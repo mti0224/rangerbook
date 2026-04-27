@@ -28,8 +28,20 @@
     return JSON.stringify(value, null, 2);
   }
 
+  function formatText(value) {
+    return normalizeText(value).replaceAll("\\n", "\n").trim();
+  }
+
+  function isNoneText(value) {
+    return formatText(value) === "(無)";
+  }
+
+  function shouldHideAbility(item) {
+    return isNoneText(item["名稱"]) || isNoneText(item["敘述"]);
+  }
+
   function displayText(value) {
-    const text = normalizeText(value).replaceAll("\\n", "\n").trim();
+    const text = formatText(value);
     return text === "(無)" ? "" : text;
   }
 
@@ -53,24 +65,26 @@
   }
 
   function toRows(raw) {
-    return Object.entries(raw).map(([code, item]) => {
-      const effects = getEffects(item);
-      const searchBlob = [
-        item["覺醒能力"],
-        getAbilityName(item),
-        getAbilityDescription(item),
-        ...effects.flatMap(effect => [
-          effect.label,
-          effect["機率"],
-          effect["發動時機"],
-          effect["場合"],
-          effect["條件"],
-          effect["效果"]
-        ])
-      ].map(normalizeText).join(" ").toLowerCase();
+    return Object.entries(raw)
+      .filter(([, item]) => !shouldHideAbility(item))
+      .map(([code, item]) => {
+        const effects = getEffects(item);
+        const searchBlob = [
+          item["覺醒能力"],
+          getAbilityName(item),
+          getAbilityDescription(item),
+          ...effects.flatMap(effect => [
+            effect.label,
+            effect["機率"],
+            effect["發動時機"],
+            effect["場合"],
+            effect["條件"],
+            effect["效果"]
+          ])
+        ].map(normalizeText).join(" ").toLowerCase();
 
-      return { code, item, effects, searchBlob };
-    });
+        return { code, item, effects, searchBlob };
+      });
   }
 
   function uniqueSorted(values) {
