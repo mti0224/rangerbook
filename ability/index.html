@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>能力數值查詢｜LINE Rangers 資料查詢</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page">
+    <section class="page-title">
+      <p class="eyebrow">Ability Database</p>
+      <h1>能力數值查詢</h1>
+      <p>
+        此頁直接讀取原始 <code>/res/能力.json</code>，不需要先轉換資料格式。
+        圖片來源固定使用 <code>https://rangers.lerico.net/res/ability_icon/</code> 加上 JSON 內的 <code>icon</code> 欄位。
+      </p>
+    </section>
+
+    <section class="controls">
+      <label class="search-box">
+        <span>搜尋能力</span>
+        <input id="searchInput" type="search" placeholder="輸入名稱、代碼、敘述、效果、條件...">
+      </label>
+
+      <label>
+        <span>覺醒能力</span>
+        <select id="awakeningFilter">
+          <option value="">全部</option>
+          <option value="是">是</option>
+          <option value="否">否</option>
+        </select>
+      </label>
+
+      <label>
+        <span>發動時機</span>
+        <select id="timingFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>場合</span>
+        <select id="modeFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>條件</span>
+        <select id="conditionFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <button id="resetBtn" type="button">清除篩選</button>
+    </section>
+
+    <section class="summary-bar">
+      <div>
+        <strong id="resultCount">0</strong>
+        <span>筆結果</span>
+      </div>
+      <button id="exportBtn" type="button">匯出目前結果 JSON</button>
+    </section>
+
+    <section class="layout">
+      <div id="abilityList" class="ability-list"></div>
+
+      <aside class="detail-panel">
+        <div id="detailEmpty" class="empty-state">
+          選擇左側能力後，這裡會顯示完整資料。
+        </div>
+        <div id="detailContent" hidden></div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/ability.js"></script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+(() => {
+  const ICON_BASE = "https://rangers.lerico.net/res/ability_icon/";
+  const DATA_URL = "../res/%E8%83%BD%E5%8A%9B.json";
+
+  const state = {
+    raw: {},
+    rows: [],
+    filtered: [],
+    selectedCode: null
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  const searchInput = $("searchInput");
+  const awakeningFilter = $("awakeningFilter");
+  const timingFilter = $("timingFilter");
+  const modeFilter = $("modeFilter");
+  const conditionFilter = $("conditionFilter");
+  const resetBtn = $("resetBtn");
+  const exportBtn = $("exportBtn");
+  const abilityList = $("abilityList");
+  const resultCount = $("resultCount");
+  const detailEmpty = $("detailEmpty");
+  const detailContent = $("detailContent");
+
+  function normalizeText(value) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") return value;
+    return JSON.stringify(value, null, 2);
+  }
+
+  function getEffects(item) {
+    return Object.entries(item)
+      .filter(([key, value]) => key.startsWith("觸發效果") && value && typeof value === "object")
+      .sort(([a], [b]) => {
+        const na = a === "觸發效果" ? 1 : Number(a.replace("觸發效果", "")) || 999;
+        const nb = b === "觸發效果" ? 1 : Number(b.replace("觸發效果", "")) || 999;
+        return na - nb;
+      })
+      .map(([key, value]) => ({ key, ...value }));
+  }
+
+  function toRows(raw) {
+    return Object.entries(raw).map(([code, item]) => {
+      const effects = getEffects(item);
+      const searchBlob = [
+        code,
+        item.icon,
+        item["覺醒能力"],
+        item["名稱"],
+        item["敘述"],
+        ...effects.flatMap(effect => [
+          effect.key,
+          effect["機率"],
+          effect["發動時機"],
+          effect["場合"],
+          effect["條件"],
+          effect["效果"]
+        ])
+      ].map(normalizeText).join(" ").toLowerCase();
+
+      return { code, item, effects, searchBlob };
+    });
+  }
+
+  function uniqueSorted(values) {
+    return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
+  }
+
+  function fillSelect(select, values) {
+    const current = select.value;
+    select.innerHTML = `<option value="">全部</option>` + values
+      .map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
+      .join("");
+    if (values.includes(current)) select.value = current;
+  }
+
+  function buildFilters() {
+    const allEffects = state.rows.flatMap(row => row.effects);
+    fillSelect(timingFilter, uniqueSorted(allEffects.map(effect => effect["發動時機"])));
+    fillSelect(modeFilter, uniqueSorted(allEffects.map(effect => effect["場合"])));
+    fillSelect(conditionFilter, uniqueSorted(allEffects.map(effect => effect["條件"])));
+  }
+
+  function applyFilters() {
+    const q = searchInput.value.trim().toLowerCase();
+    const awakening = awakeningFilter.value;
+    const timing = timingFilter.value;
+    const mode = modeFilter.value;
+    const condition = conditionFilter.value;
+
+    state.filtered = state.rows.filter(row => {
+      const item = row.item;
+      const effects = row.effects;
+
+      if (q && !row.searchBlob.includes(q)) return false;
+      if (awakening && item["覺醒能力"] !== awakening) return false;
+      if (timing && !effects.some(effect => effect["發動時機"] === timing)) return false;
+      if (mode && !effects.some(effect => effect["場合"] === mode)) return false;
+      if (condition && !effects.some(effect => effect["條件"] === condition)) return false;
+
+      return true;
+    });
+
+    renderList();
+  }
+
+  function renderList() {
+    resultCount.textContent = state.filtered.length.toLocaleString("zh-Hant");
+
+    if (!state.filtered.length) {
+      abilityList.innerHTML = `<div class="empty-state">找不到符合條件的能力。</div>`;
+      return;
+    }
+
+    abilityList.innerHTML = state.filtered.map(row => {
+      const item = row.item;
+      const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
+      const firstEffect = row.effects[0] || {};
+      const active = row.code === state.selectedCode ? " active" : "";
+
+      return `
+        <button class="ability-card${active}" type="button" data-code="${escapeHtml(row.code)}">
+          <div class="ability-icon-wrap">
+            ${iconUrl ? `<img class="ability-icon" src="${iconUrl}" alt="" loading="lazy" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
+          </div>
+          <div class="ability-main">
+            <div class="ability-title-row">
+              <h2>${escapeHtml(item["名稱"] || "(無名稱)")}</h2>
+              <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] || "未知")}</span>
+            </div>
+            <p class="code">${escapeHtml(row.code)}</p>
+            <p class="desc">${escapeHtml(item["敘述"] || "(無敘述)")}</p>
+            <div class="mini-meta">
+              <span>${escapeHtml(firstEffect["機率"] || "-")}</span>
+              <span>${escapeHtml(firstEffect["發動時機"] || "-")}</span>
+              <span>${escapeHtml(firstEffect["場合"] || "-")}</span>
+            </div>
+          </div>
+        </button>
+      `;
+    }).join("");
+
+    abilityList.querySelectorAll(".ability-card").forEach(card => {
+      card.addEventListener("click", () => selectAbility(card.dataset.code));
+    });
+  }
+
+  function selectAbility(code) {
+    state.selectedCode = code;
+    const row = state.rows.find(row => row.code === code);
+    if (!row) return;
+
+    const item = row.item;
+    const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
+
+    detailEmpty.hidden = true;
+    detailContent.hidden = false;
+
+    detailContent.innerHTML = `
+      <div class="detail-head">
+        <div class="ability-icon-wrap large">
+          ${iconUrl ? `<img class="ability-icon" src="${iconUrl}" alt="" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
+        </div>
+        <div>
+          <p class="code">${escapeHtml(code)}</p>
+          <h2>${escapeHtml(item["名稱"] || "(無名稱)")}</h2>
+          <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">覺醒能力：${escapeHtml(item["覺醒能力"] || "未知")}</span>
+        </div>
+      </div>
+
+      <section class="detail-section">
+        <h3>敘述</h3>
+        <p class="preline">${escapeHtml(item["敘述"] || "(無敘述)")}</p>
+      </section>
+
+      <section class="detail-section">
+        <h3>觸發效果</h3>
+        ${renderEffects(row.effects)}
+      </section>
+
+      <section class="detail-section">
+        <h3>原始 JSON</h3>
+        <pre class="raw-json">${escapeHtml(JSON.stringify({ [code]: item }, null, 2))}</pre>
+      </section>
+    `;
+
+    renderList();
+  }
+
+  function renderEffects(effects) {
+    if (!effects.length) return `<div class="empty-state small">沒有觸發效果資料。</div>`;
+
+    return effects.map(effect => `
+      <div class="effect-card">
+        <h4>${escapeHtml(effect.key)}</h4>
+        <dl>
+          <div><dt>機率</dt><dd>${escapeHtml(effect["機率"] || "-")}</dd></div>
+          <div><dt>發動時機</dt><dd>${escapeHtml(effect["發動時機"] || "-")}</dd></div>
+          <div><dt>場合</dt><dd>${escapeHtml(effect["場合"] || "-")}</dd></div>
+          <div><dt>條件</dt><dd>${escapeHtml(effect["條件"] || "-")}</dd></div>
+          <div><dt>效果</dt><dd>${escapeHtml(effect["效果"] || "-")}</dd></div>
+        </dl>
+      </div>
+    `).join("");
+  }
+
+  function exportFiltered() {
+    const output = {};
+    state.filtered.forEach(row => {
+      output[row.code] = row.item;
+    });
+
+    const blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ability_filtered.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function escapeHtml(value) {
+    return normalizeText(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  async function init() {
+    try {
+      const res = await fetch(DATA_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      state.raw = await res.json();
+      state.rows = toRows(state.raw);
+      state.filtered = [...state.rows];
+
+      buildFilters();
+      applyFilters();
+
+      if (state.filtered[0]) selectAbility(state.filtered[0].code);
+    } catch (error) {
+      abilityList.innerHTML = `<div class="empty-state">讀取 /res/能力.json 失敗：${escapeHtml(error.message)}</div>`;
+      console.error(error);
+    }
+  }
+
+  [searchInput, awakeningFilter, timingFilter, modeFilter, conditionFilter].forEach(el => {
+    el.addEventListener("input", applyFilters);
+    el.addEventListener("change", applyFilters);
+  });
+
+  resetBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    awakeningFilter.value = "";
+    timingFilter.value = "";
+    modeFilter.value = "";
+    conditionFilter.value = "";
+    applyFilters();
+  });
+
+  exportBtn.addEventListener("click", exportFiltered);
+
+  init();
+})();
