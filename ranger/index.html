@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rangers 角色查詢｜LINE Rangers 資料查詢</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/ranger.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">Ranger Reference</p>
+      <h1>Rangers 角色查詢</h1>
+      <p>
+        查詢 Rangers 角色的基本資料、能力數值、技能效果、能力與才能資訊。
+      </p>
+    </section>
+
+    <section class="controls ranger-controls">
+      <label class="search-box">
+        <span>搜尋角色</span>
+        <input id="rangerSearchInput" type="search" placeholder="輸入角色名稱、星數、類型、屬性、技能或能力...">
+      </label>
+
+      <label>
+        <span>星數</span>
+        <select id="starFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>類型</span>
+        <select id="typeFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>屬性</span>
+        <select id="elementFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>角色分類</span>
+        <select id="specialFilter">
+          <option value="">全部</option>
+          <option value="nft">NFT角色</option>
+          <option value="event">降臨關卡角色</option>
+          <option value="talent">有才能</option>
+        </select>
+      </label>
+
+      <button id="rangerResetBtn" type="button">清除篩選</button>
+    </section>
+
+    <section class="summary-bar">
+      <div>
+        <strong id="rangerResultCount">0</strong>
+        <span>筆結果</span>
+      </div>
+    </section>
+
+    <section class="ranger-list-layout">
+      <div id="rangerList" class="ranger-list"></div>
+    </section>
+  </main>
+
+  <div id="rangerModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="rangerModalTitle">
+      <button id="rangerModalCloseBtn" class="modal-close" type="button" aria-label="關閉角色詳細資料">×</button>
+      <div id="rangerModalContent"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/ranger.js"></script>
+</body>
+</html>
