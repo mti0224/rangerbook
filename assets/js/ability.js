@@ -17,7 +17,6 @@
   const modeFilter = $("modeFilter");
   const conditionFilter = $("conditionFilter");
   const resetBtn = $("resetBtn");
-  const exportBtn = $("exportBtn");
   const abilityList = $("abilityList");
   const resultCount = $("resultCount");
   const detailEmpty = $("detailEmpty");
@@ -37,20 +36,18 @@
         const nb = b === "觸發效果" ? 1 : Number(b.replace("觸發效果", "")) || 999;
         return na - nb;
       })
-      .map(([key, value]) => ({ key, ...value }));
+      .map(([key, value], index) => ({ label: `效果 ${index + 1}`, ...value }));
   }
 
   function toRows(raw) {
     return Object.entries(raw).map(([code, item]) => {
       const effects = getEffects(item);
       const searchBlob = [
-        code,
-        item.icon,
         item["覺醒能力"],
         item["名稱"],
         item["敘述"],
         ...effects.flatMap(effect => [
-          effect.key,
+          effect.label,
           effect["機率"],
           effect["發動時機"],
           effect["場合"],
@@ -127,9 +124,8 @@
           <div class="ability-main">
             <div class="ability-title-row">
               <h2>${escapeHtml(item["名稱"] || "(無名稱)")}</h2>
-              <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] || "未知")}</span>
+              <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒" : "一般")}</span>
             </div>
-            <p class="code">${escapeHtml(row.code)}</p>
             <p class="desc">${escapeHtml(item["敘述"] || "(無敘述)")}</p>
             <div class="mini-meta">
               <span>${escapeHtml(firstEffect["機率"] || "-")}</span>
@@ -163,25 +159,19 @@
           ${iconUrl ? `<img class="ability-icon" src="${iconUrl}" alt="" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
         </div>
         <div>
-          <p class="code">${escapeHtml(code)}</p>
           <h2>${escapeHtml(item["名稱"] || "(無名稱)")}</h2>
-          <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">覺醒能力：${escapeHtml(item["覺醒能力"] || "未知")}</span>
+          <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒能力" : "一般能力")}</span>
         </div>
       </div>
 
       <section class="detail-section">
-        <h3>敘述</h3>
+        <h3>能力敘述</h3>
         <p class="preline">${escapeHtml(item["敘述"] || "(無敘述)")}</p>
       </section>
 
       <section class="detail-section">
-        <h3>觸發效果</h3>
+        <h3>效果資料</h3>
         ${renderEffects(row.effects)}
-      </section>
-
-      <section class="detail-section">
-        <h3>原始 JSON</h3>
-        <pre class="raw-json">${escapeHtml(JSON.stringify({ [code]: item }, null, 2))}</pre>
       </section>
     `;
 
@@ -189,35 +179,20 @@
   }
 
   function renderEffects(effects) {
-    if (!effects.length) return `<div class="empty-state small">沒有觸發效果資料。</div>`;
+    if (!effects.length) return `<div class="empty-state small">沒有可顯示的效果資料。</div>`;
 
     return effects.map(effect => `
       <div class="effect-card">
-        <h4>${escapeHtml(effect.key)}</h4>
+        <h4>${escapeHtml(effect.label)}</h4>
         <dl>
           <div><dt>機率</dt><dd>${escapeHtml(effect["機率"] || "-")}</dd></div>
-          <div><dt>發動時機</dt><dd>${escapeHtml(effect["發動時機"] || "-")}</dd></div>
+          <div><dt>時機</dt><dd>${escapeHtml(effect["發動時機"] || "-")}</dd></div>
           <div><dt>場合</dt><dd>${escapeHtml(effect["場合"] || "-")}</dd></div>
           <div><dt>條件</dt><dd>${escapeHtml(effect["條件"] || "-")}</dd></div>
           <div><dt>效果</dt><dd>${escapeHtml(effect["效果"] || "-")}</dd></div>
         </dl>
       </div>
     `).join("");
-  }
-
-  function exportFiltered() {
-    const output = {};
-    state.filtered.forEach(row => {
-      output[row.code] = row.item;
-    });
-
-    const blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "ability_filtered.json";
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   function escapeHtml(value) {
@@ -242,7 +217,7 @@
 
       if (state.filtered[0]) selectAbility(state.filtered[0].code);
     } catch (error) {
-      abilityList.innerHTML = `<div class="empty-state">讀取 /res/能力.json 失敗：${escapeHtml(error.message)}</div>`;
+      abilityList.innerHTML = `<div class="empty-state">資料載入失敗，請稍後再試。</div>`;
       console.error(error);
     }
   }
@@ -260,8 +235,6 @@
     conditionFilter.value = "";
     applyFilters();
   });
-
-  exportBtn.addEventListener("click", exportFiltered);
 
   init();
 })();
