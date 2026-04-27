@@ -1,5 +1,6 @@
 (() => {
   const DATA_URL = "../res/Rangers_data.json";
+  const ABILITY_DATA_URL = "../res/%E8%83%BD%E5%8A%9B.json";
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum-140.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
@@ -7,7 +8,8 @@
   const state = {
     rows: [],
     filtered: [],
-    selectedId: null
+    selectedId: null,
+    abilityMap: {}
   };
 
   const $ = (id) => document.getElementById(id);
@@ -58,13 +60,63 @@
 
   function getSkill(ranger, key) {
     const value = ranger[key];
-    return value && typeof value === "object" ? value : null;
+    return value && typeof value === "object" && !Array.isArray(value) ? value : null;
   }
 
-  function getAbilityNames(ranger) {
-    return [ranger["能力1"], ranger["能力2"], ranger["覺醒能力"]]
-      .map(text)
-      .filter((v) => v && v !== "無" && v !== "(無)");
+  function getAbilityDetail(code) {
+    return code ? state.abilityMap[code] : null;
+  }
+
+  function getAbilityEffects(ability) {
+    if (!ability || typeof ability !== "object") return [];
+    return Object.entries(ability)
+      .filter(([key, value]) => key.startsWith("觸發效果") && value && typeof value === "object")
+      .sort(([a], [b]) => {
+        const na = a === "觸發效果" ? 1 : Number(a.replace("觸發效果", "")) || 999;
+        const nb = b === "觸發效果" ? 1 : Number(b.replace("觸發效果", "")) || 999;
+        return na - nb;
+      })
+      .map(([key, value], index) => ({ label: `效果 ${index + 1}`, ...value }));
+  }
+
+  function abilityNameFromValue(value) {
+    if (typeof value === "string") return text(value);
+    if (value && typeof value === "object") return text(value["能力"] || value["名稱"] || value["能力名稱"] || value.name);
+    return "";
+  }
+
+  function abilityCodeFromValue(value, fallback = "") {
+    if (value && typeof value === "object") {
+      return text(value.abilityCode || value["abilityCode"] || value["能力代碼"] || value.code || fallback);
+    }
+    return text(fallback);
+  }
+
+  function abilityIconFromValue(value, abilityDetail) {
+    if (value && typeof value === "object" && value.icon) return text(value.icon);
+    if (abilityDetail && abilityDetail.icon) return text(abilityDetail.icon);
+    return "";
+  }
+
+  function parseAbilityField(value, fallbackCode = "") {
+    if (Array.isArray(value)) return value.flatMap((entry) => parseAbilityField(entry, fallbackCode));
+    if (isNone(value)) return [];
+
+    const code = abilityCodeFromValue(value, fallbackCode);
+    const detail = getAbilityDetail(code);
+    const name = abilityNameFromValue(value) || text(detail?.["名稱"] || detail?.name) || code;
+    const icon = abilityIconFromValue(value, detail);
+
+    if (!name || name === "無" || name === "(無)") return [];
+    return [{ name, code, icon, detail }];
+  }
+
+  function getAbilities(ranger) {
+    return [
+      ...parseAbilityField(ranger["能力1"], ranger["abilityCode"]),
+      ...parseAbilityField(ranger["能力2"], ranger["abilityCode2"]),
+      ...parseAbilityField(ranger["覺醒能力"], ranger["awakeAbilityCode"] || ranger["覺醒能力Code"] || "")
+    ];
   }
 
   function getSearchBlob(ranger) {
@@ -80,6 +132,14 @@
       ];
     });
 
+    const abilityParts = getAbilities(ranger).flatMap((ability) => [
+      ability.name,
+      ability.code,
+      ability.detail?.["名稱"],
+      ability.detail?.["敘述"],
+      ...getAbilityEffects(ability.detail).flatMap((effect) => Object.values(effect))
+    ]);
+
     return [
       ranger["Ranger名稱"],
       ranger["ranger_id"],
@@ -91,10 +151,8 @@
       ranger["生產礦物費用"],
       ranger["移動速度"],
       ranger["攻擊速度"],
-      ranger["能力1"],
-      ranger["能力2"],
-      ranger["覺醒能力"],
       ranger["才能"],
+      ...abilityParts,
       ...skillParts
     ].map(normalizeText).join(" ").toLowerCase();
   }
@@ -237,7 +295,7 @@
 
       <section class="detail-section">
         <h3>能力與才能</h3>
-        ${renderAbilities(ranger)}
+        ${renderAbilitiesAndTalent(ranger)}
       </section>
     `;
   }
@@ -281,28 +339,99 @@
     `;
   }
 
-  function renderAbilities(ranger) {
-    const abilities = [
-      { name: ranger["能力1"], code: ranger["abilityCode"] },
-      { name: ranger["能力2"], code: ranger["abilityCode2"] },
-      { name: ranger["覺醒能力"], code: ranger["awakeAbilityCode"] || ranger["覺醒能力Code"] || "" }
-    ].filter((ability) => !isNone(ability.name));
+  function renderAbilitiesAndTalent(ranger) {
+    const abilities = getAbilities(ranger);
+    const talentHtml = renderTalent(ranger["才能"]);
 
-    const talent = isNone(ranger["才能"]) ? "" : text(ranger["才能"]);
-
-    if (!abilities.length && !talent) return `<div class="empty-state small">沒有能力或才能資料。</div>`;
+    if (!abilities.length && !talentHtml) return `<div class="empty-state small">沒有能力或才能資料。</div>`;
 
     return `
       <div class="ranger-ability-list">
-        ${abilities.map((ability) => `
-          <div class="ranger-ability-item">
-            ${ability.code ? `<img class="small-icon" src="${ABILITY_ICON(`${ability.code}_icon.png`)}" alt="" onerror="this.remove();">` : ""}
-            <span>${escapeHtml(ability.name)}</span>
-          </div>
-        `).join("")}
-        ${talent ? `<div class="ranger-ability-item talent-item"><span>才能：${escapeHtml(talent)}</span></div>` : ""}
+        ${abilities.map(renderAbilityCard).join("")}
+        ${talentHtml}
       </div>
     `;
+  }
+
+  function renderAbilityCard(ability) {
+    const detail = ability.detail;
+    const description = text(detail?.["敘述"] || "");
+    const effects = getAbilityEffects(detail);
+    const icon = ability.icon || detail?.icon || "";
+
+    return `
+      <article class="ranger-ability-card">
+        <div class="ranger-icon-title">
+          ${icon ? `<img class="small-icon" src="${ABILITY_ICON(icon)}" alt="" onerror="this.remove();">` : ""}
+          <div>
+            <h4>${escapeHtml(ability.name)}</h4>
+            ${description && description !== "無" && description !== "(無)" ? `<p class="preline">${escapeHtml(description)}</p>` : ""}
+          </div>
+        </div>
+        ${effects.length ? `<div class="ability-effect-list">${effects.map(renderAbilityEffect).join("")}</div>` : ""}
+      </article>
+    `;
+  }
+
+  function renderAbilityEffect(effect) {
+    const rows = [
+      ["機率", effect["機率"]],
+      ["時機", effect["發動時機"]],
+      ["場合", effect["場合"]],
+      ["條件", effect["條件"]],
+      ["效果", effect["效果"]]
+    ].filter(([, value]) => !isNone(value));
+
+    return `
+      <div class="ability-effect">
+        <strong>${escapeHtml(effect.label)}</strong>
+        <dl>
+          ${rows.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}
+        </dl>
+      </div>
+    `;
+  }
+
+  function renderTalent(value) {
+    if (isNone(value)) return "";
+    if (typeof value === "string") {
+      return `<article class="ranger-talent-card"><h4>才能</h4><p>${escapeHtml(value)}</p></article>`;
+    }
+    if (!value || typeof value !== "object") return "";
+
+    const sections = Object.entries(value).map(([title, content]) => renderTalentSection(title, content)).join("");
+    return `<article class="ranger-talent-card"><h4>才能</h4>${sections}</article>`;
+  }
+
+  function renderTalentSection(title, content) {
+    if (isNone(content)) return "";
+    if (typeof content === "string") {
+      return `<div class="talent-section"><h5>${escapeHtml(title)}</h5><p>${escapeHtml(content)}</p></div>`;
+    }
+    if (!content || typeof content !== "object") return "";
+
+    const simpleRows = Object.entries(content)
+      .filter(([, value]) => !Array.isArray(value) && typeof value !== "object" && !isNone(value));
+    const listRows = Object.entries(content)
+      .filter(([, value]) => Array.isArray(value));
+
+    return `
+      <div class="talent-section">
+        <h5>${escapeHtml(title)}</h5>
+        ${simpleRows.length ? `<dl>${simpleRows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` : ""}
+        ${listRows.map(([key, list]) => `
+          <div class="talent-effect-list">
+            <strong>${escapeHtml(key)}</strong>
+            ${list.map((entry) => renderTalentEntry(entry)).join("")}
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function renderTalentEntry(entry) {
+    if (typeof entry !== "object" || entry === null) return `<p>${escapeHtml(entry)}</p>`;
+    return `<div class="talent-effect"><dl>${Object.entries(entry).filter(([, value]) => !isNone(value)).map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl></div>`;
   }
 
   function openModal(html) {
@@ -320,9 +449,13 @@
 
   async function init() {
     try {
-      const res = await fetch(DATA_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const raw = await res.json();
+      const [rangerRes, abilityRes] = await Promise.all([
+        fetch(DATA_URL),
+        fetch(ABILITY_DATA_URL).catch(() => null)
+      ]);
+      if (!rangerRes.ok) throw new Error(`HTTP ${rangerRes.status}`);
+      const raw = await rangerRes.json();
+      if (abilityRes && abilityRes.ok) state.abilityMap = await abilityRes.json();
       state.rows = toRows(Array.isArray(raw) ? raw : []);
       state.filtered = [...state.rows];
       buildFilters();
