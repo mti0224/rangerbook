@@ -19,8 +19,9 @@
   const resetBtn = $("resetBtn");
   const abilityList = $("abilityList");
   const resultCount = $("resultCount");
-  const detailEmpty = $("detailEmpty");
-  const detailContent = $("detailContent");
+  const modal = $("abilityModal");
+  const modalContent = $("modalContent");
+  const modalCloseBtn = $("modalCloseBtn");
 
   function normalizeText(value) {
     if (value === null || value === undefined) return "";
@@ -176,21 +177,23 @@
     const row = state.rows.find(row => row.code === code);
     if (!row) return;
 
+    renderList();
+    openModal(renderAbilityDetail(row));
+  }
+
+  function renderAbilityDetail(row) {
     const item = row.item;
     const title = getAbilityName(item);
     const description = getAbilityDescription(item);
     const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
 
-    detailEmpty.hidden = true;
-    detailContent.hidden = false;
-
-    detailContent.innerHTML = `
+    return `
       <div class="detail-head">
         <div class="ability-icon-wrap large">
           ${iconUrl ? `<img class="ability-icon" src="${iconUrl}" alt="" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
         </div>
         <div>
-          <h2>${escapeHtml(title)}</h2>
+          <h2 id="abilityModalTitle">${escapeHtml(title)}</h2>
           <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒能力" : "一般能力")}</span>
         </div>
       </div>
@@ -206,8 +209,19 @@
         ${renderEffects(row.effects)}
       </section>
     `;
+  }
 
-    renderList();
+  function openModal(html) {
+    modalContent.innerHTML = html;
+    modal.hidden = false;
+    document.body.classList.add("modal-open");
+    modalCloseBtn.focus();
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    modalContent.innerHTML = "";
+    document.body.classList.remove("modal-open");
   }
 
   function renderEffects(effects) {
@@ -246,8 +260,6 @@
 
       buildFilters();
       applyFilters();
-
-      if (state.filtered[0]) selectAbility(state.filtered[0].code);
     } catch (error) {
       abilityList.innerHTML = `<div class="empty-state">資料載入失敗，請稍後再試。</div>`;
       console.error(error);
@@ -266,6 +278,14 @@
     modeFilter.value = "";
     conditionFilter.value = "";
     applyFilters();
+  });
+
+  modalCloseBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", event => {
+    if (event.target === modal) closeModal();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !modal.hidden) closeModal();
   });
 
   init();
