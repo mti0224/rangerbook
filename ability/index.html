@@ -64,17 +64,17 @@
       </div>
     </section>
 
-    <section class="layout">
+    <section class="layout modal-list-layout">
       <div id="abilityList" class="ability-list"></div>
-
-      <aside class="detail-panel">
-        <div id="detailEmpty" class="empty-state">
-          選擇左側能力後，這裡會顯示詳細資料。
-        </div>
-        <div id="detailContent" hidden></div>
-      </aside>
     </section>
   </main>
+
+  <div id="abilityModal" class="modal-backdrop" hidden>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="abilityModalTitle">
+      <button id="modalCloseBtn" class="modal-close" type="button" aria-label="關閉詳細資料">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
 
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/ability.js"></script>
