@@ -349,6 +349,21 @@ select {
   color: #92400e;
 }
 
+.tag-enemy {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.tag-maze {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.tag-team {
+  background: #cffafe;
+  color: #0e7490;
+}
+
 .code {
   margin-bottom: 0.25rem;
   color: var(--primary-dark);
