@@ -3,7 +3,8 @@
   if (!mount) return;
 
   const path = window.location.pathname.replace(/\/+$/, "");
-  const depthPrefix = path.endsWith("/ability") ? "../" : "./";
+  const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger");
+  const depthPrefix = isSubPage ? "../" : "./";
 
   mount.innerHTML = `
     <header class="site-header">
@@ -15,6 +16,7 @@
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${depthPrefix}">首頁</a>
           <a href="${depthPrefix}ability/">能力查詢</a>
+          <a href="${depthPrefix}ranger/">角色查詢</a>
         </nav>
       </div>
     </header>
