@@ -28,6 +28,19 @@
     return JSON.stringify(value, null, 2);
   }
 
+  function displayText(value) {
+    const text = normalizeText(value).replaceAll("\\n", "\n").trim();
+    return text === "(無)" ? "" : text;
+  }
+
+  function getAbilityName(item) {
+    return displayText(item["名稱"]) || "未命名能力";
+  }
+
+  function getAbilityDescription(item) {
+    return displayText(item["敘述"]);
+  }
+
   function getEffects(item) {
     return Object.entries(item)
       .filter(([key, value]) => key.startsWith("觸發效果") && value && typeof value === "object")
@@ -44,8 +57,8 @@
       const effects = getEffects(item);
       const searchBlob = [
         item["覺醒能力"],
-        item["名稱"],
-        item["敘述"],
+        getAbilityName(item),
+        getAbilityDescription(item),
         ...effects.flatMap(effect => [
           effect.label,
           effect["機率"],
@@ -112,6 +125,8 @@
 
     abilityList.innerHTML = state.filtered.map(row => {
       const item = row.item;
+      const title = getAbilityName(item);
+      const description = getAbilityDescription(item);
       const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
       const firstEffect = row.effects[0] || {};
       const active = row.code === state.selectedCode ? " active" : "";
@@ -123,10 +138,10 @@
           </div>
           <div class="ability-main">
             <div class="ability-title-row">
-              <h2>${escapeHtml(item["名稱"] || "(無名稱)")}</h2>
+              <h2>${escapeHtml(title)}</h2>
               <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒" : "一般")}</span>
             </div>
-            <p class="desc">${escapeHtml(item["敘述"] || "(無敘述)")}</p>
+            ${description ? `<p class="desc">${escapeHtml(description)}</p>` : ""}
             <div class="mini-meta">
               <span>${escapeHtml(firstEffect["機率"] || "-")}</span>
               <span>${escapeHtml(firstEffect["發動時機"] || "-")}</span>
@@ -148,6 +163,8 @@
     if (!row) return;
 
     const item = row.item;
+    const title = getAbilityName(item);
+    const description = getAbilityDescription(item);
     const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
 
     detailEmpty.hidden = true;
@@ -159,15 +176,16 @@
           ${iconUrl ? `<img class="ability-icon" src="${iconUrl}" alt="" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
         </div>
         <div>
-          <h2>${escapeHtml(item["名稱"] || "(無名稱)")}</h2>
+          <h2>${escapeHtml(title)}</h2>
           <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒能力" : "一般能力")}</span>
         </div>
       </div>
 
+      ${description ? `
       <section class="detail-section">
         <h3>能力敘述</h3>
-        <p class="preline">${escapeHtml(item["敘述"] || "(無敘述)")}</p>
-      </section>
+        <p class="preline">${escapeHtml(description)}</p>
+      </section>` : ""}
 
       <section class="detail-section">
         <h3>效果資料</h3>
