@@ -12,7 +12,7 @@
   const $ = (id) => document.getElementById(id);
 
   const searchInput = $("searchInput");
-  const awakeningFilter = $("awakeningFilter");
+  const categoryFilter = $("categoryFilter");
   const timingFilter = $("timingFilter");
   const modeFilter = $("modeFilter");
   const conditionFilter = $("conditionFilter");
@@ -45,18 +45,18 @@
 
   function getAbilityTag(item, detail = false) {
     if (isEnabled(item["覺醒能力"])) {
-      return { label: detail ? "覺醒能力" : "覺醒", className: "tag-wake" };
+      return { label: detail ? "覺醒能力" : "覺醒", filterValue: "覺醒", className: "tag-wake" };
     }
     if (isEnabled(item["一般敵人能力"])) {
-      return { label: "敵人", className: "tag-enemy" };
+      return { label: "敵人", filterValue: "敵人", className: "tag-enemy" };
     }
     if (isEnabled(item["迷宮敵人能力"])) {
-      return { label: "迷宮", className: "tag-maze" };
+      return { label: "迷宮", filterValue: "迷宮", className: "tag-maze" };
     }
     if (isEnabled(item["小隊"])) {
-      return { label: "小隊", className: "tag-team" };
+      return { label: "小隊", filterValue: "小隊", className: "tag-team" };
     }
-    return { label: detail ? "一般能力" : "一般", className: "" };
+    return { label: detail ? "一般能力" : "一般", filterValue: "一般", className: "" };
   }
 
   function shouldHideAbility(item) {
@@ -111,7 +111,7 @@
           ])
         ].map(normalizeText).join(" ").toLowerCase();
 
-        return { code, item, effects, searchBlob };
+        return { code, item, effects, tag, searchBlob };
       });
   }
 
@@ -136,17 +136,16 @@
 
   function applyFilters() {
     const q = searchInput.value.trim().toLowerCase();
-    const awakening = awakeningFilter.value;
+    const category = categoryFilter.value;
     const timing = timingFilter.value;
     const mode = modeFilter.value;
     const condition = conditionFilter.value;
 
     state.filtered = state.rows.filter(row => {
-      const item = row.item;
       const effects = row.effects;
 
       if (q && !row.searchBlob.includes(q)) return false;
-      if (awakening && item["覺醒能力"] !== awakening) return false;
+      if (category && row.tag.filterValue !== category) return false;
       if (timing && !effects.some(effect => effect["發動時機"] === timing)) return false;
       if (mode && !effects.some(effect => effect["場合"] === mode)) return false;
       if (condition && !effects.some(effect => effect["條件"] === condition)) return false;
@@ -172,7 +171,7 @@
       const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
       const firstEffect = row.effects[0] || {};
       const active = row.code === state.selectedCode ? " active" : "";
-      const tag = getAbilityTag(item);
+      const tag = row.tag;
 
       return `
         <button class="ability-card${active}" type="button" data-code="${escapeHtml(row.code)}">
@@ -295,14 +294,14 @@
     }
   }
 
-  [searchInput, awakeningFilter, timingFilter, modeFilter, conditionFilter].forEach(el => {
+  [searchInput, categoryFilter, timingFilter, modeFilter, conditionFilter].forEach(el => {
     el.addEventListener("input", applyFilters);
     el.addEventListener("change", applyFilters);
   });
 
   resetBtn.addEventListener("click", () => {
     searchInput.value = "";
-    awakeningFilter.value = "";
+    categoryFilter.value = "";
     timingFilter.value = "";
     modeFilter.value = "";
     conditionFilter.value = "";
