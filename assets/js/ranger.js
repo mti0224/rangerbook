@@ -58,6 +58,14 @@
     return escapeHtml(value || "-");
   }
 
+  function parseRangerDate(value) {
+    const raw = text(value).replaceAll("-", "/");
+    const parts = raw.split("/").map((part) => Number(part));
+    if (parts.length < 3 || parts.some((part) => Number.isNaN(part))) return 0;
+    const [year, month, day] = parts;
+    return new Date(year, month - 1, day).getTime() || 0;
+  }
+
   function getSkill(ranger, key) {
     const value = ranger[key];
     return value && typeof value === "object" && !Array.isArray(value) ? value : null;
@@ -165,10 +173,14 @@
   }
 
   function toRows(raw) {
-    return raw.map((ranger) => ({
-      ranger,
-      searchBlob: getSearchBlob(ranger)
-    }));
+    return raw
+      .map((ranger, index) => ({
+        ranger,
+        index,
+        dateTime: parseRangerDate(ranger["登場時間"]),
+        searchBlob: getSearchBlob(ranger)
+      }))
+      .sort((a, b) => (b.dateTime - a.dateTime) || (a.index - b.index));
   }
 
   function uniqueSorted(values) {
@@ -331,7 +343,7 @@
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
           <div>
             <h4>技能 ${index + 1}：${escapeHtml(skill["技能名稱"] || "未命名技能")}</h4>
-            <p>${escapeHtml(skill["發動機率"] || "-")}・${escapeHtml(skill["技能冷卻時間"] || "-")}・${escapeHtml(skill["觸發基準"] || "-")}</p>
+            <p>發動率：${escapeHtml(skill["發動機率"] || "-")}・技能冷卻時間：${escapeHtml(skill["技能冷卻時間"] || "-")}・觸發基準：${escapeHtml(skill["觸發基準"] || "-")}</p>
           </div>
         </div>
         ${renderSkillTable(skill)}
