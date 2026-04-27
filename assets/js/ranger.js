@@ -111,12 +111,19 @@
     return [{ name, code, icon, detail }];
   }
 
-  function getAbilities(ranger) {
+  function getNormalAbilities(ranger) {
     return [
       ...parseAbilityField(ranger["能力1"], ranger["abilityCode"]),
-      ...parseAbilityField(ranger["能力2"], ranger["abilityCode2"]),
-      ...parseAbilityField(ranger["覺醒能力"], ranger["awakeAbilityCode"] || ranger["覺醒能力Code"] || "")
+      ...parseAbilityField(ranger["能力2"], ranger["abilityCode2"])
     ];
+  }
+
+  function getAwakeAbilities(ranger) {
+    return parseAbilityField(ranger["覺醒能力"], ranger["awakeAbilityCode"] || ranger["覺醒能力Code"] || "");
+  }
+
+  function getAllAbilities(ranger) {
+    return [...getNormalAbilities(ranger), ...getAwakeAbilities(ranger)];
   }
 
   function getSearchBlob(ranger) {
@@ -132,7 +139,7 @@
       ];
     });
 
-    const abilityParts = getAbilities(ranger).flatMap((ability) => [
+    const abilityParts = getAllAbilities(ranger).flatMap((ability) => [
       ability.name,
       ability.code,
       ability.detail?.["名稱"],
@@ -294,8 +301,18 @@
       </section>
 
       <section class="detail-section">
-        <h3>能力與才能</h3>
-        ${renderAbilitiesAndTalent(ranger)}
+        <h3>能力</h3>
+        ${renderAbilityGroup(getNormalAbilities(ranger), "沒有能力資料。")}
+      </section>
+
+      <section class="detail-section">
+        <h3>覺醒能力</h3>
+        ${renderAbilityGroup(getAwakeAbilities(ranger), "沒有覺醒能力資料。")}
+      </section>
+
+      <section class="detail-section">
+        <h3>才能</h3>
+        ${renderTalent(ranger["才能"]) || `<div class="empty-state small">沒有才能資料。</div>`}
       </section>
     `;
   }
@@ -317,40 +334,47 @@
             <p>${escapeHtml(skill["發動機率"] || "-")}・${escapeHtml(skill["技能冷卻時間"] || "-")}・${escapeHtml(skill["觸發基準"] || "-")}</p>
           </div>
         </div>
-        <div class="skill-effect-list">
-          ${Array.isArray(skill["技能組"]) ? skill["技能組"].map(renderSkillEffect).join("") : ""}
-        </div>
+        ${renderSkillTable(skill)}
       </article>
     `).join("");
   }
 
-  function renderSkillEffect(effect) {
+  function renderSkillTable(skill) {
+    const effects = Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
+    if (!effects.length) return `<div class="empty-state small">沒有技能效果資料。</div>`;
     return `
-      <div class="skill-effect">
-        <strong>${escapeHtml(effect["效果"] || "-")}</strong>
-        <dl>
-          <div><dt>係數</dt><dd>${escapeHtml(effect["係數"] || "-")}</dd></div>
-          <div><dt>時間</dt><dd>${escapeHtml(effect["有效時間"] || "-")}</dd></div>
-          <div><dt>範圍</dt><dd>${escapeHtml(effect["範圍"] || "-")}</dd></div>
-          <div><dt>活動</dt><dd>${escapeHtml(effect["適用於活動關卡"] || "-")}</dd></div>
-          <div><dt>守護神</dt><dd>${escapeHtml(effect["適用於守護神"] || "-")}</dd></div>
-        </dl>
+      <div class="table-scroll">
+        <table class="skill-effect-table">
+          <thead>
+            <tr>
+              <th>技能效果</th>
+              <th>係數</th>
+              <th>時間</th>
+              <th>範圍</th>
+              <th>活動</th>
+              <th>守護神</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${effects.map((effect) => `
+              <tr>
+                <th>${escapeHtml(effect["效果"] || "-")}</th>
+                <td>${escapeHtml(effect["係數"] || "-")}</td>
+                <td>${escapeHtml(effect["有效時間"] || "-")}</td>
+                <td>${escapeHtml(effect["範圍"] || "-")}</td>
+                <td>${escapeHtml(effect["適用於活動關卡"] || "-")}</td>
+                <td>${escapeHtml(effect["適用於守護神"] || "-")}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
       </div>
     `;
   }
 
-  function renderAbilitiesAndTalent(ranger) {
-    const abilities = getAbilities(ranger);
-    const talentHtml = renderTalent(ranger["才能"]);
-
-    if (!abilities.length && !talentHtml) return `<div class="empty-state small">沒有能力或才能資料。</div>`;
-
-    return `
-      <div class="ranger-ability-list">
-        ${abilities.map(renderAbilityCard).join("")}
-        ${talentHtml}
-      </div>
-    `;
+  function renderAbilityGroup(abilities, emptyText) {
+    if (!abilities.length) return `<div class="empty-state small">${escapeHtml(emptyText)}</div>`;
+    return `<div class="ranger-ability-list">${abilities.map(renderAbilityCard).join("")}</div>`;
   }
 
   function renderAbilityCard(ability) {
@@ -392,21 +416,28 @@
     `;
   }
 
+  function formatTalentTitle(title) {
+    const clean = text(title);
+    if (clean.includes("強化才能")) return clean.replace(/\d+$/g, "");
+    return clean;
+  }
+
   function renderTalent(value) {
     if (isNone(value)) return "";
     if (typeof value === "string") {
-      return `<article class="ranger-talent-card"><h4>才能</h4><p>${escapeHtml(value)}</p></article>`;
+      return `<article class="ranger-talent-card"><p>${escapeHtml(value)}</p></article>`;
     }
     if (!value || typeof value !== "object") return "";
 
     const sections = Object.entries(value).map(([title, content]) => renderTalentSection(title, content)).join("");
-    return `<article class="ranger-talent-card"><h4>才能</h4>${sections}</article>`;
+    return sections ? `<div class="ranger-talent-list">${sections}</div>` : "";
   }
 
   function renderTalentSection(title, content) {
     if (isNone(content)) return "";
+    const displayTitle = formatTalentTitle(title);
     if (typeof content === "string") {
-      return `<div class="talent-section"><h5>${escapeHtml(title)}</h5><p>${escapeHtml(content)}</p></div>`;
+      return `<article class="ranger-talent-card"><h4>${escapeHtml(displayTitle)}</h4><p>${escapeHtml(content)}</p></article>`;
     }
     if (!content || typeof content !== "object") return "";
 
@@ -416,16 +447,16 @@
       .filter(([, value]) => Array.isArray(value));
 
     return `
-      <div class="talent-section">
-        <h5>${escapeHtml(title)}</h5>
+      <article class="ranger-talent-card">
+        <h4>${escapeHtml(displayTitle)}</h4>
         ${simpleRows.length ? `<dl>${simpleRows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` : ""}
         ${listRows.map(([key, list]) => `
           <div class="talent-effect-list">
-            <strong>${escapeHtml(key)}</strong>
+            <strong>${escapeHtml(formatTalentTitle(key))}</strong>
             ${list.map((entry) => renderTalentEntry(entry)).join("")}
           </div>
         `).join("")}
-      </div>
+      </article>
     `;
   }
 
