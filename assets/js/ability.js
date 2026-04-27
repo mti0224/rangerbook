@@ -37,6 +37,28 @@
     return formatText(value) === "(無)";
   }
 
+  function isEnabled(value) {
+    if (value === true || value === 1) return true;
+    const text = formatText(value).toLowerCase();
+    return ["是", "true", "1", "yes", "y"].includes(text);
+  }
+
+  function getAbilityTag(item, detail = false) {
+    if (isEnabled(item["覺醒能力"])) {
+      return { label: detail ? "覺醒能力" : "覺醒", className: "tag-wake" };
+    }
+    if (isEnabled(item["一般敵人能力"])) {
+      return { label: "敵人", className: "tag-enemy" };
+    }
+    if (isEnabled(item["迷宮敵人能力"])) {
+      return { label: "迷宮", className: "tag-maze" };
+    }
+    if (isEnabled(item["小隊"])) {
+      return { label: "小隊", className: "tag-team" };
+    }
+    return { label: detail ? "一般能力" : "一般", className: "" };
+  }
+
   function shouldHideAbility(item) {
     return isNoneText(item["名稱"]) || isNoneText(item["敘述"]);
   }
@@ -70,8 +92,13 @@
       .filter(([, item]) => !shouldHideAbility(item))
       .map(([code, item]) => {
         const effects = getEffects(item);
+        const tag = getAbilityTag(item);
         const searchBlob = [
           item["覺醒能力"],
+          item["一般敵人能力"],
+          item["迷宮敵人能力"],
+          item["小隊"],
+          tag.label,
           getAbilityName(item),
           getAbilityDescription(item),
           ...effects.flatMap(effect => [
@@ -145,6 +172,7 @@
       const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
       const firstEffect = row.effects[0] || {};
       const active = row.code === state.selectedCode ? " active" : "";
+      const tag = getAbilityTag(item);
 
       return `
         <button class="ability-card${active}" type="button" data-code="${escapeHtml(row.code)}">
@@ -154,7 +182,7 @@
           <div class="ability-main">
             <div class="ability-title-row">
               <h2>${escapeHtml(title)}</h2>
-              <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒" : "一般")}</span>
+              <span class="tag ${tag.className}">${escapeHtml(tag.label)}</span>
             </div>
             ${description ? `<p class="desc">${escapeHtml(description)}</p>` : ""}
             <div class="mini-meta">
@@ -186,6 +214,7 @@
     const title = getAbilityName(item);
     const description = getAbilityDescription(item);
     const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
+    const tag = getAbilityTag(item, true);
 
     return `
       <div class="detail-head">
@@ -194,7 +223,7 @@
         </div>
         <div>
           <h2 id="abilityModalTitle">${escapeHtml(title)}</h2>
-          <span class="tag ${item["覺醒能力"] === "是" ? "tag-wake" : ""}">${escapeHtml(item["覺醒能力"] === "是" ? "覺醒能力" : "一般能力")}</span>
+          <span class="tag ${tag.className}">${escapeHtml(tag.label)}</span>
         </div>
       </div>
 
