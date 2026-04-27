@@ -153,7 +153,9 @@
   font-size: 1.05rem;
 }
 
-.ranger-skill-card {
+.ranger-skill-card,
+.ranger-ability-card,
+.ranger-talent-card {
   border: 1px solid var(--line);
   border-radius: 1rem;
   padding: 0.9rem;
@@ -188,19 +190,25 @@
   border: 1px solid var(--line);
 }
 
-.skill-effect-list {
+.skill-effect-list,
+.ability-effect-list,
+.talent-effect-list {
   display: grid;
   gap: 0.55rem;
 }
 
-.skill-effect {
+.skill-effect,
+.ability-effect,
+.talent-effect {
   border: 1px solid #e0e7ff;
   border-radius: 0.85rem;
   padding: 0.75rem;
   background: #ffffff;
 }
 
-.skill-effect strong {
+.skill-effect strong,
+.ability-effect strong,
+.talent-effect-list strong {
   display: block;
   margin-bottom: 0.45rem;
 }
@@ -210,19 +218,32 @@
   gap: 0.55rem;
 }
 
-.ranger-ability-item {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  border: 1px solid var(--line);
-  border-radius: 0.95rem;
-  padding: 0.65rem 0.75rem;
-  background: #fbfdff;
-  font-weight: 800;
+.ranger-ability-card .preline {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
-.talent-item {
+.ranger-talent-card h4 {
+  margin-bottom: 0.65rem;
   color: var(--primary-dark);
+}
+
+.talent-section {
+  border-top: 1px solid var(--line);
+  padding-top: 0.65rem;
+  margin-top: 0.65rem;
+}
+
+.talent-section h5 {
+  margin: 0 0 0.45rem;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.talent-section p {
+  margin-bottom: 0;
+  color: var(--muted);
 }
 
 @media (max-width: 620px) {
