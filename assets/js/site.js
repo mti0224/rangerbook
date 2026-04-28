@@ -8,16 +8,12 @@
 
   mount.innerHTML = `
     <header class="site-header">
-      <div class="header-inner">
-        <a class="brand" href="${depthPrefix}">
-          <span class="brand-mark">LR</span>
-          <span>LINE Rangers 資料查詢</span>
-        </a>
+      <div class="header-inner header-inner-left">
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${depthPrefix}">首頁</a>
-          <a href="${depthPrefix}ability/">能力查詢</a>
-          <a href="${depthPrefix}ranger/">角色查詢</a>
+          <a href="${depthPrefix}ranger/">Rangers</a>
           <a href="${depthPrefix}hsEnemy/">主困敵人</a>
+          <a href="${depthPrefix}ability/">能力</a>
         </nav>
       </div>
     </header>
