@@ -1,0 +1,58 @@
+.enemy-skill-effect-table {
+  width: 100%;
+  min-width: 560px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+.enemy-skill-effect-table th,
+.enemy-skill-effect-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #e0e7ff;
+  border-right: 1px solid #e0e7ff;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: normal;
+  font-size: 0.9rem;
+}
+
+.enemy-skill-effect-table thead th {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.enemy-skill-effect-table tbody th {
+  background: #fbfdff;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.enemy-skill-effect-table tr:last-child th,
+.enemy-skill-effect-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.enemy-skill-effect-table th:last-child,
+.enemy-skill-effect-table td:last-child {
+  border-right: 0;
+}
+
+.enemy-skill-effect-table th:nth-child(1),
+.enemy-skill-effect-table td:nth-child(1) { width: 37.5%; }
+.enemy-skill-effect-table th:nth-child(2),
+.enemy-skill-effect-table td:nth-child(2) { width: 25%; }
+.enemy-skill-effect-table th:nth-child(3),
+.enemy-skill-effect-table td:nth-child(3) { width: 18.75%; }
+.enemy-skill-effect-table th:nth-child(4),
+.enemy-skill-effect-table td:nth-child(4) { width: 18.75%; }
+
+.enemy-card .ranger-mini-stats {
+  margin-top: 0.55rem;
+}
