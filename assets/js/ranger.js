@@ -4,6 +4,7 @@
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum-140.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
+  const TLT_ICON = (index) => `../assets/tlt_icon/tlt${index}.png`;
 
   const state = {
     rows: [],
@@ -434,10 +435,28 @@
     return clean;
   }
 
+  function getTalentIconIndex(title) {
+    const clean = text(title);
+    if (clean.includes("主要才能")) return 1;
+    if (clean.includes("強化才能")) {
+      const match = clean.match(/(\d+)$/);
+      const number = match ? Number(match[1]) : 0;
+      return Math.min(4, Math.max(2, number + 2));
+    }
+    return 0;
+  }
+
+  function renderTalentTitle(title, tag = "h4") {
+    const displayTitle = formatTalentTitle(title);
+    const iconIndex = getTalentIconIndex(title);
+    const iconHtml = iconIndex ? `<img class="talent-icon" src="${TLT_ICON(iconIndex)}" alt="" onerror="this.remove();">` : "";
+    return `<${tag} class="talent-title-with-icon">${iconHtml}<span>${escapeHtml(displayTitle)}</span></${tag}>`;
+  }
+
   function renderTalent(value) {
     if (isNone(value)) return "";
     if (typeof value === "string") {
-      return `<article class="ranger-talent-card"><p>${escapeHtml(value)}</p></article>`;
+      return `<article class="ranger-talent-card">${renderTalentTitle("主要才能")}<p>${escapeHtml(value)}</p></article>`;
     }
     if (!value || typeof value !== "object") return "";
 
@@ -447,9 +466,8 @@
 
   function renderTalentSection(title, content) {
     if (isNone(content)) return "";
-    const displayTitle = formatTalentTitle(title);
     if (typeof content === "string") {
-      return `<article class="ranger-talent-card"><h4>${escapeHtml(displayTitle)}</h4><p>${escapeHtml(content)}</p></article>`;
+      return `<article class="ranger-talent-card">${renderTalentTitle(title)}<p>${escapeHtml(content)}</p></article>`;
     }
     if (!content || typeof content !== "object") return "";
 
@@ -460,11 +478,11 @@
 
     return `
       <article class="ranger-talent-card">
-        <h4>${escapeHtml(displayTitle)}</h4>
+        ${renderTalentTitle(title)}
         ${simpleRows.length ? `<dl>${simpleRows.map(([key, value]) => `<div><dt>${escapeHtml(key)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` : ""}
         ${listRows.map(([key, list]) => `
           <div class="talent-effect-list">
-            <strong>${escapeHtml(formatTalentTitle(key))}</strong>
+            ${renderTalentTitle(key, "strong")}
             ${list.map((entry) => renderTalentEntry(entry)).join("")}
           </div>
         `).join("")}
