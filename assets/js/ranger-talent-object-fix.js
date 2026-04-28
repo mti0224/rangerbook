@@ -105,8 +105,19 @@
     const effectTable = effects.length ? `
       <div class="table-scroll talent-main-effect-wrap">
         <table class="talent-main-effect-table">
-          <thead><tr><th>增益效果</th></tr></thead>
-          <tbody>${effects.map((effect) => `<tr><td>${escapeHtml(effect)}</td></tr>`).join("")}</tbody>
+          <colgroup>
+            <col class="talent-main-condition-col">
+            <col class="talent-main-prob-col">
+          </colgroup>
+          <thead><tr><th>增益效果</th><th>觸發機率</th></tr></thead>
+          <tbody>
+            ${effects.map((effect, index) => `
+              <tr>
+                <td>${escapeHtml(effect)}</td>
+                ${index === 0 ? `<td rowspan="${effects.length}">${escapeHtml(probability)}</td>` : ""}
+              </tr>
+            `).join("")}
+          </tbody>
         </table>
       </div>
     ` : "";
@@ -141,18 +152,16 @@
         <div class="table-scroll talent-boost-table-wrap">
           <table class="talent-boost-table">
             <tbody>
-              <tr>
-                ${rows.map(([key, value], index) => {
+              <tr class="talent-boost-icon-row">
+                ${rows.map(([,], index) => `
+                  <td><img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();"></td>
+                `).join("")}
+              </tr>
+              <tr class="talent-boost-text-row">
+                ${rows.map(([key, value]) => {
                   const keyText = cleanText(key);
                   const valueDisplay = /^\d+$/.test(keyText) ? valueText(value) : `${keyText}${valueText(value)}`;
-                  return `
-                    <td>
-                      <span class="talent-boost-cell">
-                        <img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();">
-                        <span>${escapeHtml(valueDisplay)}</span>
-                      </span>
-                    </td>
-                  `;
+                  return `<td>${escapeHtml(valueDisplay)}</td>`;
                 }).join("")}
               </tr>
             </tbody>
