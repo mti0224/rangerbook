@@ -28,7 +28,7 @@
 
         const label = normalizeText(dt?.textContent);
         const value = normalizeText(dd.textContent);
-        const mergedText = `${label}${value}`;
+        const mergedText = /^\d+$/.test(label) ? value : `${label}${value}`;
 
         if (dt) dt.remove();
         row.classList.add("talent-boost-row");
