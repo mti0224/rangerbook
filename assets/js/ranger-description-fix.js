@@ -4,7 +4,7 @@
 
   const ROOT_DESC_KEY = "角色敘述";
   const SKILL_DESC_KEY = "技能敘述";
-  const TALENT_DESC_KEY = "主要才能敘述";
+  const TALENT_DESC_KEYS = ["主要才能敘述", "敘述", "描述", "說明"];
 
   function cleanText(value) {
     if (value === null || value === undefined) return "";
@@ -24,6 +24,15 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  }
+
+  function getFirstText(obj, keys) {
+    if (!obj || typeof obj !== "object") return "";
+    for (const key of keys) {
+      if (!isNone(obj[key])) return obj[key];
+    }
+    const found = Object.entries(obj).find(([key, value]) => keys.some((k) => cleanText(key).includes(k)) && !isNone(value));
+    return found ? found[1] : "";
   }
 
   function loadRangers() {
@@ -98,7 +107,7 @@
     });
 
     const mainTalent = getMainTalentObject(ranger);
-    const talentDesc = mainTalent?.[TALENT_DESC_KEY] || ranger[TALENT_DESC_KEY];
+    const talentDesc = getFirstText(mainTalent, TALENT_DESC_KEYS) || getFirstText(ranger, TALENT_DESC_KEYS);
     if (!isNone(talentDesc)) {
       const mainTalentCard = [...content.querySelectorAll(".ranger-talent-card")]
         .find((card) => card.querySelector(".talent-title-with-icon span")?.textContent.trim().includes("主要才能"));
