@@ -235,19 +235,34 @@ strong.talent-title-with-icon {
   overflow-x: auto;
 }
 
-.skill-effect-table {
+.skill-effect-table,
+.skill-meta-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 660px;
   overflow: hidden;
   border: 1px solid #e0e7ff;
   border-radius: 0.9rem;
   background: #ffffff;
 }
 
+.skill-effect-table {
+  min-width: 660px;
+}
+
+.skill-meta-table {
+  min-width: 420px;
+  table-layout: fixed;
+}
+
+.skill-meta-table-wrap {
+  margin: 0.55rem 0 0.75rem;
+}
+
 .skill-effect-table th,
-.skill-effect-table td {
+.skill-effect-table td,
+.skill-meta-table th,
+.skill-meta-table td {
   padding: 0.65rem 0.75rem;
   border-bottom: 1px solid #e0e7ff;
   border-right: 1px solid #e0e7ff;
@@ -256,7 +271,8 @@ strong.talent-title-with-icon {
   font-size: 0.9rem;
 }
 
-.skill-effect-table thead th {
+.skill-effect-table thead th,
+.skill-meta-table thead th {
   background: #eef2ff;
   color: #3730a3;
   font-weight: 900;
@@ -269,13 +285,22 @@ strong.talent-title-with-icon {
 }
 
 .skill-effect-table tr:last-child th,
-.skill-effect-table tr:last-child td {
+.skill-effect-table tr:last-child td,
+.skill-meta-table tr:last-child th,
+.skill-meta-table tr:last-child td {
   border-bottom: 0;
 }
 
 .skill-effect-table th:last-child,
-.skill-effect-table td:last-child {
+.skill-effect-table td:last-child,
+.skill-meta-table th:last-child,
+.skill-meta-table td:last-child {
   border-right: 0;
+}
+
+.skill-meta-table th,
+.skill-meta-table td {
+  width: 33.3333%;
 }
 
 .ability-effect-list,
@@ -304,10 +329,20 @@ strong.talent-title-with-icon {
   gap: 0.55rem;
 }
 
-.ranger-ability-card .preline {
+.ranger-ability-card .preline,
+.ranger-skill-description,
+.ranger-talent-description,
+.ranger-description {
   margin-bottom: 0;
   color: var(--muted);
   font-size: 0.92rem;
+  white-space: pre-line;
+}
+
+.ranger-skill-description,
+.ranger-talent-description,
+.ranger-description {
+  margin-top: 0.35rem;
 }
 
 .ranger-talent-card h4 {
