@@ -351,7 +351,8 @@ strong.talent-title-with-icon {
   margin-top: 0.45rem;
 }
 
-.talent-main-table {
+.talent-main-table,
+.talent-main-effect-table {
   min-width: 520px;
 }
 
@@ -383,7 +384,8 @@ strong.talent-title-with-icon {
   font-weight: 900;
 }
 
-.talent-main-table td[rowspan] {
+.talent-main-table td[rowspan],
+.talent-main-effect-table td[rowspan] {
   vertical-align: middle;
   font-weight: 900;
   font-size: 1.05rem;
@@ -409,6 +411,18 @@ strong.talent-title-with-icon {
 
 .talent-boost-table td {
   width: 33.3333%;
+  text-align: center;
+}
+
+.talent-boost-icon-row td {
+  vertical-align: middle;
+  padding-bottom: 0.35rem;
+}
+
+.talent-boost-text-row td {
+  vertical-align: top;
+  padding-top: 0.35rem;
+  font-weight: 800;
 }
 
 .talent-boost-cell {
@@ -454,6 +468,7 @@ strong.talent-title-with-icon {
   }
 
   .talent-main-table,
+  .talent-main-effect-table,
   .talent-boost-table {
     min-width: 560px;
   }
