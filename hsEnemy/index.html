@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>主要困難關卡敵人查詢｜LINE Rangers 資料查詢</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/ranger.css">
+  <link rel="stylesheet" href="../assets/css/ranger-ability-effect-merge.css">
+  <link rel="stylesheet" href="../assets/css/ranger-pagination.css">
+  <link rel="stylesheet" href="../assets/css/hsEnemy.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">Hard Stage Enemy Reference</p>
+      <h1>主要困難關卡敵人查詢</h1>
+      <p>
+        查詢主要困難關卡敵人的基本數值、技能效果與能力資訊。
+      </p>
+    </section>
+
+    <section class="controls ranger-controls">
+      <label class="search-box">
+        <span>搜尋敵人</span>
+        <input id="enemySearchInput" type="search" placeholder="輸入敵人 ID、星數、類型、屬性、技能或能力...">
+      </label>
+
+      <label>
+        <span>星數</span>
+        <select id="starFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>類型</span>
+        <select id="typeFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>屬性</span>
+        <select id="elementFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <button id="enemyResetBtn" type="button">清除篩選</button>
+    </section>
+
+    <section class="summary-bar">
+      <div>
+        <strong id="enemyResultCount">0</strong>
+        <span>筆結果</span>
+      </div>
+    </section>
+
+    <section class="ranger-list-layout">
+      <div id="enemyList" class="ranger-list"></div>
+    </section>
+  </main>
+
+  <div id="enemyModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="enemyModalTitle">
+      <button id="enemyModalCloseBtn" class="modal-close" type="button" aria-label="關閉敵人詳細資料">×</button>
+      <div id="enemyModalContent"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/hsEnemy.js"></script>
+</body>
+</html>
