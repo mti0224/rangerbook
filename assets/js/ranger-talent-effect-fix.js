@@ -41,7 +41,7 @@
     if (typeof value !== "object") return clean(value);
     if (Array.isArray(value)) return value.map(toText).filter(Boolean).join("、");
     return Object.entries(value)
-      .filter(([key, val]) => !["觸發機率", "發動機率", "機率"].includes(clean(key)) && !isNone(val))
+      .filter(([key, val]) => !["觸發機率", "發動機率", "機率", "有效時間", "時間", "持續時間"].includes(clean(key)) && !isNone(val))
       .map(([key, val]) => {
         const child = toText(val);
         return /^\d+$/.test(clean(key)) ? child : `${clean(key)}${child}`;
@@ -51,10 +51,29 @@
   }
 
   function appendTime(effect, time) {
-    const effectText = clean(effect);
+    const effectText = clean(effect).replace(/^效果/, "");
     const timeText = clean(time);
     if (!effectText || !timeText || effectText.includes(timeText)) return effectText;
     return `${effectText}(${timeText})`;
+  }
+
+  function parseInlineRows(text, parentProbability = "-") {
+    const raw = clean(text);
+    if (!raw) return [];
+
+    const rows = [];
+    const pattern = /(?:觸發機率|發動機率|機率)\s*([^、，,]+)[、，,]\s*(?:增益效果|效果)\s*([^、，,]+)/g;
+    let match;
+    while ((match = pattern.exec(raw)) !== null) {
+      rows.push({ probability: clean(match[1]) || parentProbability || "-", effect: clean(match[2]).replace(/^效果/, "") });
+    }
+    if (rows.length) return rows;
+
+    return raw
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((effect) => ({ probability: parentProbability || "-", effect: effect.replace(/^效果/, "") }));
   }
 
   function parseEffectRows(value, parentProbability = "-") {
@@ -72,6 +91,11 @@
         return parseEffectRows(nested, probability);
       }
 
+      if (typeof nested === "string") {
+        const inlineRows = parseInlineRows(nested, probability);
+        if (inlineRows.length > 1 || /觸發機率|發動機率|機率|增益效果|效果/.test(nested)) return inlineRows;
+      }
+
       const effect = clean(nested) || clean(getByKeys(value, ["內容", "文字", "名稱"])) || toText(value);
       const time = getByKeys(value, ["有效時間", "時間", "持續時間"]);
       const display = appendTime(effect, time);
@@ -79,11 +103,7 @@
       return display ? [{ probability, effect: display }] : [];
     }
 
-    return clean(value)
-      .split(/\n+/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((effect) => ({ probability: parentProbability || "-", effect }));
+    return parseInlineRows(value, parentProbability);
   }
 
   function loadRangers() {
@@ -141,6 +161,11 @@
     `;
   }
 
+  function rowsFromExistingTable(card) {
+    const tableText = card.querySelector(".talent-main-effect-wrap")?.innerText || "";
+    return parseInlineRows(tableText.replace(/^機率\s*增益效果/i, ""), "-");
+  }
+
   async function apply() {
     const modal = document.getElementById("rangerModal");
     const content = document.getElementById("rangerModalContent");
@@ -159,7 +184,12 @@
 
     const parentProbability = clean(getByKeys(mainTalent, ["觸發機率", "發動機率", "機率"])) || "-";
     const effectValue = getByKeys(mainTalent, ["增益效果", "效果", "觸發效果", "效果列表"]);
-    const rows = parseEffectRows(effectValue, parentProbability);
+    let rows = parseEffectRows(effectValue, parentProbability);
+
+    if (rows.length <= 1 && rows[0]?.effect?.includes("觸發機率")) {
+      rows = parseInlineRows(rows[0].effect, parentProbability);
+    }
+    if (!rows.length) rows = rowsFromExistingTable(card);
     if (!rows.length) return;
 
     card.querySelector(".talent-main-effect-wrap")?.remove();
@@ -175,7 +205,7 @@
   if (target) {
     new MutationObserver(() => {
       clearTimeout(timer);
-      timer = setTimeout(apply, 40);
+      timer = setTimeout(apply, 80);
     }).observe(target, { childList: true, subtree: true });
   }
 })();
