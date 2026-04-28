@@ -26,10 +26,15 @@
         const dd = row.querySelector("dd");
         if (!dd || dd.dataset.tltFixed === "1") return;
 
+        const label = normalizeText(dt?.textContent);
+        const value = normalizeText(dd.textContent);
+        const mergedText = `${label}${value}`;
+
         if (dt) dt.remove();
+        row.classList.add("talent-boost-row");
         dd.dataset.tltFixed = "1";
         dd.classList.add("talent-boost-value");
-        dd.innerHTML = `${iconHtml(index + 2)}<span>${dd.innerHTML}</span>`;
+        dd.innerHTML = `${iconHtml(index + 2)}<span>${mergedText}</span>`;
       });
     });
   }
