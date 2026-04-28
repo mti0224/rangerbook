@@ -211,6 +211,25 @@ strong.talent-title-with-icon {
   font-size: 0.95rem;
 }
 
+.talent-boost-row {
+  display: block !important;
+  margin: 0.55rem 0;
+}
+
+.talent-boost-row .talent-boost-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.talent-boost-row .talent-inline-icon {
+  width: 34px;
+  height: 34px;
+}
+
 .table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -342,5 +361,9 @@ strong.talent-title-with-icon {
 
   .ranger-stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .talent-boost-row .talent-boost-value {
+    white-space: normal;
   }
 }
