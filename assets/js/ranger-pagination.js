@@ -102,7 +102,9 @@
     const end = start + state.pageSize;
 
     cards.forEach((card, index) => {
-      card.hidden = index < start || index >= end;
+      const shouldHide = index < start || index >= end;
+      card.hidden = shouldHide;
+      card.style.display = shouldHide ? "none" : "";
     });
 
     info.textContent = `第 ${state.page} / ${totalPages} 頁，顯示第 ${start + 1}–${Math.min(end, total)} 筆，共 ${total} 筆`;
