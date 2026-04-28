@@ -141,7 +141,6 @@
       const skill = getSkill(enemy, key);
       if (!skill) return [enemy[key]];
       return [
-        skill["技能名稱"],
         skill["發動機率"],
         skill["觸發基準"],
         skill["技能冷卻時間"],
@@ -393,7 +392,7 @@
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
           <div>
-            <h4>技能 ${index + 1}：${escapeHtml(skill["技能名稱"] || "未命名技能")}</h4>
+            <h4>技能 ${index + 1}</h4>
             <p>發動率：${escapeHtml(skill["發動機率"] || "-")}・技能冷卻時間：${escapeHtml(skill["技能冷卻時間"] || "-")}・觸發基準：${escapeHtml(skill["觸發基準"] || "-")}</p>
           </div>
         </div>
