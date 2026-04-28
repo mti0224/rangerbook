@@ -47,8 +47,77 @@
     return `<h4 class="talent-title-with-icon">${icon}<span>${escapeHtml(formatTalentTitle(title))}</span></h4>`;
   }
 
-  function renderNormalTalent(title, content) {
+  function splitRows(value) {
+    const text = valueText(value);
+    if (!text) return [];
+    return text.split(/\n+/).map((row) => row.trim()).filter(Boolean);
+  }
+
+  function getObjectValueByKeys(obj, keys) {
+    if (!obj || typeof obj !== "object") return undefined;
+    const entries = Object.entries(obj);
+    for (const wanted of keys) {
+      const found = entries.find(([key]) => cleanText(key) === wanted);
+      if (found) return found[1];
+    }
+    for (const wanted of keys) {
+      const found = entries.find(([key]) => cleanText(key).includes(wanted));
+      if (found) return found[1];
+    }
+    return undefined;
+  }
+
+  function renderMainTalent(title, content) {
     if (isNone(content)) return "";
+
+    if (typeof content !== "object" || content === null) {
+      return `<article class="ranger-talent-card">${talentTitle(title, 1)}<p>${escapeHtml(valueText(content))}</p></article>`;
+    }
+
+    const probability = valueText(getObjectValueByKeys(content, ["觸發機率", "發動機率", "機率"])) || "-";
+    const conditionValue = getObjectValueByKeys(content, ["條件", "觸發條件"]);
+    const conditions = splitRows(conditionValue).length ? splitRows(conditionValue) : ["無特定條件"];
+    const effectValue = getObjectValueByKeys(content, ["增益效果", "效果"]);
+    const effects = splitRows(effectValue);
+
+    const conditionTable = `
+      <div class="table-scroll talent-main-table-wrap">
+        <table class="talent-main-table">
+          <colgroup>
+            <col class="talent-main-condition-col">
+            <col class="talent-main-prob-col">
+          </colgroup>
+          <thead>
+            <tr><th>條件</th><th>觸發機率</th></tr>
+          </thead>
+          <tbody>
+            ${conditions.map((condition, index) => `
+              <tr>
+                <td>${escapeHtml(condition)}</td>
+                ${index === 0 ? `<td rowspan="${conditions.length}">${escapeHtml(probability)}</td>` : ""}
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    const effectTable = effects.length ? `
+      <div class="table-scroll talent-main-effect-wrap">
+        <table class="talent-main-effect-table">
+          <thead><tr><th>增益效果</th></tr></thead>
+          <tbody>${effects.map((effect) => `<tr><td>${escapeHtml(effect)}</td></tr>`).join("")}</tbody>
+        </table>
+      </div>
+    ` : "";
+
+    return `<article class="ranger-talent-card">${talentTitle(title, 1)}${conditionTable}${effectTable}</article>`;
+  }
+
+  function renderNormalTalent(title, content) {
+    if (cleanText(title).includes("主要才能")) return renderMainTalent(title, content);
+    if (isNone(content)) return "";
+
     const body = typeof content === "object" && content !== null
       ? `<dl>${Object.entries(content)
           .filter(([, value]) => !isNone(value))
@@ -56,7 +125,7 @@
           .join("")}</dl>`
       : `<p>${escapeHtml(valueText(content))}</p>`;
 
-    return `<article class="ranger-talent-card">${talentTitle(title, cleanText(title).includes("主要才能") ? 1 : 0)}${body}</article>`;
+    return `<article class="ranger-talent-card">${talentTitle(title, 0)}${body}</article>`;
   }
 
   function renderBoostTalent(title, content) {
@@ -69,20 +138,26 @@
     return `
       <article class="ranger-talent-card">
         ${talentTitle(title, 0)}
-        <dl>
-          ${rows.map(([key, value], index) => {
-            const keyText = cleanText(key);
-            const valueDisplay = /^\d+$/.test(keyText) ? valueText(value) : `${keyText}${valueText(value)}`;
-            return `
-              <div class="talent-boost-row">
-                <dd class="talent-boost-value">
-                  <img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();">
-                  <span>${escapeHtml(valueDisplay)}</span>
-                </dd>
-              </div>
-            `;
-          }).join("")}
-        </dl>
+        <div class="table-scroll talent-boost-table-wrap">
+          <table class="talent-boost-table">
+            <tbody>
+              <tr>
+                ${rows.map(([key, value], index) => {
+                  const keyText = cleanText(key);
+                  const valueDisplay = /^\d+$/.test(keyText) ? valueText(value) : `${keyText}${valueText(value)}`;
+                  return `
+                    <td>
+                      <span class="talent-boost-cell">
+                        <img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();">
+                        <span>${escapeHtml(valueDisplay)}</span>
+                      </span>
+                    </td>
+                  `;
+                }).join("")}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </article>
     `;
   }
@@ -137,9 +212,10 @@
 
     const sections = [...document.querySelectorAll("#rangerModalContent .detail-section")];
     const talentSection = sections.find((section) => section.querySelector("h3")?.textContent.trim() === "才能");
-    if (!talentSection) return;
+    if (!talentSection || talentSection.dataset.talentFixedFor === id) return;
 
     talentSection.innerHTML = `<h3>才能</h3>${renderTalent(ranger["才能"])}`;
+    talentSection.dataset.talentFixedFor = id;
   }
 
   const observer = new MutationObserver(() => setTimeout(fixTalentSection, 0));
