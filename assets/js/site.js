@@ -17,7 +17,7 @@
           <a href="${depthPrefix}">首頁</a>
           <a href="${depthPrefix}ability/">能力查詢</a>
           <a href="${depthPrefix}ranger/">角色查詢</a>
-          <a href="${depthPrefix}hsEnemy/">困難敵人</a>
+          <a href="${depthPrefix}hsEnemy/">主困敵人</a>
         </nav>
       </div>
     </header>
