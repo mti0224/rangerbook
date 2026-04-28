@@ -1,0 +1,55 @@
+.ability-effect {
+  padding: 0;
+  overflow-x: auto;
+}
+
+.ability-effect > strong {
+  display: none;
+}
+
+.ability-effect dl {
+  display: grid;
+  grid-template-columns: 2fr 2fr 3fr 3fr 3fr;
+  gap: 0;
+  margin: 0;
+  min-width: 720px;
+}
+
+.ability-effect dl > div {
+  display: block !important;
+  padding: 0;
+  border-right: 1px solid #e0e7ff;
+}
+
+.ability-effect dl > div:last-child {
+  border-right: 0;
+}
+
+.ability-effect dt {
+  display: block;
+  padding: 0.55rem 0.65rem;
+  background: #eef2ff;
+  color: #3730a3;
+  border-bottom: 1px solid #e0e7ff;
+  font-weight: 900;
+}
+
+.ability-effect dd {
+  display: block;
+  margin: 0;
+  padding: 0.65rem;
+  color: var(--text);
+  word-break: break-word;
+}
+
+@media (max-width: 620px) {
+  .ability-effect dl {
+    min-width: 620px;
+  }
+
+  .ability-effect dt,
+  .ability-effect dd {
+    padding: 0.5rem;
+    font-size: 0.86rem;
+  }
+}
