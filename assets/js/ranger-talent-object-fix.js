@@ -84,17 +84,17 @@
       <div class="table-scroll talent-main-table-wrap">
         <table class="talent-main-table">
           <colgroup>
-            <col class="talent-main-condition-col">
             <col class="talent-main-prob-col">
+            <col class="talent-main-condition-col">
           </colgroup>
           <thead>
-            <tr><th>條件</th><th>觸發機率</th></tr>
+            <tr><th>觸發機率</th><th>條件</th></tr>
           </thead>
           <tbody>
             ${conditions.map((condition, index) => `
               <tr>
+                ${index === 0 ? `<td rowspan="${conditions.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}
                 <td>${escapeHtml(condition)}</td>
-                ${index === 0 ? `<td rowspan="${conditions.length}">${escapeHtml(probability)}</td>` : ""}
               </tr>
             `).join("")}
           </tbody>
@@ -114,7 +114,7 @@
             ${effects.map((effect, index) => `
               <tr>
                 <td>${escapeHtml(effect)}</td>
-                ${index === 0 ? `<td rowspan="${effects.length}">${escapeHtml(probability)}</td>` : ""}
+                ${index === 0 ? `<td rowspan="${effects.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}
               </tr>
             `).join("")}
           </tbody>
