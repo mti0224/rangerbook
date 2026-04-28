@@ -1,0 +1,52 @@
+.ability-effect-table-wrap {
+  margin-top: 0.35rem;
+}
+
+.ability-effect-table {
+  width: 100%;
+  min-width: 720px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+.ability-effect-table th,
+.ability-effect-table td {
+  padding: 0.65rem;
+  border-right: 1px solid #e0e7ff;
+  border-bottom: 1px solid #e0e7ff;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.ability-effect-table th {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.ability-effect-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.ability-effect-table th:last-child,
+.ability-effect-table td:last-child {
+  border-right: 0;
+}
+
+.ability-effect-table th:nth-child(1),
+.ability-effect-table td:nth-child(1) { width: 15.3846%; }
+.ability-effect-table th:nth-child(2),
+.ability-effect-table td:nth-child(2) { width: 15.3846%; }
+.ability-effect-table th:nth-child(3),
+.ability-effect-table td:nth-child(3) { width: 23.0769%; }
+.ability-effect-table th:nth-child(4),
+.ability-effect-table td:nth-child(4) { width: 23.0769%; }
+.ability-effect-table th:nth-child(5),
+.ability-effect-table td:nth-child(5) { width: 23.0769%; }
