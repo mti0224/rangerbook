@@ -1,0 +1,43 @@
+.ranger-card .ranger-title-row > .tag {
+  display: none;
+}
+
+.ranger-card .ranger-tags span.tag-type-power {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.ranger-card .ranger-tags span.tag-type-agility {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.ranger-card .ranger-tags span.tag-type-intelligence {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.ranger-card .ranger-tags span.tag-element-fire {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.ranger-card .ranger-tags span.tag-element-water {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.ranger-card .ranger-tags span.tag-element-wood {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ranger-card .ranger-tags span.tag-element-light {
+  background: #fef9c3;
+  color: #a16207;
+}
+
+.ranger-card .ranger-tags span.tag-element-dark {
+  background: #ede9fe;
+  color: #6d28d9;
+}
