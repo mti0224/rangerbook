@@ -3,7 +3,7 @@
   if (!mount) return;
 
   const path = window.location.pathname.replace(/\/+$/, "");
-  const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger");
+  const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/hsEnemy");
   const depthPrefix = isSubPage ? "../" : "./";
 
   mount.innerHTML = `
@@ -17,6 +17,7 @@
           <a href="${depthPrefix}">首頁</a>
           <a href="${depthPrefix}ability/">能力查詢</a>
           <a href="${depthPrefix}ranger/">角色查詢</a>
+          <a href="${depthPrefix}hsEnemy/">困難敵人</a>
         </nav>
       </div>
     </header>
