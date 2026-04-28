@@ -11,17 +11,17 @@
 }
 
 .skill-effect-table th:nth-child(1),
-.skill-effect-table td:nth-child(1) { width: 38.4615%; }
+.skill-effect-table td:nth-child(1) { width: 27.2727%; }
 .skill-effect-table th:nth-child(2),
-.skill-effect-table td:nth-child(2) { width: 15.3846%; }
+.skill-effect-table td:nth-child(2) { width: 18.1818%; }
 .skill-effect-table th:nth-child(3),
-.skill-effect-table td:nth-child(3) { width: 7.6923%; }
+.skill-effect-table td:nth-child(3) { width: 13.6364%; }
 .skill-effect-table th:nth-child(4),
-.skill-effect-table td:nth-child(4) { width: 7.6923%; }
+.skill-effect-table td:nth-child(4) { width: 13.6364%; }
 .skill-effect-table th:nth-child(5),
-.skill-effect-table td:nth-child(5) { width: 15.3846%; }
+.skill-effect-table td:nth-child(5) { width: 13.6364%; }
 .skill-effect-table th:nth-child(6),
-.skill-effect-table td:nth-child(6) { width: 15.3846%; }
+.skill-effect-table td:nth-child(6) { width: 13.6364%; }
 
 .skill-effect-table .break-header {
   display: inline-block;
