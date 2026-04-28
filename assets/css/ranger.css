@@ -222,7 +222,7 @@ strong.talent-title-with-icon {
   gap: 0.45rem;
   margin: 0;
   white-space: nowrap;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .talent-boost-row .talent-inline-icon {
@@ -385,10 +385,11 @@ strong.talent-title-with-icon {
 }
 
 .talent-main-table td[rowspan],
-.talent-main-effect-table td[rowspan] {
+.talent-main-effect-table td[rowspan],
+.talent-prob-cell {
   vertical-align: middle;
-  font-weight: 900;
-  font-size: 1.05rem;
+  font-weight: 400;
+  font-size: 1rem;
 }
 
 .talent-main-table tr:last-child td,
@@ -417,19 +418,20 @@ strong.talent-title-with-icon {
 .talent-boost-icon-row td {
   vertical-align: middle;
   padding-bottom: 0.35rem;
+  background: #eef2ff;
 }
 
 .talent-boost-text-row td {
   vertical-align: top;
   padding-top: 0.35rem;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .talent-boost-cell {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 @media (max-width: 620px) {
