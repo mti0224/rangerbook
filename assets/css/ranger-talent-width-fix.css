@@ -17,6 +17,28 @@
   box-sizing: border-box;
 }
 
+.ranger-modal-panel .talent-main-prob-col {
+  width: 30%;
+}
+
+.ranger-modal-panel .talent-main-condition-col {
+  width: 70%;
+}
+
+.ranger-modal-panel .talent-main-table th:first-child,
+.ranger-modal-panel .talent-main-table td:first-child,
+.ranger-modal-panel .talent-main-effect-table th:first-child,
+.ranger-modal-panel .talent-main-effect-table td:first-child {
+  width: 30%;
+}
+
+.ranger-modal-panel .talent-main-table th:nth-child(2),
+.ranger-modal-panel .talent-main-table td:nth-child(2),
+.ranger-modal-panel .talent-main-effect-table th:nth-child(2),
+.ranger-modal-panel .talent-main-effect-table td:nth-child(2) {
+  width: 70%;
+}
+
 .ranger-modal-panel .talent-boost-table {
   table-layout: fixed;
 }
