@@ -1,0 +1,11 @@
+.ranger-tags span.tag-inf-boss,
+.detail-tags span.tag-inf-boss {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.ranger-tags span.tag-inf-normal,
+.detail-tags span.tag-inf-normal {
+  background: #f3f4f6;
+  color: #6b7280;
+}
