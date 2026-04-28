@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LINE Rangers 資料查詢</title>
   <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/home.css">
 </head>
 <body>
   <div id="site-header"></div>
@@ -17,35 +18,36 @@
         提供整理後的 LINE Rangers 遊戲資料查詢介面。你可以快速查詢 Rangers 角色、主要困難關卡敵人、能力效果、觸發條件與相關數值，
         未來也會陸續加入更多資料分類。
       </p>
-      <div class="hero-actions">
-        <a class="primary-btn" href="./ranger/">前往角色查詢</a>
-        <a class="primary-btn" href="./hsEnemy/">前往困難敵人查詢</a>
-        <a class="primary-btn" href="./ability/">前往能力查詢</a>
-      </div>
     </section>
 
-    <section class="tool-grid">
-      <a class="tool-card" href="./ranger/">
-        <div class="tool-icon">角色</div>
-        <div>
-          <h2>Rangers 角色查詢</h2>
-          <p>查詢角色基本資料、能力數值、技能效果、能力與才能。</p>
+    <section class="home-tool-grid" aria-label="資料查詢入口">
+      <a class="home-tool-card" href="./ranger/">
+        <div class="home-tool-image-wrap">
+          <img class="home-tool-image" src="./assets/main_icon/rangerIcon.png" alt="" loading="lazy">
+        </div>
+        <div class="home-tool-content">
+          <h2>Rangers角色查詢</h2>
+          <p>查詢 Rangers 角色的基本資料、能力數值、技能效果、能力與才能資訊。</p>
         </div>
       </a>
 
-      <a class="tool-card" href="./hsEnemy/">
-        <div class="tool-icon">敵人</div>
-        <div>
-          <h2>主要困難關卡敵人查詢</h2>
-          <p>查詢主要困難關卡敵人的基本數值、技能效果與能力。</p>
+      <a class="home-tool-card" href="./ability/">
+        <div class="home-tool-image-wrap">
+          <img class="home-tool-image" src="./assets/main_icon/abilityIcon.png" alt="" loading="lazy">
         </div>
-      </a>
-
-      <a class="tool-card" href="./ability/">
-        <div class="tool-icon">能力</div>
-        <div>
-          <h2>能力數值查詢</h2>
+        <div class="home-tool-content">
+          <h2>能力查詢</h2>
           <p>查詢能力名稱、敘述、能力分類、觸發時機、條件與效果。</p>
+        </div>
+      </a>
+
+      <a class="home-tool-card" href="./hsEnemy/">
+        <div class="home-tool-image-wrap">
+          <img class="home-tool-image" src="./assets/main_icon/hsIcon.png" alt="" loading="lazy">
+        </div>
+        <div class="home-tool-content">
+          <h2>主要困難關卡敵人查詢</h2>
+          <p>查詢主要困難關卡敵人的基本數值、技能效果與能力資訊。</p>
         </div>
       </a>
     </section>
