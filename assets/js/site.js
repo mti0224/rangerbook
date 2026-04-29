@@ -6,6 +6,13 @@
   const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/gear") || path.endsWith("/hsEnemy") || path.endsWith("/infEnemy");
   const depthPrefix = isSubPage ? "../" : "./";
 
+  if (!document.querySelector('link[href$="header-responsive.css"]')) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `${depthPrefix}assets/css/header-responsive.css`;
+    document.head.appendChild(link);
+  }
+
   mount.innerHTML = `
     <header class="site-header">
       <div class="header-inner header-inner-left">
@@ -61,4 +68,5 @@
   window.addEventListener("resize", updateMenuMode);
   window.addEventListener("load", updateMenuMode);
   requestAnimationFrame(updateMenuMode);
+  setTimeout(updateMenuMode, 120);
 })();
