@@ -20,20 +20,48 @@
       <p>查詢裝備的詳細數據。</p>
     </section>
 
-    <section class="controls ranger-controls">
-      <label class="search-box">
+    <section class="controls ranger-controls gear-controls">
+      <label class="search-box gear-search-box">
         <span>搜尋裝備</span>
         <input id="gearSearchInput" type="search" placeholder="輸入裝備名稱、種類、效果或數值...">
       </label>
 
-      <label>
-        <span>星級</span>
-        <select id="gearStarFilter"><option value="">全部</option></select>
-      </label>
+      <section class="gear-filter-panel">
+        <div class="gear-filter-head">
+          <h2>星數</h2>
+        </div>
+        <div id="gearStarFilter" class="gear-checkbox-grid gear-star-grid"></div>
+      </section>
 
-      <label>
-        <span>種類</span>
-        <select id="gearTypeFilter"><option value="">全部</option></select>
+      <section class="gear-filter-panel">
+        <div class="gear-filter-head">
+          <h2>類型</h2>
+        </div>
+        <div id="gearTypeFilter" class="gear-checkbox-grid gear-type-grid"></div>
+      </section>
+
+      <section class="gear-filter-panel gear-basic-filter-panel">
+        <div class="gear-filter-head">
+          <h2>基本效果</h2>
+          <div class="gear-mode-switch" role="group" aria-label="基本效果篩選模式">
+            <button id="gearBasicModeOr" class="active" type="button" data-mode="OR">OR</button>
+            <button id="gearBasicModeAnd" type="button" data-mode="AND">AND</button>
+          </div>
+        </div>
+        <div id="gearBasicEffectFilter" class="gear-checkbox-grid gear-basic-grid"></div>
+      </section>
+
+      <section class="gear-filter-panel gear-trigger-filter-panel">
+        <div class="gear-filter-head">
+          <h2>觸發條件</h2>
+        </div>
+        <div id="gearTriggerAttrFilter" class="gear-checkbox-grid gear-trigger-attr-grid"></div>
+        <div id="gearTriggerTypeFilter" class="gear-checkbox-grid gear-trigger-type-grid"></div>
+      </section>
+
+      <label class="gear-max-toggle">
+        <input id="gearShowMaxToggle" type="checkbox">
+        <span>顯示滿等數值</span>
       </label>
 
       <button id="gearResetBtn" type="button">清除篩選</button>
