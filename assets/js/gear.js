@@ -1,12 +1,20 @@
 (() => {
   const DATA_URL = "../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
+  const ATTR_OPTIONS = ["火", "水", "木", "光", "暗"];
+  const TYPECLASS_OPTIONS = ["智慧型", "敏捷型", "力量型"];
 
-  const state = { rows: [], filtered: [], selectedId: "", page: 1, pageSize: 60 };
+  const state = { rows: [], filtered: [], selectedId: "", page: 1, pageSize: 60, basicMode: "OR", showMax: false };
   const $ = (id) => document.getElementById(id);
   const searchInput = $("gearSearchInput");
   const starFilter = $("gearStarFilter");
   const typeFilter = $("gearTypeFilter");
+  const basicEffectFilter = $("gearBasicEffectFilter");
+  const triggerAttrFilter = $("gearTriggerAttrFilter");
+  const triggerTypeFilter = $("gearTriggerTypeFilter");
+  const basicModeOr = $("gearBasicModeOr");
+  const basicModeAnd = $("gearBasicModeAnd");
+  const showMaxToggle = $("gearShowMaxToggle");
   const resetBtn = $("gearResetBtn");
   const resultCount = $("gearResultCount");
   const gearList = $("gearList");
@@ -58,16 +66,80 @@
   function sortGearRows(a, b) {
     const starDiff = getStarNumber(b.gear) - getStarNumber(a.gear);
     if (starDiff) return starDiff;
-
     const numberDiff = getGearNumber(b.gear) - getGearNumber(a.gear);
     if (numberDiff) return numberDiff;
-
     return getId(a.gear).localeCompare(getId(b.gear), "zh-Hant", { numeric: true }) || a.index - b.index;
   }
 
   function effectText(obj, limit = 3) {
     if (isEmptyObject(obj)) return [];
-    return Object.entries(obj).slice(0, limit).map(([key, value]) => `${key} ${value}`);
+    return Object.entries(obj).slice(0, limit).map(([key, value]) => `${key} ${formatEffectValue(value)}`);
+  }
+
+  function normalizeRangeText(value) {
+    return text(value).replace(/～/g, "~").replace(/\s+/g, "").replace(/~\s*|\s*~/g, "~");
+  }
+
+  function formatSigned1(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return String(value);
+    const s = n.toFixed(1);
+    return n > 0 ? `+${s}` : s;
+  }
+
+  function formatNumbersWithSign1(value) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "number") return formatSigned1(value);
+    return text(value).replace(/[+\-]?\d+(?:\.\d+)?/g, (match) => {
+      const n = parseFloat(match);
+      return Number.isNaN(n) ? match : formatSigned1(n);
+    });
+  }
+
+  function scaleNumbersInText(value, factor) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "number") return formatSigned1(value * factor);
+    return text(value).replace(/[+\-]?\d+(?:\.\d+)?/g, (match) => {
+      const n = parseFloat(match);
+      return Number.isNaN(n) ? match : formatSigned1(n * factor);
+    });
+  }
+
+  function formatEffectValue(value) {
+    return state.showMax ? scaleNumbersInText(value, 6) : formatNumbersWithSign1(value);
+  }
+
+  function getBasicKeys(gear) {
+    const basic = gear["基本效果"];
+    return new Set(basic && typeof basic === "object" && !Array.isArray(basic) ? Object.keys(basic) : []);
+  }
+
+  function pickTriggerTags(triggerText) {
+    const attrs = new Set();
+    const types = new Set();
+    const source = text(triggerText);
+    ATTR_OPTIONS.forEach((attr) => {
+      if (source.includes(`${attr}屬性`)) attrs.add(attr);
+    });
+    TYPECLASS_OPTIONS.forEach((type) => {
+      if (source.includes(type)) types.add(type);
+    });
+    return { attrs, types };
+  }
+
+  function getTriggerText(gear) {
+    const advanced = gear["高級效果"];
+    return advanced && typeof advanced === "object" ? text(advanced["觸發條件"]) : "";
+  }
+
+  function getSelectedValues(container) {
+    return new Set([...container.querySelectorAll("input[type='checkbox']:checked")].map((input) => input.value));
+  }
+
+  function matchEffectKeys(gearKeys, selectedSet, mode) {
+    if (selectedSet.size === 0) return true;
+    const matched = [...selectedSet].filter((key) => gearKeys.has(key)).length;
+    return mode === "AND" ? matched === selectedSet.size : matched > 0;
   }
 
   function searchBlob(gear) {
@@ -86,10 +158,29 @@
     return [...new Set(values.map(text).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant", { numeric: true }));
   }
 
-  function fillSelect(select, values) {
-    select.innerHTML = `<option value="">全部</option>` + uniqueSorted(values)
-      .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
-      .join("");
+  function renderCheckbox(container, values, formatter = (value) => value) {
+    if (!container) return;
+    container.innerHTML = uniqueSorted(values).map((value) => `
+      <label class="gear-checkbox" title="${escapeHtml(formatter(value))}">
+        <input type="checkbox" value="${escapeHtml(value)}">
+        <span>${escapeHtml(formatter(value))}</span>
+      </label>
+    `).join("");
+  }
+
+  function setBasicMode(mode) {
+    state.basicMode = mode;
+    basicModeOr?.classList.toggle("active", mode === "OR");
+    basicModeAnd?.classList.toggle("active", mode === "AND");
+    applyFilters();
+  }
+
+  function buildFilters() {
+    renderCheckbox(starFilter, state.rows.map(({ gear }) => gear["裝備星級"]), (value) => `${value}星`);
+    renderCheckbox(typeFilter, state.rows.map(({ gear }) => gear["裝備種類"]));
+    renderCheckbox(basicEffectFilter, state.rows.flatMap(({ gear }) => [...getBasicKeys(gear)]));
+    renderCheckbox(triggerAttrFilter, ATTR_OPTIONS);
+    renderCheckbox(triggerTypeFilter, TYPECLASS_OPTIONS);
   }
 
   function ensurePaginationBar() {
@@ -159,13 +250,24 @@
 
   function applyFilters() {
     const q = searchInput.value.trim().toLowerCase();
-    const star = starFilter.value;
-    const type = typeFilter.value;
+    const stars = getSelectedValues(starFilter);
+    const types = getSelectedValues(typeFilter);
+    const basicEffects = getSelectedValues(basicEffectFilter);
+    const triggerAttrs = getSelectedValues(triggerAttrFilter);
+    const triggerTypes = getSelectedValues(triggerTypeFilter);
+    const triggerSelected = new Set([...triggerAttrs, ...triggerTypes]);
+
     state.filtered = state.rows.filter((row) => {
       const gear = row.gear;
       if (q && !row.search.includes(q)) return false;
-      if (star && text(gear["裝備星級"]) !== star) return false;
-      if (type && text(gear["裝備種類"]) !== type) return false;
+      if (stars.size && !stars.has(text(gear["裝備星級"]))) return false;
+      if (types.size && !types.has(text(gear["裝備種類"]))) return false;
+      if (!matchEffectKeys(getBasicKeys(gear), basicEffects, state.basicMode)) return false;
+
+      const trigger = pickTriggerTags(getTriggerText(gear));
+      const gearTriggerTags = new Set([...trigger.attrs, ...trigger.types]);
+      if (!matchEffectKeys(gearTriggerTags, triggerSelected, "OR")) return false;
+
       return true;
     });
     state.page = 1;
@@ -214,7 +316,7 @@
           <thead><tr><th>效果</th><th>數值</th></tr></thead>
           <tbody>
             ${Object.entries(effects).map(([key, value]) => `
-              <tr><th>${escapeHtml(key)}</th><td>${escapeHtml(value)}</td></tr>
+              <tr><th>${escapeHtml(key)}</th><td>${escapeHtml(formatEffectValue(value))}</td></tr>
             `).join("")}
           </tbody>
         </table>
@@ -231,6 +333,11 @@
       return renderEffectTable("高級效果", switchable, header);
     }
     return renderEffectTable("高級效果", advanced);
+  }
+
+  function renderSkillPlus(skillPlus) {
+    if (isEmptyObject(skillPlus)) return `<div class="empty-state small">沒有Skill+資料。</div>`;
+    return renderEffectTable("Skill+", skillPlus);
   }
 
   function openGear(id) {
@@ -253,7 +360,7 @@
       </div>
       <section class="detail-section"><h3>基本效果</h3>${renderEffectTable("基本效果", gear["基本效果"])}</section>
       <section class="detail-section"><h3>高級效果</h3>${renderAdvanced(gear["高級效果"])}</section>
-      <section class="detail-section"><h3>Skill+</h3>${renderEffectTable("Skill+", gear["Skill+"])}</section>
+      <section class="detail-section"><h3>Skill+</h3>${renderSkillPlus(gear["Skill+"])}</section>
     `;
     modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -268,6 +375,19 @@
     document.body.classList.remove("modal-open");
   }
 
+  function clearAll() {
+    searchInput.value = "";
+    [starFilter, typeFilter, basicEffectFilter, triggerAttrFilter, triggerTypeFilter].forEach((container) => {
+      container?.querySelectorAll("input[type='checkbox']").forEach((input) => { input.checked = false; });
+    });
+    state.basicMode = "OR";
+    basicModeOr?.classList.add("active");
+    basicModeAnd?.classList.remove("active");
+    state.showMax = false;
+    if (showMaxToggle) showMaxToggle.checked = false;
+    applyFilters();
+  }
+
   async function init() {
     try {
       const res = await fetch(DATA_URL);
@@ -277,8 +397,7 @@
         .map((gear, index) => ({ gear, index, search: searchBlob(gear) }))
         .sort(sortGearRows);
       state.filtered = [...state.rows];
-      fillSelect(starFilter, state.rows.map(({ gear }) => gear["裝備星級"]));
-      fillSelect(typeFilter, state.rows.map(({ gear }) => gear["裝備種類"]));
+      buildFilters();
       renderList();
     } catch (error) {
       gearList.innerHTML = `<div class="empty-state">資料載入失敗，請確認裝備資料庫.json是否已放在 /res 資料夾。</div>`;
@@ -286,18 +405,19 @@
     }
   }
 
-  [searchInput, starFilter, typeFilter].forEach((el) => {
-    el.addEventListener("input", applyFilters);
-    el.addEventListener("change", applyFilters);
+  searchInput?.addEventListener("input", applyFilters);
+  [starFilter, typeFilter, basicEffectFilter, triggerAttrFilter, triggerTypeFilter].forEach((container) => {
+    container?.addEventListener("change", applyFilters);
   });
-  resetBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    starFilter.value = "";
-    typeFilter.value = "";
-    applyFilters();
+  basicModeOr?.addEventListener("click", () => setBasicMode("OR"));
+  basicModeAnd?.addEventListener("click", () => setBasicMode("AND"));
+  showMaxToggle?.addEventListener("change", () => {
+    state.showMax = showMaxToggle.checked;
+    renderList();
   });
-  modalCloseBtn.addEventListener("click", closeModal);
-  modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
+  resetBtn?.addEventListener("click", clearAll);
+  modalCloseBtn?.addEventListener("click", closeModal);
+  modal?.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !modal.hidden) closeModal(); });
 
   init();
