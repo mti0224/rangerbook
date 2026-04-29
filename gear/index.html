@@ -21,50 +21,58 @@
     </section>
 
     <section class="controls ranger-controls gear-controls">
-      <label class="search-box gear-search-box">
-        <span>搜尋裝備</span>
-        <input id="gearSearchInput" type="search" placeholder="輸入裝備名稱、種類、效果或數值...">
-      </label>
+      <div class="gear-basic-filter-row">
+        <label class="search-box gear-search-box">
+          <span>搜尋裝備</span>
+          <input id="gearSearchInput" type="search" placeholder="輸入裝備名稱、種類、效果或數值...">
+        </label>
 
-      <section class="gear-filter-panel">
-        <div class="gear-filter-head">
-          <h2>星數</h2>
-        </div>
-        <div id="gearStarFilter" class="gear-checkbox-grid gear-star-grid"></div>
-      </section>
+        <button id="gearAdvancedToggleBtn" class="gear-advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="gearAdvancedFilters">
+          進階篩選 ▼
+        </button>
 
-      <section class="gear-filter-panel">
-        <div class="gear-filter-head">
-          <h2>類型</h2>
-        </div>
-        <div id="gearTypeFilter" class="gear-checkbox-grid gear-type-grid"></div>
-      </section>
+        <button id="gearResetBtn" type="button">清除篩選</button>
+      </div>
 
-      <section class="gear-filter-panel gear-basic-filter-panel">
-        <div class="gear-filter-head">
-          <h2>基本效果</h2>
-          <div class="gear-mode-switch" role="group" aria-label="基本效果篩選模式">
-            <button id="gearBasicModeOr" class="active" type="button" data-mode="OR">OR</button>
-            <button id="gearBasicModeAnd" type="button" data-mode="AND">AND</button>
+      <div id="gearAdvancedFilters" class="gear-advanced-filters" hidden>
+        <section class="gear-filter-panel">
+          <div class="gear-filter-head">
+            <h2>星數</h2>
           </div>
-        </div>
-        <div id="gearBasicEffectFilter" class="gear-checkbox-grid gear-basic-grid"></div>
-      </section>
+          <div id="gearStarFilter" class="gear-checkbox-grid gear-star-grid"></div>
+        </section>
 
-      <section class="gear-filter-panel gear-trigger-filter-panel">
-        <div class="gear-filter-head">
-          <h2>觸發條件</h2>
-        </div>
-        <div id="gearTriggerAttrFilter" class="gear-checkbox-grid gear-trigger-attr-grid"></div>
-        <div id="gearTriggerTypeFilter" class="gear-checkbox-grid gear-trigger-type-grid"></div>
-      </section>
+        <section class="gear-filter-panel">
+          <div class="gear-filter-head">
+            <h2>類型</h2>
+          </div>
+          <div id="gearTypeFilter" class="gear-checkbox-grid gear-type-grid"></div>
+        </section>
 
-      <label class="gear-max-toggle">
-        <input id="gearShowMaxToggle" type="checkbox">
-        <span>顯示滿等數值</span>
-      </label>
+        <section class="gear-filter-panel gear-basic-filter-panel">
+          <div class="gear-filter-head">
+            <h2>基本效果</h2>
+            <div class="gear-mode-switch" role="group" aria-label="基本效果篩選模式">
+              <button id="gearBasicModeOr" class="active" type="button" data-mode="OR">OR</button>
+              <button id="gearBasicModeAnd" type="button" data-mode="AND">AND</button>
+            </div>
+          </div>
+          <div id="gearBasicEffectFilter" class="gear-checkbox-grid gear-basic-grid"></div>
+        </section>
 
-      <button id="gearResetBtn" type="button">清除篩選</button>
+        <section class="gear-filter-panel gear-trigger-filter-panel">
+          <div class="gear-filter-head">
+            <h2>觸發條件</h2>
+          </div>
+          <div id="gearTriggerAttrFilter" class="gear-checkbox-grid gear-trigger-attr-grid"></div>
+          <div id="gearTriggerTypeFilter" class="gear-checkbox-grid gear-trigger-type-grid"></div>
+        </section>
+
+        <label class="gear-max-toggle">
+          <input id="gearShowMaxToggle" type="checkbox">
+          <span>顯示滿等數值</span>
+        </label>
+      </div>
     </section>
 
     <section class="summary-bar">
