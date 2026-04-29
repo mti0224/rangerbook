@@ -11,6 +11,11 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
 }
 
+.pagination-bar-bottom {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
 .pagination-info {
   color: var(--muted);
   font-weight: 800;
