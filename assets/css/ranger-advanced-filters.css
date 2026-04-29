@@ -1,0 +1,46 @@
+.ranger-controls {
+  align-items: end;
+}
+
+.ranger-controls .advanced-toggle-btn {
+  min-height: 42px;
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 0.72rem 1rem;
+  font-weight: 900;
+  color: #ffffff;
+  background: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+.ranger-controls .advanced-toggle-btn:hover {
+  background: var(--primary-dark);
+}
+
+.ranger-controls .advanced-filters {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  padding: 1rem;
+  margin-top: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fbfdff;
+}
+
+.ranger-controls .advanced-filters[hidden] {
+  display: none;
+}
+
+.ranger-controls .advanced-filters label {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .ranger-controls .advanced-toggle-btn,
+  .ranger-controls #rangerResetBtn {
+    width: 100%;
+  }
+}
