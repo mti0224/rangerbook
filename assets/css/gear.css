@@ -1,3 +1,124 @@
+.gear-controls {
+  grid-template-columns: 1fr;
+  align-items: stretch;
+}
+
+.gear-search-box {
+  width: 100%;
+}
+
+.gear-filter-panel {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 0.9rem;
+  background: #fbfdff;
+}
+
+.gear-filter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.gear-filter-head h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.gear-checkbox-grid {
+  display: grid;
+  gap: 0.45rem 0.85rem;
+}
+
+.gear-star-grid {
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+}
+
+.gear-type-grid,
+.gear-trigger-type-grid {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+
+.gear-trigger-attr-grid {
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  margin-bottom: 0.45rem;
+}
+
+.gear-basic-grid {
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  max-height: 17rem;
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.gear-checkbox {
+  display: inline-flex;
+  align-items: center;
+  grid-template-columns: none;
+  gap: 0.45rem;
+  min-width: 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.gear-checkbox input {
+  width: 1rem;
+  min-height: auto;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.gear-checkbox span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gear-mode-switch {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.gear-mode-switch button {
+  border-radius: 0;
+  padding: 0.35rem 0.65rem;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.gear-mode-switch button.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.gear-max-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-template-columns: none;
+  gap: 0.45rem;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.gear-max-toggle input {
+  width: 1rem;
+  min-height: auto;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
 .gear-thumb-wrap {
   background: #f8fafc;
 }
@@ -68,4 +189,14 @@
 
 .gear-detail-image {
   padding: 0.5rem;
+}
+
+@media (max-width: 620px) {
+  .gear-basic-grid,
+  .gear-type-grid,
+  .gear-trigger-type-grid,
+  .gear-trigger-attr-grid,
+  .gear-star-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
