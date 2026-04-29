@@ -27,7 +27,7 @@
     <section class="controls ranger-controls">
       <label class="search-box">
         <span>搜尋角色</span>
-        <input id="rangerSearchInput" type="search" placeholder="輸入角色名稱、星數、類型、屬性、技能或能力...">
+        <input id="rangerSearchInput" type="search" placeholder="輸入角色名稱、ID或關鍵字...">
       </label>
 
       <label>
@@ -51,15 +51,41 @@
         </select>
       </label>
 
-      <label>
-        <span>角色分類</span>
-        <select id="specialFilter">
-          <option value="">全部</option>
-          <option value="nft">NFT角色</option>
-          <option value="event">降臨關卡角色</option>
-          <option value="talent">有才能</option>
-        </select>
-      </label>
+      <button id="rangerAdvancedToggleBtn" class="advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="rangerAdvancedFilters">
+        進階篩選 ▼
+      </button>
+
+      <div id="rangerAdvancedFilters" class="advanced-filters" hidden>
+        <label>
+          <span>角色分類</span>
+          <select id="specialFilter">
+            <option value="">全部</option>
+            <option value="nft">NFT角色</option>
+            <option value="event">降臨關卡角色</option>
+            <option value="talent">有才能</option>
+          </select>
+        </label>
+
+        <label>
+          <span>技能效果包含</span>
+          <input id="skillEffectFilter" type="search" placeholder="例如：沉默、解無敵、持續傷害...">
+        </label>
+
+        <label>
+          <span>能力 / 覺醒能力包含</span>
+          <input id="abilityEffectFilter" type="search" placeholder="例如：技能抗性、攻擊力、體力...">
+        </label>
+
+        <label>
+          <span>才能條件為</span>
+          <input id="talentConditionFilter" type="search" placeholder="例如：體力低於、每隔、攻擊時...">
+        </label>
+
+        <label>
+          <span>才能效果包含</span>
+          <input id="talentEffectFilter" type="search" placeholder="例如：技能傷害、冷卻、無敵...">
+        </label>
+      </div>
 
       <button id="rangerResetBtn" type="button">清除篩選</button>
     </section>
