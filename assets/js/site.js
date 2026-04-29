@@ -3,7 +3,7 @@
   if (!mount) return;
 
   const path = window.location.pathname.replace(/\/+$/, "");
-  const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/gear") || path.endsWith("/hsEnemy") || path.endsWith("/infEnemy") || path.endsWith("/eventStageEnemy");
+  const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/gear") || path.endsWith("/hsEnemy") || path.endsWith("/infEnemy") || path.endsWith("/eventStageEnemy") || path.endsWith("/adventEnemy");
   const depthPrefix = isSubPage ? "../" : "./";
 
   if (!document.querySelector('link[href*="header-responsive.css"]')) {
@@ -23,6 +23,7 @@
           <a href="${depthPrefix}hsEnemy/">主困敵人</a>
           <a href="${depthPrefix}infEnemy/">無限之塔</a>
           <a href="${depthPrefix}eventStageEnemy/">活動關卡</a>
+          <a href="${depthPrefix}adventEnemy/">降臨敵人</a>
           <a href="${depthPrefix}ability/">能力</a>
         </nav>
         <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
