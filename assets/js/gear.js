@@ -7,6 +7,8 @@
   const state = { rows: [], filtered: [], selectedId: "", page: 1, pageSize: 60, basicMode: "OR", showMax: false };
   const $ = (id) => document.getElementById(id);
   const searchInput = $("gearSearchInput");
+  const advancedToggleBtn = $("gearAdvancedToggleBtn");
+  const advancedFilters = $("gearAdvancedFilters");
   const starFilter = $("gearStarFilter");
   const typeFilter = $("gearTypeFilter");
   const basicEffectFilter = $("gearBasicEffectFilter");
@@ -73,11 +75,7 @@
 
   function effectText(obj, limit = 3) {
     if (isEmptyObject(obj)) return [];
-    return Object.entries(obj).slice(0, limit).map(([key, value]) => `${key} ${formatEffectValue(value)}`);
-  }
-
-  function normalizeRangeText(value) {
-    return text(value).replace(/～/g, "~").replace(/\s+/g, "").replace(/~\s*|\s*~/g, "~");
+    return Object.entries(obj).slice(0, limit).map(([key, value]) => `${key} ${formatBasicEffectValue(value)}`);
   }
 
   function formatSigned1(value) {
@@ -105,7 +103,7 @@
     });
   }
 
-  function formatEffectValue(value) {
+  function formatBasicEffectValue(value) {
     return state.showMax ? scaleNumbersInText(value, 6) : formatNumbersWithSign1(value);
   }
 
@@ -133,6 +131,7 @@
   }
 
   function getSelectedValues(container) {
+    if (!container) return new Set();
     return new Set([...container.querySelectorAll("input[type='checkbox']:checked")].map((input) => input.value));
   }
 
@@ -173,6 +172,14 @@
     basicModeOr?.classList.toggle("active", mode === "OR");
     basicModeAnd?.classList.toggle("active", mode === "AND");
     applyFilters();
+  }
+
+  function toggleAdvancedFilters() {
+    if (!advancedToggleBtn || !advancedFilters) return;
+    const isOpen = advancedFilters.hidden;
+    advancedFilters.hidden = !isOpen;
+    advancedToggleBtn.setAttribute("aria-expanded", String(isOpen));
+    advancedToggleBtn.textContent = isOpen ? "收合進階篩選 ▲" : "進階篩選 ▼";
   }
 
   function buildFilters() {
@@ -307,7 +314,7 @@
     });
   }
 
-  function renderEffectTable(title, effects, extraHeader = "") {
+  function renderEffectTable(title, effects, extraHeader = "", useMaxValue = false) {
     if (isEmptyObject(effects)) return `<div class="empty-state small">沒有${escapeHtml(title)}資料。</div>`;
     return `
       ${extraHeader}
@@ -316,7 +323,7 @@
           <thead><tr><th>效果</th><th>數值</th></tr></thead>
           <tbody>
             ${Object.entries(effects).map(([key, value]) => `
-              <tr><th>${escapeHtml(key)}</th><td>${escapeHtml(formatEffectValue(value))}</td></tr>
+              <tr><th>${escapeHtml(key)}</th><td>${escapeHtml(useMaxValue ? formatBasicEffectValue(value) : value)}</td></tr>
             `).join("")}
           </tbody>
         </table>
@@ -330,14 +337,14 @@
     const switchable = advanced["可切換的效果"];
     const header = condition ? `<p class="gear-condition">觸發條件：${escapeHtml(condition)}</p>` : "";
     if (switchable && typeof switchable === "object") {
-      return renderEffectTable("高級效果", switchable, header);
+      return renderEffectTable("高級效果", switchable, header, false);
     }
-    return renderEffectTable("高級效果", advanced);
+    return renderEffectTable("高級效果", advanced, "", false);
   }
 
   function renderSkillPlus(skillPlus) {
     if (isEmptyObject(skillPlus)) return `<div class="empty-state small">沒有Skill+資料。</div>`;
-    return renderEffectTable("Skill+", skillPlus);
+    return renderEffectTable("Skill+", skillPlus, "", false);
   }
 
   function openGear(id) {
@@ -358,7 +365,7 @@
           </div>
         </div>
       </div>
-      <section class="detail-section"><h3>基本效果</h3>${renderEffectTable("基本效果", gear["基本效果"])}</section>
+      <section class="detail-section"><h3>基本效果</h3>${renderEffectTable("基本效果", gear["基本效果"], "", true)}</section>
       <section class="detail-section"><h3>高級效果</h3>${renderAdvanced(gear["高級效果"])}</section>
       <section class="detail-section"><h3>Skill+</h3>${renderSkillPlus(gear["Skill+"])}</section>
     `;
@@ -406,6 +413,7 @@
   }
 
   searchInput?.addEventListener("input", applyFilters);
+  advancedToggleBtn?.addEventListener("click", toggleAdvancedFilters);
   [starFilter, typeFilter, basicEffectFilter, triggerAttrFilter, triggerTypeFilter].forEach((container) => {
     container?.addEventListener("change", applyFilters);
   });
@@ -414,6 +422,7 @@
   showMaxToggle?.addEventListener("change", () => {
     state.showMax = showMaxToggle.checked;
     renderList();
+    if (!modal.hidden && state.selectedId) openGear(state.selectedId);
   });
   resetBtn?.addEventListener("click", clearAll);
   modalCloseBtn?.addEventListener("click", closeModal);
