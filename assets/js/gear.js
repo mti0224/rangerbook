@@ -42,15 +42,17 @@
     return text(gear["裝備名稱"] || gear.name || getId(gear));
   }
 
+  function numberFrom(value) {
+    const matched = text(value).match(/\d+/g);
+    return matched ? Number(matched.join("")) : 0;
+  }
+
   function getStarNumber(gear) {
-    const value = Number(text(gear["裝備星級"]).replace(/[^\d.-]/g, ""));
-    return Number.isFinite(value) ? value : 0;
+    return numberFrom(gear["裝備星級"]);
   }
 
   function getGearNumber(gear) {
-    const raw = text(gear["編號"] || gear.number || gear.no || getId(gear));
-    const matched = raw.match(/\d+/g);
-    return matched ? Number(matched.join("")) : 0;
+    return numberFrom(gear["編號"] || gear.number || gear.no || getId(gear));
   }
 
   function sortGearRows(a, b) {
