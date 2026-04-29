@@ -16,7 +16,7 @@
 
   const $ = (id) => document.getElementById(id);
   const searchInput = $("enemySearchInput");
-  const starFilter = $("starFilter");
+  const abilityFilter = $("abilityFilter");
   const typeFilter = $("typeFilter");
   const elementFilter = $("elementFilter");
   const resetBtn = $("enemyResetBtn");
@@ -172,13 +172,18 @@
   }
 
   function fillSelect(select, values) {
+    if (!select) return;
     select.innerHTML = `<option value="">全部</option>` + values
       .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
       .join("");
   }
 
+  function getAbilityNames(enemy) {
+    return getAbilities(enemy).map((ability) => ability.name).filter((name) => !isNone(name));
+  }
+
   function buildFilters() {
-    fillSelect(starFilter, uniqueSorted(state.rows.map((row) => row.enemy["Ranger星數"])));
+    fillSelect(abilityFilter, uniqueSorted(state.rows.flatMap((row) => getAbilityNames(row.enemy))));
     fillSelect(typeFilter, uniqueSorted(state.rows.map((row) => row.enemy["類型"])));
     fillSelect(elementFilter, uniqueSorted(state.rows.map((row) => row.enemy["屬性"])));
   }
@@ -270,14 +275,14 @@
 
   function applyFilters() {
     const q = searchInput.value.trim().toLowerCase();
-    const star = starFilter.value;
+    const ability = abilityFilter?.value || "";
     const type = typeFilter.value;
     const element = elementFilter.value;
 
     state.filtered = state.rows.filter((row) => {
       const enemy = row.enemy;
       if (q && !row.searchBlob.includes(q)) return false;
-      if (star && enemy["Ranger星數"] !== star) return false;
+      if (ability && !getAbilityNames(enemy).includes(ability)) return false;
       if (type && enemy["類型"] !== type) return false;
       if (element && enemy["屬性"] !== element) return false;
       return true;
@@ -509,14 +514,14 @@
     }
   }
 
-  [searchInput, starFilter, typeFilter, elementFilter].forEach((el) => {
-    el.addEventListener("input", applyFilters);
-    el.addEventListener("change", applyFilters);
+  [searchInput, abilityFilter, typeFilter, elementFilter].forEach((el) => {
+    el?.addEventListener("input", applyFilters);
+    el?.addEventListener("change", applyFilters);
   });
 
   resetBtn.addEventListener("click", () => {
     searchInput.value = "";
-    starFilter.value = "";
+    if (abilityFilter) abilityFilter.value = "";
     typeFilter.value = "";
     elementFilter.value = "";
     applyFilters();
