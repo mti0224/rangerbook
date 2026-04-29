@@ -1,40 +1,37 @@
 (() => {
-  const SOURCE_IDS = ["paginationInfo", "paginationSize", "paginationPrev", "paginationNext", "paginationPages"];
-
   function getTopPaginationBar() {
     return document.querySelector(".pagination-bar:not(.pagination-bar-bottom)");
   }
 
-  function findListAfter(bar) {
-    let node = bar?.nextElementSibling;
+  function getListAnchor(topBar) {
+    let node = topBar?.nextElementSibling;
     while (node) {
-      if (node.querySelector?.(".ranger-list, .ability-list, .gear-list")) return node;
+      if (node.matches?.(".ranger-list-layout, .layout.modal-list-layout") || node.querySelector?.(".ranger-list, .ability-list, .gear-list")) return node;
       node = node.nextElementSibling;
     }
-    return document.querySelector(".ranger-list-layout, .layout.modal-list-layout") || bar;
+    return document.querySelector(".ranger-list-layout, .layout.modal-list-layout") || topBar;
   }
 
   function ensureBottomBar() {
     const topBar = getTopPaginationBar();
+    const existing = document.getElementById("bottomPaginationBar");
     if (!topBar || topBar.hidden) {
-      const existing = document.getElementById("bottomPaginationBar");
       if (existing) existing.hidden = true;
       return null;
     }
 
-    let bottomBar = document.getElementById("bottomPaginationBar");
+    let bottomBar = existing;
     if (!bottomBar) {
       bottomBar = document.createElement("section");
       bottomBar.id = "bottomPaginationBar";
       bottomBar.className = "pagination-bar pagination-bar-bottom";
-      const anchor = findListAfter(topBar);
-      anchor.insertAdjacentElement("afterend", bottomBar);
+      getListAnchor(topBar).insertAdjacentElement("afterend", bottomBar);
     }
     bottomBar.hidden = false;
     return bottomBar;
   }
 
-  function copyPagination() {
+  function syncBottomPagination() {
     const topBar = getTopPaginationBar();
     const bottomBar = ensureBottomBar();
     if (!topBar || !bottomBar) return;
@@ -61,40 +58,64 @@
         <button id="bottomPaginationNext" type="button" ${nextDisabled}>下一頁</button>
       </div>
     `;
-
-    document.getElementById("bottomPaginationSize")?.addEventListener("change", (event) => {
-      const topSize = document.getElementById("paginationSize");
-      if (!topSize) return;
-      topSize.value = event.target.value;
-      topSize.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-
-    document.getElementById("bottomPaginationPrev")?.addEventListener("click", () => {
-      document.getElementById("paginationPrev")?.click();
-    });
-
-    document.getElementById("bottomPaginationNext")?.addEventListener("click", () => {
-      document.getElementById("paginationNext")?.click();
-    });
-
-    document.querySelectorAll("#bottomPaginationPages .pagination-page").forEach((button) => {
-      button.addEventListener("click", () => {
-        const page = button.dataset.page;
-        const topButton = document.querySelector(`#paginationPages .pagination-page[data-page="${CSS.escape(page)}"]`);
-        topButton?.click();
-      });
-    });
   }
+
+  function clickTopPage(page) {
+    const selector = `#paginationPages .pagination-page[data-page="${CSS.escape(page)}"]`;
+    const topButton = document.querySelector(selector);
+    if (topButton) topButton.click();
+  }
+
+  document.addEventListener("change", (event) => {
+    if (event.target?.id !== "bottomPaginationSize") return;
+    const topSize = document.getElementById("paginationSize");
+    if (!topSize) return;
+    topSize.value = event.target.value;
+    topSize.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    if (target.id === "bottomPaginationPrev") {
+      event.preventDefault();
+      document.getElementById("paginationPrev")?.click();
+      return;
+    }
+
+    if (target.id === "bottomPaginationNext") {
+      event.preventDefault();
+      document.getElementById("paginationNext")?.click();
+      return;
+    }
+
+    const pageButton = target.closest("#bottomPaginationPages .pagination-page");
+    if (pageButton) {
+      event.preventDefault();
+      clickTopPage(pageButton.dataset.page || "1");
+    }
+  });
 
   let timer = 0;
-  function scheduleCopy() {
+  function scheduleSync() {
     clearTimeout(timer);
-    timer = setTimeout(copyPagination, 30);
+    timer = setTimeout(syncBottomPagination, 60);
   }
 
-  const observer = new MutationObserver(scheduleCopy);
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "disabled", "class"] });
-  document.addEventListener("DOMContentLoaded", scheduleCopy);
-  window.addEventListener("load", scheduleCopy);
-  scheduleCopy();
+  const observer = new MutationObserver((mutations) => {
+    if (mutations.some((mutation) => mutation.target?.closest?.("#bottomPaginationBar"))) return;
+    scheduleSync();
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["hidden", "disabled", "class", "data-page"]
+  });
+
+  document.addEventListener("DOMContentLoaded", scheduleSync);
+  window.addEventListener("load", scheduleSync);
+  scheduleSync();
 })();
