@@ -16,7 +16,6 @@
   mount.innerHTML = `
     <header class="site-header">
       <div class="header-inner header-inner-left">
-        <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">選單</button>
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${depthPrefix}">首頁</a>
           <a href="${depthPrefix}ranger/">Rangers</a>
@@ -25,6 +24,7 @@
           <a href="${depthPrefix}infEnemy/">無限之塔</a>
           <a href="${depthPrefix}ability/">能力</a>
         </nav>
+        <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">選單</button>
       </div>
     </header>
   `;
@@ -45,9 +45,12 @@
     header.classList.remove("nav-collapsed", "menu-open");
     toggle.setAttribute("aria-expanded", "false");
 
-    const availableWidth = inner.clientWidth - 8;
+    const forceCollapsed = window.matchMedia("(max-width: 760px)").matches;
+    const availableWidth = inner.clientWidth - 12;
     const neededWidth = nav.scrollWidth;
-    if (neededWidth > availableWidth) {
+    const isWrapped = nav.getBoundingClientRect().height > 54;
+
+    if (forceCollapsed || neededWidth > availableWidth || isWrapped) {
       header.classList.add("nav-collapsed");
     }
   }
@@ -66,7 +69,9 @@
   });
 
   window.addEventListener("resize", updateMenuMode);
+  window.addEventListener("orientationchange", () => setTimeout(updateMenuMode, 150));
   window.addEventListener("load", updateMenuMode);
   requestAnimationFrame(updateMenuMode);
   setTimeout(updateMenuMode, 120);
+  setTimeout(updateMenuMode, 500);
 })();
