@@ -9,22 +9,24 @@
   if (!document.querySelector('link[href*="header-responsive.css"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = `${depthPrefix}assets/css/header-responsive.css?v=20260429b`;
+    link.href = `${depthPrefix}assets/css/header-responsive.css?v=20260429c`;
     document.head.appendChild(link);
   }
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
       <div class="header-inner header-inner-left">
+        <a class="site-home-link" href="${depthPrefix}">首頁</a>
         <nav class="site-nav" aria-label="主要導覽">
-          <a href="${depthPrefix}">首頁</a>
           <a href="${depthPrefix}ranger/">Rangers</a>
           <a href="${depthPrefix}gear/">裝備</a>
           <a href="${depthPrefix}hsEnemy/">主困敵人</a>
           <a href="${depthPrefix}infEnemy/">無限之塔</a>
           <a href="${depthPrefix}ability/">能力</a>
         </nav>
-        <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">選單</button>
+        <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </header>
   `;
@@ -32,6 +34,7 @@
   const header = mount.querySelector(".site-header");
   const inner = mount.querySelector(".header-inner");
   const nav = mount.querySelector(".site-nav");
+  const homeLink = mount.querySelector(".site-home-link");
   const toggle = mount.querySelector(".site-menu-toggle");
 
   function setOpen(open) {
@@ -40,7 +43,7 @@
   }
 
   function updateMenuMode() {
-    if (!header || !inner || !nav) return;
+    if (!header || !inner || !nav || !homeLink) return;
 
     const forceCollapsed = window.matchMedia("(max-width: 760px)").matches;
 
@@ -52,7 +55,7 @@
     header.classList.remove("nav-collapsed", "menu-open");
     toggle.setAttribute("aria-expanded", "false");
 
-    const availableWidth = inner.clientWidth - 12;
+    const availableWidth = inner.clientWidth - homeLink.offsetWidth - 72;
     const neededWidth = nav.scrollWidth;
     const isWrapped = nav.getBoundingClientRect().height > 54;
 
