@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>裝備｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/ranger.css">
+  <link rel="stylesheet" href="../assets/css/ranger-pagination.css">
+  <link rel="stylesheet" href="../assets/css/card-tag-colors.css">
+  <link rel="stylesheet" href="../assets/css/gear.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>裝備</h1>
+      <p>查詢裝備的詳細數據。</p>
+    </section>
+
+    <section class="controls ranger-controls">
+      <label class="search-box">
+        <span>搜尋裝備</span>
+        <input id="gearSearchInput" type="search" placeholder="輸入裝備名稱、種類、效果或數值...">
+      </label>
+
+      <label>
+        <span>星級</span>
+        <select id="gearStarFilter"><option value="">全部</option></select>
+      </label>
+
+      <label>
+        <span>種類</span>
+        <select id="gearTypeFilter"><option value="">全部</option></select>
+      </label>
+
+      <button id="gearResetBtn" type="button">清除篩選</button>
+    </section>
+
+    <section class="summary-bar">
+      <div>
+        <strong id="gearResultCount">0</strong>
+        <span>筆結果</span>
+      </div>
+    </section>
+
+    <section class="ranger-list-layout">
+      <div id="gearList" class="ranger-list gear-list"></div>
+    </section>
+  </main>
+
+  <div id="gearModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="gearModalTitle">
+      <button id="gearModalCloseBtn" class="modal-close" type="button" aria-label="關閉裝備詳細資料">×</button>
+      <div id="gearModalContent"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/gear.js"></script>
+  <script src="../assets/js/card-tag-colors.js"></script>
+</body>
+</html>
