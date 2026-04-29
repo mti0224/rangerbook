@@ -4,14 +4,41 @@
   align-items: center;
 }
 
+.site-home-link,
+.site-nav a {
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  color: var(--muted);
+  font-weight: 650;
+}
+
+.site-home-link:hover,
+.site-nav a:hover {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+
 .site-menu-toggle {
   display: none;
+  width: 2.45rem;
+  height: 2.45rem;
   margin-left: auto;
-  padding: 0.55rem 0.85rem;
+  padding: 0;
   border-radius: 999px;
   background: var(--primary);
   color: #ffffff;
-  font-weight: 850;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.site-menu-toggle span {
+  display: block;
+  width: 1.05rem;
+  height: 0.13rem;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .site-header.nav-collapsed .header-inner-left {
@@ -22,8 +49,6 @@
 
 .site-header.nav-collapsed .site-menu-toggle {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .site-header.nav-collapsed .site-nav {
@@ -61,15 +86,13 @@
 
 @media (max-width: 760px) {
   .site-header .header-inner-left {
-    justify-content: flex-end;
+    justify-content: space-between;
     flex-direction: row;
     align-items: center;
   }
 
   .site-header .site-menu-toggle {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .site-header .site-nav {
