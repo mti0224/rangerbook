@@ -6,15 +6,15 @@
   const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/gear") || path.endsWith("/hsEnemy") || path.endsWith("/infEnemy");
   const depthPrefix = isSubPage ? "../" : "./";
 
-  if (!document.querySelector('link[href$="header-responsive.css"]')) {
+  if (!document.querySelector('link[href*="header-responsive.css"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = `${depthPrefix}assets/css/header-responsive.css`;
+    link.href = `${depthPrefix}assets/css/header-responsive.css?v=20260429b`;
     document.head.appendChild(link);
   }
 
   mount.innerHTML = `
-    <header class="site-header">
+    <header class="site-header nav-collapsed">
       <div class="header-inner header-inner-left">
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${depthPrefix}">首頁</a>
@@ -42,15 +42,21 @@
   function updateMenuMode() {
     if (!header || !inner || !nav) return;
 
+    const forceCollapsed = window.matchMedia("(max-width: 760px)").matches;
+
+    if (forceCollapsed) {
+      header.classList.add("nav-collapsed");
+      return;
+    }
+
     header.classList.remove("nav-collapsed", "menu-open");
     toggle.setAttribute("aria-expanded", "false");
 
-    const forceCollapsed = window.matchMedia("(max-width: 760px)").matches;
     const availableWidth = inner.clientWidth - 12;
     const neededWidth = nav.scrollWidth;
     const isWrapped = nav.getBoundingClientRect().height > 54;
 
-    if (forceCollapsed || neededWidth > availableWidth || isWrapped) {
+    if (neededWidth > availableWidth || isWrapped) {
       header.classList.add("nav-collapsed");
     }
   }
