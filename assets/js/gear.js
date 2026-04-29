@@ -59,7 +59,7 @@
     const starDiff = getStarNumber(b.gear) - getStarNumber(a.gear);
     if (starDiff) return starDiff;
 
-    const numberDiff = getGearNumber(a.gear) - getGearNumber(b.gear);
+    const numberDiff = getGearNumber(b.gear) - getGearNumber(a.gear);
     if (numberDiff) return numberDiff;
 
     return getId(a.gear).localeCompare(getId(b.gear), "zh-Hant", { numeric: true }) || a.index - b.index;
