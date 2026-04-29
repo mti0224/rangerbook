@@ -63,38 +63,65 @@
     return gearMapPromise;
   }
 
-  function scalar(value) {
-    if (value === null || value === undefined) return "-";
-    if (typeof value !== "object") return text(value) || "-";
+  function readByKeys(obj, keys) {
+    if (!obj || typeof obj !== "object") return "";
+    const entries = Object.entries(obj);
+    for (const wanted of keys) {
+      const found = entries.find(([key]) => text(key) === wanted);
+      if (found) return found[1];
+    }
+    for (const wanted of keys) {
+      const found = entries.find(([key]) => text(key).includes(wanted));
+      if (found) return found[1];
+    }
     return "";
   }
 
-  function collectRows(obj, prefix = "") {
-    if (isEmpty(obj)) return [];
-    if (typeof obj !== "object") return [[prefix || "效果", scalar(obj)]];
-    if (Array.isArray(obj)) {
-      return obj.flatMap((item, index) => collectRows(item, prefix ? `${prefix} ${index + 1}` : `項目 ${index + 1}`));
+  function normalizeSkillPlusRows(skillPlus) {
+    if (isEmpty(skillPlus)) return [];
+
+    if (Array.isArray(skillPlus)) {
+      return skillPlus.flatMap(normalizeSkillPlusRows);
     }
 
-    const rows = [];
-    Object.entries(obj).forEach(([key, value]) => {
-      const label = prefix ? `${prefix} / ${key}` : key;
-      if (isEmpty(value)) return;
-      if (typeof value === "object") rows.push(...collectRows(value, label));
-      else rows.push([label, scalar(value)]);
-    });
-    return rows;
+    if (typeof skillPlus !== "object") {
+      return [{ effect: text(skillPlus), factor: "-", duration: "-" }];
+    }
+
+    const directEffect = readByKeys(skillPlus, ["技能效果", "效果", "skillEffect", "effect"]);
+    const directFactor = readByKeys(skillPlus, ["係數", "倍率", "數值", "factor", "value"]);
+    const directDuration = readByKeys(skillPlus, ["有效時間", "時間", "持續時間", "duration", "time"]);
+
+    if (!isEmpty(directEffect) || !isEmpty(directFactor) || !isEmpty(directDuration)) {
+      return [{
+        effect: text(directEffect) || "-",
+        factor: text(directFactor) || "-",
+        duration: text(directDuration) || "-"
+      }];
+    }
+
+    return Object.values(skillPlus).flatMap((value) => normalizeSkillPlusRows(value));
   }
 
-  function renderRows(rows) {
+  function renderSkillPlusTable(rows) {
     if (!rows.length) return `<div class="empty-state small">沒有Skill+資料。</div>`;
     return `
       <div class="table-scroll gear-effect-table-wrap">
-        <table class="gear-effect-table">
-          <thead><tr><th>項目</th><th>數值</th></tr></thead>
+        <table class="gear-effect-table gear-skillplus-table">
+          <thead>
+            <tr>
+              <th>技能效果</th>
+              <th>係數</th>
+              <th>有效時間</th>
+            </tr>
+          </thead>
           <tbody>
-            ${rows.map(([key, value]) => `
-              <tr><th>${escapeHtml(key)}</th><td>${escapeHtml(value)}</td></tr>
+            ${rows.map((row) => `
+              <tr>
+                <td>${escapeHtml(row.effect || "-")}</td>
+                <td>${escapeHtml(row.factor || "-")}</td>
+                <td>${escapeHtml(row.duration || "-")}</td>
+              </tr>
             `).join("")}
           </tbody>
         </table>
@@ -103,30 +130,7 @@
   }
 
   function renderSkillPlus(skillPlus) {
-    if (isEmpty(skillPlus)) return `<div class="empty-state small">沒有Skill+資料。</div>`;
-
-    if (typeof skillPlus !== "object") {
-      return renderRows([["效果", skillPlus]]);
-    }
-
-    if (Array.isArray(skillPlus)) {
-      return renderRows(collectRows(skillPlus));
-    }
-
-    const topEntries = Object.entries(skillPlus).filter(([, value]) => !isEmpty(value));
-    const hasNestedGroups = topEntries.some(([, value]) => value && typeof value === "object" && !Array.isArray(value));
-
-    if (!hasNestedGroups) return renderRows(collectRows(skillPlus));
-
-    return topEntries.map(([title, value]) => {
-      if (typeof value !== "object") return renderRows([[title, value]]);
-      return `
-        <article class="gear-skillplus-group">
-          <h4>${escapeHtml(title)}</h4>
-          ${renderRows(collectRows(value))}
-        </article>
-      `;
-    }).join("");
+    return renderSkillPlusTable(normalizeSkillPlusRows(skillPlus));
   }
 
   async function applySkillPlus() {
