@@ -24,11 +24,11 @@
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${depthPrefix}ranger/">Rangers</a>
           <a href="${depthPrefix}gear/">裝備</a>
-          <a href="${depthPrefix}hsEnemy/">主困敵人</a>
+          <a href="${depthPrefix}hsEnemy/">困難關卡</a>
           <a href="${depthPrefix}infEnemy/">無限之塔</a>
           <a href="${depthPrefix}eventStageEnemy/">活動關卡</a>
-          <a href="${depthPrefix}adventEnemy/">降臨敵人</a>
-          <a href="${depthPrefix}labyrinthEnemy/">迷宮敵人</a>
+          <a href="${depthPrefix}adventEnemy/">降臨關卡</a>
+          <a href="${depthPrefix}labyrinthEnemy/">迷宮</a>
           <a href="${depthPrefix}ability/">能力</a>
         </nav>
         <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
