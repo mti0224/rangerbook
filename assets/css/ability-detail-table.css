@@ -1,0 +1,88 @@
+#modalContent {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.ability-detail-head,
+.ability-detail-section {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.ability-detail-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.ability-detail-effect-table {
+  width: 100%;
+  min-width: 780px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+.ability-detail-effect-table th,
+.ability-detail-effect-table td {
+  padding: 0.65rem 0.75rem;
+  border-right: 1px solid #e0e7ff;
+  border-bottom: 1px solid #e0e7ff;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.ability-detail-effect-table thead th {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.ability-detail-effect-table tbody th {
+  background: #fbfdff;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.ability-detail-effect-table tr:last-child th,
+.ability-detail-effect-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.ability-detail-effect-table th:last-child,
+.ability-detail-effect-table td:last-child {
+  border-right: 0;
+}
+
+.ability-detail-effect-table th:nth-child(1),
+.ability-detail-effect-table td:nth-child(1) {
+  width: 5.5rem;
+}
+
+.ability-detail-effect-table th:nth-child(2),
+.ability-detail-effect-table td:nth-child(2) {
+  width: 5.5rem;
+}
+
+.ability-detail-effect-table th:nth-child(3),
+.ability-detail-effect-table td:nth-child(3),
+.ability-detail-effect-table th:nth-child(4),
+.ability-detail-effect-table td:nth-child(4) {
+  width: 7rem;
+}
+
+.ability-detail-effect-table th:nth-child(5),
+.ability-detail-effect-table td:nth-child(5),
+.ability-detail-effect-table th:nth-child(6),
+.ability-detail-effect-table td:nth-child(6) {
+  width: 14rem;
+}
