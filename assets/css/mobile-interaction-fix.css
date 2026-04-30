@@ -1,0 +1,75 @@
+@media (hover: none) and (pointer: coarse) {
+  .site-nav a:hover,
+  .site-home-link:hover,
+  .primary-btn:hover,
+  button:hover,
+  .ability-card:hover,
+  .ranger-card:hover,
+  .gear-card:hover,
+  .ranger-card.active:hover,
+  .ability-card.active:hover,
+  .modal-close:hover {
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .site-nav a:hover,
+  .site-home-link:hover {
+    background: transparent !important;
+    color: var(--muted) !important;
+  }
+
+  button:hover,
+  .primary-btn:hover {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+  }
+
+  .ranger-card:hover,
+  .gear-card:hover,
+  .ability-card:hover {
+    background: var(--panel) !important;
+    border-color: var(--line) !important;
+  }
+
+  .ranger-card.active,
+  .gear-card.active,
+  .ability-card.active {
+    background: #f8fbff !important;
+    border-color: #bfdbfe !important;
+  }
+
+  .modal-close:hover {
+    background: #f3f4f6 !important;
+    color: var(--text) !important;
+  }
+}
+
+.modal-backdrop {
+  top: var(--header-height) !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  height: calc(100dvh - var(--header-height)) !important;
+  z-index: 900 !important;
+  align-items: start !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
+  overflow-y: auto !important;
+}
+
+.modal-panel {
+  max-height: calc(100dvh - var(--header-height) - 1.5rem) !important;
+  margin: 0 auto !important;
+}
+
+@media (max-width: 620px) {
+  .modal-backdrop {
+    align-items: start !important;
+    padding: 0.75rem 0.6rem max(0.75rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  .modal-panel {
+    max-height: calc(100dvh - var(--header-height) - 1.5rem) !important;
+  }
+}
