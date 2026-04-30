@@ -36,12 +36,27 @@
     return undefined;
   }
 
+  function getExactByKeys(obj, keys) {
+    if (!obj || typeof obj !== "object") return undefined;
+    const entries = Object.entries(obj);
+    for (const wanted of keys) {
+      const found = entries.find(([key]) => clean(key) === wanted);
+      if (found) return found[1];
+    }
+    return undefined;
+  }
+
   function toText(value) {
     if (value === null || value === undefined) return "";
     if (typeof value !== "object") return clean(value);
     if (Array.isArray(value)) return value.map(toText).filter(Boolean).join("、");
     return Object.entries(value)
-      .filter(([key, val]) => !["觸發機率", "發動機率", "機率", "有效時間", "時間", "持續時間"].includes(clean(key)) && !isNone(val))
+      .filter(([key, val]) => {
+        const k = clean(key);
+        if (k.includes("搜尋分類")) return false;
+        if (["觸發機率", "發動機率", "機率", "有效時間", "時間", "持續時間"].includes(k)) return false;
+        return !isNone(val);
+      })
       .map(([key, val]) => {
         const child = toText(val);
         return /^\d+$/.test(clean(key)) ? child : `${clean(key)}${child}`;
@@ -84,8 +99,8 @@
     }
 
     if (typeof value === "object") {
-      const probability = clean(getByKeys(value, ["觸發機率", "發動機率", "機率"])) || parentProbability || "-";
-      const nested = getByKeys(value, ["增益效果", "效果", "觸發效果", "效果列表"]);
+      const probability = clean(getExactByKeys(value, ["觸發機率", "發動機率", "機率"])) || parentProbability || "-";
+      const nested = getExactByKeys(value, ["增益效果", "效果", "觸發效果", "效果列表", "內容", "文字", "名稱"]);
 
       if (nested && typeof nested === "object") {
         return parseEffectRows(nested, probability);
@@ -93,13 +108,15 @@
 
       if (typeof nested === "string") {
         const inlineRows = parseInlineRows(nested, probability);
-        if (inlineRows.length > 1 || /觸發機率|發動機率|機率|增益效果|效果/.test(nested)) return inlineRows;
+        if (/觸發機率|發動機率|機率|增益效果/.test(nested) && inlineRows.length) return inlineRows;
+        const time = getExactByKeys(value, ["有效時間", "時間", "持續時間"]);
+        const display = appendTime(nested, time);
+        return display ? [{ probability, effect: display }] : [];
       }
 
-      const effect = clean(nested) || clean(getByKeys(value, ["內容", "文字", "名稱"])) || toText(value);
-      const time = getByKeys(value, ["有效時間", "時間", "持續時間"]);
+      const effect = toText(value);
+      const time = getExactByKeys(value, ["有效時間", "時間", "持續時間"]);
       const display = appendTime(effect, time);
-
       return display ? [{ probability, effect: display }] : [];
     }
 
@@ -182,8 +199,8 @@
       .find((el) => el.querySelector(".talent-title-with-icon span")?.textContent.trim().includes("主要才能"));
     if (!card || card.dataset.effectFixedFor === id) return;
 
-    const parentProbability = clean(getByKeys(mainTalent, ["觸發機率", "發動機率", "機率"])) || "-";
-    const effectValue = getByKeys(mainTalent, ["增益效果", "效果", "觸發效果", "效果列表"]);
+    const parentProbability = clean(getExactByKeys(mainTalent, ["觸發機率", "發動機率", "機率"])) || "-";
+    const effectValue = getExactByKeys(mainTalent, ["增益效果", "效果", "觸發效果", "效果列表"]);
     let rows = parseEffectRows(effectValue, parentProbability);
 
     if (rows.length <= 1 && rows[0]?.effect?.includes("觸發機率")) {
