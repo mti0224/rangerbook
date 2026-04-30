@@ -32,12 +32,30 @@
     background: var(--panel) !important;
     border-color: var(--line) !important;
     color: var(--text) !important;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .ranger-card:hover *,
-  .gear-card:hover *,
-  .ability-card:hover * {
-    color: inherit;
+  .ranger-card:hover h2,
+  .gear-card:hover h2,
+  .ability-card:hover h2,
+  .ranger-card:hover .ranger-card-main,
+  .gear-card:hover .ranger-card-main,
+  .ability-card:hover .ability-main {
+    color: var(--text) !important;
+  }
+
+  .ranger-card:hover .ranger-mini-stats span,
+  .gear-card:hover .gear-mini-stats span,
+  .ability-card:hover .mini-meta span {
+    color: #3730a3 !important;
+  }
+
+  .ranger-card:hover .ranger-tags span,
+  .gear-card:hover .ranger-tags span,
+  .ability-card:hover .tag,
+  .ranger-tags span,
+  .tag {
+    color: var(--muted) !important;
   }
 
   .ranger-card.active,
@@ -48,21 +66,21 @@
     color: var(--text) !important;
   }
 
-  .ranger-mini-stats span,
-  .gear-mini-stats span,
-  .mini-meta span {
-    color: #3730a3 !important;
-  }
-
-  .ranger-tags span,
-  .tag {
-    color: var(--muted) !important;
-  }
-
   .modal-close:hover {
     background: #f3f4f6 !important;
     color: var(--text) !important;
   }
+}
+
+body.modal-open {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+body.modal-open .site-header,
+body.modal-open .modal-panel {
+  touch-action: auto;
 }
 
 .modal-backdrop {
@@ -77,6 +95,8 @@
   justify-content: center !important;
   padding: 0.75rem 1rem max(0.75rem, env(safe-area-inset-bottom)) !important;
   overflow: hidden !important;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .modal-backdrop[hidden] {
@@ -89,6 +109,8 @@
   margin: 0 auto !important;
   overflow: auto !important;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 @supports (height: 100dvh) {
