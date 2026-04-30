@@ -260,7 +260,6 @@
         <table class="ability-detail-effect-table">
           <thead>
             <tr>
-              <th>項目</th>
               <th>機率</th>
               <th>時機</th>
               <th>場合</th>
@@ -271,7 +270,6 @@
           <tbody>
             ${effects.map(effect => `
               <tr>
-                <th>${escapeHtml(effect.label)}</th>
                 <td>${escapeHtml(effect["機率"] || "-")}</td>
                 <td>${escapeHtml(effect["發動時機"] || "-")}</td>
                 <td>${escapeHtml(effect["場合"] || "-")}</td>
