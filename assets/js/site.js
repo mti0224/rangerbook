@@ -6,12 +6,16 @@
   const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/gear") || path.endsWith("/hsEnemy") || path.endsWith("/infEnemy") || path.endsWith("/eventStageEnemy") || path.endsWith("/adventEnemy");
   const depthPrefix = isSubPage ? "../" : "./";
 
-  if (!document.querySelector('link[href*="header-responsive.css"]')) {
+  function loadStylesheet(filename, version) {
+    if (document.querySelector(`link[href*="${filename}"]`)) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = `${depthPrefix}assets/css/header-responsive.css?v=20260429c`;
+    link.href = `${depthPrefix}assets/css/${filename}?v=${version}`;
     document.head.appendChild(link);
   }
+
+  loadStylesheet("header-responsive.css", "20260429c");
+  loadStylesheet("mobile-interaction-fix.css", "20260430a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
