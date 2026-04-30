@@ -160,6 +160,7 @@ button {
   color: white;
   font-weight: 800;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .primary-btn:hover,
@@ -502,7 +503,7 @@ dd {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 3000;
   display: grid;
   place-items: center;
   padding: 1rem;
