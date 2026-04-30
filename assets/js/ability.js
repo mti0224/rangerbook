@@ -216,7 +216,7 @@
     const tag = getAbilityTag(item, true);
 
     return `
-      <div class="detail-head">
+      <div class="detail-head ability-detail-head">
         <div class="ability-icon-wrap large">
           ${iconUrl ? `<img class="ability-icon" src="${iconUrl}" alt="" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
         </div>
@@ -227,12 +227,12 @@
       </div>
 
       ${description ? `
-      <section class="detail-section">
+      <section class="detail-section ability-detail-section">
         <h3>能力敘述</h3>
         <p class="preline">${escapeHtml(description)}</p>
       </section>` : ""}
 
-      <section class="detail-section">
+      <section class="detail-section ability-detail-section">
         <h3>效果資料</h3>
         ${renderEffects(row.effects)}
       </section>
@@ -255,18 +255,34 @@
   function renderEffects(effects) {
     if (!effects.length) return `<div class="empty-state small">沒有可顯示的效果資料。</div>`;
 
-    return effects.map(effect => `
-      <div class="effect-card">
-        <h4>${escapeHtml(effect.label)}</h4>
-        <dl>
-          <div><dt>機率</dt><dd>${escapeHtml(effect["機率"] || "-")}</dd></div>
-          <div><dt>時機</dt><dd>${escapeHtml(effect["發動時機"] || "-")}</dd></div>
-          <div><dt>場合</dt><dd>${escapeHtml(effect["場合"] || "-")}</dd></div>
-          <div><dt>條件</dt><dd>${escapeHtml(effect["條件"] || "-")}</dd></div>
-          <div><dt>效果</dt><dd>${escapeHtml(effect["效果"] || "-")}</dd></div>
-        </dl>
+    return `
+      <div class="table-scroll ability-detail-table-scroll">
+        <table class="ability-detail-effect-table">
+          <thead>
+            <tr>
+              <th>項目</th>
+              <th>機率</th>
+              <th>時機</th>
+              <th>場合</th>
+              <th>條件</th>
+              <th>效果</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${effects.map(effect => `
+              <tr>
+                <th>${escapeHtml(effect.label)}</th>
+                <td>${escapeHtml(effect["機率"] || "-")}</td>
+                <td>${escapeHtml(effect["發動時機"] || "-")}</td>
+                <td>${escapeHtml(effect["場合"] || "-")}</td>
+                <td>${escapeHtml(effect["條件"] || "-")}</td>
+                <td>${escapeHtml(effect["效果"] || "-")}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
       </div>
-    `).join("");
+    `;
   }
 
   function escapeHtml(value) {
