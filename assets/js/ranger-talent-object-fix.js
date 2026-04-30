@@ -28,7 +28,11 @@
     if (Array.isArray(value)) return value.map(valueText).filter(Boolean).join("、");
 
     return Object.entries(value)
-      .filter(([, v]) => !isNone(v))
+      .filter(([key, v]) => {
+        const k = cleanText(key);
+        if (k.includes("搜尋分類")) return false;
+        return !isNone(v);
+      })
       .map(([key, v]) => {
         const child = valueText(v);
         if (!child) return "";
@@ -67,6 +71,32 @@
     return undefined;
   }
 
+  function getExactObjectValueByKeys(obj, keys) {
+    if (!obj || typeof obj !== "object") return undefined;
+    const entries = Object.entries(obj);
+    for (const wanted of keys) {
+      const found = entries.find(([key]) => cleanText(key) === wanted);
+      if (found) return found[1];
+    }
+    return undefined;
+  }
+
+  function parseMainTalentEffects(value, fallbackProbability = "-") {
+    if (isNone(value)) return [];
+
+    if (Array.isArray(value)) {
+      return value.flatMap((entry) => parseMainTalentEffects(entry, fallbackProbability));
+    }
+
+    if (typeof value === "object" && value !== null) {
+      const probability = valueText(getExactObjectValueByKeys(value, ["觸發機率", "發動機率", "機率"])) || fallbackProbability || "-";
+      const effect = valueText(getExactObjectValueByKeys(value, ["效果", "增益效果", "內容", "文字", "名稱"]));
+      return effect ? [{ probability, effect }] : [];
+    }
+
+    return splitRows(value).map((effect) => ({ probability: fallbackProbability || "-", effect }));
+  }
+
   function renderMainTalent(title, content) {
     if (isNone(content)) return "";
 
@@ -74,11 +104,11 @@
       return `<article class="ranger-talent-card">${talentTitle(title, 1)}<p>${escapeHtml(valueText(content))}</p></article>`;
     }
 
-    const probability = valueText(getObjectValueByKeys(content, ["觸發機率", "發動機率", "機率"])) || "-";
-    const conditionValue = getObjectValueByKeys(content, ["條件", "觸發條件"]);
+    const probability = valueText(getExactObjectValueByKeys(content, ["觸發機率", "發動機率", "機率"])) || "-";
+    const conditionValue = getExactObjectValueByKeys(content, ["條件", "觸發條件"]);
     const conditions = splitRows(conditionValue).length ? splitRows(conditionValue) : ["無特定條件"];
-    const effectValue = getObjectValueByKeys(content, ["增益效果", "效果"]);
-    const effects = splitRows(effectValue);
+    const effectValue = getExactObjectValueByKeys(content, ["增益效果", "效果", "觸發效果", "效果列表"]);
+    const effects = parseMainTalentEffects(effectValue, probability);
 
     const conditionTable = `
       <div class="table-scroll talent-main-table-wrap">
@@ -111,10 +141,10 @@
           </colgroup>
           <thead><tr><th>機率</th><th>增益效果</th></tr></thead>
           <tbody>
-            ${effects.map((effect, index) => `
+            ${effects.map((effect) => `
               <tr>
-                ${index === 0 ? `<td rowspan="${effects.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}
-                <td>${escapeHtml(effect)}</td>
+                <td class="talent-prob-cell">${escapeHtml(effect.probability || "-")}</td>
+                <td>${escapeHtml(effect.effect || "-")}</td>
               </tr>
             `).join("")}
           </tbody>
