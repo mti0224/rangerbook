@@ -15,7 +15,7 @@
   }
 
   loadStylesheet("header-responsive.css", "20260429c");
-  loadStylesheet("mobile-interaction-fix.css", "20260430b");
+  loadStylesheet("mobile-interaction-fix.css", "20260430c");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
@@ -82,49 +82,6 @@
   nav.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => setOpen(false));
   });
-
-  function installTouchTapFallback() {
-    const isCoarsePointer = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-    if (!isCoarsePointer) return;
-
-    let touchMoved = false;
-    let lastSyntheticClickAt = 0;
-
-    document.addEventListener("touchmove", () => {
-      touchMoved = true;
-    }, { passive: true });
-
-    document.addEventListener("touchstart", () => {
-      touchMoved = false;
-    }, { passive: true });
-
-    document.addEventListener("click", (event) => {
-      if (Date.now() - lastSyntheticClickAt < 500) {
-        event.stopPropagation();
-      }
-    }, true);
-
-    document.addEventListener("touchend", (event) => {
-      if (touchMoved || event.touches.length) return;
-      const target = event.target instanceof Element ? event.target : null;
-      if (!target) return;
-      if (target.closest("input, select, textarea, label")) return;
-
-      const clickable = target.closest("button, a, .ranger-card, .gear-card, .ability-card");
-      if (!clickable) return;
-      if (clickable.matches("a")) return;
-
-      event.preventDefault();
-      lastSyntheticClickAt = Date.now();
-      clickable.dispatchEvent(new MouseEvent("click", {
-        bubbles: true,
-        cancelable: true,
-        view: window
-      }));
-    }, { passive: false });
-  }
-
-  installTouchTapFallback();
 
   window.addEventListener("resize", updateMenuMode);
   window.addEventListener("orientationchange", () => setTimeout(updateMenuMode, 150));
