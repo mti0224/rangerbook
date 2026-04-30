@@ -22,20 +22,6 @@
     return !text || text === "無" || text === "(無)" || text.toLowerCase() === "undefined";
   }
 
-  function getByKeys(obj, keys) {
-    if (!obj || typeof obj !== "object") return undefined;
-    const entries = Object.entries(obj);
-    for (const wanted of keys) {
-      const found = entries.find(([key]) => clean(key) === wanted);
-      if (found) return found[1];
-    }
-    for (const wanted of keys) {
-      const found = entries.find(([key]) => clean(key).includes(wanted));
-      if (found) return found[1];
-    }
-    return undefined;
-  }
-
   function getExactByKeys(obj, keys) {
     if (!obj || typeof obj !== "object") return undefined;
     const entries = Object.entries(obj);
@@ -178,9 +164,22 @@
     `;
   }
 
-  function rowsFromExistingTable(card) {
-    const tableText = card.querySelector(".talent-main-effect-wrap")?.innerText || "";
-    return parseInlineRows(tableText.replace(/^機率\s*增益效果/i, ""), "-");
+  function effectTableIsAlreadyValid(card) {
+    const wrap = card.querySelector(".talent-main-effect-wrap");
+    if (!wrap) return false;
+
+    const rows = [...wrap.querySelectorAll("tbody tr")];
+    if (!rows.length) return false;
+
+    return rows.every((row) => {
+      const cells = [...row.children].map((cell) => clean(cell.textContent));
+      const probability = cells[0] || "";
+      const effect = cells[1] || "";
+      if (!effect) return false;
+      if (effect.includes("觸發機率") || effect.includes("效果搜尋分類") || effect.includes("條件搜尋分類")) return false;
+      if (probability === "-" && /^\d+(?:\.\d+)?%/.test(effect)) return false;
+      return true;
+    });
   }
 
   async function apply() {
@@ -199,14 +198,14 @@
       .find((el) => el.querySelector(".talent-title-with-icon span")?.textContent.trim().includes("主要才能"));
     if (!card || card.dataset.effectFixedFor === id) return;
 
+    if (effectTableIsAlreadyValid(card)) {
+      card.dataset.effectFixedFor = id;
+      return;
+    }
+
     const parentProbability = clean(getExactByKeys(mainTalent, ["觸發機率", "發動機率", "機率"])) || "-";
     const effectValue = getExactByKeys(mainTalent, ["增益效果", "效果", "觸發效果", "效果列表"]);
-    let rows = parseEffectRows(effectValue, parentProbability);
-
-    if (rows.length <= 1 && rows[0]?.effect?.includes("觸發機率")) {
-      rows = parseInlineRows(rows[0].effect, parentProbability);
-    }
-    if (!rows.length) rows = rowsFromExistingTable(card);
+    const rows = parseEffectRows(effectValue, parentProbability);
     if (!rows.length) return;
 
     card.querySelector(".talent-main-effect-wrap")?.remove();
