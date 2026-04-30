@@ -20,7 +20,7 @@
 
 .ability-detail-effect-table {
   width: 100%;
-  min-width: 700px;
+  min-width: 620px;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -32,7 +32,7 @@
 
 .ability-detail-effect-table th,
 .ability-detail-effect-table td {
-  padding: 0.65rem 0.75rem;
+  padding: 0.6rem 0.65rem;
   border-right: 1px solid #e0e7ff;
   border-bottom: 1px solid #e0e7ff;
   text-align: left;
@@ -59,19 +59,53 @@
 
 .ability-detail-effect-table th:nth-child(1),
 .ability-detail-effect-table td:nth-child(1) {
-  width: 5.5rem;
+  width: 5rem;
 }
 
 .ability-detail-effect-table th:nth-child(2),
 .ability-detail-effect-table td:nth-child(2),
 .ability-detail-effect-table th:nth-child(3),
 .ability-detail-effect-table td:nth-child(3) {
-  width: 7rem;
+  width: 6.5rem;
 }
 
 .ability-detail-effect-table th:nth-child(4),
 .ability-detail-effect-table td:nth-child(4),
 .ability-detail-effect-table th:nth-child(5),
 .ability-detail-effect-table td:nth-child(5) {
-  width: 15rem;
+  width: 11.5rem;
+}
+
+@media (max-width: 620px) {
+  .ability-detail-table-scroll {
+    margin-right: -0.15rem;
+  }
+
+  .ability-detail-effect-table {
+    min-width: 560px;
+  }
+
+  .ability-detail-effect-table th,
+  .ability-detail-effect-table td {
+    padding: 0.55rem 0.6rem;
+  }
+
+  .ability-detail-effect-table th:nth-child(1),
+  .ability-detail-effect-table td:nth-child(1) {
+    width: 4.7rem;
+  }
+
+  .ability-detail-effect-table th:nth-child(2),
+  .ability-detail-effect-table td:nth-child(2),
+  .ability-detail-effect-table th:nth-child(3),
+  .ability-detail-effect-table td:nth-child(3) {
+    width: 6.1rem;
+  }
+
+  .ability-detail-effect-table th:nth-child(4),
+  .ability-detail-effect-table td:nth-child(4),
+  .ability-detail-effect-table th:nth-child(5),
+  .ability-detail-effect-table td:nth-child(5) {
+    width: 10rem;
+  }
 }
