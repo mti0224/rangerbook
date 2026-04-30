@@ -531,10 +531,10 @@ dd {
 }
 
 .modal-close {
-  position: sticky;
-  top: 0;
-  float: right;
-  z-index: 1;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
   width: 2.35rem;
   height: 2.35rem;
   display: grid;
@@ -620,6 +620,7 @@ dd {
 
   .modal-panel .detail-head {
     align-items: flex-start;
+    padding-right: 3rem;
   }
 
   dl div {
