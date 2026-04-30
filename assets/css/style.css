@@ -502,8 +502,11 @@ dd {
 
 .modal-backdrop {
   position: fixed;
-  inset: 0;
-  z-index: 3000;
+  top: var(--header-height);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 900;
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -518,7 +521,7 @@ dd {
 .modal-panel {
   position: relative;
   width: min(760px, 100%);
-  max-height: min(82vh, 760px);
+  max-height: calc(100vh - var(--header-height) - 2rem);
   overflow: auto;
   background: var(--panel);
   border: 1px solid var(--line);
@@ -546,6 +549,18 @@ dd {
 
 .modal-close:hover {
   background: #e5e7eb;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .site-nav a:hover,
+  .primary-btn:hover,
+  button:hover,
+  .ability-card:hover,
+  .modal-close:hover {
+    background: inherit;
+    color: inherit;
+    border-color: inherit;
+  }
 }
 
 @media (max-width: 960px) {
@@ -598,7 +613,7 @@ dd {
 
   .modal-panel {
     width: 100%;
-    max-height: 88vh;
+    max-height: calc(100vh - var(--header-height) - 1.2rem);
     border-radius: 22px 22px 16px 16px;
     padding: 1rem;
   }
