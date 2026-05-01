@@ -124,7 +124,7 @@ html[data-theme="dark"] body {
 }
 
 html[data-theme="dark"] .site-header {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.92);
 }
 
 html[data-theme="dark"] .hero,
@@ -142,6 +142,7 @@ html[data-theme="dark"] .tool-card,
 html[data-theme="dark"] .home-tool-card,
 html[data-theme="dark"] .ranger-card,
 html[data-theme="dark"] .ability-card,
+html[data-theme="dark"] .gear-card,
 html[data-theme="dark"] .gear-filter-panel,
 html[data-theme="dark"] .gear-effect-table,
 html[data-theme="dark"] .ability-detail-effect-table,
@@ -150,15 +151,59 @@ html[data-theme="dark"] .skill-meta-table,
 html[data-theme="dark"] .talent-main-table,
 html[data-theme="dark"] .talent-main-effect-table,
 html[data-theme="dark"] .talent-boost-table,
+html[data-theme="dark"] .ability-effect-table,
 html[data-theme="dark"] .ability-effect,
 html[data-theme="dark"] .ranger-skill-card,
 html[data-theme="dark"] .ranger-ability-card,
 html[data-theme="dark"] .ranger-talent-card,
 html[data-theme="dark"] .ranger-stat,
-html[data-theme="dark"] .effect-card {
-  background-color: var(--panel);
+html[data-theme="dark"] .effect-card,
+html[data-theme="dark"] .pagination-bar,
+html[data-theme="dark"] .home-tool-image-wrap,
+html[data-theme="dark"] .tool-icon,
+html[data-theme="dark"] .ability-icon-wrap,
+html[data-theme="dark"] .ranger-thumb-wrap,
+html[data-theme="dark"] .gear-thumb-wrap,
+html[data-theme="dark"] .ranger-detail-image-wrap,
+html[data-theme="dark"] .gear-detail-image-wrap {
+  background-color: var(--panel) !important;
   color: var(--text);
-  border-color: var(--line);
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .home-tool-card h2,
+html[data-theme="dark"] .home-tool-card p,
+html[data-theme="dark"] .home-tool-content,
+html[data-theme="dark"] .tool-card h2,
+html[data-theme="dark"] .tool-card p,
+html[data-theme="dark"] .ranger-title-row h2,
+html[data-theme="dark"] .ability-title-row h2,
+html[data-theme="dark"] .gear-card h2,
+html[data-theme="dark"] .detail-section h3,
+html[data-theme="dark"] .ranger-stat strong,
+html[data-theme="dark"] .ranger-stat span,
+html[data-theme="dark"] .gear-checkbox,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .summary-bar span,
+html[data-theme="dark"] .summary-bar strong {
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .hero-text,
+html[data-theme="dark"] .page-title p,
+html[data-theme="dark"] .desc,
+html[data-theme="dark"] .ranger-date,
+html[data-theme="dark"] .ranger-description,
+html[data-theme="dark"] .ranger-skill-description,
+html[data-theme="dark"] .ranger-talent-description,
+html[data-theme="dark"] .preline,
+html[data-theme="dark"] .gear-condition,
+html[data-theme="dark"] .theme-toggle-label small {
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] input::placeholder {
+  color: #7f8da3;
 }
 
 html[data-theme="dark"] .site-header.nav-collapsed .site-nav,
@@ -168,26 +213,81 @@ html[data-theme="dark"] .site-header .site-nav {
   border-color: var(--line);
 }
 
+html[data-theme="dark"] .site-nav a,
+html[data-theme="dark"] .site-home-link,
+html[data-theme="dark"] .site-header.nav-collapsed .site-nav a {
+  color: var(--text);
+}
+
+html[data-theme="dark"] .site-nav a:hover,
+html[data-theme="dark"] .site-home-link:hover,
+html[data-theme="dark"] .theme-toggle-row:hover {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+
 html[data-theme="dark"] .site-settings-toggle,
 html[data-theme="dark"] .site-menu-toggle,
-html[data-theme="dark"] .modal-close {
-  background: #1e3a5f;
-  color: #dbeafe;
+html[data-theme="dark"] .modal-close,
+html[data-theme="dark"] .pagination-actions button,
+html[data-theme="dark"] .pagination-page,
+html[data-theme="dark"] #paginationPrev,
+html[data-theme="dark"] #paginationNext,
+html[data-theme="dark"] #bottomPaginationPrev,
+html[data-theme="dark"] #bottomPaginationNext,
+html[data-theme="dark"] .advanced-toggle-btn,
+html[data-theme="dark"] .gear-advanced-toggle-btn,
+html[data-theme="dark"] #rangerResetBtn,
+html[data-theme="dark"] #enemyResetBtn,
+html[data-theme="dark"] #gearResetBtn,
+html[data-theme="dark"] #resetBtn {
+  background: #1e3a5f !important;
+  color: #dbeafe !important;
+  border-color: #315a88 !important;
+}
+
+html[data-theme="dark"] .pagination-page.active,
+html[data-theme="dark"] .pagination-actions button:hover,
+html[data-theme="dark"] .pagination-page:hover,
+html[data-theme="dark"] .site-menu-toggle:hover,
+html[data-theme="dark"] .site-settings-toggle:hover,
+html[data-theme="dark"] button:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] button:disabled,
+html[data-theme="dark"] .pagination-actions button:disabled {
+  background: #273244 !important;
+  color: #718096 !important;
+  opacity: 1;
 }
 
 html[data-theme="dark"] .ranger-tags span,
 html[data-theme="dark"] .tag,
 html[data-theme="dark"] .gear-mode-switch,
-html[data-theme="dark"] .gear-mode-switch button {
-  background: #263247;
-  color: var(--muted);
+html[data-theme="dark"] .gear-mode-switch button,
+html[data-theme="dark"] .tag-type-power,
+html[data-theme="dark"] .tag-type-agility,
+html[data-theme="dark"] .tag-type-intelligence,
+html[data-theme="dark"] .tag-element-fire,
+html[data-theme="dark"] .tag-element-water,
+html[data-theme="dark"] .tag-element-wood,
+html[data-theme="dark"] .tag-element-light,
+html[data-theme="dark"] .tag-element-dark,
+html[data-theme="dark"] .tag-inf-boss,
+html[data-theme="dark"] .tag-inf-normal {
+  background: #263247 !important;
+  color: #dbeafe !important;
+  border-color: #334155 !important;
 }
 
 html[data-theme="dark"] .ranger-mini-stats span,
+html[data-theme="dark"] .gear-mini-stats span,
 html[data-theme="dark"] .mini-meta span,
 html[data-theme="dark"] code {
-  background: #1e3a5f;
-  color: #bfdbfe;
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
 }
 
 html[data-theme="dark"] .skill-effect-table thead th,
@@ -195,22 +295,43 @@ html[data-theme="dark"] .skill-meta-table thead th,
 html[data-theme="dark"] .talent-main-table th,
 html[data-theme="dark"] .talent-main-effect-table th,
 html[data-theme="dark"] .ability-detail-effect-table thead th,
+html[data-theme="dark"] .ability-effect-table thead th,
 html[data-theme="dark"] .gear-effect-table thead th,
 html[data-theme="dark"] .talent-boost-icon-row td {
-  background: #1e3a5f;
-  color: #bfdbfe;
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .skill-effect-table tbody th,
+html[data-theme="dark"] .talent-main-table tbody th,
+html[data-theme="dark"] .talent-main-effect-table tbody th,
+html[data-theme="dark"] .ability-detail-effect-table tbody th,
+html[data-theme="dark"] .ability-effect-table tbody th,
+html[data-theme="dark"] .gear-effect-table tbody th,
+html[data-theme="dark"] .talent-boost-text-row td,
+html[data-theme="dark"] table td,
+html[data-theme="dark"] table th {
+  background-color: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
 }
 
 html[data-theme="dark"] .ranger-card.active,
 html[data-theme="dark"] .ability-card.active,
 html[data-theme="dark"] .gear-card.active {
-  background: #1f3658;
-  border-color: #60a5fa;
+  background: #1f3658 !important;
+  border-color: #60a5fa !important;
 }
 
 html[data-theme="dark"] .empty-state {
   background: var(--panel);
   border-color: #475569;
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .modal-backdrop {
+  background: rgba(2, 6, 23, 0.72) !important;
 }
 
 @media (max-width: 760px) {
