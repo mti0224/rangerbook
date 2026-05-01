@@ -118,6 +118,7 @@ html[data-theme="dark"] body {
   --primary: #60a5fa;
   --primary-dark: #93c5fd;
   --soft: #1e3a5f;
+  --hover-panel: #1f2a3d;
   --shadow: 0 14px 42px rgba(0, 0, 0, 0.34);
   background: var(--bg);
   color: var(--text);
@@ -169,6 +170,16 @@ html[data-theme="dark"] .gear-detail-image-wrap {
   background-color: var(--panel) !important;
   color: var(--text);
   border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .home-tool-card:hover,
+html[data-theme="dark"] .tool-card:hover,
+html[data-theme="dark"] .ranger-card:hover,
+html[data-theme="dark"] .ability-card:hover,
+html[data-theme="dark"] .gear-card:hover {
+  background: var(--hover-panel) !important;
+  border-color: #475569 !important;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
 }
 
 html[data-theme="dark"] .home-tool-card h2,
@@ -267,19 +278,67 @@ html[data-theme="dark"] .ranger-tags span,
 html[data-theme="dark"] .tag,
 html[data-theme="dark"] .gear-mode-switch,
 html[data-theme="dark"] .gear-mode-switch button,
-html[data-theme="dark"] .tag-type-power,
-html[data-theme="dark"] .tag-type-agility,
-html[data-theme="dark"] .tag-type-intelligence,
-html[data-theme="dark"] .tag-element-fire,
-html[data-theme="dark"] .tag-element-water,
-html[data-theme="dark"] .tag-element-wood,
-html[data-theme="dark"] .tag-element-light,
-html[data-theme="dark"] .tag-element-dark,
 html[data-theme="dark"] .tag-inf-boss,
 html[data-theme="dark"] .tag-inf-normal {
   background: #263247 !important;
   color: #dbeafe !important;
   border-color: #334155 !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-type-power,
+html[data-theme="dark"] .ranger-tags span.tag-type-power,
+html[data-theme="dark"] .tag-type-power {
+  background: #4a2716 !important;
+  color: #fdba74 !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-type-agility,
+html[data-theme="dark"] .ranger-tags span.tag-type-agility,
+html[data-theme="dark"] .tag-type-agility {
+  background: #113449 !important;
+  color: #7dd3fc !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-type-intelligence,
+html[data-theme="dark"] .ranger-tags span.tag-type-intelligence,
+html[data-theme="dark"] .tag-type-intelligence {
+  background: #2c3442 !important;
+  color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-element-fire,
+html[data-theme="dark"] .ranger-tags span.tag-element-fire,
+html[data-theme="dark"] .tag-element-fire {
+  background: #4a1d1d !important;
+  color: #fca5a5 !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-element-water,
+html[data-theme="dark"] .ranger-tags span.tag-element-water,
+html[data-theme="dark"] .tag-element-water {
+  background: #172f5f !important;
+  color: #93c5fd !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-element-wood,
+html[data-theme="dark"] .ranger-tags span.tag-element-wood,
+html[data-theme="dark"] .tag-element-wood {
+  background: #163b28 !important;
+  color: #86efac !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-element-light,
+html[data-theme="dark"] .ranger-tags span.tag-element-light,
+html[data-theme="dark"] .tag-element-light {
+  background: #4a3d16 !important;
+  color: #fde68a !important;
+}
+
+html[data-theme="dark"] .ranger-card .ranger-tags span.tag-element-dark,
+html[data-theme="dark"] .ranger-tags span.tag-element-dark,
+html[data-theme="dark"] .tag-element-dark {
+  background: #312052 !important;
+  color: #c4b5fd !important;
 }
 
 html[data-theme="dark"] .ranger-mini-stats span,
