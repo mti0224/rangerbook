@@ -1,0 +1,98 @@
+/* Ranger compare responsive table refinements */
+
+.compare-highlight-control {
+  display: inline-flex !important;
+  align-items: center;
+  grid-template-columns: none !important;
+}
+
+.compare-highlight-control input {
+  flex: 0 0 1rem;
+  width: 1rem;
+  min-width: 1rem;
+  max-width: 1rem;
+  height: 1rem;
+  min-height: 1rem;
+  max-height: 1rem;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Desktop/tablet: keep the original roomy layout. */
+#compareResult .compare-section:nth-of-type(1) .compare-table,
+#compareResult .compare-basic-stat-section .compare-table,
+#compareResult .compare-section:nth-of-type(6) .compare-table,
+#compareResult .compare-section:nth-of-type(7) .compare-table {
+  min-width: 620px;
+}
+
+#compareResult .compare-section:nth-of-type(1) .compare-table th,
+#compareResult .compare-basic-stat-section .compare-table th,
+#compareResult .compare-section:nth-of-type(6) .compare-table th,
+#compareResult .compare-section:nth-of-type(7) .compare-table th {
+  width: 9rem;
+}
+
+#compareResult .compare-section:nth-of-type(1) .compare-table td,
+#compareResult .compare-basic-stat-section .compare-table td,
+#compareResult .compare-section:nth-of-type(6) .compare-table td,
+#compareResult .compare-section:nth-of-type(7) .compare-table td {
+  width: calc((100% - 9rem) / 2);
+}
+
+/* Only compress when the viewport is narrow. */
+@media (max-width: 720px) {
+  #compareResult .compare-section:nth-of-type(1) .compare-table,
+  #compareResult .compare-basic-stat-section .compare-table,
+  #compareResult .compare-section:nth-of-type(6) .compare-table {
+    min-width: 480px;
+  }
+
+  #compareResult .compare-section:nth-of-type(1) .compare-table th,
+  #compareResult .compare-basic-stat-section .compare-table th,
+  #compareResult .compare-section:nth-of-type(6) .compare-table th {
+    width: 7.4rem;
+    white-space: nowrap;
+    word-break: keep-all;
+    overflow-wrap: normal;
+  }
+
+  #compareResult .compare-section:nth-of-type(1) .compare-table td,
+  #compareResult .compare-basic-stat-section .compare-table td,
+  #compareResult .compare-section:nth-of-type(6) .compare-table td {
+    width: calc((100% - 7.4rem) / 2);
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  /* 強化才能：左欄只有圖示，壓得更窄，文字欄用換行解決。 */
+  #compareResult .compare-section:nth-of-type(7) .compare-table {
+    min-width: 390px;
+  }
+
+  #compareResult .compare-section:nth-of-type(7) .compare-table th {
+    width: 3.8rem;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  #compareResult .compare-section:nth-of-type(7) .compare-table td {
+    width: calc((100% - 3.8rem) / 2);
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  #compareResult .compare-section:nth-of-type(7) .compare-table th,
+  #compareResult .compare-section:nth-of-type(7) .compare-table td {
+    padding-left: 0.45rem;
+    padding-right: 0.45rem;
+  }
+
+  .compare-talent-icon {
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+}
