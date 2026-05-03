@@ -190,6 +190,24 @@
   border-bottom: 1px solid var(--line);
 }
 
+.compare-highlight-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.75rem;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--muted);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.compare-highlight-control input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
 .compare-table-wrap {
   overflow-x: auto;
 }
@@ -232,6 +250,13 @@
 .compare-table th:last-child,
 .compare-table td:last-child {
   border-right: 0;
+}
+
+.compare-better {
+  color: #b45309 !important;
+  background: #fffbeb !important;
+  font-weight: 950;
+  box-shadow: inset 4px 0 0 #f59e0b;
 }
 
 .compare-skill-table {
@@ -308,6 +333,16 @@ html[data-theme="dark"] .compare-table th {
   color: var(--muted) !important;
 }
 
+html[data-theme="dark"] .compare-highlight-control {
+  color: #bfdbfe !important;
+}
+
+html[data-theme="dark"] .compare-better {
+  color: #fde68a !important;
+  background: #422006 !important;
+  box-shadow: inset 4px 0 0 #f59e0b;
+}
+
 @media (max-width: 720px) {
   .compare-controls,
   .compare-selected-row {
@@ -321,5 +356,11 @@ html[data-theme="dark"] .compare-table th {
   .compare-selected-image {
     width: 60px;
     height: 60px;
+  }
+
+  .compare-highlight-control {
+    display: flex;
+    margin-left: 0;
+    margin-top: 0.35rem;
   }
 }
