@@ -92,26 +92,49 @@
     return skill && typeof skill === "object" && !Array.isArray(skill) ? skill : null;
   }
 
-  function skillEffects(skill) {
-    if (!skill || !Array.isArray(skill["技能組"])) return "-";
-    return skill["技能組"].map((effect) => {
-      const name = text(effect?.["效果"] || "-");
-      const factor = text(effect?.["係數"] || "");
-      const duration = text(effect?.["有效時間"] || "");
-      const range = text(effect?.["範圍"] || "");
-      const parts = [factor && `係數：${factor}`, duration && `時間：${duration}`, range && `範圍：${range}`].filter(Boolean);
-      return parts.length ? `${name}（${parts.join("、")}）` : name;
-    }).filter(Boolean).join("\n") || "-";
+  function getSkillEffects(skill) {
+    return skill && Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
   }
 
-  function skillValue(ranger, key, field) {
-    const skill = getSkill(ranger, key);
+  function parseRangeNumber(value) {
+    const n = Number(text(value).replaceAll(",", "").replace(/[^
+\d.-]/g, ""));
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function skillRange(skill) {
+    const effects = getSkillEffects(skill);
+    if (!effects.length) return "-";
+
+    const ranges = effects
+      .map((effect) => text(effect?.["範圍"]))
+      .filter((value) => value && value !== "-");
+    if (!ranges.length) return "-";
+
+    const numeric = ranges
+      .map((value) => ({ value, n: parseRangeNumber(value) }))
+      .filter((item) => item.n !== null);
+
+    if (!numeric.length) return html(ranges[0]);
+    const max = numeric.reduce((best, item) => item.n > best.n ? item : best, numeric[0]);
+    return html(max.value);
+  }
+
+  function skillMetaValue(skill, field) {
     if (!skill) return "-";
-    if (field === "名稱") return fmt(skill["技能名稱"] || skill.name || key);
+    if (field === "名稱") return fmt(skill["技能名稱"] || skill.name || "-");
     if (field === "發動率") return fmt(skill["發動機率"] || skill["技能發動率"] || skill["技能發動機率"]);
     if (field === "冷卻") return fmt(skill["技能冷卻時間"] || skill["冷卻時間"]);
     if (field === "觸發基準") return fmt(skill["觸發基準"] || skill["觸發條件"] || skill["基準"]);
-    if (field === "技能效果") return html(skillEffects(skill));
+    if (field === "技能範圍") return skillRange(skill);
+    return "-";
+  }
+
+  function effectCell(effect, field) {
+    if (!effect) return "-";
+    if (field === "效果") return fmt(effect["效果"] || "-");
+    if (field === "係數") return fmt(effect["係數"] || "-");
+    if (field === "時間") return fmt(effect["有效時間"] || effect["時間"] || "-");
     return "-";
   }
 
@@ -193,6 +216,62 @@
     return `<section class="compare-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
   }
 
+  function skillSection(title, key) {
+    const leftSkill = getSkill(state.left, key);
+    const rightSkill = getSkill(state.right, key);
+    const metaFields = ["名稱", "發動率", "冷卻", "觸發基準", "技能範圍"];
+    const leftEffects = getSkillEffects(leftSkill);
+    const rightEffects = getSkillEffects(rightSkill);
+    const effectCount = Math.max(leftEffects.length, rightEffects.length);
+
+    const metaRows = metaFields.map((field) => `
+      <tr>
+        <th>${html(field)}</th>
+        <td colspan="3">${skillMetaValue(leftSkill, field)}</td>
+        <td colspan="3">${skillMetaValue(rightSkill, field)}</td>
+      </tr>
+    `);
+
+    const effectRows = [];
+    if (effectCount) {
+      effectRows.push(`
+        <tr class="compare-skill-subhead">
+          <th>技能效果</th>
+          <td>效果</td><td>係數</td><td>時間</td>
+          <td>效果</td><td>係數</td><td>時間</td>
+        </tr>
+      `);
+      for (let i = 0; i < effectCount; i += 1) {
+        const left = leftEffects[i];
+        const right = rightEffects[i];
+        effectRows.push(`
+          <tr>
+            <th>效果 ${i + 1}</th>
+            <td>${effectCell(left, "效果")}</td>
+            <td>${effectCell(left, "係數")}</td>
+            <td>${effectCell(left, "時間")}</td>
+            <td>${effectCell(right, "效果")}</td>
+            <td>${effectCell(right, "係數")}</td>
+            <td>${effectCell(right, "時間")}</td>
+          </tr>
+        `);
+      }
+    } else {
+      effectRows.push(`<tr><th>技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
+    }
+
+    return `
+      <section class="compare-section compare-skill-section">
+        <h3>${html(title)}</h3>
+        <div class="compare-table-wrap">
+          <table class="compare-table compare-skill-table">
+            <tbody>${[...metaRows, ...effectRows].join("")}</tbody>
+          </table>
+        </div>
+      </section>
+    `;
+  }
+
   function iconLabel(index) {
     return `<img class="compare-talent-icon" src="${TLT_ICON(index)}" alt="tlt${index}" onerror="this.replaceWith(document.createTextNode('tlt${index}'))">`;
   }
@@ -217,13 +296,12 @@
       ["再生產時間", (r) => valueOf(r, "Ranger再生產時間")]
     ];
     const statKeys = ["體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"];
-    const skillFields = ["名稱", "發動率", "冷卻", "觸發基準", "技能效果"];
 
     els.result.innerHTML = [
       section("基本資料", basicRows.map(([label, getter]) => row(html(label), getter(state.left), getter(state.right)))),
       section("基本數值", statKeys.map((key) => row(html(key), valueOf(state.left, key), valueOf(state.right, key)))),
-      section("技能1", skillFields.map((field) => row(html(field), skillValue(state.left, "技能1", field), skillValue(state.right, "技能1", field)))),
-      section("技能2", skillFields.map((field) => row(html(field), skillValue(state.left, "技能2", field), skillValue(state.right, "技能2", field)))),
+      skillSection("技能1", "技能1"),
+      skillSection("技能2", "技能2"),
       section("能力", [
         row("能力1", html(abilityText(state.left?.["能力1"])), html(abilityText(state.right?.["能力1"]))),
         row("能力2", html(abilityText(state.left?.["能力2"])), html(abilityText(state.right?.["能力2"]))),
