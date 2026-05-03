@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>無限之塔關卡資訊｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/ranger.css">
+  <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
+  <link rel="stylesheet" href="../../assets/css/endless.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>無限之塔關卡資訊</h1>
+      <p>選擇樓層後查看該樓層的敵人生產線資訊。</p>
+    </section>
+
+    <section id="endlessStageGrid" class="endless-stage-grid" aria-label="無限之塔樓層選擇"></section>
+
+    <section id="endlessStageDetail" hidden>
+      <div class="endless-stage-head">
+        <h2 id="endlessStageTitle" class="endless-stage-title"></h2>
+        <a class="endless-back-link" href="../stage/">返回關卡選擇</a>
+      </div>
+      <div id="endlessStageTable"></div>
+    </section>
+  </main>
+
+  <div id="endlessEnemyModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="endlessEnemyModalTitle">
+      <button id="endlessEnemyModalCloseBtn" class="modal-close" type="button" aria-label="關閉敵人詳細資料">×</button>
+      <div id="endlessEnemyModalContent"></div>
+    </div>
+  </div>
+
+  <script src="../../assets/js/site.js"></script>
+  <script>
+    window.__originalFetchForEndlessStage = window.fetch.bind(window);
+    window.fetch = (resource, options) => {
+      const url = String(resource);
+      if (url.includes("../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json")) {
+        return window.__originalFetchForEndlessStage("../../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json", options);
+      }
+      if (url.includes("../res/infEnemy_data.json")) {
+        return window.__originalFetchForEndlessStage("../../res/infEnemy_data.json", options);
+      }
+      return window.__originalFetchForEndlessStage(resource, options);
+    };
+  </script>
+  <script src="../../assets/js/endless-stage.js"></script>
+  <script src="../../assets/js/card-tag-colors.js"></script>
+</body>
+</html>
