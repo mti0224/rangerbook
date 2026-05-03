@@ -228,6 +228,7 @@
   text-align: left;
   vertical-align: top;
   word-break: break-word;
+  overflow-wrap: anywhere;
   white-space: pre-line;
 }
 
@@ -314,6 +315,27 @@
   border-radius: var(--radius);
   padding: 1rem;
   text-align: center;
+}
+
+#compareResult .compare-section:nth-of-type(1) .compare-table,
+#compareResult .compare-basic-stat-section .compare-table,
+#compareResult .compare-section:nth-of-type(6) .compare-table,
+#compareResult .compare-section:nth-of-type(7) .compare-table {
+  min-width: 460px;
+}
+
+#compareResult .compare-section:nth-of-type(1) .compare-table th,
+#compareResult .compare-basic-stat-section .compare-table th,
+#compareResult .compare-section:nth-of-type(6) .compare-table th,
+#compareResult .compare-section:nth-of-type(7) .compare-table th {
+  width: 7.2rem;
+}
+
+#compareResult .compare-section:nth-of-type(1) .compare-table td,
+#compareResult .compare-basic-stat-section .compare-table td,
+#compareResult .compare-section:nth-of-type(6) .compare-table td,
+#compareResult .compare-section:nth-of-type(7) .compare-table td {
+  width: calc((100% - 7.2rem) / 2);
 }
 
 html[data-theme="dark"] .ranger-hub-card,
@@ -413,5 +435,26 @@ html[data-theme="dark"] .compare-better {
 
   .compare-skill-table th {
     width: 6.5rem;
+  }
+
+  #compareResult .compare-section:nth-of-type(1) .compare-table,
+  #compareResult .compare-basic-stat-section .compare-table,
+  #compareResult .compare-section:nth-of-type(6) .compare-table,
+  #compareResult .compare-section:nth-of-type(7) .compare-table {
+    min-width: 390px;
+  }
+
+  #compareResult .compare-section:nth-of-type(1) .compare-table th,
+  #compareResult .compare-basic-stat-section .compare-table th,
+  #compareResult .compare-section:nth-of-type(6) .compare-table th,
+  #compareResult .compare-section:nth-of-type(7) .compare-table th {
+    width: 5.6rem;
+  }
+
+  #compareResult .compare-section:nth-of-type(1) .compare-table td,
+  #compareResult .compare-basic-stat-section .compare-table td,
+  #compareResult .compare-section:nth-of-type(6) .compare-table td,
+  #compareResult .compare-section:nth-of-type(7) .compare-table td {
+    width: calc((100% - 5.6rem) / 2);
   }
 }
