@@ -4,8 +4,10 @@
 
   const THEME_KEY = "rangerbook-theme";
   const path = window.location.pathname.replace(/\/+$/, "");
-  const isSubPage = path.endsWith("/ability") || path.endsWith("/ranger") || path.endsWith("/gear") || path.endsWith("/hsEnemy") || path.endsWith("/infEnemy") || path.endsWith("/eventStageEnemy") || path.endsWith("/adventEnemy") || path.endsWith("/labyrinthEnemy");
-  const depthPrefix = isSubPage ? "../" : "./";
+  const baseMatch = window.location.pathname.match(/^(.*\/rangerbook\/)/);
+  const basePrefix = baseMatch ? baseMatch[1] : "/rangerbook/";
+  const depth = window.location.pathname.replace(basePrefix, "").split("/").filter(Boolean).length;
+  const depthPrefix = depth ? "../".repeat(depth) : "./";
 
   function loadStylesheet(filename, version) {
     if (document.querySelector(`link[href*="${filename}"]`)) return;
@@ -44,7 +46,7 @@
           <a href="${depthPrefix}ranger/">Rangers</a>
           <a href="${depthPrefix}gear/">裝備</a>
           <a href="${depthPrefix}hsEnemy/">困難關卡</a>
-          <a href="${depthPrefix}infEnemy/">無限之塔</a>
+          <a href="${depthPrefix}endless/">無限之塔</a>
           <a href="${depthPrefix}eventStageEnemy/">活動關卡</a>
           <a href="${depthPrefix}adventEnemy/">降臨關卡</a>
           <a href="${depthPrefix}labyrinthEnemy/">迷宮</a>
