@@ -3,17 +3,14 @@
   if (!mount) return;
 
   const THEME_KEY = "rangerbook-theme";
-  const path = window.location.pathname.replace(/\/+$/, "");
-  const baseMatch = window.location.pathname.match(/^(.*\/rangerbook\/)/);
-  const basePrefix = baseMatch ? baseMatch[1] : "/rangerbook/";
-  const depth = window.location.pathname.replace(basePrefix, "").split("/").filter(Boolean).length;
-  const depthPrefix = depth ? "../".repeat(depth) : "./";
+  const basePrefix = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const rootPrefix = basePrefix;
 
   function loadStylesheet(filename, version) {
     if (document.querySelector(`link[href*="${filename}"]`)) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = `${depthPrefix}assets/css/${filename}?v=${version}`;
+    link.href = `${rootPrefix}assets/css/${filename}?v=${version}`;
     document.head.appendChild(link);
   }
 
@@ -36,21 +33,21 @@
 
   loadStylesheet("header-responsive.css", "20260429c");
   loadStylesheet("mobile-interaction-fix.css", "20260430c");
-  loadStylesheet("theme-toggle.css", "20260501a");
+  loadStylesheet("theme-toggle.css", "20260501b");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
       <div class="header-inner header-inner-left">
-        <a class="site-home-link" href="${depthPrefix}">首頁</a>
+        <a class="site-home-link" href="${rootPrefix}">首頁</a>
         <nav class="site-nav" aria-label="主要導覽">
-          <a href="${depthPrefix}ranger/">Rangers</a>
-          <a href="${depthPrefix}gear/">裝備</a>
-          <a href="${depthPrefix}hsEnemy/">困難關卡</a>
-          <a href="${depthPrefix}endless/">無限之塔</a>
-          <a href="${depthPrefix}eventStageEnemy/">活動關卡</a>
-          <a href="${depthPrefix}adventEnemy/">降臨關卡</a>
-          <a href="${depthPrefix}labyrinthEnemy/">迷宮</a>
-          <a href="${depthPrefix}ability/">能力</a>
+          <a href="${rootPrefix}ranger/">Rangers</a>
+          <a href="${rootPrefix}gear/">裝備</a>
+          <a href="${rootPrefix}hsEnemy/">困難關卡</a>
+          <a href="${rootPrefix}endless/">無限之塔</a>
+          <a href="${rootPrefix}eventStageEnemy/">活動關卡</a>
+          <a href="${rootPrefix}adventEnemy/">降臨關卡</a>
+          <a href="${rootPrefix}labyrinthEnemy/">迷宮</a>
+          <a href="${rootPrefix}ability/">能力</a>
         </nav>
         <div class="site-actions">
           <div class="site-settings">
