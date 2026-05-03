@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/rangerbook/ranger/">
+  <title>Ranger數據｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/ranger.css">
+  <link rel="stylesheet" href="../assets/css/ranger-detail.css">
+  <link rel="stylesheet" href="../assets/css/ranger-pagination.css">
+  <link rel="stylesheet" href="../assets/css/card-tag-colors.css">
+  <link rel="stylesheet" href="../assets/css/ranger-advanced-filters.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>Ranger數據</h1>
+      <p>
+        查詢每隻角色的詳細數據。
+      </p>
+    </section>
+
+    <section class="controls ranger-controls">
+      <label class="search-box">
+        <span>搜尋角色</span>
+        <input id="rangerSearchInput" type="search" placeholder="輸入角色名稱、ID或關鍵字...">
+      </label>
+
+      <label>
+        <span>星數</span>
+        <select id="starFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>類型</span>
+        <select id="typeFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <label>
+        <span>屬性</span>
+        <select id="elementFilter">
+          <option value="">全部</option>
+        </select>
+      </label>
+
+      <button id="rangerAdvancedToggleBtn" class="advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="rangerAdvancedFilters">
+        進階篩選 ▼
+      </button>
+
+      <div id="rangerAdvancedFilters" class="advanced-filters" hidden>
+        <label>
+          <span>角色分類</span>
+          <select id="specialFilter">
+            <option value="">全部</option>
+            <option value="nft">NFT角色</option>
+            <option value="event">降臨關卡角色</option>
+            <option value="talent">有才能</option>
+          </select>
+        </label>
+
+        <label>
+          <span>技能效果包含</span>
+          <select id="skillEffectFilter">
+            <option value="">全部</option>
+          </select>
+        </label>
+
+        <label>
+          <span>能力 / 覺醒能力包含</span>
+          <select id="abilityEffectFilter">
+            <option value="">全部</option>
+          </select>
+        </label>
+
+        <label>
+          <span>才能條件為</span>
+          <select id="talentConditionFilter">
+            <option value="">全部</option>
+          </select>
+        </label>
+
+        <label>
+          <span>才能效果包含</span>
+          <select id="talentEffectFilter">
+            <option value="">全部</option>
+          </select>
+        </label>
+      </div>
+
+      <button id="rangerResetBtn" type="button">清除篩選</button>
+    </section>
+
+    <section class="summary-bar">
+      <div>
+        <strong id="rangerResultCount">0</strong>
+        <span>筆結果</span>
+      </div>
+    </section>
+
+    <section class="ranger-list-layout">
+      <div id="rangerList" class="ranger-list"></div>
+    </section>
+  </main>
+
+  <div id="rangerModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="rangerModalTitle">
+      <button id="rangerModalCloseBtn" class="modal-close" type="button" aria-label="關閉角色詳細資料">×</button>
+      <div id="rangerModalContent"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/ranger-recovery.js"></script>
+  <script src="../assets/js/ranger-advanced-filters.js"></script>
+  <script src="../assets/js/ranger-detail-fixes.js"></script>
+  <script src="../assets/js/card-tag-colors.js"></script>
+  <script src="../assets/js/bottom-pagination.js"></script>
+</body>
+</html>
