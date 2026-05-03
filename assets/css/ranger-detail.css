@@ -1,0 +1,141 @@
+.skill-effect-table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 780px;
+}
+
+.skill-effect-table th,
+.skill-effect-table td {
+  word-break: break-word;
+  white-space: normal;
+}
+
+.skill-effect-table th:nth-child(1),
+.skill-effect-table td:nth-child(1) { width: 27.2727%; }
+.skill-effect-table th:nth-child(2),
+.skill-effect-table td:nth-child(2) { width: 18.1818%; }
+.skill-effect-table th:nth-child(3),
+.skill-effect-table td:nth-child(3) { width: 13.6364%; }
+.skill-effect-table th:nth-child(4),
+.skill-effect-table td:nth-child(4) { width: 13.6364%; }
+.skill-effect-table th:nth-child(5),
+.skill-effect-table td:nth-child(5) { width: 13.6364%; }
+.skill-effect-table th:nth-child(6),
+.skill-effect-table td:nth-child(6) { width: 13.6364%; }
+
+.skill-effect-table .break-header {
+  display: inline-block;
+  line-height: 1.25;
+  white-space: pre-line;
+}
+
+.ability-effect-table-wrap {
+  margin-top: 0.35rem;
+}
+
+.ability-effect-table {
+  width: 100%;
+  min-width: 720px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+.ability-effect-table th,
+.ability-effect-table td {
+  padding: 0.65rem;
+  border-right: 1px solid #e0e7ff;
+  border-bottom: 1px solid #e0e7ff;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.ability-effect-table th {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.ability-effect-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.ability-effect-table th:last-child,
+.ability-effect-table td:last-child {
+  border-right: 0;
+}
+
+.ability-effect-table th:nth-child(1),
+.ability-effect-table td:nth-child(1) { width: 15.3846%; }
+.ability-effect-table th:nth-child(2),
+.ability-effect-table td:nth-child(2) { width: 15.3846%; }
+.ability-effect-table th:nth-child(3),
+.ability-effect-table td:nth-child(3) { width: 23.0769%; }
+.ability-effect-table th:nth-child(4),
+.ability-effect-table td:nth-child(4) { width: 23.0769%; }
+.ability-effect-table th:nth-child(5),
+.ability-effect-table td:nth-child(5) { width: 23.0769%; }
+
+.ranger-modal-panel .ranger-talent-card,
+.ranger-modal-panel .ranger-talent-card .table-scroll,
+.ranger-modal-panel .talent-main-table-wrap,
+.ranger-modal-panel .talent-main-effect-wrap,
+.ranger-modal-panel .talent-boost-table-wrap {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ranger-modal-panel .talent-main-table,
+.ranger-modal-panel .talent-main-effect-table,
+.ranger-modal-panel .talent-boost-table {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.ranger-modal-panel .talent-main-prob-col {
+  width: 30%;
+}
+
+.ranger-modal-panel .talent-main-condition-col {
+  width: 70%;
+}
+
+.ranger-modal-panel .talent-main-table th:first-child,
+.ranger-modal-panel .talent-main-table td:first-child,
+.ranger-modal-panel .talent-main-effect-table th:first-child,
+.ranger-modal-panel .talent-main-effect-table td:first-child {
+  width: 30%;
+}
+
+.ranger-modal-panel .talent-main-table th:nth-child(2),
+.ranger-modal-panel .talent-main-table td:nth-child(2),
+.ranger-modal-panel .talent-main-effect-table th:nth-child(2),
+.ranger-modal-panel .talent-main-effect-table td:nth-child(2) {
+  width: 70%;
+}
+
+.ranger-modal-panel .talent-boost-table {
+  table-layout: fixed;
+}
+
+.ranger-modal-panel .talent-boost-table td {
+  width: 33.3333%;
+  white-space: normal;
+}
+
+@media (max-width: 620px) {
+  .ranger-modal-panel .talent-main-table,
+  .ranger-modal-panel .talent-main-effect-table,
+  .ranger-modal-panel .talent-boost-table {
+    min-width: 0;
+  }
+}
