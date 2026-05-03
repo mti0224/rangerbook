@@ -359,9 +359,12 @@ html[data-theme="dark"] .compare-highlight-control {
   color: #bfdbfe !important;
 }
 
+html[data-theme="dark"] .compare-table td.compare-better,
+html[data-theme="dark"] .compare-table th.compare-better,
 html[data-theme="dark"] .compare-better {
   color: #fde68a !important;
   background: #422006 !important;
+  background-color: #422006 !important;
   box-shadow: inset 4px 0 0 #f59e0b;
 }
 
