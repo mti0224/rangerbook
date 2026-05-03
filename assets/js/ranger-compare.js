@@ -8,16 +8,13 @@
 
   const state = {
     index: [],
-    fullRows: [],
     fullMap: new Map(),
     left: null,
     right: null,
     indexPromise: null,
     fullPromise: null,
     indexLoaded: false,
-    fullLoaded: false,
-    indexError: null,
-    fullError: null
+    fullLoaded: false
   };
 
   const $ = (id) => document.getElementById(id);
@@ -70,10 +67,6 @@
     return text(ranger?.["Ranger名稱"] || ranger?.name) || getId(ranger) || "未命名角色";
   }
 
-  function makeSearchText(item) {
-    return [item.id, item.name, item.star, item.type, item.element].map(raw).join(" ").toLowerCase();
-  }
-
   function parseIndexRow(row) {
     const item = {
       id: text(row.id || row.ranger_id || row.unitCode),
@@ -82,7 +75,7 @@
       type: text(row.type || row["類型"]),
       element: text(row.element || row["屬性"])
     };
-    item.search = makeSearchText(item);
+    item.search = [item.id, item.name, item.star, item.type, item.element].map(raw).join(" ").toLowerCase();
     item.meta = [item.star, item.type, item.element, item.id].filter(Boolean).join(" / ");
     return item;
   }
@@ -97,16 +90,14 @@
   }
 
   function parseRangeNumber(value) {
-    const n = Number(text(value).replaceAll(",", "").replace(/[^
-\d.-]/g, ""));
+    const match = text(value).replaceAll(",", "").match(/-?\d+(?:\.\d+)?/);
+    if (!match) return null;
+    const n = Number(match[0]);
     return Number.isFinite(n) ? n : null;
   }
 
   function skillRange(skill) {
-    const effects = getSkillEffects(skill);
-    if (!effects.length) return "-";
-
-    const ranges = effects
+    const ranges = getSkillEffects(skill)
       .map((effect) => text(effect?.["範圍"]))
       .filter((value) => value && value !== "-");
     if (!ranges.length) return "-";
@@ -114,8 +105,8 @@
     const numeric = ranges
       .map((value) => ({ value, n: parseRangeNumber(value) }))
       .filter((item) => item.n !== null);
-
     if (!numeric.length) return html(ranges[0]);
+
     const max = numeric.reduce((best, item) => item.n > best.n ? item : best, numeric[0]);
     return html(max.value);
   }
@@ -342,7 +333,6 @@
         return true;
       })
       .catch((error) => {
-        state.indexError = error;
         console.error(error);
         return false;
       });
@@ -360,13 +350,11 @@
         return res.json();
       })
       .then((rows) => {
-        state.fullRows = Array.isArray(rows) ? rows : [];
-        state.fullMap = new Map(state.fullRows.map((ranger) => [getId(ranger), ranger]));
+        state.fullMap = new Map((Array.isArray(rows) ? rows : []).map((ranger) => [getId(ranger), ranger]));
         state.fullLoaded = true;
         return true;
       })
       .catch((error) => {
-        state.fullError = error;
         console.error(error);
         return false;
       });
