@@ -6,11 +6,13 @@
 
   const state = {
     rows: [],
+    index: [],
     rowMap: new Map(),
     left: null,
     right: null,
-    leftQuery: "",
-    rightQuery: ""
+    loadingPromise: null,
+    loaded: false,
+    error: null
   };
 
   const $ = (id) => document.getElementById(id);
@@ -76,14 +78,10 @@
   }
 
   function searchable(ranger) {
-    return [
-      getName(ranger),
-      getId(ranger),
-      ranger["Ranger星數"],
-      ranger["類型"],
-      ranger["屬性"],
-      ranger["登場時間"]
-    ].map(raw).join(" ").toLowerCase();
+    return [getName(ranger), getId(ranger), ranger["Ranger星數"], ranger["類型"], ranger["屬性"], ranger["登場時間"]]
+      .map(raw)
+      .join(" ")
+      .toLowerCase();
   }
 
   function skillSummary(ranger, key) {
@@ -128,40 +126,22 @@
 
   function selectedCard(ranger, side) {
     if (!ranger) {
-      return `
-        <div class="compare-selected-card">
-          <div class="compare-selected-image"><span class="no-icon">未選</span></div>
-          <div>
-            <h2>${side === "left" ? "角色 A" : "角色 B"}</h2>
-            <p class="compare-suggestion-meta">請從上方搜尋選擇角色</p>
-          </div>
-        </div>
-      `;
+      return `<div class="compare-selected-card"><div class="compare-selected-image"><span class="no-icon">未選</span></div><div><h2>${side === "left" ? "角色 A" : "角色 B"}</h2><p class="compare-suggestion-meta">請從上方搜尋選擇角色</p></div></div>`;
     }
     const id = getId(ranger);
     return `
       <div class="compare-selected-card">
-        <div class="compare-selected-image">
-          <img src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.compare-selected-image').classList.add('missing-icon'); this.remove();">
-        </div>
+        <div class="compare-selected-image"><img src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.compare-selected-image').classList.add('missing-icon'); this.remove();"></div>
         <div>
           <h2>${html(getName(ranger))}</h2>
-          <div class="ranger-tags">
-            ${[ranger["Ranger星數"], ranger["類型"], ranger["屬性"]].filter(Boolean).map((tag) => `<span>${html(tag)}</span>`).join("")}
-          </div>
+          <div class="ranger-tags">${[ranger["Ranger星數"], ranger["類型"], ranger["屬性"]].filter(Boolean).map((tag) => `<span>${html(tag)}</span>`).join("")}</div>
           <p class="compare-suggestion-meta">${html(id)}</p>
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
   function renderSelected() {
-    els.selected.innerHTML = `
-      <div class="compare-selected-row">
-        ${selectedCard(state.left, "left")}
-        ${selectedCard(state.right, "right")}
-      </div>
-    `;
+    els.selected.innerHTML = `<div class="compare-selected-row">${selectedCard(state.left, "left")}${selectedCard(state.right, "right")}</div>`;
   }
 
   function valueOf(ranger, key) {
@@ -174,14 +154,7 @@
   }
 
   function section(title, rows) {
-    return `
-      <section class="compare-section">
-        <h3>${html(title)}</h3>
-        <div class="compare-table-wrap">
-          <table class="compare-table"><tbody>${rows.join("")}</tbody></table>
-        </div>
-      </section>
-    `;
+    return `<section class="compare-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
   }
 
   function renderResult() {
@@ -201,16 +174,12 @@
       ["生產礦物費用", (r) => valueOf(r, "生產礦物費用")],
       ["再生產時間", (r) => valueOf(r, "Ranger再生產時間")]
     ];
-
     const statKeys = ["體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"];
 
     els.result.innerHTML = [
       section("基本資料", basicRows.map(([label, getter]) => row(label, getter(state.left), getter(state.right)))),
       section("基本數值", statKeys.map((key) => row(key, valueOf(state.left, key), valueOf(state.right, key)))),
-      section("技能", [
-        row("技能1", html(skillSummary(state.left, "技能1")), html(skillSummary(state.right, "技能1"))),
-        row("技能2", html(skillSummary(state.left, "技能2")), html(skillSummary(state.right, "技能2")))
-      ]),
+      section("技能", [row("技能1", html(skillSummary(state.left, "技能1")), html(skillSummary(state.right, "技能1"))), row("技能2", html(skillSummary(state.left, "技能2")), html(skillSummary(state.right, "技能2")))]),
       section("能力與才能", [
         row("能力1", html(abilityText(state.left?.["能力1"])), html(abilityText(state.right?.["能力1"]))),
         row("能力2", html(abilityText(state.left?.["能力2"])), html(abilityText(state.right?.["能力2"]))),
@@ -220,38 +189,82 @@
     ].join("");
   }
 
-  function suggestionItem(ranger, side) {
-    const id = getId(ranger);
-    const active = (side === "left" ? state.left : state.right) && getId(side === "left" ? state.left : state.right) === id;
-    return `
-      <button class="compare-suggestion compare-suggestion-text ${active ? "active" : ""}" type="button" data-id="${html(id)}" data-side="${side}">
-        <div>
-          <div class="compare-suggestion-name">${html(getName(ranger))}</div>
-          <div class="compare-suggestion-meta">${html([ranger["Ranger星數"], ranger["類型"], ranger["屬性"], id].filter(Boolean).join(" / "))}</div>
-        </div>
-      </button>
-    `;
+  function suggestionItem(item, side) {
+    const active = (side === "left" ? state.left : state.right) && getId(side === "left" ? state.left : state.right) === item.id;
+    return `<button class="compare-suggestion compare-suggestion-text ${active ? "active" : ""}" type="button" data-id="${html(item.id)}" data-side="${side}"><div><div class="compare-suggestion-name">${html(item.name)}</div><div class="compare-suggestion-meta">${html(item.meta)}</div></div></button>`;
+  }
+
+  async function ensureDataLoaded(target) {
+    if (state.loaded) return true;
+    if (state.error) {
+      target.innerHTML = `<div class="empty-state small">Rangers 資料載入失敗。</div>`;
+      return false;
+    }
+    if (!state.loadingPromise) {
+      state.loadingPromise = loadData();
+    }
+    target.innerHTML = `<div class="empty-state small">Rangers 資料載入中...</div>`;
+    try {
+      await state.loadingPromise;
+      return true;
+    } catch (error) {
+      state.error = error;
+      target.innerHTML = `<div class="empty-state small">Rangers 資料載入失敗。</div>`;
+      console.error(error);
+      return false;
+    }
+  }
+
+  async function loadData() {
+    const res = await fetch(DATA_URL, { cache: "force-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const rows = await res.json();
+    state.rows = (Array.isArray(rows) ? rows : [])
+      .map((ranger, index) => ({ ranger, index, date: parseDate(ranger["登場時間"]), search: searchable(ranger) }))
+      .sort((a, b) => (b.date - a.date) || (a.index - b.index))
+      .map((item) => item.ranger);
+
+    state.index = state.rows.map((ranger) => {
+      const id = getId(ranger);
+      return {
+        id,
+        name: getName(ranger),
+        search: searchable(ranger),
+        meta: [ranger["Ranger星數"], ranger["類型"], ranger["屬性"], id].filter(Boolean).join(" / ")
+      };
+    });
+    state.rowMap = new Map(state.rows.map((ranger) => [getId(ranger), ranger]));
+    state.loaded = true;
   }
 
   function filterRows(query) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-    return state.rows.filter((ranger) => ranger.__search.includes(q)).slice(0, MAX_SUGGESTIONS);
+    const exact = [];
+    const partial = [];
+    for (const item of state.index) {
+      if (item.id.toLowerCase() === q || item.name.toLowerCase() === q) exact.push(item);
+      else if (item.search.includes(q)) partial.push(item);
+      if (exact.length + partial.length >= MAX_SUGGESTIONS) break;
+    }
+    return [...exact, ...partial].slice(0, MAX_SUGGESTIONS);
   }
 
-  function renderSuggestions(side) {
+  async function renderSuggestions(side) {
     const input = side === "left" ? els.leftInput : els.rightInput;
     const target = side === "left" ? els.leftSuggestions : els.rightSuggestions;
-    const rows = filterRows(input.value);
+    const query = input.value.trim();
 
-    if (!input.value.trim()) {
+    if (!query) {
       target.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
       return;
     }
 
-    target.innerHTML = rows.length
-      ? rows.map((ranger) => suggestionItem(ranger, side)).join("")
-      : `<div class="empty-state small">找不到角色。</div>`;
+    const loaded = await ensureDataLoaded(target);
+    if (!loaded) return;
+
+    const rows = filterRows(query);
+    target.innerHTML = rows.length ? rows.map((item) => suggestionItem(item, side)).join("") : `<div class="empty-state small">找不到角色。</div>`;
   }
 
   function selectRanger(side, id) {
@@ -268,7 +281,7 @@
     renderResult();
   }
 
-  function debounce(fn, delay = 120) {
+  function debounce(fn, delay = 180) {
     let timer = 0;
     return (...args) => {
       clearTimeout(timer);
@@ -276,37 +289,25 @@
     };
   }
 
-  async function init() {
-    try {
-      const res = await fetch(DATA_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const rows = await res.json();
-      state.rows = (Array.isArray(rows) ? rows : [])
-        .map((ranger, index) => ({ ...ranger, __index: index, __date: parseDate(ranger["登場時間"]), __search: searchable(ranger) }))
-        .sort((a, b) => (b.__date - a.__date) || (a.__index - b.__index));
-      state.rowMap = new Map(state.rows.map((ranger) => [getId(ranger), ranger]));
+  const debouncedLeft = debounce(() => renderSuggestions("left"));
+  const debouncedRight = debounce(() => renderSuggestions("right"));
 
-      renderSuggestions("left");
-      renderSuggestions("right");
-      renderResult();
-    } catch (error) {
-      els.result.innerHTML = `<div class="compare-empty">Rangers 資料載入失敗，請稍後再試。</div>`;
-      console.error(error);
-    }
-  }
-
-  els.leftInput.addEventListener("input", debounce(() => renderSuggestions("left")));
-  els.rightInput.addEventListener("input", debounce(() => renderSuggestions("right")));
+  els.leftInput.addEventListener("focus", () => renderSuggestions("left"));
+  els.rightInput.addEventListener("focus", () => renderSuggestions("right"));
+  els.leftInput.addEventListener("input", debouncedLeft);
+  els.rightInput.addEventListener("input", debouncedRight);
 
   els.leftSuggestions.addEventListener("click", (event) => {
-    const button = event.target.closest(".compare-suggestion");
+    const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
     if (button) selectRanger(button.dataset.side, button.dataset.id);
   });
 
   els.rightSuggestions.addEventListener("click", (event) => {
-    const button = event.target.closest(".compare-suggestion");
+    const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
     if (button) selectRanger(button.dataset.side, button.dataset.id);
   });
 
-  init();
+  els.leftSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
+  els.rightSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
+  renderResult();
 })();
