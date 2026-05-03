@@ -3,6 +3,7 @@
   const INDEX_URL = `${ROOT}res/Ranger_index.json`;
   const DATA_URL = `${ROOT}res/Rangers_data.json`;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
+  const TLT_ICON = (index) => `${ROOT}assets/tlt_icon/tlt${index}.png`;
   const MAX_SUGGESTIONS = 8;
 
   const state = {
@@ -86,19 +87,32 @@
     return item;
   }
 
-  function skillSummary(ranger, key) {
+  function getSkill(ranger, key) {
     const skill = ranger?.[key];
-    if (!skill || typeof skill !== "object" || Array.isArray(skill)) return "-";
-    const effects = Array.isArray(skill["技能組"])
-      ? skill["技能組"].map((effect) => text(effect?.["效果"])).filter(Boolean).join("、")
-      : "";
-    return [
-      skill["技能名稱"] ? `名稱：${text(skill["技能名稱"])}` : "",
-      skill["發動機率"] ? `發動率：${text(skill["發動機率"])}` : "",
-      skill["技能冷卻時間"] ? `冷卻：${text(skill["技能冷卻時間"])}` : "",
-      skill["觸發基準"] ? `基準：${text(skill["觸發基準"])}` : "",
-      effects ? `效果：${effects}` : ""
-    ].filter(Boolean).join("\n") || "-";
+    return skill && typeof skill === "object" && !Array.isArray(skill) ? skill : null;
+  }
+
+  function skillEffects(skill) {
+    if (!skill || !Array.isArray(skill["技能組"])) return "-";
+    return skill["技能組"].map((effect) => {
+      const name = text(effect?.["效果"] || "-");
+      const factor = text(effect?.["係數"] || "");
+      const duration = text(effect?.["有效時間"] || "");
+      const range = text(effect?.["範圍"] || "");
+      const parts = [factor && `係數：${factor}`, duration && `時間：${duration}`, range && `範圍：${range}`].filter(Boolean);
+      return parts.length ? `${name}（${parts.join("、")}）` : name;
+    }).filter(Boolean).join("\n") || "-";
+  }
+
+  function skillValue(ranger, key, field) {
+    const skill = getSkill(ranger, key);
+    if (!skill) return "-";
+    if (field === "名稱") return fmt(skill["技能名稱"] || skill.name || key);
+    if (field === "發動率") return fmt(skill["發動機率"] || skill["技能發動率"] || skill["技能發動機率"]);
+    if (field === "冷卻") return fmt(skill["技能冷卻時間"] || skill["冷卻時間"]);
+    if (field === "觸發基準") return fmt(skill["觸發基準"] || skill["觸發條件"] || skill["基準"]);
+    if (field === "技能效果") return html(skillEffects(skill));
+    return "-";
   }
 
   function abilityText(value) {
@@ -108,22 +122,42 @@
     return text(value);
   }
 
-  function talentSummary(ranger) {
+  function getMainTalent(ranger) {
     const talent = ranger?.["才能"];
-    if (!talent || typeof talent !== "object") return isNone(talent) ? "-" : text(talent);
+    if (!talent || typeof talent !== "object") return null;
     const main = talent["主要才能"];
-    const boost = talent["強化才能"];
-    const lines = [];
-    if (main && typeof main === "object") {
-      const effects = Array.isArray(main["增益效果"])
-        ? main["增益效果"].map((item) => text(item?.["效果"])).filter(Boolean).join("、")
-        : "";
-      lines.push(`主要才能：${[main["條件"], effects].map(text).filter(Boolean).join(" / ") || text(main["敘述"]) || "-"}`);
-    } else if (!isNone(main)) {
-      lines.push(`主要才能：${text(main)}`);
+    return main && typeof main === "object" ? main : null;
+  }
+
+  function mainTalentEffects(main) {
+    if (!main) return [];
+    const effects = Array.isArray(main["增益效果"]) ? main["增益效果"] : [];
+    return effects.map((effect) => ({
+      effect: text(effect?.["效果"] || "-"),
+      probability: text(effect?.["觸發機率"] || effect?.["發動機率"] || effect?.["機率"] || "-")
+    })).filter((item) => item.effect && item.effect !== "-");
+  }
+
+  function mainTalentValue(ranger, field) {
+    const main = getMainTalent(ranger);
+    if (!main) return "-";
+    if (field === "條件") return fmt(main["條件"] || "無特定條件");
+    if (field === "條件觸發機率") return fmt(main["觸發機率"] || main["發動機率"] || main["機率"]);
+    if (field === "效果") {
+      const effects = mainTalentEffects(main).map((item) => item.effect).join("\n");
+      return html(effects || text(main["敘述"] || "-"));
     }
-    if (Array.isArray(boost) && boost.length) lines.push(`強化才能：${boost.map(text).join("、")}`);
-    return lines.join("\n") || "-";
+    if (field === "效果觸發機率") {
+      const probabilities = mainTalentEffects(main).map((item) => item.probability).join("\n");
+      return html(probabilities || "-");
+    }
+    return "-";
+  }
+
+  function boostTalentValue(ranger, index) {
+    const boost = ranger?.["才能"]?.["強化才能"];
+    if (!Array.isArray(boost)) return "-";
+    return fmt(boost[index] || "-");
   }
 
   function selectedCard(ranger, side) {
@@ -152,11 +186,15 @@
   }
 
   function row(label, left, right) {
-    return `<tr><th>${html(label)}</th><td>${left}</td><td>${right}</td></tr>`;
+    return `<tr><th>${label}</th><td>${left}</td><td>${right}</td></tr>`;
   }
 
   function section(title, rows) {
     return `<section class="compare-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
+  }
+
+  function iconLabel(index) {
+    return `<img class="compare-talent-icon" src="${TLT_ICON(index)}" alt="tlt${index}" onerror="this.replaceWith(document.createTextNode('tlt${index}'))">`;
   }
 
   function renderResult(message = "") {
@@ -172,8 +210,6 @@
 
     const basicRows = [
       ["Ranger名稱", (r) => html(getName(r))],
-      ["ID", (r) => html(getId(r))],
-      ["登場時間", (r) => valueOf(r, "登場時間")],
       ["星數", (r) => valueOf(r, "Ranger星數")],
       ["類型", (r) => valueOf(r, "類型")],
       ["屬性", (r) => valueOf(r, "屬性")],
@@ -181,16 +217,28 @@
       ["再生產時間", (r) => valueOf(r, "Ranger再生產時間")]
     ];
     const statKeys = ["體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"];
+    const skillFields = ["名稱", "發動率", "冷卻", "觸發基準", "技能效果"];
 
     els.result.innerHTML = [
-      section("基本資料", basicRows.map(([label, getter]) => row(label, getter(state.left), getter(state.right)))),
-      section("基本數值", statKeys.map((key) => row(key, valueOf(state.left, key), valueOf(state.right, key)))),
-      section("技能", [row("技能1", html(skillSummary(state.left, "技能1")), html(skillSummary(state.right, "技能1"))), row("技能2", html(skillSummary(state.left, "技能2")), html(skillSummary(state.right, "技能2")))]),
-      section("能力與才能", [
+      section("基本資料", basicRows.map(([label, getter]) => row(html(label), getter(state.left), getter(state.right)))),
+      section("基本數值", statKeys.map((key) => row(html(key), valueOf(state.left, key), valueOf(state.right, key)))),
+      section("技能1", skillFields.map((field) => row(html(field), skillValue(state.left, "技能1", field), skillValue(state.right, "技能1", field)))),
+      section("技能2", skillFields.map((field) => row(html(field), skillValue(state.left, "技能2", field), skillValue(state.right, "技能2", field)))),
+      section("能力", [
         row("能力1", html(abilityText(state.left?.["能力1"])), html(abilityText(state.right?.["能力1"]))),
         row("能力2", html(abilityText(state.left?.["能力2"])), html(abilityText(state.right?.["能力2"]))),
-        row("覺醒能力", html(abilityText(state.left?.["覺醒能力"])), html(abilityText(state.right?.["覺醒能力"]))),
-        row("才能", html(talentSummary(state.left)), html(talentSummary(state.right)))
+        row("覺醒能力", html(abilityText(state.left?.["覺醒能力"])), html(abilityText(state.right?.["覺醒能力"])))
+      ]),
+      section("主要才能", [
+        row("條件", mainTalentValue(state.left, "條件"), mainTalentValue(state.right, "條件")),
+        row("條件觸發機率", mainTalentValue(state.left, "條件觸發機率"), mainTalentValue(state.right, "條件觸發機率")),
+        row("效果", mainTalentValue(state.left, "效果"), mainTalentValue(state.right, "效果")),
+        row("效果觸發機率", mainTalentValue(state.left, "效果觸發機率"), mainTalentValue(state.right, "效果觸發機率"))
+      ]),
+      section("強化才能", [
+        row(iconLabel(2), boostTalentValue(state.left, 0), boostTalentValue(state.right, 0)),
+        row(iconLabel(3), boostTalentValue(state.left, 1), boostTalentValue(state.right, 1)),
+        row(iconLabel(4), boostTalentValue(state.left, 2), boostTalentValue(state.right, 2))
       ])
     ].join("");
   }
