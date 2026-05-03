@@ -1,4 +1,5 @@
-.enemy-skill-effect-table {
+.enemy-skill-effect-table,
+.ability-effect-table {
   width: 100%;
   min-width: 560px;
   table-layout: fixed;
@@ -11,7 +12,9 @@
 }
 
 .enemy-skill-effect-table th,
-.enemy-skill-effect-table td {
+.enemy-skill-effect-table td,
+.ability-effect-table th,
+.ability-effect-table td {
   padding: 0.65rem 0.75rem;
   border-bottom: 1px solid #e0e7ff;
   border-right: 1px solid #e0e7ff;
@@ -22,25 +25,31 @@
   font-size: 0.9rem;
 }
 
-.enemy-skill-effect-table thead th {
+.enemy-skill-effect-table thead th,
+.ability-effect-table thead th {
   background: #eef2ff;
   color: #3730a3;
   font-weight: 900;
 }
 
-.enemy-skill-effect-table tbody th {
+.enemy-skill-effect-table tbody th,
+.ability-effect-table tbody th {
   background: #fbfdff;
   color: var(--text);
   font-weight: 900;
 }
 
 .enemy-skill-effect-table tr:last-child th,
-.enemy-skill-effect-table tr:last-child td {
+.enemy-skill-effect-table tr:last-child td,
+.ability-effect-table tr:last-child th,
+.ability-effect-table tr:last-child td {
   border-bottom: 0;
 }
 
 .enemy-skill-effect-table th:last-child,
-.enemy-skill-effect-table td:last-child {
+.enemy-skill-effect-table td:last-child,
+.ability-effect-table th:last-child,
+.ability-effect-table td:last-child {
   border-right: 0;
 }
 
@@ -53,6 +62,100 @@
 .enemy-skill-effect-table th:nth-child(4),
 .enemy-skill-effect-table td:nth-child(4) { width: 18.75%; }
 
+.ability-effect-table {
+  min-width: 720px;
+}
+
+.ability-effect-table th:nth-child(1),
+.ability-effect-table td:nth-child(1) { width: 5.5rem; }
+.ability-effect-table th:nth-child(2),
+.ability-effect-table td:nth-child(2),
+.ability-effect-table th:nth-child(3),
+.ability-effect-table td:nth-child(3) { width: 7rem; }
+.ability-effect-table th:nth-child(4),
+.ability-effect-table td:nth-child(4),
+.ability-effect-table th:nth-child(5),
+.ability-effect-table td:nth-child(5) { width: 14rem; }
+
+.enemy-skill-meta-table,
+.skill-meta-table {
+  width: 100%;
+  min-width: 420px;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.9rem;
+  background: #ffffff;
+}
+
+.enemy-skill-meta-table th,
+.enemy-skill-meta-table td,
+.skill-meta-table th,
+.skill-meta-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #e0e7ff;
+  border-right: 1px solid #e0e7ff;
+  text-align: left;
+  vertical-align: top;
+  word-break: break-word;
+  white-space: normal;
+  font-size: 0.9rem;
+}
+
+.enemy-skill-meta-table thead th,
+.skill-meta-table thead th {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.enemy-skill-meta-table th:last-child,
+.enemy-skill-meta-table td:last-child,
+.skill-meta-table th:last-child,
+.skill-meta-table td:last-child {
+  border-right: 0;
+}
+
+.enemy-skill-meta-table tr:last-child th,
+.enemy-skill-meta-table tr:last-child td,
+.skill-meta-table tr:last-child th,
+.skill-meta-table tr:last-child td {
+  border-bottom: 0;
+}
+
 .enemy-card .ranger-mini-stats {
   margin-top: 0.55rem;
+}
+
+html[data-theme="dark"] .enemy-skill-effect-table,
+html[data-theme="dark"] .ability-effect-table,
+html[data-theme="dark"] .enemy-skill-meta-table,
+html[data-theme="dark"] .skill-meta-table {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .enemy-skill-effect-table thead th,
+html[data-theme="dark"] .ability-effect-table thead th,
+html[data-theme="dark"] .enemy-skill-meta-table thead th,
+html[data-theme="dark"] .skill-meta-table thead th {
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .enemy-skill-effect-table tbody th,
+html[data-theme="dark"] .ability-effect-table tbody th,
+html[data-theme="dark"] .enemy-skill-meta-table tbody th,
+html[data-theme="dark"] .skill-meta-table tbody th,
+html[data-theme="dark"] .enemy-skill-effect-table td,
+html[data-theme="dark"] .ability-effect-table td,
+html[data-theme="dark"] .enemy-skill-meta-table td,
+html[data-theme="dark"] .skill-meta-table td {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
 }
