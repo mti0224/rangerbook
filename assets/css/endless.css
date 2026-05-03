@@ -126,7 +126,7 @@
 
 .endless-stage-table th:first-child,
 .endless-stage-table td:first-child {
-  width: 4.1rem;
+  width: 4.9rem;
   padding-left: 0.35rem;
   padding-right: 0.35rem;
   text-align: center;
@@ -150,12 +150,12 @@
 }
 
 .endless-enemy-thumb {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3.2rem;
+  height: 3.2rem;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  border-radius: 0.8rem;
+  border-radius: 0.9rem;
   background: #f3f4f6;
   border: 1px solid var(--line);
   overflow: hidden;
