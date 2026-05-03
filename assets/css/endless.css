@@ -1,0 +1,229 @@
+.endless-entry-grid,
+.endless-stage-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.endless-entry-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.endless-stage-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.endless-stage-card,
+.endless-entry-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 5.8rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.endless-stage-card {
+  justify-content: center;
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.05rem;
+}
+
+.endless-stage-card:hover,
+.endless-entry-card:hover {
+  background: #f8fbff;
+  border-color: #bfdbfe;
+}
+
+.endless-entry-icon {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 1.1rem;
+  background: #f3f4f6;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.endless-entry-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.endless-entry-card h2 {
+  margin: 0 0 0.15rem;
+  font-size: 1.2rem;
+}
+
+.endless-entry-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.endless-stage-head {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.endless-stage-title {
+  margin: 0;
+  font-size: 1.45rem;
+}
+
+.endless-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--primary-dark);
+  font-weight: 850;
+}
+
+.endless-table-wrap {
+  margin-top: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.endless-stage-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.endless-stage-table th,
+.endless-stage-table td {
+  padding: 0.8rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.endless-stage-table th {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.endless-stage-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.endless-stage-table th:last-child,
+.endless-stage-table td:last-child {
+  border-right: 0;
+}
+
+.endless-enemy-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.endless-enemy-thumb {
+  width: 3.2rem;
+  height: 3.2rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 0.9rem;
+  background: #f3f4f6;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.endless-enemy-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.endless-detail-btn {
+  padding: 0.55rem 0.9rem;
+}
+
+.endless-line-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.55rem;
+}
+
+.endless-line-stat {
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  background: #fbfdff;
+}
+
+.endless-line-stat span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.endless-line-stat strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.05rem;
+}
+
+html[data-theme="dark"] .endless-stage-card,
+html[data-theme="dark"] .endless-entry-card,
+html[data-theme="dark"] .endless-table-wrap,
+html[data-theme="dark"] .endless-stage-table,
+html[data-theme="dark"] .endless-line-stat,
+html[data-theme="dark"] .endless-entry-icon,
+html[data-theme="dark"] .endless-enemy-thumb {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .endless-stage-card:hover,
+html[data-theme="dark"] .endless-entry-card:hover {
+  background: var(--hover-panel, #1f2a3d) !important;
+  border-color: #475569 !important;
+}
+
+html[data-theme="dark"] .endless-stage-table th {
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
+}
+
+@media (max-width: 900px) {
+  .endless-stage-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .endless-stage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .endless-stage-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
