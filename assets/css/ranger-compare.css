@@ -234,6 +234,13 @@
   border-right: 0;
 }
 
+.compare-talent-icon {
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
 .compare-empty {
   color: var(--muted);
   background: var(--panel);
