@@ -234,6 +234,25 @@
   border-right: 0;
 }
 
+.compare-skill-table {
+  min-width: 980px;
+}
+
+.compare-skill-table th {
+  width: 9.5rem;
+}
+
+.compare-skill-table td {
+  width: auto;
+}
+
+.compare-skill-subhead th,
+.compare-skill-subhead td {
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
 .compare-talent-icon {
   width: 2.2rem;
   height: 2.2rem;
@@ -270,7 +289,9 @@ html[data-theme="dark"] .compare-suggestion.active {
   color: var(--text) !important;
 }
 
-html[data-theme="dark"] .compare-section h3 {
+html[data-theme="dark"] .compare-section h3,
+html[data-theme="dark"] .compare-skill-subhead th,
+html[data-theme="dark"] .compare-skill-subhead td {
   background: #1e3a5f !important;
   color: #bfdbfe !important;
   border-color: var(--line) !important;
