@@ -1,5 +1,4 @@
 (() => {
-  const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
 
   const leftInput = document.getElementById("compareLeftInput");
@@ -44,18 +43,22 @@
     target.innerHTML = "";
   }
 
-  function setSelectedInput(button) {
+  function closeAfterOriginalSelect(button) {
     const side = button.dataset.side;
     const name = button.querySelector(".compare-suggestion-name")?.textContent.trim();
     const input = side === "left" ? leftInput : rightInput;
+
     if (name && input) input.value = name;
-    if (side === "left" || side === "right") {
+    if (side !== "left" && side !== "right") return;
+
+    window.setTimeout(() => {
+      if (name && input) input.value = name;
       clearSuggestions(side);
-      window.setTimeout(() => clearSuggestions(side), 120);
-      window.setTimeout(() => clearSuggestions(side), 600);
-      window.setTimeout(() => clearSuggestions(side), 1200);
       input?.blur();
-    }
+    }, 0);
+
+    window.setTimeout(() => clearSuggestions(side), 250);
+    window.setTimeout(() => clearSuggestions(side), 900);
   }
 
   [leftSuggestions, rightSuggestions].forEach((target) => {
@@ -64,14 +67,9 @@
     const observer = new MutationObserver(() => enhanceSuggestions(target));
     observer.observe(target, { childList: true, subtree: true });
 
-    target.addEventListener("pointerdown", (event) => {
-      const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
-      if (button) setSelectedInput(button);
-    }, true);
-
     target.addEventListener("click", (event) => {
       const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
-      if (button) setSelectedInput(button);
-    }, true);
+      if (button) closeAfterOriginalSelect(button);
+    });
   });
 })();
