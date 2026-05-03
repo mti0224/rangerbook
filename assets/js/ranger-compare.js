@@ -2,13 +2,17 @@
   const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const INDEX_URL = `${ROOT}res/Ranger_index.json`;
   const DATA_URL = `${ROOT}res/Rangers_data.json`;
+  const ABILITY_DATA_URL = `${ROOT}res/%E8%83%BD%E5%8A%9B.json`;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const TLT_ICON = (index) => `${ROOT}assets/tlt_icon/tlt${index}.png`;
+  const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const MAX_SUGGESTIONS = 8;
 
   const state = {
     index: [],
     fullMap: new Map(),
+    abilityMap: {},
+    abilityByName: new Map(),
     left: null,
     right: null,
     indexPromise: null,
@@ -104,11 +108,65 @@
     return "-";
   }
 
-  function abilityText(value) {
-    if (isNone(value)) return "-";
-    if (Array.isArray(value)) return value.map(abilityText).filter((v) => v !== "-").join("、") || "-";
-    if (typeof value === "object") return text(value["能力"] || value["名稱"] || value.name || value.abilityCode || value.code || "-");
-    return text(value);
+  function getAbilityDetail(codeOrName) {
+    const key = text(codeOrName);
+    if (!key) return null;
+    return state.abilityMap[key] || state.abilityByName.get(key) || null;
+  }
+
+  function abilityNameFromDetail(detail, fallback = "") {
+    if (!detail || typeof detail !== "object") return fallback;
+    return text(detail["名稱"] || detail.name || detail["能力"] || fallback);
+  }
+
+  function abilityIconFromDetail(detail) {
+    if (!detail || typeof detail !== "object") return "";
+    return text(detail.icon || detail["icon"] || detail["圖示"] || detail["圖片"] || "");
+  }
+
+  function parseAbilityEntries(value, fallbackCode = "") {
+    if (isNone(value)) return [];
+    if (Array.isArray(value)) return value.flatMap((entry) => parseAbilityEntries(entry, fallbackCode));
+
+    if (typeof value === "object") {
+      const code = text(value.abilityCode || value["abilityCode"] || value.code || value["code"] || fallbackCode);
+      const detail = getAbilityDetail(code) || getAbilityDetail(value["能力"] || value["名稱"] || value.name);
+      const name = text(value["能力"] || value["名稱"] || value.name || abilityNameFromDetail(detail, code));
+      const icon = text(value.icon || value["icon"] || abilityIconFromDetail(detail));
+      return name && !isNone(name) ? [{ name, code, icon }] : [];
+    }
+
+    const code = text(fallbackCode);
+    const detail = getAbilityDetail(code) || getAbilityDetail(value);
+    const name = text(value) || abilityNameFromDetail(detail, code);
+    const icon = abilityIconFromDetail(detail);
+    return name && !isNone(name) ? [{ name, code, icon }] : [];
+  }
+
+  function abilityEntryHtml(entry) {
+    if (!entry) return "-";
+    const icon = entry.icon ? `<img class="compare-ability-icon" src="${ABILITY_ICON(entry.icon)}" alt="" onerror="this.remove();">` : "";
+    return `<span class="compare-ability-item">${icon}<span>${html(entry.name)}</span></span>`;
+  }
+
+  function abilityCell(entries) {
+    const rows = entries.filter(Boolean);
+    if (!rows.length) return "-";
+    return `<div class="compare-ability-list">${rows.map(abilityEntryHtml).join("")}</div>`;
+  }
+
+  function abilityEntriesFor(ranger, slot) {
+    if (!ranger) return [];
+    if (slot === 1) return parseAbilityEntries(ranger["能力1"], ranger.abilityCode || ranger["abilityCode"]);
+    if (slot === 2) return parseAbilityEntries(ranger["能力2"], ranger.abilityCode2 || ranger["abilityCode2"]);
+    return [];
+  }
+
+  function awakeningEntriesFor(ranger) {
+    if (!ranger) return [];
+    const value = ranger["覺醒能力"] || ranger["覺醒能力列表"] || ranger.awakeAbility || ranger.awakeAbilities;
+    const fallback = ranger.awakeAbilityCode || ranger["awakeAbilityCode"] || ranger["覺醒能力Code"] || "";
+    return parseAbilityEntries(value, fallback);
   }
 
   function getMainTalent(ranger) {
@@ -142,9 +200,7 @@
       const effects = mainTalentEffects(main).map((item) => item.effect).join("\n");
       return html(effects || text(main["敘述"] || "-"));
     }
-    if (field === "效果觸發機率") {
-      return minProbabilityText(mainTalentEffects(main).map((item) => item.probability));
-    }
+    if (field === "效果觸發機率") return minProbabilityText(mainTalentEffects(main).map((item) => item.probability));
     return "-";
   }
 
@@ -155,9 +211,7 @@
   }
 
   function selectedCard(ranger, side) {
-    if (!ranger) {
-      return `<div class="compare-selected-card"><div class="compare-selected-image"><span class="no-icon">未選</span></div><div><h2>${side === "left" ? "角色 A" : "角色 B"}</h2><p class="compare-suggestion-meta">請從上方搜尋選擇角色</p></div></div>`;
-    }
+    if (!ranger) return `<div class="compare-selected-card"><div class="compare-selected-image"><span class="no-icon">未選</span></div><div><h2>${side === "left" ? "角色 A" : "角色 B"}</h2><p class="compare-suggestion-meta">請從上方搜尋選擇角色</p></div></div>`;
     const id = getId(ranger);
     return `<div class="compare-selected-card"><div class="compare-selected-image"><img src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.compare-selected-image').classList.add('missing-icon'); this.remove();"></div><div><h2>${html(getName(ranger))}</h2><div class="ranger-tags">${[ranger["Ranger星數"], ranger["類型"], ranger["屬性"]].filter(Boolean).map((tag) => `<span>${html(tag)}</span>`).join("")}</div><p class="compare-suggestion-meta">${html(id)}</p></div></div>`;
   }
@@ -202,10 +256,8 @@
     const leftEffects = getSkillEffects(leftSkill);
     const rightEffects = getSkillEffects(rightSkill);
     const effectCount = Math.max(leftEffects.length, rightEffects.length);
-
     const metaRows = metaFields.map((field) => `<tr><th>${html(field)}</th><td colspan="3">${skillMetaValue(leftSkill, field)}</td><td colspan="3">${skillMetaValue(rightSkill, field)}</td></tr>`);
     const effectRows = [];
-
     if (effectCount) {
       effectRows.push(`<tr class="compare-skill-subhead"><th>技能效果</th><td>效果</td><td>係數</td><td>時間</td><td>效果</td><td>係數</td><td>時間</td></tr>`);
       for (let i = 0; i < effectCount; i += 1) {
@@ -216,8 +268,22 @@
     } else {
       effectRows.push(`<tr><th>技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
     }
-
     return `<section class="compare-section compare-skill-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
+  }
+
+  function abilitySection() {
+    const leftAwakening = awakeningEntriesFor(state.left);
+    const rightAwakening = awakeningEntriesFor(state.right);
+    const awakeningCount = Math.max(leftAwakening.length, rightAwakening.length);
+    const rows = [
+      row("能力1", abilityCell(abilityEntriesFor(state.left, 1)), abilityCell(abilityEntriesFor(state.right, 1))),
+      row("能力2", abilityCell(abilityEntriesFor(state.left, 2)), abilityCell(abilityEntriesFor(state.right, 2)))
+    ];
+    for (let i = 0; i < awakeningCount; i += 1) {
+      rows.push(row(`覺醒能力${i + 1}`, abilityCell([leftAwakening[i]]), abilityCell([rightAwakening[i]])));
+    }
+    if (!awakeningCount) rows.push(row("覺醒能力", "-", "-"));
+    return section("能力", rows);
   }
 
   function iconLabel(index) {
@@ -243,7 +309,6 @@
       els.result.innerHTML = `<div class="compare-empty">請先選擇兩隻角色進行比對。</div>`;
       return;
     }
-
     const basicRows = [
       ["Ranger名稱", (r) => html(getName(r))],
       ["星數", (r) => valueOf(r, "Ranger星數")],
@@ -252,17 +317,12 @@
     ];
     const statKeys = ["生產礦物費用", "Ranger再生產時間", "體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"];
     const statLabels = { Ranger再生產時間: "再生產時間" };
-
     els.result.innerHTML = [
       section("基本資料", basicRows.map(([label, getter]) => row(html(label), getter(state.left), getter(state.right)))),
       section(basicStatTitle(), statKeys.map((key) => statRow(key, statLabels[key] || key)), "compare-basic-stat-section"),
       skillSection("技能1", "技能1"),
       skillSection("技能2", "技能2"),
-      section("能力", [
-        row("能力1", html(abilityText(state.left?.["能力1"])), html(abilityText(state.right?.["能力1"]))),
-        row("能力2", html(abilityText(state.left?.["能力2"])), html(abilityText(state.right?.["能力2"]))),
-        row("覺醒能力", html(abilityText(state.left?.["覺醒能力"])), html(abilityText(state.right?.["覺醒能力"])))
-      ]),
+      abilitySection(),
       section("主要才能", [
         row("條件", mainTalentValue(state.left, "條件"), mainTalentValue(state.right, "條件")),
         row("條件觸發機率", mainTalentValue(state.left, "條件觸發機率"), mainTalentValue(state.right, "條件觸發機率")),
@@ -275,7 +335,6 @@
         row(iconLabel(4), boostTalentValue(state.left, 2), boostTalentValue(state.right, 2))
       ])
     ].join("");
-
     bindHighlightCheckbox();
   }
 
@@ -303,23 +362,33 @@
     return state.indexPromise;
   }
 
+  function buildAbilityIndexes(data) {
+    state.abilityMap = data && typeof data === "object" ? data : {};
+    state.abilityByName = new Map();
+    Object.values(state.abilityMap).forEach((detail) => {
+      const name = abilityNameFromDetail(detail);
+      if (name) state.abilityByName.set(name, detail);
+    });
+  }
+
   async function loadFullData() {
     if (state.fullLoaded) return true;
     if (state.fullPromise) return state.fullPromise;
-    state.fullPromise = fetch(DATA_URL, { cache: "force-cache" })
-      .then((res) => {
+    state.fullPromise = Promise.all([
+      fetch(DATA_URL, { cache: "force-cache" }).then((res) => {
         if (!res.ok) throw new Error(`Rangers_data.json HTTP ${res.status}`);
         return res.json();
-      })
-      .then((rows) => {
-        state.fullMap = new Map((Array.isArray(rows) ? rows : []).map((ranger) => [getId(ranger), ranger]));
-        state.fullLoaded = true;
-        return true;
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
+      }),
+      fetch(ABILITY_DATA_URL, { cache: "force-cache" }).then((res) => res.ok ? res.json() : {}).catch(() => ({}))
+    ]).then(([rows, abilityData]) => {
+      state.fullMap = new Map((Array.isArray(rows) ? rows : []).map((ranger) => [getId(ranger), ranger]));
+      buildAbilityIndexes(abilityData);
+      state.fullLoaded = true;
+      return true;
+    }).catch((error) => {
+      console.error(error);
+      return false;
+    });
     return state.fullPromise;
   }
 
