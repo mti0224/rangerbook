@@ -1,18 +1,22 @@
 (() => {
   const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const INDEX_URL = `${ROOT}res/Ranger_index.json`;
   const DATA_URL = `${ROOT}res/Rangers_data.json`;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const MAX_SUGGESTIONS = 8;
 
   const state = {
-    rows: [],
     index: [],
-    rowMap: new Map(),
+    fullRows: [],
+    fullMap: new Map(),
     left: null,
     right: null,
-    loadingPromise: null,
-    loaded: false,
-    error: null
+    indexPromise: null,
+    fullPromise: null,
+    indexLoaded: false,
+    fullLoaded: false,
+    indexError: null,
+    fullError: null
   };
 
   const $ = (id) => document.getElementById(id);
@@ -48,12 +52,6 @@
     return !v || v === "無" || v === "(無)" || v === "-";
   }
 
-  function num(value) {
-    if (typeof value === "number") return value;
-    const n = Number(text(value).replaceAll(",", ""));
-    return Number.isFinite(n) ? n : 0;
-  }
-
   function fmt(value) {
     if (value === null || value === undefined || value === "") return "-";
     if (typeof value === "number") return value.toLocaleString("zh-Hant");
@@ -68,20 +66,24 @@
   }
 
   function getName(ranger) {
-    return text(ranger?.["Ranger名稱"]) || getId(ranger) || "未命名角色";
+    return text(ranger?.["Ranger名稱"] || ranger?.name) || getId(ranger) || "未命名角色";
   }
 
-  function parseDate(value) {
-    const parts = text(value).replaceAll("-", "/").split("/").map(Number);
-    if (parts.length < 3 || parts.some(Number.isNaN)) return 0;
-    return new Date(parts[0], parts[1] - 1, parts[2]).getTime() || 0;
+  function makeSearchText(item) {
+    return [item.id, item.name, item.star, item.type, item.element].map(raw).join(" ").toLowerCase();
   }
 
-  function searchable(ranger) {
-    return [getName(ranger), getId(ranger), ranger["Ranger星數"], ranger["類型"], ranger["屬性"], ranger["登場時間"]]
-      .map(raw)
-      .join(" ")
-      .toLowerCase();
+  function parseIndexRow(row) {
+    const item = {
+      id: text(row.id || row.ranger_id || row.unitCode),
+      name: text(row.name || row["Ranger名稱"]),
+      star: text(row.star || row["Ranger星數"]),
+      type: text(row.type || row["類型"]),
+      element: text(row.element || row["屬性"])
+    };
+    item.search = makeSearchText(item);
+    item.meta = [item.star, item.type, item.element, item.id].filter(Boolean).join(" / ");
+    return item;
   }
 
   function skillSummary(ranger, key) {
@@ -157,8 +159,12 @@
     return `<section class="compare-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
   }
 
-  function renderResult() {
+  function renderResult(message = "") {
     renderSelected();
+    if (message) {
+      els.result.innerHTML = `<div class="compare-empty">${html(message)}</div>`;
+      return;
+    }
     if (!state.left && !state.right) {
       els.result.innerHTML = `<div class="compare-empty">請先選擇兩隻角色進行比對。</div>`;
       return;
@@ -190,51 +196,56 @@
   }
 
   function suggestionItem(item, side) {
-    const active = (side === "left" ? state.left : state.right) && getId(side === "left" ? state.left : state.right) === item.id;
-    return `<button class="compare-suggestion compare-suggestion-text ${active ? "active" : ""}" type="button" data-id="${html(item.id)}" data-side="${side}"><div><div class="compare-suggestion-name">${html(item.name)}</div><div class="compare-suggestion-meta">${html(item.meta)}</div></div></button>`;
+    return `<button class="compare-suggestion compare-suggestion-text" type="button" data-id="${html(item.id)}" data-side="${side}"><div><div class="compare-suggestion-name">${html(item.name)}</div><div class="compare-suggestion-meta">${html(item.meta)}</div></div></button>`;
   }
 
-  async function ensureDataLoaded(target) {
-    if (state.loaded) return true;
-    if (state.error) {
-      target.innerHTML = `<div class="empty-state small">Rangers 資料載入失敗。</div>`;
-      return false;
-    }
-    if (!state.loadingPromise) {
-      state.loadingPromise = loadData();
-    }
-    target.innerHTML = `<div class="empty-state small">Rangers 資料載入中...</div>`;
-    try {
-      await state.loadingPromise;
-      return true;
-    } catch (error) {
-      state.error = error;
-      target.innerHTML = `<div class="empty-state small">Rangers 資料載入失敗。</div>`;
-      console.error(error);
-      return false;
-    }
+  async function loadIndex() {
+    if (state.indexLoaded) return true;
+    if (state.indexPromise) return state.indexPromise;
+
+    state.indexPromise = fetch(INDEX_URL, { cache: "force-cache" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Ranger_index.json HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((rows) => {
+        state.index = (Array.isArray(rows) ? rows : [])
+          .map(parseIndexRow)
+          .filter((item) => item.id && item.name);
+        state.indexLoaded = true;
+        return true;
+      })
+      .catch((error) => {
+        state.indexError = error;
+        console.error(error);
+        return false;
+      });
+
+    return state.indexPromise;
   }
 
-  async function loadData() {
-    const res = await fetch(DATA_URL, { cache: "force-cache" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rows = await res.json();
-    state.rows = (Array.isArray(rows) ? rows : [])
-      .map((ranger, index) => ({ ranger, index, date: parseDate(ranger["登場時間"]), search: searchable(ranger) }))
-      .sort((a, b) => (b.date - a.date) || (a.index - b.index))
-      .map((item) => item.ranger);
+  async function loadFullData() {
+    if (state.fullLoaded) return true;
+    if (state.fullPromise) return state.fullPromise;
 
-    state.index = state.rows.map((ranger) => {
-      const id = getId(ranger);
-      return {
-        id,
-        name: getName(ranger),
-        search: searchable(ranger),
-        meta: [ranger["Ranger星數"], ranger["類型"], ranger["屬性"], id].filter(Boolean).join(" / ")
-      };
-    });
-    state.rowMap = new Map(state.rows.map((ranger) => [getId(ranger), ranger]));
-    state.loaded = true;
+    state.fullPromise = fetch(DATA_URL, { cache: "force-cache" })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Rangers_data.json HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((rows) => {
+        state.fullRows = Array.isArray(rows) ? rows : [];
+        state.fullMap = new Map(state.fullRows.map((ranger) => [getId(ranger), ranger]));
+        state.fullLoaded = true;
+        return true;
+      })
+      .catch((error) => {
+        state.fullError = error;
+        console.error(error);
+        return false;
+      });
+
+    return state.fullPromise;
   }
 
   function filterRows(query) {
@@ -260,16 +271,33 @@
       return;
     }
 
-    const loaded = await ensureDataLoaded(target);
-    if (!loaded) return;
+    if (!state.indexLoaded) {
+      target.innerHTML = `<div class="empty-state small">搜尋索引載入中...</div>`;
+      const ok = await loadIndex();
+      if (!ok) {
+        target.innerHTML = `<div class="empty-state small">搜尋索引載入失敗。</div>`;
+        return;
+      }
+    }
 
     const rows = filterRows(query);
     target.innerHTML = rows.length ? rows.map((item) => suggestionItem(item, side)).join("") : `<div class="empty-state small">找不到角色。</div>`;
   }
 
-  function selectRanger(side, id) {
-    const ranger = state.rowMap.get(id);
-    if (!ranger) return;
+  async function selectRanger(side, id) {
+    renderResult("完整角色資料載入中...");
+    const ok = await loadFullData();
+    if (!ok) {
+      renderResult("完整 Rangers 資料載入失敗，無法比對。");
+      return;
+    }
+
+    const ranger = state.fullMap.get(id);
+    if (!ranger) {
+      renderResult(`找不到角色資料：${id}`);
+      return;
+    }
+
     if (side === "left") {
       state.left = ranger;
       els.leftInput.value = getName(ranger);
@@ -277,11 +305,12 @@
       state.right = ranger;
       els.rightInput.value = getName(ranger);
     }
+
     renderSuggestions(side);
     renderResult();
   }
 
-  function debounce(fn, delay = 180) {
+  function debounce(fn, delay = 80) {
     let timer = 0;
     return (...args) => {
       clearTimeout(timer);
@@ -310,4 +339,6 @@
   els.leftSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
   els.rightSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
   renderResult();
+
+  window.setTimeout(() => { loadIndex(); }, 50);
 })();
