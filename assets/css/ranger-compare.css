@@ -278,6 +278,28 @@
   font-weight: 900;
 }
 
+.compare-ability-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.compare-ability-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  line-height: 1.25;
+  font-weight: 850;
+}
+
+.compare-ability-icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 0.45rem;
+}
+
 .compare-talent-icon {
   width: 2.2rem;
   height: 2.2rem;
