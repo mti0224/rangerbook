@@ -14,7 +14,8 @@
     indexPromise: null,
     fullPromise: null,
     indexLoaded: false,
-    fullLoaded: false
+    fullLoaded: false,
+    highlightBetter: false
   };
 
   const $ = (id) => document.getElementById(id);
@@ -27,28 +28,15 @@
     result: $("compareResult")
   };
 
-  function raw(value) {
-    if (value === null || value === undefined) return "";
-    return String(value);
-  }
-
-  function text(value) {
-    return raw(value).replaceAll("\\n", "\n").trim();
-  }
-
-  function html(value) {
-    return raw(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function isNone(value) {
-    const v = text(value);
-    return !v || v === "無" || v === "(無)" || v === "-";
-  }
+  const raw = (value) => value === null || value === undefined ? "" : String(value);
+  const text = (value) => raw(value).replaceAll("\\n", "\n").trim();
+  const html = (value) => raw(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+  const isNone = (value) => ["", "無", "(無)", "-"].includes(text(value));
 
   function fmt(value) {
     if (value === null || value === undefined || value === "") return "-";
@@ -59,13 +47,15 @@
     return html(t || "-");
   }
 
-  function getId(ranger) {
-    return text(ranger?.ranger_id || ranger?.unitCode || ranger?.id || "");
+  function parseNumber(value) {
+    const match = text(value).replaceAll(",", "").match(/-?\d+(?:\.\d+)?/);
+    if (!match) return null;
+    const n = Number(match[0]);
+    return Number.isFinite(n) ? n : null;
   }
 
-  function getName(ranger) {
-    return text(ranger?.["Ranger名稱"] || ranger?.name) || getId(ranger) || "未命名角色";
-  }
+  const getId = (ranger) => text(ranger?.ranger_id || ranger?.unitCode || ranger?.id || "");
+  const getName = (ranger) => text(ranger?.["Ranger名稱"] || ranger?.name) || getId(ranger) || "未命名角色";
 
   function parseIndexRow(row) {
     const item = {
@@ -85,28 +75,13 @@
     return skill && typeof skill === "object" && !Array.isArray(skill) ? skill : null;
   }
 
-  function getSkillEffects(skill) {
-    return skill && Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
-  }
-
-  function parseRangeNumber(value) {
-    const match = text(value).replaceAll(",", "").match(/-?\d+(?:\.\d+)?/);
-    if (!match) return null;
-    const n = Number(match[0]);
-    return Number.isFinite(n) ? n : null;
-  }
+  const getSkillEffects = (skill) => skill && Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
 
   function skillRange(skill) {
-    const ranges = getSkillEffects(skill)
-      .map((effect) => text(effect?.["範圍"]))
-      .filter((value) => value && value !== "-");
+    const ranges = getSkillEffects(skill).map((effect) => text(effect?.["範圍"])).filter((value) => value && value !== "-");
     if (!ranges.length) return "-";
-
-    const numeric = ranges
-      .map((value) => ({ value, n: parseRangeNumber(value) }))
-      .filter((item) => item.n !== null);
+    const numeric = ranges.map((value) => ({ value, n: parseNumber(value) })).filter((item) => item.n !== null);
     if (!numeric.length) return html(ranges[0]);
-
     const max = numeric.reduce((best, item) => item.n > best.n ? item : best, numeric[0]);
     return html(max.value);
   }
@@ -137,19 +112,25 @@
   }
 
   function getMainTalent(ranger) {
-    const talent = ranger?.["才能"];
-    if (!talent || typeof talent !== "object") return null;
-    const main = talent["主要才能"];
+    const main = ranger?.["才能"]?.["主要才能"];
     return main && typeof main === "object" ? main : null;
   }
 
   function mainTalentEffects(main) {
-    if (!main) return [];
-    const effects = Array.isArray(main["增益效果"]) ? main["增益效果"] : [];
+    const effects = main && Array.isArray(main["增益效果"]) ? main["增益效果"] : [];
     return effects.map((effect) => ({
       effect: text(effect?.["效果"] || "-"),
       probability: text(effect?.["觸發機率"] || effect?.["發動機率"] || effect?.["機率"] || "-")
     })).filter((item) => item.effect && item.effect !== "-");
+  }
+
+  function minProbabilityText(probabilities) {
+    const rows = probabilities.filter((value) => value && value !== "-");
+    if (!rows.length) return "-";
+    const parsed = rows.map((value) => ({ value, n: parseNumber(value) })).filter((item) => item.n !== null);
+    if (!parsed.length) return html(rows[0]);
+    const min = parsed.reduce((best, item) => item.n < best.n ? item : best, parsed[0]);
+    return html(min.value);
   }
 
   function mainTalentValue(ranger, field) {
@@ -162,8 +143,7 @@
       return html(effects || text(main["敘述"] || "-"));
     }
     if (field === "效果觸發機率") {
-      const probabilities = mainTalentEffects(main).map((item) => item.probability).join("\n");
-      return html(probabilities || "-");
+      return minProbabilityText(mainTalentEffects(main).map((item) => item.probability));
     }
     return "-";
   }
@@ -179,32 +159,40 @@
       return `<div class="compare-selected-card"><div class="compare-selected-image"><span class="no-icon">未選</span></div><div><h2>${side === "left" ? "角色 A" : "角色 B"}</h2><p class="compare-suggestion-meta">請從上方搜尋選擇角色</p></div></div>`;
     }
     const id = getId(ranger);
-    return `
-      <div class="compare-selected-card">
-        <div class="compare-selected-image"><img src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.compare-selected-image').classList.add('missing-icon'); this.remove();"></div>
-        <div>
-          <h2>${html(getName(ranger))}</h2>
-          <div class="ranger-tags">${[ranger["Ranger星數"], ranger["類型"], ranger["屬性"]].filter(Boolean).map((tag) => `<span>${html(tag)}</span>`).join("")}</div>
-          <p class="compare-suggestion-meta">${html(id)}</p>
-        </div>
-      </div>`;
+    return `<div class="compare-selected-card"><div class="compare-selected-image"><img src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.compare-selected-image').classList.add('missing-icon'); this.remove();"></div><div><h2>${html(getName(ranger))}</h2><div class="ranger-tags">${[ranger["Ranger星數"], ranger["類型"], ranger["屬性"]].filter(Boolean).map((tag) => `<span>${html(tag)}</span>`).join("")}</div><p class="compare-suggestion-meta">${html(id)}</p></div></div>`;
   }
 
   function renderSelected() {
     els.selected.innerHTML = `<div class="compare-selected-row">${selectedCard(state.left, "left")}${selectedCard(state.right, "right")}</div>`;
   }
 
-  function valueOf(ranger, key) {
-    if (!ranger) return "-";
-    return fmt(ranger[key]);
+  const valueOf = (ranger, key) => ranger ? fmt(ranger[key]) : "-";
+  const rawValue = (ranger, key) => ranger ? ranger[key] : "";
+  const row = (label, left, right) => `<tr><th>${label}</th><td>${left}</td><td>${right}</td></tr>`;
+
+  function section(title, rows, extraClass = "") {
+    return `<section class="compare-section ${extraClass}"><h3>${title}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
   }
 
-  function row(label, left, right) {
-    return `<tr><th>${label}</th><td>${left}</td><td>${right}</td></tr>`;
+  function betterSide(key, leftValue, rightValue) {
+    const left = parseNumber(leftValue);
+    const right = parseNumber(rightValue);
+    if (left === null || right === null || left === right) return null;
+    const lowerIsBetter = new Set(["生產礦物費用", "Ranger再生產時間", "再生產時間"]);
+    return lowerIsBetter.has(key) ? (left < right ? "left" : "right") : (left > right ? "left" : "right");
   }
 
-  function section(title, rows) {
-    return `<section class="compare-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
+  function statRow(key, label = key) {
+    const leftRaw = rawValue(state.left, key);
+    const rightRaw = rawValue(state.right, key);
+    const better = state.highlightBetter ? betterSide(key, leftRaw, rightRaw) : null;
+    const leftClass = better === "left" ? " class=\"compare-better\"" : "";
+    const rightClass = better === "right" ? " class=\"compare-better\"" : "";
+    return `<tr><th>${html(label)}</th><td${leftClass}>${valueOf(state.left, key)}</td><td${rightClass}>${valueOf(state.right, key)}</td></tr>`;
+  }
+
+  function basicStatTitle() {
+    return `基本數值 <label class="compare-highlight-control"><input id="compareHighlightBetter" type="checkbox" ${state.highlightBetter ? "checked" : ""}>醒目顯示較佳數值</label>`;
   }
 
   function skillSection(title, key) {
@@ -215,56 +203,34 @@
     const rightEffects = getSkillEffects(rightSkill);
     const effectCount = Math.max(leftEffects.length, rightEffects.length);
 
-    const metaRows = metaFields.map((field) => `
-      <tr>
-        <th>${html(field)}</th>
-        <td colspan="3">${skillMetaValue(leftSkill, field)}</td>
-        <td colspan="3">${skillMetaValue(rightSkill, field)}</td>
-      </tr>
-    `);
-
+    const metaRows = metaFields.map((field) => `<tr><th>${html(field)}</th><td colspan="3">${skillMetaValue(leftSkill, field)}</td><td colspan="3">${skillMetaValue(rightSkill, field)}</td></tr>`);
     const effectRows = [];
+
     if (effectCount) {
-      effectRows.push(`
-        <tr class="compare-skill-subhead">
-          <th>技能效果</th>
-          <td>效果</td><td>係數</td><td>時間</td>
-          <td>效果</td><td>係數</td><td>時間</td>
-        </tr>
-      `);
+      effectRows.push(`<tr class="compare-skill-subhead"><th>技能效果</th><td>效果</td><td>係數</td><td>時間</td><td>效果</td><td>係數</td><td>時間</td></tr>`);
       for (let i = 0; i < effectCount; i += 1) {
         const left = leftEffects[i];
         const right = rightEffects[i];
-        effectRows.push(`
-          <tr>
-            <th>效果 ${i + 1}</th>
-            <td>${effectCell(left, "效果")}</td>
-            <td>${effectCell(left, "係數")}</td>
-            <td>${effectCell(left, "時間")}</td>
-            <td>${effectCell(right, "效果")}</td>
-            <td>${effectCell(right, "係數")}</td>
-            <td>${effectCell(right, "時間")}</td>
-          </tr>
-        `);
+        effectRows.push(`<tr><th>效果 ${i + 1}</th><td>${effectCell(left, "效果")}</td><td>${effectCell(left, "係數")}</td><td>${effectCell(left, "時間")}</td><td>${effectCell(right, "效果")}</td><td>${effectCell(right, "係數")}</td><td>${effectCell(right, "時間")}</td></tr>`);
       }
     } else {
       effectRows.push(`<tr><th>技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
     }
 
-    return `
-      <section class="compare-section compare-skill-section">
-        <h3>${html(title)}</h3>
-        <div class="compare-table-wrap">
-          <table class="compare-table compare-skill-table">
-            <tbody>${[...metaRows, ...effectRows].join("")}</tbody>
-          </table>
-        </div>
-      </section>
-    `;
+    return `<section class="compare-section compare-skill-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
   }
 
   function iconLabel(index) {
     return `<img class="compare-talent-icon" src="${TLT_ICON(index)}" alt="tlt${index}" onerror="this.replaceWith(document.createTextNode('tlt${index}'))">`;
+  }
+
+  function bindHighlightCheckbox() {
+    const checkbox = document.getElementById("compareHighlightBetter");
+    if (!checkbox) return;
+    checkbox.addEventListener("change", () => {
+      state.highlightBetter = checkbox.checked;
+      renderResult();
+    });
   }
 
   function renderResult(message = "") {
@@ -282,15 +248,14 @@
       ["Ranger名稱", (r) => html(getName(r))],
       ["星數", (r) => valueOf(r, "Ranger星數")],
       ["類型", (r) => valueOf(r, "類型")],
-      ["屬性", (r) => valueOf(r, "屬性")],
-      ["生產礦物費用", (r) => valueOf(r, "生產礦物費用")],
-      ["再生產時間", (r) => valueOf(r, "Ranger再生產時間")]
+      ["屬性", (r) => valueOf(r, "屬性")]
     ];
-    const statKeys = ["體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"];
+    const statKeys = ["生產礦物費用", "Ranger再生產時間", "體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"];
+    const statLabels = { Ranger再生產時間: "再生產時間" };
 
     els.result.innerHTML = [
       section("基本資料", basicRows.map(([label, getter]) => row(html(label), getter(state.left), getter(state.right)))),
-      section("基本數值", statKeys.map((key) => row(html(key), valueOf(state.left, key), valueOf(state.right, key)))),
+      section(basicStatTitle(), statKeys.map((key) => statRow(key, statLabels[key] || key)), "compare-basic-stat-section"),
       skillSection("技能1", "技能1"),
       skillSection("技能2", "技能2"),
       section("能力", [
@@ -310,6 +275,8 @@
         row(iconLabel(4), boostTalentValue(state.left, 2), boostTalentValue(state.right, 2))
       ])
     ].join("");
+
+    bindHighlightCheckbox();
   }
 
   function suggestionItem(item, side) {
@@ -319,16 +286,13 @@
   async function loadIndex() {
     if (state.indexLoaded) return true;
     if (state.indexPromise) return state.indexPromise;
-
     state.indexPromise = fetch(INDEX_URL, { cache: "force-cache" })
       .then((res) => {
         if (!res.ok) throw new Error(`Ranger_index.json HTTP ${res.status}`);
         return res.json();
       })
       .then((rows) => {
-        state.index = (Array.isArray(rows) ? rows : [])
-          .map(parseIndexRow)
-          .filter((item) => item.id && item.name);
+        state.index = (Array.isArray(rows) ? rows : []).map(parseIndexRow).filter((item) => item.id && item.name);
         state.indexLoaded = true;
         return true;
       })
@@ -336,14 +300,12 @@
         console.error(error);
         return false;
       });
-
     return state.indexPromise;
   }
 
   async function loadFullData() {
     if (state.fullLoaded) return true;
     if (state.fullPromise) return state.fullPromise;
-
     state.fullPromise = fetch(DATA_URL, { cache: "force-cache" })
       .then((res) => {
         if (!res.ok) throw new Error(`Rangers_data.json HTTP ${res.status}`);
@@ -358,7 +320,6 @@
         console.error(error);
         return false;
       });
-
     return state.fullPromise;
   }
 
@@ -379,39 +340,32 @@
     const input = side === "left" ? els.leftInput : els.rightInput;
     const target = side === "left" ? els.leftSuggestions : els.rightSuggestions;
     const query = input.value.trim();
-
     if (!query) {
       target.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
       return;
     }
-
     if (!state.indexLoaded) {
       target.innerHTML = `<div class="empty-state small">搜尋索引載入中...</div>`;
-      const ok = await loadIndex();
-      if (!ok) {
+      if (!await loadIndex()) {
         target.innerHTML = `<div class="empty-state small">搜尋索引載入失敗。</div>`;
         return;
       }
     }
-
     const rows = filterRows(query);
     target.innerHTML = rows.length ? rows.map((item) => suggestionItem(item, side)).join("") : `<div class="empty-state small">找不到角色。</div>`;
   }
 
   async function selectRanger(side, id) {
     renderResult("完整角色資料載入中...");
-    const ok = await loadFullData();
-    if (!ok) {
+    if (!await loadFullData()) {
       renderResult("完整 Rangers 資料載入失敗，無法比對。");
       return;
     }
-
     const ranger = state.fullMap.get(id);
     if (!ranger) {
       renderResult(`找不到角色資料：${id}`);
       return;
     }
-
     if (side === "left") {
       state.left = ranger;
       els.leftInput.value = getName(ranger);
@@ -419,7 +373,6 @@
       state.right = ranger;
       els.rightInput.value = getName(ranger);
     }
-
     renderSuggestions(side);
     renderResult();
   }
@@ -432,19 +385,14 @@
     };
   }
 
-  const debouncedLeft = debounce(() => renderSuggestions("left"));
-  const debouncedRight = debounce(() => renderSuggestions("right"));
-
   els.leftInput.addEventListener("focus", () => renderSuggestions("left"));
   els.rightInput.addEventListener("focus", () => renderSuggestions("right"));
-  els.leftInput.addEventListener("input", debouncedLeft);
-  els.rightInput.addEventListener("input", debouncedRight);
-
+  els.leftInput.addEventListener("input", debounce(() => renderSuggestions("left")));
+  els.rightInput.addEventListener("input", debounce(() => renderSuggestions("right")));
   els.leftSuggestions.addEventListener("click", (event) => {
     const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
     if (button) selectRanger(button.dataset.side, button.dataset.id);
   });
-
   els.rightSuggestions.addEventListener("click", (event) => {
     const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
     if (button) selectRanger(button.dataset.side, button.dataset.id);
@@ -453,6 +401,5 @@
   els.leftSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
   els.rightSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
   renderResult();
-
   window.setTimeout(() => { loadIndex(); }, 50);
 })();
