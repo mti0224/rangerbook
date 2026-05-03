@@ -125,7 +125,13 @@ html[data-theme="dark"] body {
 }
 
 html[data-theme="dark"] .site-header {
-  background: rgba(15, 23, 42, 0.92);
+  background: #0f172a !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .header-inner,
+html[data-theme="dark"] .site-actions {
+  background: transparent !important;
 }
 
 html[data-theme="dark"] .hero,
@@ -169,6 +175,41 @@ html[data-theme="dark"] .ranger-detail-image-wrap,
 html[data-theme="dark"] .gear-detail-image-wrap {
   background-color: var(--panel) !important;
   color: var(--text);
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .summary-bar {
+  background: #111827 !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .advanced-filters,
+html[data-theme="dark"] #rangerAdvancedFilters,
+html[data-theme="dark"] .gear-advanced-filters,
+html[data-theme="dark"] #gearAdvancedFilters {
+  background: #172033 !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .advanced-filters label,
+html[data-theme="dark"] .advanced-filters span,
+html[data-theme="dark"] #rangerAdvancedFilters label,
+html[data-theme="dark"] #rangerAdvancedFilters span,
+html[data-theme="dark"] .gear-advanced-filters label,
+html[data-theme="dark"] .gear-advanced-filters span,
+html[data-theme="dark"] #gearAdvancedFilters label,
+html[data-theme="dark"] #gearAdvancedFilters span {
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .advanced-filters select,
+html[data-theme="dark"] #rangerAdvancedFilters select,
+html[data-theme="dark"] .gear-advanced-filters select,
+html[data-theme="dark"] #gearAdvancedFilters select {
+  background-color: #111827 !important;
+  color: var(--text) !important;
   border-color: var(--line) !important;
 }
 
@@ -220,21 +261,22 @@ html[data-theme="dark"] input::placeholder {
 html[data-theme="dark"] .site-header.nav-collapsed .site-nav,
 html[data-theme="dark"] .site-settings-menu,
 html[data-theme="dark"] .site-header .site-nav {
-  background: rgba(23, 32, 51, 0.98);
-  border-color: var(--line);
+  background: #0f172a !important;
+  border-color: var(--line) !important;
 }
 
 html[data-theme="dark"] .site-nav a,
 html[data-theme="dark"] .site-home-link,
 html[data-theme="dark"] .site-header.nav-collapsed .site-nav a {
   color: var(--text);
+  background: transparent !important;
 }
 
 html[data-theme="dark"] .site-nav a:hover,
 html[data-theme="dark"] .site-home-link:hover,
 html[data-theme="dark"] .theme-toggle-row:hover {
-  background: var(--soft);
-  color: var(--primary-dark);
+  background: var(--soft) !important;
+  color: var(--primary-dark) !important;
 }
 
 html[data-theme="dark"] .site-settings-toggle,
