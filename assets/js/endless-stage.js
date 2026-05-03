@@ -1,12 +1,16 @@
 (() => {
-  const DATA_URL = "../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json";
-  const ENEMY_DATA_URL = "../res/infEnemy_data.json";
+  const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const DATA_URL = `${ROOT}res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json`;
+  const ENEMY_DATA_URL = `${ROOT}res/infEnemy_data.json`;
+  const ABILITY_DATA_URL = `${ROOT}res/%E8%83%BD%E5%8A%9B.json`;
   const ENEMY_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
+  const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
+  const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
 
   const state = {
-    raw: null,
     stages: [],
     enemyMap: new Map(),
+    abilityMap: {},
     currentStage: null
   };
 
@@ -33,12 +37,6 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
-  }
-
-  function toNumber(value) {
-    if (typeof value === "number") return value;
-    const n = Number(text(value).replaceAll(",", ""));
-    return Number.isFinite(n) ? n : 0;
   }
 
   function formatValue(value) {
@@ -69,52 +67,43 @@
   }
 
   function getEnemyId(row) {
-    return text(pick(row, ["敵人", "敵人ID", "enemy", "enemyId", "unitCode", "ranger_id", "id"]));
+    return text(pick(row, ["敵人id", "敵人ID", "敵人", "enemy", "enemyId", "unitCode", "ranger_id", "id"]));
   }
 
-  function getStageNo(stage) {
-    const n = toNumber(pick(stage, ["樓層", "關卡", "stage", "floor", "no", "id"]));
-    if (n) return n;
-    const key = text(stage.key || stage.stageKey || "");
-    const m = key.match(/\d+/);
-    return m ? Number(m[0]) : 0;
+  function getEnemyBase(row) {
+    const id = getEnemyId(row);
+    return state.enemyMap.get(id) || {};
+  }
+
+  function getLineDetail(row) {
+    const detail = row?.["詳細資訊"];
+    return detail && typeof detail === "object" ? detail : {};
+  }
+
+  function getStageNoFromKey(key, fallback) {
+    const match = text(key).match(/\d+/);
+    return match ? Number(match[0]) : fallback;
   }
 
   function stageUrl(n) {
-    return `./end${n}`;
+    return `${ROOT}endless/stage/end${n}`;
   }
 
   function parseStageData(raw) {
-    if (Array.isArray(raw)) {
-      const first = raw[0];
-      if (first && typeof first === "object" && Array.isArray(first["生產線"])) {
-        return raw.map((stage, index) => ({
-          no: getStageNo(stage) || index + 1,
-          rows: stage["生產線"],
-          raw: stage
-        }));
-      }
-
-      const grouped = new Map();
-      raw.forEach((row) => {
-        const no = toNumber(pick(row, ["樓層", "關卡", "stage", "floor", "end"]));
-        if (!no) return;
-        if (!grouped.has(no)) grouped.set(no, []);
-        grouped.get(no).push(row);
-      });
-      if (grouped.size) {
-        return [...grouped.entries()].map(([no, rows]) => ({ no, rows, raw: { no } })).sort((a, b) => a.no - b.no);
-      }
-      return raw.map((row, index) => ({ no: index + 1, rows: Array.isArray(row) ? row : [row], raw: row }));
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      return Object.entries(raw).map(([key, value], index) => ({
+        no: getStageNoFromKey(key, index + 1),
+        rows: Array.isArray(value) ? value : [],
+        raw: { key, value }
+      })).sort((a, b) => a.no - b.no);
     }
 
-    if (raw && typeof raw === "object") {
-      return Object.entries(raw).map(([key, value], index) => {
-        const noMatch = key.match(/\d+/);
-        const no = noMatch ? Number(noMatch[0]) : index + 1;
-        const rows = Array.isArray(value) ? value : Array.isArray(value?.["生產線"]) ? value["生產線"] : [value];
-        return { no, rows, raw: { key, value } };
-      }).sort((a, b) => a.no - b.no);
+    if (Array.isArray(raw)) {
+      return raw.map((value, index) => ({
+        no: index + 1,
+        rows: Array.isArray(value) ? value : Array.isArray(value?.["生產線"]) ? value["生產線"] : [value],
+        raw: value
+      }));
     }
 
     return [];
@@ -137,11 +126,10 @@
   function renderEnemyCell(row) {
     const id = getEnemyId(row);
     return `
-      <div class="endless-enemy-cell">
+      <div class="endless-enemy-cell image-only" title="${escapeHtml(id)}">
         <div class="endless-enemy-thumb">
-          ${id ? `<img src="${ENEMY_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.endless-enemy-thumb').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
+          ${id ? `<img src="${ENEMY_IMAGE(id)}" alt="${escapeHtml(id)}" loading="lazy" onerror="this.closest('.endless-enemy-thumb').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
         </div>
-        <strong>${escapeHtml(id || "-")}</strong>
       </div>
     `;
   }
@@ -149,7 +137,7 @@
   function renderStageDetail(stage) {
     if (!stageDetail || !stageTitle || !stageTable) return;
     state.currentStage = stage;
-    stageGrid && (stageGrid.hidden = true);
+    if (stageGrid) stageGrid.hidden = true;
     stageDetail.hidden = false;
     stageTitle.textContent = `第 ${stage.no} 層`;
 
@@ -169,9 +157,9 @@
             ${stage.rows.map((row, index) => `
               <tr>
                 <td>${renderEnemyCell(row)}</td>
-                <td>${formatValue(pick(row, ["初登場時間", "初登場", "登場時間", "startTime", "firstSpawn"]))}</td>
-                <td>${formatValue(pick(row, ["再生產間距", "再生產時間", "生產間隔", "spawnInterval", "interval"]))}</td>
-                <td>${formatValue(pick(row, ["數量上限", "最大數量", "上限", "limit", "maxCount"]))}</td>
+                <td>${formatValue(row["初登場時間"])}</td>
+                <td>${formatValue(row["再生產間距"])}</td>
+                <td>${formatValue(row["生產上限"] || row["數量上限"])}</td>
                 <td><button class="endless-detail-btn" type="button" data-row-index="${index}">查看</button></td>
               </tr>
             `).join("")}
@@ -188,13 +176,137 @@
     });
   }
 
-  function renderLineStat(label, value) {
-    return `<div class="endless-line-stat"><span>${escapeHtml(label)}</span><strong>${formatValue(value)}</strong></div>`;
+  function renderStat(label, value) {
+    return `<div class="ranger-stat"><span>${escapeHtml(label)}</span><strong>${formatValue(value)}</strong></div>`;
+  }
+
+  function getSkill(enemy, key) {
+    const value = enemy?.[key];
+    return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+  }
+
+  function renderSkills(enemy) {
+    const skills = [getSkill(enemy, "技能1"), getSkill(enemy, "技能2"), getSkill(enemy, "技能3")].filter(Boolean);
+    if (!skills.length) return `<div class="empty-state small">沒有技能資料。</div>`;
+    return skills.map((skill, index) => `
+      <article class="ranger-skill-card">
+        <div class="ranger-icon-title">
+          ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
+          <div>
+            <h4>技能 ${index + 1}</h4>
+            <p>發動率：${escapeHtml(skill["發動機率"] || "-")}・技能冷卻時間：${escapeHtml(skill["技能冷卻時間"] || "-")}・觸發基準：${escapeHtml(skill["觸發基準"] || "-")}</p>
+          </div>
+        </div>
+        ${renderSkillTable(skill)}
+      </article>
+    `).join("");
+  }
+
+  function renderSkillTable(skill) {
+    const effects = Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
+    if (!effects.length) return `<div class="empty-state small">沒有技能效果資料。</div>`;
+    return `
+      <div class="table-scroll">
+        <table class="enemy-skill-effect-table">
+          <thead><tr><th>技能效果</th><th>係數</th><th>時間</th><th>範圍</th></tr></thead>
+          <tbody>
+            ${effects.map((effect) => `
+              <tr>
+                <th>${escapeHtml(effect["效果"] || "-")}</th>
+                <td>${escapeHtml(effect["係數"] || "-")}</td>
+                <td>${escapeHtml(effect["有效時間"] || "-")}</td>
+                <td>${escapeHtml(effect["範圍"] || "-")}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function getAbilityDetail(code) {
+    return code ? state.abilityMap[code] : null;
+  }
+
+  function parseAbility(value, fallbackCode = "") {
+    if (!value || value === "無" || value === "(無)") return [];
+    if (Array.isArray(value)) return value.flatMap((entry) => parseAbility(entry, fallbackCode));
+    const code = typeof value === "object" ? text(value.abilityCode || value["abilityCode"] || value.code || fallbackCode) : text(fallbackCode);
+    const detail = getAbilityDetail(code);
+    const name = typeof value === "object" ? text(value["能力"] || value["名稱"] || value.name || detail?.["名稱"] || code) : text(value || detail?.["名稱"] || code);
+    if (!name || name === "無" || name === "(無)") return [];
+    const icon = typeof value === "object" && value.icon ? value.icon : detail?.icon || "";
+    return [{ name, code, icon, detail }];
+  }
+
+  function getAbilities(enemy) {
+    return [
+      ...parseAbility(enemy?.["能力1"], enemy?.abilityCode),
+      ...parseAbility(enemy?.["能力2"], enemy?.abilityCode2),
+      ...parseAbility(enemy?.["能力3"], enemy?.abilityCode3)
+    ];
+  }
+
+  function getAbilityEffects(ability) {
+    if (!ability || typeof ability !== "object") return [];
+    return Object.entries(ability)
+      .filter(([key, value]) => key.startsWith("觸發效果") && value && typeof value === "object")
+      .sort(([a], [b]) => {
+        const na = a === "觸發效果" ? 1 : Number(a.replace("觸發效果", "")) || 999;
+        const nb = b === "觸發效果" ? 1 : Number(b.replace("觸發效果", "")) || 999;
+        return na - nb;
+      })
+      .map(([, value]) => value);
+  }
+
+  function renderAbilities(enemy) {
+    const abilities = getAbilities(enemy);
+    if (!abilities.length) return `<div class="empty-state small">沒有能力資料。</div>`;
+    return `<div class="ranger-ability-list">${abilities.map((ability) => {
+      const description = text(ability.detail?.["敘述"] || "");
+      return `
+        <article class="ranger-ability-card">
+          <div class="ranger-icon-title">
+            ${ability.icon ? `<img class="small-icon" src="${ABILITY_ICON(ability.icon)}" alt="" onerror="this.remove();">` : ""}
+            <div>
+              <h4>${escapeHtml(ability.name)}</h4>
+              ${description && description !== "無" && description !== "(無)" ? `<p class="preline">${escapeHtml(description)}</p>` : ""}
+            </div>
+          </div>
+          ${renderAbilityEffectTable(getAbilityEffects(ability.detail))}
+        </article>
+      `;
+    }).join("")}</div>`;
+  }
+
+  function renderAbilityEffectTable(effects) {
+    if (!effects.length) return "";
+    return `
+      <div class="ability-effect-list">
+        <div class="table-scroll ability-effect-table-wrap">
+          <table class="ability-effect-table">
+            <thead><tr><th>機率</th><th>時機</th><th>場合</th><th>條件</th><th>效果</th></tr></thead>
+            <tbody>
+              ${effects.map((effect) => `
+                <tr>
+                  <td>${escapeHtml(effect["機率"] || "-")}</td>
+                  <td>${escapeHtml(effect["發動時機"] || "-")}</td>
+                  <td>${escapeHtml(effect["場合"] || "-")}</td>
+                  <td>${escapeHtml(effect["條件"] || "-")}</td>
+                  <td>${escapeHtml(effect["效果"] || "-")}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
   }
 
   function renderEnemyLineDetail(row) {
     const id = getEnemyId(row);
-    const enemy = state.enemyMap.get(id) || {};
+    const enemy = getEnemyBase(row);
+    const detail = getLineDetail(row);
     return `
       <div class="ranger-detail-head">
         <div class="ranger-detail-image-wrap">
@@ -209,33 +321,33 @@
       </div>
       <section class="detail-section">
         <h3>生產線資訊</h3>
-        <div class="endless-line-stat-grid">
-          ${renderLineStat("初登場時間", pick(row, ["初登場時間", "初登場", "登場時間", "startTime", "firstSpawn"]))}
-          ${renderLineStat("再生產間距", pick(row, ["再生產間距", "再生產時間", "生產間隔", "spawnInterval", "interval"]))}
-          ${renderLineStat("數量上限", pick(row, ["數量上限", "最大數量", "上限", "limit", "maxCount"]))}
+        <div class="ranger-stat-grid">
+          ${renderStat("初登場時間", row["初登場時間"])}
+          ${renderStat("再生產間距", row["再生產間距"])}
+          ${renderStat("生產上限", row["生產上限"])}
         </div>
       </section>
       <section class="detail-section">
         <h3>敵人詳細資訊</h3>
         <div class="ranger-stat-grid">
-          ${renderLineStat("體力", enemy["體力"])}
-          ${renderLineStat("物理攻擊力", enemy["物理攻擊力"])}
-          ${renderLineStat("魔法攻擊力", enemy["魔法攻擊力"])}
-          ${renderLineStat("物理防禦力", enemy["物理防禦力"])}
-          ${renderLineStat("魔法防禦力", enemy["魔法防禦力"])}
-          ${renderLineStat("攻擊範圍", enemy["攻擊範圍"])}
-          ${renderLineStat("濺射範圍", enemy["濺射範圍"])}
-          ${renderLineStat("移動速度", enemy["移動速度"])}
-          ${renderLineStat("攻擊速度", enemy["攻擊速度"])}
-          ${renderLineStat("技能抗性", enemy["技能抗性"])}
-          ${renderLineStat("爆擊機率", enemy["爆擊機率"])}
-          ${renderLineStat("爆擊傷害", enemy["爆擊傷害"])}
-          ${renderLineStat("閃避機率", enemy["閃避機率"])}
-          ${renderLineStat("技能閃避機率", enemy["技能閃避機率"])}
-          ${renderLineStat("命中率", enemy["命中率"])}
-          ${renderLineStat("技能命中率", enemy["技能命中率"])}
+          ${renderStat("體力", detail["體力"])}
+          ${renderStat("物理攻擊力", detail["物理攻擊力"])}
+          ${renderStat("魔法攻擊力", detail["魔法攻擊力"])}
+          ${renderStat("物理防禦力", detail["物理防禦力"])}
+          ${renderStat("魔法防禦力", detail["魔法防禦力"])}
+          ${renderStat("攻擊範圍", detail["攻擊範圍"])}
+          ${renderStat("濺射範圍", detail["濺射範圍"])}
+          ${renderStat("技能抗性", detail["技能抗性"])}
+          ${renderStat("爆擊機率", detail["爆擊機率"])}
+          ${renderStat("爆擊傷害", detail["爆擊傷害"])}
+          ${renderStat("閃避機率", detail["閃避機率"])}
+          ${renderStat("技能閃避機率", detail["技能閃避機率"])}
+          ${renderStat("命中率", detail["命中率"])}
+          ${renderStat("技能命中率", detail["技能命中率"])}
         </div>
       </section>
+      <section class="detail-section"><h3>技能</h3>${renderSkills(enemy)}</section>
+      <section class="detail-section"><h3>能力</h3>${renderAbilities(enemy)}</section>
     `;
   }
 
@@ -256,18 +368,19 @@
   }
 
   function getRequestedStageNo() {
-    const path = window.location.pathname;
-    const match = path.match(/\/endless\/stage\/end(\d+)\/?$/);
+    const match = window.location.pathname.match(/\/endless\/stage\/end(\d+)\/?$/);
     return match ? Number(match[1]) : 0;
   }
 
   async function init() {
     try {
-      const [stageRes, enemyRes] = await Promise.all([fetch(DATA_URL), fetch(ENEMY_DATA_URL).catch(() => null)]);
+      const [stageRes, enemyRes, abilityRes] = await Promise.all([
+        fetch(DATA_URL),
+        fetch(ENEMY_DATA_URL).catch(() => null),
+        fetch(ABILITY_DATA_URL).catch(() => null)
+      ]);
       if (!stageRes.ok) throw new Error(`HTTP ${stageRes.status}`);
-      const raw = await stageRes.json();
-      state.raw = raw;
-      state.stages = parseStageData(raw);
+      state.stages = parseStageData(await stageRes.json());
 
       if (enemyRes && enemyRes.ok) {
         const enemies = await enemyRes.json();
@@ -278,6 +391,7 @@
           });
         }
       }
+      if (abilityRes && abilityRes.ok) state.abilityMap = await abilityRes.json();
 
       const requested = getRequestedStageNo();
       if (requested) {
