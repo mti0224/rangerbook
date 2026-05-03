@@ -102,7 +102,7 @@
 
 .endless-stage-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 620px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
@@ -110,7 +110,7 @@
 
 .endless-stage-table th,
 .endless-stage-table td {
-  padding: 0.8rem;
+  padding: 0.65rem 0.6rem;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   text-align: left;
@@ -136,17 +136,17 @@
 .endless-enemy-cell {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
   min-width: 0;
 }
 
 .endless-enemy-thumb {
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  border-radius: 0.9rem;
+  border-radius: 0.8rem;
   background: #f3f4f6;
   border: 1px solid var(--line);
   overflow: hidden;
@@ -159,12 +159,12 @@
 }
 
 .endless-detail-btn {
-  padding: 0.55rem 0.9rem;
+  padding: 0.5rem 0.75rem;
 }
 
 .endless-line-stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 0.55rem;
 }
 
@@ -225,5 +225,34 @@ html[data-theme="dark"] .endless-stage-table th {
   .endless-stage-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .endless-stage-table {
+    min-width: 520px;
+  }
+
+  .endless-stage-table th,
+  .endless-stage-table td {
+    padding: 0.52rem 0.45rem;
+    font-size: 0.86rem;
+  }
+
+  .endless-enemy-cell {
+    gap: 0.38rem;
+  }
+
+  .endless-enemy-thumb {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.65rem;
+  }
+
+  .endless-detail-btn {
+    padding: 0.45rem 0.58rem;
+    font-size: 0.82rem;
+  }
+
+  .endless-line-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
   }
 }
