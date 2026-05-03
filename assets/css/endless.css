@@ -102,7 +102,7 @@
 
 .endless-stage-table {
   width: 100%;
-  min-width: 620px;
+  min-width: 600px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
@@ -124,6 +124,14 @@
   font-weight: 900;
 }
 
+.endless-stage-table th:first-child,
+.endless-stage-table td:first-child {
+  width: 4.1rem;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  text-align: center;
+}
+
 .endless-stage-table tr:last-child td {
   border-bottom: 0;
 }
@@ -136,6 +144,7 @@
 .endless-enemy-cell {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   min-width: 0;
 }
@@ -228,13 +237,20 @@ html[data-theme="dark"] .endless-stage-table th {
   }
 
   .endless-stage-table {
-    min-width: 520px;
+    min-width: 500px;
   }
 
   .endless-stage-table th,
   .endless-stage-table td {
     padding: 0.52rem 0.45rem;
     font-size: 0.86rem;
+  }
+
+  .endless-stage-table th:first-child,
+  .endless-stage-table td:first-child {
+    width: 3.1rem;
+    padding-left: 0.24rem;
+    padding-right: 0.24rem;
   }
 
   .endless-enemy-cell {
