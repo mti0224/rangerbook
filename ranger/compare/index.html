@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ranger比對｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/ranger.css">
+  <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
+  <link rel="stylesheet" href="../../assets/css/ranger-compare.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>Ranger比對</h1>
+      <p>搜尋並選擇兩隻角色，左右對齊比較各項數據。</p>
+    </section>
+
+    <section class="compare-controls" aria-label="選擇比對角色">
+      <label class="compare-picker">
+        <span>角色 A</span>
+        <input id="compareLeftInput" type="search" placeholder="搜尋第一隻角色...">
+        <div id="compareLeftSuggestions" class="compare-suggestions"></div>
+      </label>
+
+      <label class="compare-picker">
+        <span>角色 B</span>
+        <input id="compareRightInput" type="search" placeholder="搜尋第二隻角色...">
+        <div id="compareRightSuggestions" class="compare-suggestions"></div>
+      </label>
+    </section>
+
+    <section id="compareSelected" class="compare-board"></section>
+    <section id="compareResult" class="compare-board"></section>
+  </main>
+
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/ranger-compare.js"></script>
+  <script src="../../assets/js/card-tag-colors.js"></script>
+</body>
+</html>
