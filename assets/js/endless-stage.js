@@ -185,6 +185,29 @@
     return value && typeof value === "object" && !Array.isArray(value) ? value : null;
   }
 
+  function renderSkillMetaTable(skill) {
+    return `
+      <div class="table-scroll skill-meta-table-wrap enemy-skill-meta-table-wrap">
+        <table class="skill-meta-table enemy-skill-meta-table">
+          <thead>
+            <tr>
+              <th>發動率</th>
+              <th>技能冷卻時間</th>
+              <th>觸發基準</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${escapeHtml(skill["發動機率"] || "-")}</td>
+              <td>${escapeHtml(skill["技能冷卻時間"] || "-")}</td>
+              <td>${escapeHtml(skill["觸發基準"] || "-")}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   function renderSkills(enemy) {
     const skills = [getSkill(enemy, "技能1"), getSkill(enemy, "技能2"), getSkill(enemy, "技能3")].filter(Boolean);
     if (!skills.length) return `<div class="empty-state small">沒有技能資料。</div>`;
@@ -194,9 +217,9 @@
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
           <div>
             <h4>技能 ${index + 1}</h4>
-            <p>發動率：${escapeHtml(skill["發動機率"] || "-")}・技能冷卻時間：${escapeHtml(skill["技能冷卻時間"] || "-")}・觸發基準：${escapeHtml(skill["觸發基準"] || "-")}</p>
           </div>
         </div>
+        ${renderSkillMetaTable(skill)}
         ${renderSkillTable(skill)}
       </article>
     `).join("");
