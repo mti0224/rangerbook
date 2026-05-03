@@ -232,7 +232,7 @@
     const left = parseNumber(leftValue);
     const right = parseNumber(rightValue);
     if (left === null || right === null || left === right) return null;
-    const lowerIsBetter = new Set(["生產礦物費用", "Ranger再生產時間", "再生產時間"]);
+    const lowerIsBetter = new Set(["生產礦物費用", "Ranger再生產時間", "再生產時間", "攻擊速度"]);
     return lowerIsBetter.has(key) ? (left < right ? "left" : "right") : (left > right ? "left" : "right");
   }
 
