@@ -80,8 +80,8 @@
 }
 
 .compare-suggestion-text {
-  display: block;
-  grid-template-columns: none;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
 }
 
 .compare-suggestion-text > div {
@@ -214,7 +214,7 @@
 
 .compare-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 620px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
@@ -232,14 +232,14 @@
 }
 
 .compare-table th {
-  width: 12rem;
+  width: 9rem;
   background: #f8fafc;
   color: var(--muted);
   font-weight: 900;
 }
 
 .compare-table td {
-  width: calc((100% - 12rem) / 2);
+  width: calc((100% - 9rem) / 2);
 }
 
 .compare-table tr:last-child th,
@@ -260,11 +260,11 @@
 }
 
 .compare-skill-table {
-  min-width: 980px;
+  min-width: 820px;
 }
 
 .compare-skill-table th {
-  width: 9.5rem;
+  width: 8rem;
 }
 
 .compare-skill-table td {
@@ -387,5 +387,31 @@ html[data-theme="dark"] .compare-better {
     display: flex;
     margin-left: 0;
     margin-top: 0.35rem;
+  }
+
+  .compare-table {
+    min-width: 520px;
+  }
+
+  .compare-skill-table {
+    min-width: 680px;
+  }
+
+  .compare-table th,
+  .compare-table td {
+    padding: 0.58rem 0.55rem;
+    font-size: 0.88rem;
+  }
+
+  .compare-table th {
+    width: 6.8rem;
+  }
+
+  .compare-table td {
+    width: calc((100% - 6.8rem) / 2);
+  }
+
+  .compare-skill-table th {
+    width: 6.5rem;
   }
 }
