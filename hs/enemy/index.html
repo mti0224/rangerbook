@@ -70,6 +70,19 @@
   </div>
 
   <script src="../../assets/js/site.js"></script>
+  <script>
+    window.__originalFetchForHsEnemy = window.fetch.bind(window);
+    window.fetch = function (resource, options) {
+      var url = String(resource);
+      if (url.includes('../res/hsEnemy_data.json')) {
+        return window.__originalFetchForHsEnemy('../../res/hsEnemy_data.json', options);
+      }
+      if (url.includes('../res/%E8%83%BD%E5%8A%9B.json')) {
+        return window.__originalFetchForHsEnemy('../../res/%E8%83%BD%E5%8A%9B.json', options);
+      }
+      return window.__originalFetchForHsEnemy(resource, options);
+    };
+  </script>
   <script src="../../assets/js/hsEnemy.js"></script>
   <script src="../../assets/js/hsEnemy-skill-meta-table.js"></script>
   <script src="../../assets/js/card-tag-colors.js"></script>
