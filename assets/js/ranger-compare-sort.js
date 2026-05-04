@@ -1,14 +1,8 @@
 (() => {
   const originalFetch = window.fetch.bind(window);
 
-  function starRank(value) {
-    const raw = String(value ?? "");
-    const match = raw.match(/\d+/);
-    return match ? Number(match[0]) : 0;
-  }
-
-  function getStar(row) {
-    return row?.star ?? row?.["Ranger星數"] ?? row?.rarity ?? row?.grade ?? "";
+  function getStarText(row) {
+    return String(row?.star ?? row?.["Ranger星數"] ?? row?.rarity ?? row?.grade ?? "");
   }
 
   function getName(row) {
@@ -19,21 +13,31 @@
     return String(row?.id ?? row?.ranger_id ?? row?.unitCode ?? "");
   }
 
-  function releaseRank(row) {
+  function starPriority(row) {
+    const raw = getStarText(row);
+    const star = Number(raw.match(/\d+/)?.[0] || 0);
+
+    let evolution = 0;
+    if (/超進化|超進/.test(raw)) evolution = 3;
+    else if (/終極|究極|究進/.test(raw)) evolution = 2;
+
+    return star * 10 + evolution;
+  }
+
+  function idPriority(row) {
     const id = getId(row);
-    const numbers = id.match(/\d+/g);
-    if (!numbers || !numbers.length) return 0;
-    return Math.max(...numbers.map((value) => Number(value)).filter(Number.isFinite));
+    const match = id.match(/\d+/);
+    return match ? Number(match[0]) : 0;
   }
 
   function sortRangerIndex(rows) {
     if (!Array.isArray(rows)) return rows;
     return rows.slice().sort((a, b) => {
-      const starDiff = starRank(getStar(b)) - starRank(getStar(a));
+      const starDiff = starPriority(b) - starPriority(a);
       if (starDiff !== 0) return starDiff;
 
-      const timeDiff = releaseRank(b) - releaseRank(a);
-      if (timeDiff !== 0) return timeDiff;
+      const idDiff = idPriority(b) - idPriority(a);
+      if (idDiff !== 0) return idDiff;
 
       return getName(a).localeCompare(getName(b), "zh-Hant");
     });
