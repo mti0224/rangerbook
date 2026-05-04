@@ -132,7 +132,7 @@
       effectRows.push(`<tr><th>技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
     }
 
-    return `<section class="compare-section compare-skill-section" data-skill-title="${html(title)}"><h3>${skillTitleHtml(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
+    return `<section class="compare-section compare-skill-section" data-skill-title="${html(title)}" data-skill-swap-rendered="1"><h3>${skillTitleHtml(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
   }
 
   function getSkillSections() {
@@ -147,8 +147,9 @@
     if (!checkbox || checkbox.dataset.bound === "1") return;
     checkbox.dataset.bound = "1";
     checkbox.checked = swapLeftSkills;
-    checkbox.addEventListener("change", () => {
-      swapLeftSkills = checkbox.checked;
+    checkbox.addEventListener("change", (event) => {
+      event.stopPropagation();
+      swapLeftSkills = event.currentTarget.checked;
       applySkillSwap(true);
     });
   }
@@ -161,7 +162,7 @@
       .compare-skill-section h3 {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         flex-wrap: wrap;
         gap: 0.6rem;
       }
@@ -178,7 +179,9 @@
       .compare-skill-swap-control input {
         flex: 0 0 1rem;
         width: 1rem;
+        min-width: 1rem;
         height: 1rem;
+        min-height: 1rem;
         margin: 0;
         accent-color: var(--primary);
       }
@@ -196,14 +199,10 @@
 
     injectStyle();
 
-    const alreadyCustom = skill1.dataset.skillSwapRendered === "1" && skill2.dataset.skillSwapRendered === "1";
-    if (!swapLeftSkills && !alreadyCustom && !forceRender) {
-      if (!skill1.querySelector("#compareSwapLeftSkill12")) {
-        const h3 = skill1.querySelector("h3");
-        if (h3) h3.innerHTML = skillTitleHtml("技能1");
-      }
+    if (!forceRender && !skill1.querySelector("#compareSwapLeftSkill12")) {
+      const h3 = skill1.querySelector("h3");
+      if (h3) h3.innerHTML = skillTitleHtml("技能1");
       bindCheckbox();
-      return;
     }
 
     if (!await loadFullData()) return;
@@ -223,9 +222,6 @@
     const nextSkill2 = getSkillSections().skill2;
     if (nextSkill2) nextSkill2.outerHTML = renderSkillSection("技能2", nextLeftSkill2, nextRightSkill2);
 
-    const rendered = getSkillSections();
-    if (rendered.skill1) rendered.skill1.dataset.skillSwapRendered = "1";
-    if (rendered.skill2) rendered.skill2.dataset.skillSwapRendered = "1";
     bindCheckbox();
     applying = false;
   }
