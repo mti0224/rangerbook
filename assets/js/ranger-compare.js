@@ -19,7 +19,8 @@
     fullPromise: null,
     indexLoaded: false,
     fullLoaded: false,
-    highlightBetter: false
+    highlightBetter: false,
+    swapLeftSkill12: false
   };
 
   const $ = (id) => document.getElementById(id);
@@ -249,8 +250,20 @@
     return `基本數值 <label class="compare-highlight-control"><input id="compareHighlightBetter" type="checkbox" ${state.highlightBetter ? "checked" : ""}>醒目顯示較佳數值</label>`;
   }
 
+  function skillTitle(title) {
+    if (title !== "技能1") return html(title);
+    return `${html(title)} <label class="compare-highlight-control compare-skill-swap-control"><input id="compareSwapLeftSkill12" type="checkbox" ${state.swapLeftSkill12 ? "checked" : ""}>若勾選，角色A的技能1資料將與技能2資料對調</label>`;
+  }
+
+  function leftSkillKey(key) {
+    if (!state.swapLeftSkill12) return key;
+    if (key === "技能1") return "技能2";
+    if (key === "技能2") return "技能1";
+    return key;
+  }
+
   function skillSection(title, key) {
-    const leftSkill = getSkill(state.left, key);
+    const leftSkill = getSkill(state.left, leftSkillKey(key));
     const rightSkill = getSkill(state.right, key);
     const metaFields = ["名稱", "發動率", "冷卻", "觸發基準", "技能範圍"];
     const leftEffects = getSkillEffects(leftSkill);
@@ -268,7 +281,7 @@
     } else {
       effectRows.push(`<tr><th>技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
     }
-    return `<section class="compare-section compare-skill-section"><h3>${html(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
+    return `<section class="compare-section compare-skill-section"><h3>${skillTitle(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
   }
 
   function abilitySection() {
@@ -295,6 +308,15 @@
     if (!checkbox) return;
     checkbox.addEventListener("change", () => {
       state.highlightBetter = checkbox.checked;
+      renderResult();
+    });
+  }
+
+  function bindSkillSwapCheckbox() {
+    const checkbox = document.getElementById("compareSwapLeftSkill12");
+    if (!checkbox) return;
+    checkbox.addEventListener("change", () => {
+      state.swapLeftSkill12 = checkbox.checked;
       renderResult();
     });
   }
@@ -336,6 +358,7 @@
       ])
     ].join("");
     bindHighlightCheckbox();
+    bindSkillSwapCheckbox();
   }
 
   function suggestionItem(item, side) {
