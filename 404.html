@@ -7,10 +7,11 @@
   <script>
     (function () {
       var path = window.location.pathname;
-      var match = path.match(/\/rangerbook\/endless\/stage\/end\d+\/?$/);
-      if (match) {
-        document.write('<base href="/rangerbook/endless/stage/">');
-      }
+      var isEndlessStage = /\/rangerbook\/endless\/stage\/end\d+\/?$/.test(path);
+      var isHsStage = /\/rangerbook\/hs\/stage\/hs\d{1,3}\/?$/.test(path);
+      window.__rangerbookRouteKind = isHsStage ? 'hs-stage' : isEndlessStage ? 'endless-stage' : 'unknown';
+      if (isHsStage) document.write('<base href="/rangerbook/hs/stage/">');
+      else if (isEndlessStage) document.write('<base href="/rangerbook/endless/stage/">');
     })();
   </script>
   <link rel="stylesheet" href="../../assets/css/style.css">
@@ -19,11 +20,23 @@
   <link rel="stylesheet" href="../../assets/css/hsEnemy.css">
   <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
   <link rel="stylesheet" href="../../assets/css/endless.css">
+  <link rel="stylesheet" href="../../assets/css/hs-stage.css">
+  <style>
+    html[data-route-kind="hs-stage"] .endless-route,
+    html[data-route-kind="endless-stage"] .hs-route,
+    html[data-route-kind="unknown"] .stage-route {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <script>
+    document.documentElement.dataset.routeKind = window.__rangerbookRouteKind || 'unknown';
+  </script>
+
   <div id="site-header"></div>
 
-  <main class="page ranger-page">
+  <main class="page ranger-page stage-route endless-route">
     <section class="page-title">
       <p class="eyebrow">LINE Rangers Database</p>
       <h1>無限之塔關卡資訊</h1>
@@ -41,6 +54,32 @@
     </section>
   </main>
 
+  <main class="page ranger-page stage-route hs-route">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>困難關卡資訊</h1>
+      <p>選擇關卡後查看該關卡的敵人生產線資訊。</p>
+    </section>
+
+    <section id="hsStageGrid" class="endless-stage-grid" aria-label="困難關卡選擇"></section>
+
+    <section id="hsStageDetail" hidden>
+      <div class="endless-stage-head">
+        <h2 id="hsStageTitle" class="endless-stage-title"></h2>
+        <a class="endless-back-link" href="/rangerbook/hs/stage/">返回關卡選擇</a>
+      </div>
+      <div id="hsStageConditions"></div>
+    </section>
+  </main>
+
+  <main class="page ranger-page stage-route unknown-route">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>找不到頁面</h1>
+      <p>這個網址目前沒有對應的資料頁面。</p>
+    </section>
+  </main>
+
   <div id="endlessEnemyModal" class="modal-backdrop" hidden>
     <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="endlessEnemyModalTitle">
       <button id="endlessEnemyModalCloseBtn" class="modal-close" type="button" aria-label="關閉敵人詳細資料">×</button>
@@ -48,21 +87,32 @@
     </div>
   </div>
 
+  <div id="hsEnemyLineModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="hsEnemyLineModalTitle">
+      <button id="hsEnemyLineModalCloseBtn" class="modal-close" type="button" aria-label="關閉敵人詳細資料">×</button>
+      <div id="hsEnemyLineModalContent"></div>
+    </div>
+  </div>
+
   <script src="../../assets/js/site.js"></script>
   <script>
-    window.__originalFetchForEndlessStage404 = window.fetch.bind(window);
-    window.fetch = function (resource, options) {
-      var url = String(resource);
-      if (url.includes('../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json')) {
-        return window.__originalFetchForEndlessStage404('../../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json', options);
-      }
-      if (url.includes('../res/infEnemy_data.json')) {
-        return window.__originalFetchForEndlessStage404('../../res/infEnemy_data.json', options);
-      }
-      return window.__originalFetchForEndlessStage404(resource, options);
-    };
+    if (window.__rangerbookRouteKind === 'endless-stage') {
+      window.__originalFetchForEndlessStage404 = window.fetch.bind(window);
+      window.fetch = function (resource, options) {
+        var url = String(resource);
+        if (url.includes('../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json')) {
+          return window.__originalFetchForEndlessStage404('../../res/%E7%84%A1%E9%99%90%E4%B9%8B%E5%A1%94%E6%95%B5%E4%BA%BA%E7%94%9F%E7%94%A2%E7%B7%9A.json', options);
+        }
+        if (url.includes('../res/infEnemy_data.json')) {
+          return window.__originalFetchForEndlessStage404('../../res/infEnemy_data.json', options);
+        }
+        return window.__originalFetchForEndlessStage404(resource, options);
+      };
+      document.write('<script src="../../assets/js/endless-stage.js"><\/script>');
+    } else if (window.__rangerbookRouteKind === 'hs-stage') {
+      document.write('<script src="../../assets/js/hs-stage.js"><\/script>');
+    }
   </script>
-  <script src="../../assets/js/endless-stage.js"></script>
   <script src="../../assets/js/card-tag-colors.js"></script>
 </body>
 </html>
