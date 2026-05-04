@@ -15,11 +15,26 @@
     return String(row?.name ?? row?.["Ranger名稱"] ?? "");
   }
 
+  function getId(row) {
+    return String(row?.id ?? row?.ranger_id ?? row?.unitCode ?? "");
+  }
+
+  function releaseRank(row) {
+    const id = getId(row);
+    const numbers = id.match(/\d+/g);
+    if (!numbers || !numbers.length) return 0;
+    return Math.max(...numbers.map((value) => Number(value)).filter(Number.isFinite));
+  }
+
   function sortRangerIndex(rows) {
     if (!Array.isArray(rows)) return rows;
     return rows.slice().sort((a, b) => {
       const starDiff = starRank(getStar(b)) - starRank(getStar(a));
       if (starDiff !== 0) return starDiff;
+
+      const timeDiff = releaseRank(b) - releaseRank(a);
+      if (timeDiff !== 0) return timeDiff;
+
       return getName(a).localeCompare(getName(b), "zh-Hant");
     });
   }
