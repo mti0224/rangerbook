@@ -106,7 +106,7 @@
     if (title !== "技能1") return html(title);
     return `
       <span>${html(title)}</span>
-      <label class="compare-skill-swap-control">
+      <label class="compare-skill-swap-control" for="compareSwapLeftSkill12">
         <input id="compareSwapLeftSkill12" type="checkbox" ${swapLeftSkills ? "checked" : ""}>
         <span>若勾選，角色A的技能1資料將與技能2資料對調</span>
       </label>
@@ -142,18 +142,6 @@
     return { skill1, skill2 };
   }
 
-  function bindCheckbox() {
-    const checkbox = document.getElementById("compareSwapLeftSkill12");
-    if (!checkbox || checkbox.dataset.bound === "1") return;
-    checkbox.dataset.bound = "1";
-    checkbox.checked = swapLeftSkills;
-    checkbox.addEventListener("change", (event) => {
-      event.stopPropagation();
-      swapLeftSkills = event.currentTarget.checked;
-      applySkillSwap(true);
-    });
-  }
-
   function injectStyle() {
     if (document.getElementById("compareSkillSwapStyle")) return;
     const style = document.createElement("style");
@@ -175,6 +163,7 @@
         font-weight: 800;
         line-height: 1.35;
         cursor: pointer;
+        user-select: none;
       }
       .compare-skill-swap-control input {
         flex: 0 0 1rem;
@@ -202,7 +191,6 @@
     if (!forceRender && !skill1.querySelector("#compareSwapLeftSkill12")) {
       const h3 = skill1.querySelector("h3");
       if (h3) h3.innerHTML = skillTitleHtml("技能1");
-      bindCheckbox();
     }
 
     if (!await loadFullData()) return;
@@ -222,7 +210,6 @@
     const nextSkill2 = getSkillSections().skill2;
     if (nextSkill2) nextSkill2.outerHTML = renderSkillSection("技能2", nextLeftSkill2, nextRightSkill2);
 
-    bindCheckbox();
     applying = false;
   }
 
@@ -230,6 +217,21 @@
     clearTimeout(scheduled);
     scheduled = setTimeout(() => applySkillSwap(false), MAX_APPLY_DELAY);
   }
+
+  document.addEventListener("click", (event) => {
+    const checkbox = event.target instanceof Element ? event.target.closest("#compareSwapLeftSkill12") : null;
+    const label = event.target instanceof Element ? event.target.closest(".compare-skill-swap-control") : null;
+    if (!checkbox && !label) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    swapLeftSkills = !swapLeftSkills;
+    const current = document.getElementById("compareSwapLeftSkill12");
+    if (current) current.checked = swapLeftSkills;
+    applySkillSwap(true);
+  }, true);
 
   const observer = new MutationObserver(() => {
     if (!applying) scheduleApply();
