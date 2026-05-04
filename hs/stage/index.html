@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>困難關卡資訊｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/ranger.css">
+  <link rel="stylesheet" href="../../assets/css/ranger-ability-effect-merge.css">
+  <link rel="stylesheet" href="../../assets/css/hsEnemy.css">
+  <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
+  <link rel="stylesheet" href="../../assets/css/endless.css">
+  <link rel="stylesheet" href="../../assets/css/hs-stage.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>困難關卡資訊</h1>
+      <p>選擇關卡後查看該關卡的敵人生產線資訊。</p>
+    </section>
+
+    <section id="hsStageGrid" class="endless-stage-grid" aria-label="困難關卡選擇"></section>
+
+    <section id="hsStageDetail" hidden>
+      <div class="endless-stage-head">
+        <h2 id="hsStageTitle" class="endless-stage-title"></h2>
+        <a class="endless-back-link" href="../stage/">返回關卡選擇</a>
+      </div>
+      <div id="hsStageConditions"></div>
+    </section>
+  </main>
+
+  <div id="hsEnemyLineModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="hsEnemyLineModalTitle">
+      <button id="hsEnemyLineModalCloseBtn" class="modal-close" type="button" aria-label="關閉敵人詳細資料">×</button>
+      <div id="hsEnemyLineModalContent"></div>
+    </div>
+  </div>
+
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/hs-stage.js"></script>
+  <script src="../../assets/js/card-tag-colors.js"></script>
+</body>
+</html>
