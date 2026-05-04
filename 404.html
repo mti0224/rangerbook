@@ -23,8 +23,10 @@
   <link rel="stylesheet" href="../../assets/css/hs-stage.css">
   <style>
     html[data-route-kind="hs-stage"] .endless-route,
+    html[data-route-kind="hs-stage"] .unknown-route,
     html[data-route-kind="endless-stage"] .hs-route,
-    html[data-route-kind="unknown"] .stage-route {
+    html[data-route-kind="endless-stage"] .unknown-route,
+    html[data-route-kind="unknown"] .stage-route:not(.unknown-route) {
       display: none;
     }
   </style>
