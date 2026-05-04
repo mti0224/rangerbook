@@ -3,7 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <base href="/rangerbook/ranger/">
+  <script>
+    (function () {
+      var prefix = window.location.pathname.includes('/rangerbook/') ? '/rangerbook/ranger/' : '/ranger/';
+      document.write('<base href="' + prefix + '">');
+    })();
+  </script>
   <title>Ranger數據｜LINE Rangers Database</title>
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="../assets/css/ranger.css">
