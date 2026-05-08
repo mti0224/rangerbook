@@ -7,11 +7,14 @@
   <script>
     (function () {
       var path = window.location.pathname;
-      var isEndlessStage = /\/rangerbook\/endless\/stage\/end\d+\/?$/.test(path);
-      var isHsStage = /\/rangerbook\/hs\/stage\/hs\d{1,3}\/?$/.test(path);
+      var hasRepoPrefix = path.indexOf('/rangerbook/') === 0;
+      var root = hasRepoPrefix ? '/rangerbook/' : '/';
+      var isEndlessStage = /^(?:\/rangerbook)?\/endless\/stage\/end\d+\/?$/.test(path);
+      var isHsStage = /^(?:\/rangerbook)?\/hs\/stage\/hs\d{1,3}\/?$/.test(path);
+      window.__rangerbookRoot = root;
       window.__rangerbookRouteKind = isHsStage ? 'hs-stage' : isEndlessStage ? 'endless-stage' : 'unknown';
-      if (isHsStage) document.write('<base href="/rangerbook/hs/stage/">');
-      else if (isEndlessStage) document.write('<base href="/rangerbook/endless/stage/">');
+      if (isHsStage) document.write('<base href="' + root + 'hs/stage/">');
+      else if (isEndlessStage) document.write('<base href="' + root + 'endless/stage/">');
     })();
   </script>
   <link rel="stylesheet" href="../../assets/css/style.css">
@@ -50,7 +53,7 @@
     <section id="endlessStageDetail" hidden>
       <div class="endless-stage-head">
         <h2 id="endlessStageTitle" class="endless-stage-title"></h2>
-        <a class="endless-back-link" href="/rangerbook/endless/stage/">返回關卡選擇</a>
+        <a id="endlessStageBackLink" class="endless-back-link" href="/endless/stage/">返回關卡選擇</a>
       </div>
       <div id="endlessStageTable"></div>
     </section>
@@ -68,7 +71,7 @@
     <section id="hsStageDetail" hidden>
       <div class="endless-stage-head">
         <h2 id="hsStageTitle" class="endless-stage-title"></h2>
-        <a class="endless-back-link" href="/rangerbook/hs/stage/">返回關卡選擇</a>
+        <a id="hsStageBackLink" class="endless-back-link" href="/hs/stage/">返回關卡選擇</a>
       </div>
       <div id="hsStageConditions"></div>
     </section>
@@ -98,6 +101,14 @@
 
   <script src="../../assets/js/site.js"></script>
   <script>
+    (function () {
+      var root = window.__rangerbookRoot || '/';
+      var endlessBackLink = document.getElementById('endlessStageBackLink');
+      var hsBackLink = document.getElementById('hsStageBackLink');
+      if (endlessBackLink) endlessBackLink.href = root + 'endless/stage/';
+      if (hsBackLink) hsBackLink.href = root + 'hs/stage/';
+    })();
+
     if (window.__rangerbookRouteKind === 'endless-stage') {
       window.__originalFetchForEndlessStage404 = window.fetch.bind(window);
       window.fetch = function (resource, options) {
