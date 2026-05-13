@@ -6,6 +6,18 @@
   const basePrefix = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const rootPrefix = basePrefix;
 
+  function ensureSiteIcon() {
+    const iconHref = `${rootPrefix}assets/main_icon/icon.png`;
+    let icon = document.querySelector('link[rel="icon"]');
+    if (!icon) {
+      icon = document.createElement("link");
+      icon.rel = "icon";
+      document.head.appendChild(icon);
+    }
+    icon.type = "image/png";
+    icon.href = iconHref;
+  }
+
   function loadStylesheet(filename, version) {
     if (document.querySelector(`link[href*="${filename}"]`)) return;
     const link = document.createElement("link");
@@ -29,6 +41,7 @@
     toggle?.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   }
 
+  ensureSiteIcon();
   applyTheme(getStoredTheme());
 
   loadStylesheet("header-responsive.css", "20260429c");
@@ -41,6 +54,7 @@
         <a class="site-home-link" href="${rootPrefix}">首頁</a>
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${rootPrefix}ranger/">Rangers</a>
+          <a href="${rootPrefix}pvp/">PvP</a>
           <a href="${rootPrefix}gear/">裝備</a>
           <a href="${rootPrefix}hs/">困難關卡</a>
           <a href="${rootPrefix}endless/">無限之塔</a>
