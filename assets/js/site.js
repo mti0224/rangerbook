@@ -62,6 +62,7 @@
           <a href="${rootPrefix}adventEnemy/">降臨關卡</a>
           <a href="${rootPrefix}labyrinthEnemy/">迷宮</a>
           <a href="${rootPrefix}ability/">能力</a>
+          <a href="${rootPrefix}about/">關於本站</a>
         </nav>
         <div class="site-actions">
           <div class="site-settings">
