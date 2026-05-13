@@ -7,7 +7,37 @@
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="../assets/css/home.css">
-  <link rel="stylesheet" href="../assets/css/ranger-compare.css">
+  <style>
+    .about-article {
+      margin-top: 1.2rem;
+      padding: clamp(1.35rem, 3vw, 2.2rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      line-height: 1.9;
+      font-size: clamp(1rem, 1.8vw, 1.08rem);
+    }
+
+    .about-article h2 {
+      margin: 1.8rem 0 0.65rem;
+      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+      letter-spacing: -0.02em;
+    }
+
+    .about-article h2:first-child {
+      margin-top: 0;
+    }
+
+    .about-article p {
+      margin: 0 0 1rem;
+    }
+
+    .about-article p:last-child {
+      margin-bottom: 0;
+    }
+  </style>
 </head>
 <body>
   <div id="site-header"></div>
@@ -19,21 +49,31 @@
       <p>LINE Rangers 手冊是一個提供 LINE Rangers 遊戲資料查詢的非官方資料庫網站。</p>
     </section>
 
-    <section class="ranger-hub-grid" aria-label="關於本站內容">
-      <div class="ranger-hub-card">
-        <div>
-          <h2>網站用途</h2>
-          <p>本站整理角色、裝備、能力、關卡敵人與 PvP 等相關資料，方便玩家快速查詢與比較。</p>
-        </div>
-      </div>
+    <article class="about-article" aria-label="關於本站文章">
+      <h2>LINE Rangers 手冊是什麼？</h2>
+      <p>
+        LINE Rangers 手冊是一個以 LINE Rangers 玩家需求為出發點建立的非官方資料庫網站。本站整理角色、裝備、能力、關卡敵人、無限之塔、活動關卡、降臨關卡、迷宮與 PvP 等相關資料，目標是讓玩家能更快速地查詢遊戲內各項數據，並在培養角色、搭配裝備、研究隊伍或比較資料時，有一個清楚、方便且容易使用的參考工具。
+      </p>
+      <p>
+        這個網站並不是官方網站，資料內容會依照遊戲版本與資料更新狀況持續調整。由於 LINE Rangers 會不定期更新角色、技能、活動與平衡內容，因此本站資料僅作為玩家查詢與研究用途，實際內容仍以遊戲內顯示與官方公告為準。
+      </p>
 
-      <div class="ranger-hub-card">
-        <div>
-          <h2>資料說明</h2>
-          <p>網站內容會依資料更新狀況持續調整，實際遊戲內容仍以 LINE Rangers 官方版本為準。</p>
-        </div>
-      </div>
-    </section>
+      <h2>建立本站的目的</h2>
+      <p>
+        LINE Rangers 有大量角色、裝備、能力與關卡資料，許多數值在遊戲內不一定容易完整比較。本站希望透過資料整理與視覺化呈現，降低玩家查找資訊的時間成本，讓不同階段的玩家都能更容易理解角色特色、隊伍組成與關卡資訊。
+      </p>
+      <p>
+        未來本站也會持續擴充功能，包含更完整的 PvP 排行榜、角色使用率、資料比對與其他輔助分析工具，讓 LINE Rangers 手冊不只是資料查詢頁面，也能成為玩家研究遊戲與分享攻略時的輔助平台。
+      </p>
+
+      <h2>關於作者：蚯蚓貓</h2>
+      <p>
+        本站由蚯蚓貓製作與維護。蚯蚓貓是來自台灣的 LINE Rangers 玩家與內容創作者，長期經營 LINE Rangers 相關影片、攻略與社群內容，並持續關注遊戲資料、角色強度、隊伍搭配與版本更新。
+      </p>
+      <p>
+        除了遊戲內容創作之外，蚯蚓貓也將程式設計、資料整理與網站開發能力應用在 LINE Rangers 手冊的建置上，希望透過自動化資料處理與更清楚的網站介面，讓玩家能用更直覺的方式查詢與理解遊戲資料。
+      </p>
+    </article>
   </main>
 
   <script src="../assets/js/site.js"></script>
