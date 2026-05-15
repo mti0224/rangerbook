@@ -1,6 +1,7 @@
 (() => {
   const ICON_BASE = "https://rangers.lerico.net/res/ability_icon/";
   const DATA_URL = "../res/%E8%83%BD%E5%8A%9B.json";
+  const ADMIN_MODE_KEY = "rangerbook-admin-mode";
 
   const state = {
     raw: {},
@@ -22,6 +23,10 @@
   const modal = $("abilityModal");
   const modalContent = $("modalContent");
   const modalCloseBtn = $("modalCloseBtn");
+
+  function isAdminMode() {
+    return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+  }
 
   function normalizeText(value) {
     if (value === null || value === undefined) return "";
@@ -88,8 +93,9 @@
   }
 
   function toRows(raw) {
+    const adminMode = isAdminMode();
     return Object.entries(raw)
-      .filter(([, item]) => !shouldHideAbility(item))
+      .filter(([, item]) => adminMode || !shouldHideAbility(item))
       .map(([code, item]) => {
         const effects = getEffects(item);
         const tag = getAbilityTag(item);
