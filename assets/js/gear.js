@@ -3,6 +3,8 @@
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ATTR_OPTIONS = ["火", "水", "木", "光", "暗"];
   const TYPECLASS_OPTIONS = ["智慧型", "敏捷型", "力量型"];
+  const ADMIN_MODE_KEY = "rangerbook-admin-mode";
+  const MISSING_GEAR_ICON_KEY = "rangerbook-missing-gear-icons";
 
   const state = { rows: [], filtered: [], selectedId: "", page: 1, pageSize: 60, basicMode: "OR", showMax: false };
   const $ = (id) => document.getElementById(id);
@@ -24,6 +26,27 @@
   const modalPanel = modal?.querySelector(".modal-panel");
   const modalContent = $("gearModalContent");
   const modalCloseBtn = $("gearModalCloseBtn");
+
+  function isAdminMode() {
+    return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+  }
+
+  function getMissingIconSet() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(MISSING_GEAR_ICON_KEY) || "[]");
+      return new Set(Array.isArray(raw) ? raw.map(String) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function rememberMissingIcon(id) {
+    if (!id || isAdminMode()) return;
+    const set = getMissingIconSet();
+    if (set.has(id)) return;
+    set.add(id);
+    localStorage.setItem(MISSING_GEAR_ICON_KEY, JSON.stringify([...set]));
+  }
 
   function text(value) {
     if (value === null || value === undefined) return "";
@@ -50,6 +73,33 @@
 
   function getName(gear) {
     return text(gear["裝備名稱"] || gear.name || getId(gear));
+  }
+
+  function hasKorean(value) {
+    return /[\u3130-\u318F\uAC00-\uD7AF]/.test(text(value));
+  }
+
+  function hasTstText(value) {
+    return text(value).toUpperCase().includes("TST");
+  }
+
+  function gearRawText(gear) {
+    return [
+      getId(gear),
+      getName(gear),
+      gear["裝備星級"],
+      gear["裝備種類"],
+      gear["基本效果"],
+      gear["高級效果"],
+      gear["Skill+"]
+    ].map(text).join(" ");
+  }
+
+  function shouldHideGearForPublic(gear) {
+    if (isAdminMode()) return false;
+    const id = getId(gear);
+    const rawText = gearRawText(gear);
+    return !id || hasKorean(rawText) || hasTstText(rawText) || getMissingIconSet().has(id);
   }
 
   function numberFrom(value) {
@@ -142,15 +192,7 @@
   }
 
   function searchBlob(gear) {
-    return [
-      getId(gear),
-      getName(gear),
-      gear["裝備星級"],
-      gear["裝備種類"],
-      gear["基本效果"],
-      gear["高級效果"],
-      gear["Skill+"]
-    ].map(text).join(" ").toLowerCase();
+    return gearRawText(gear).toLowerCase();
   }
 
   function uniqueSorted(values) {
@@ -266,6 +308,7 @@
 
     state.filtered = state.rows.filter((row) => {
       const gear = row.gear;
+      if (!isAdminMode() && shouldHideGearForPublic(gear)) return false;
       if (q && !row.search.includes(q)) return false;
       if (stars.size && !stars.has(text(gear["裝備星級"]))) return false;
       if (types.size && !types.has(text(gear["裝備種類"]))) return false;
@@ -279,6 +322,18 @@
     });
     state.page = 1;
     renderList();
+  }
+
+  function handleGearIconError(img, id) {
+    const wrap = img.closest(".gear-thumb-wrap");
+    wrap?.classList.add("missing-icon");
+    img.remove();
+    rememberMissingIcon(id);
+    if (!isAdminMode()) {
+      const card = wrap?.closest(".gear-card");
+      card?.remove();
+      window.setTimeout(applyFilters, 0);
+    }
   }
 
   function renderList() {
@@ -298,7 +353,7 @@
       return `
         <button class="ranger-card gear-card ${state.selectedId === id ? "active" : ""}" type="button" data-gear-id="${escapeHtml(id)}">
           <div class="ranger-thumb-wrap gear-thumb-wrap">
-            <img class="ranger-thumb gear-thumb" src="${GEAR_ICON(id)}" alt="" loading="lazy" onerror="this.closest('.gear-thumb-wrap').classList.add('missing-icon'); this.remove();">
+            <img class="ranger-thumb gear-thumb" src="${GEAR_ICON(id)}" alt="" loading="lazy" data-gear-id="${escapeHtml(id)}">
           </div>
           <div class="ranger-card-main">
             <div class="ranger-title-row"><h2>${escapeHtml(getName(gear))}</h2></div>
@@ -308,6 +363,10 @@
         </button>
       `;
     }).join("");
+
+    gearList.querySelectorAll(".gear-thumb").forEach((img) => {
+      img.addEventListener("error", () => handleGearIconError(img, img.dataset.gearId || ""), { once: true });
+    });
 
     gearList.querySelectorAll(".gear-card").forEach((card) => {
       card.addEventListener("click", () => openGear(card.dataset.gearId));
@@ -405,7 +464,7 @@
         .sort(sortGearRows);
       state.filtered = [...state.rows];
       buildFilters();
-      renderList();
+      applyFilters();
     } catch (error) {
       gearList.innerHTML = `<div class="empty-state">資料載入失敗，請確認裝備資料庫.json是否已放在 /res 資料夾。</div>`;
       console.error(error);
