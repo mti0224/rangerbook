@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>管理員登入｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .admin-login-page {
+      min-height: calc(100vh - 120px);
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
+    }
+
+    .admin-login-card {
+      width: min(440px, 100%);
+      border: 1px solid var(--border-color, rgba(120, 120, 120, 0.24));
+      border-radius: 20px;
+      padding: 28px;
+      background: var(--card-bg, rgba(255, 255, 255, 0.88));
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.10);
+    }
+
+    .admin-login-card h1 {
+      margin: 0 0 8px;
+      font-size: 1.7rem;
+    }
+
+    .admin-login-card p {
+      margin: 0 0 20px;
+      color: var(--muted-text, #666);
+      line-height: 1.6;
+    }
+
+    .admin-login-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .admin-login-form label {
+      display: grid;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .admin-login-form input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color, rgba(120, 120, 120, 0.34));
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      background: var(--input-bg, #fff);
+      color: inherit;
+    }
+
+    .admin-login-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .admin-login-actions button,
+    .admin-login-actions a {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .admin-login-actions button {
+      background: #1f6feb;
+      color: #fff;
+    }
+
+    .admin-login-actions a {
+      background: rgba(120, 120, 120, 0.14);
+      color: inherit;
+    }
+
+    .admin-login-message {
+      min-height: 1.5em;
+      margin-top: 14px;
+      font-weight: 700;
+    }
+
+    .admin-login-message.error {
+      color: #d1242f;
+    }
+
+    .admin-login-message.success {
+      color: #1a7f37;
+    }
+
+    .admin-mode-status {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(26, 127, 55, 0.12);
+      color: #1a7f37;
+      font-weight: 800;
+    }
+
+    .admin-mode-status.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="admin-login-page">
+    <section class="admin-login-card" aria-labelledby="adminLoginTitle">
+      <div id="adminModeStatus" class="admin-mode-status">目前已啟用管理員檢視模式。</div>
+      <h1 id="adminLoginTitle">管理員登入</h1>
+      <p>登入後會在同一台瀏覽器啟用管理員檢視模式，可看到前端原本隱藏的資料。</p>
+
+      <form id="adminLoginForm" class="admin-login-form" autocomplete="off">
+        <label>
+          <span>帳號</span>
+          <input id="adminUsername" type="text" inputmode="text" autocomplete="username" required>
+        </label>
+
+        <label>
+          <span>密碼</span>
+          <input id="adminPassword" type="password" autocomplete="current-password" required>
+        </label>
+
+        <div class="admin-login-actions">
+          <button type="submit">登入</button>
+          <button id="adminLogoutBtn" type="button">登出管理員模式</button>
+          <a href="../">回首頁</a>
+        </div>
+      </form>
+
+      <div id="adminLoginMessage" class="admin-login-message" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="../assets/js/site.js"></script>
+  <script>
+    (() => {
+      const ADMIN_MODE_KEY = "rangerbook-admin-mode";
+      const ADMIN_USERNAME = "admin1234";
+      const ADMIN_PASSWORD = "@dmin!1234";
+
+      const form = document.getElementById("adminLoginForm");
+      const usernameInput = document.getElementById("adminUsername");
+      const passwordInput = document.getElementById("adminPassword");
+      const logoutBtn = document.getElementById("adminLogoutBtn");
+      const message = document.getElementById("adminLoginMessage");
+      const status = document.getElementById("adminModeStatus");
+
+      function isAdminMode() {
+        return localStorage.getItem(ADMIN_MODE_KEY) === "true";
+      }
+
+      function updateStatus() {
+        status.classList.toggle("active", isAdminMode());
+      }
+
+      function setMessage(text, type) {
+        message.textContent = text;
+        message.className = `admin-login-message ${type || ""}`.trim();
+      }
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+          localStorage.setItem(ADMIN_MODE_KEY, "true");
+          passwordInput.value = "";
+          setMessage("登入成功，已啟用管理員檢視模式。", "success");
+          updateStatus();
+          return;
+        }
+
+        localStorage.removeItem(ADMIN_MODE_KEY);
+        setMessage("帳號或密碼錯誤。", "error");
+        updateStatus();
+      });
+
+      logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem(ADMIN_MODE_KEY);
+        setMessage("已登出管理員檢視模式。", "success");
+        updateStatus();
+      });
+
+      updateStatus();
+    })();
+  </script>
+</body>
+</html>
