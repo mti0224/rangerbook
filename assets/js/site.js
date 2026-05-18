@@ -25,8 +25,20 @@
     }
   }
 
+  const srcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
+  const nativeSetAttribute = Element.prototype.setAttribute;
+
+  function setImageSrcRaw(img, value) {
+    if (srcDescriptor?.set) {
+      srcDescriptor.set.call(img, value);
+      return;
+    }
+    nativeSetAttribute.call(img, "src", value);
+  }
+
   function patchImage(img) {
     if (!(img instanceof HTMLImageElement)) return;
+    if (img.dataset.resourceFallbackTried === "true") return;
     const currentSrc = img.getAttribute("src");
     const fallbackSrc = legacyResourceUrl(currentSrc || img.src);
     if (!fallbackSrc) return;
@@ -34,10 +46,9 @@
     if (!primarySrc || primarySrc === currentSrc) return;
     img.dataset.resourceFallbackSrc = fallbackSrc;
     img.dataset.resourcePrimarySrc = primarySrc;
-    img.setAttribute("src", primarySrc);
+    nativeSetAttribute.call(img, "src", primarySrc);
   }
 
-  const srcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
   if (srcDescriptor?.set && srcDescriptor?.get) {
     Object.defineProperty(HTMLImageElement.prototype, "src", {
       configurable: true,
@@ -46,6 +57,10 @@
         return srcDescriptor.get.call(this);
       },
       set(value) {
+        if (this.dataset.resourceUseRawSrc === "true") {
+          delete this.dataset.resourceUseRawSrc;
+          return srcDescriptor.set.call(this, value);
+        }
         const fallbackSrc = legacyResourceUrl(value);
         if (fallbackSrc) {
           this.dataset.resourceFallbackSrc = fallbackSrc;
@@ -57,9 +72,12 @@
     });
   }
 
-  const nativeSetAttribute = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function (name, value) {
     if (this instanceof HTMLImageElement && String(name).toLowerCase() === "src") {
+      if (this.dataset.resourceUseRawSrc === "true") {
+        delete this.dataset.resourceUseRawSrc;
+        return nativeSetAttribute.call(this, name, value);
+      }
       const fallbackSrc = legacyResourceUrl(String(value));
       if (fallbackSrc) {
         this.dataset.resourceFallbackSrc = fallbackSrc;
@@ -76,8 +94,10 @@
     const fallbackSrc = img.dataset.resourceFallbackSrc;
     if (!fallbackSrc || img.dataset.resourceFallbackTried === "true") return;
     img.dataset.resourceFallbackTried = "true";
-    img.src = fallbackSrc;
+    img.dataset.resourceUseRawSrc = "true";
+    setImageSrcRaw(img, fallbackSrc);
     event.preventDefault();
+    event.stopPropagation();
     event.stopImmediatePropagation();
   }, true);
 
