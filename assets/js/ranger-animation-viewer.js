@@ -5,11 +5,11 @@
 
   const CLIPS = [
     { key: "idle", label: "待機", body: ["idle", "wait"] },
-    { key: "move", label: "移動", body: ["move"] },
-    { key: "knockback", label: "被擊退", body: ["knockback", "hit", "damage", "down", "finish"] },
-    { key: "attack", label: "一般攻擊", body: ["attack_all", "attack_ready", "attack"], bullet: { part: "bul", names: ["_all", "normal", "finish"] } },
-    { key: "skill1", label: "技能1", body: ["s_attack_all", "s_attack_ready", "s_attack"], bullet: { part: "bul2", names: ["_all", "normal", "finish"] } },
-    { key: "skill2", label: "技能2", body: ["s2_attack_all", "s2_attack_ready", "s2_attack"], bullet: { part: "bul3", names: ["_all", "normal", "finish"] } },
+    { key: "move", label: "移動", body: ["walk"] },
+    { key: "knockback", label: "被擊退", body: ["knockback"] },
+    { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], bullet: { part: "bul", names: ["_all", "normal", "finish"] } },
+    { key: "skill1", label: "技能1", body: ["s_attack_all"], ready: ["s_attack_ready"], bullet: { part: "bul2", names: ["_all", "normal", "finish"] } },
+    { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], bullet: { part: "bul3", names: ["_all", "normal", "finish"] } },
     { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
 
@@ -105,6 +105,9 @@
     const bottom = Math.max(...rects.map((rect) => rect.bottom));
     return { x, y, right, bottom, w: Math.max(1, right - x), h: Math.max(1, bottom - y) };
   }
+  function animDuration(part, animResult) {
+    return animResult ? animResult.anim.frame_count / Math.max(1, part?.anim_rate || 24) : 0;
+  }
   function buildTrack(meta, clipKey) {
     const clip = CLIPS.find((item) => item.key === clipKey) || CLIPS[0];
     if (clip.sequence) {
@@ -112,37 +115,49 @@
       let cursor = 0;
       clip.sequence.forEach((key) => {
         const child = buildTrack(meta, key);
+        if (!child.segments.length) return;
         child.segments.forEach((segment) => segments.push({ ...segment, start: (segment.start || 0) + cursor }));
         cursor += child.duration || 0;
       });
       return { key: clip.key, label: clip.label, segments, duration: cursor || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
     }
+
     const body = meta?.parts?.body;
-    const bodyAnim = getAnim(body, clip.body || ["idle", "wait", "_all"]);
-    const segments = [];
-    if (bodyAnim) {
-      const duration = bodyAnim.anim.frame_count / Math.max(1, body.anim_rate || 24);
-      segments.push({ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: clip.key === "idle" });
-      if (clip.bullet) {
-        const bulletPart = meta?.parts?.[clip.bullet.part];
-        const bulletAnim = getAnim(bulletPart, clip.bullet.names || ["_all"]);
-        if (bulletAnim) segments.push({ partName: clip.bullet.part, animName: bulletAnim.name, start: 0, duration, loop: true });
+    const bodyAnim = getAnim(body, clip.body || []);
+    if (!bodyAnim) return { key: clip.key, label: clip.label, segments: [], duration: 0, partNames: [] };
+
+    const duration = animDuration(body, bodyAnim);
+    const segments = [{ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: clip.key === "idle" }];
+
+    if (clip.bullet) {
+      const bulletPart = meta?.parts?.[clip.bullet.part];
+      const bulletAnim = getAnim(bulletPart, clip.bullet.names || ["_all"]);
+      if (bulletAnim) {
+        const readyAnim = getAnim(body, clip.ready || []);
+        const start = Math.min(duration, animDuration(body, readyAnim));
+        const bulletDuration = animDuration(bulletPart, bulletAnim) || Math.max(0, duration - start);
+        segments.push({
+          partName: clip.bullet.part,
+          animName: bulletAnim.name,
+          start,
+          duration: bulletDuration,
+          loop: false,
+        });
       }
-      return { key: clip.key, label: clip.label, segments, duration: duration || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
     }
-    const fallback = getAnim(body, ["idle", "wait", "_all"]);
-    if (fallback) {
-      const duration = fallback.anim.frame_count / Math.max(1, body.anim_rate || 24);
-      segments.push({ partName: "body", animName: fallback.name, start: 0, duration, loop: true });
-      return { key: clip.key, label: clip.label, segments, duration, partNames: ["body"] };
-    }
-    return { key: clip.key, label: clip.label, segments: [], duration: 1, partNames: [] };
+
+    return { key: clip.key, label: clip.label, segments, duration: duration || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
+  }
+  function availableClips(meta) {
+    return CLIPS.map((clip) => ({ clip, track: buildTrack(meta, clip.key) })).filter(({ track }) => track.segments.length > 0);
   }
   function clipOptions(meta) {
-    return CLIPS.map((clip) => {
-      const track = buildTrack(meta, clip.key);
-      return `<option value="${escapeHtml(clip.key)}"${track.segments.length ? "" : " disabled"}>${escapeHtml(clip.label)}</option>`;
-    }).join("");
+    return availableClips(meta).map(({ clip }) => `<option value="${escapeHtml(clip.key)}">${escapeHtml(clip.label)}</option>`).join("");
+  }
+  function defaultClipKey(meta) {
+    const available = availableClips(meta).map(({ clip }) => clip.key);
+    if (available.includes("idle")) return "idle";
+    return available[0] || "";
   }
   function renderPanel(unitId, meta) {
     return `
@@ -266,10 +281,12 @@
   function bindPanel(section, meta) {
     const select = section.querySelector(".ranger-animation-select"), zoom = section.querySelector(".ranger-animation-zoom"), zoomText = section.querySelector(".ranger-animation-zoom-percent"), canvas = section.querySelector(".ranger-animation-canvas");
     if (!select || !canvas) return;
-    state.activeMeta = meta; state.activeCanvas = canvas; state.activeClip = select.value || "idle";
+    const defaultKey = defaultClipKey(meta);
+    if (defaultKey) select.value = defaultKey;
+    state.activeMeta = meta; state.activeCanvas = canvas; state.activeClip = select.value || defaultKey;
     state.panX = 0; state.panY = 0;
     bindDrag(canvas);
-    select.addEventListener("change", () => { state.activeClip = select.value || "idle"; startPlayback(section); });
+    select.addEventListener("change", () => { state.activeClip = select.value || defaultKey; startPlayback(section); });
     zoom?.addEventListener("input", () => { state.zoom = Number(zoom.value) || 1; if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`; });
     if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
     startPlayback(section);
