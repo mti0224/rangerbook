@@ -3,13 +3,21 @@
   const RESOURCE_PRIMARY_BASE = "https://rangerbook.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
 
+  const VIEWER_BODY_OFFSET = { x: -130, y: -88 };
+  const PROJECTILE_TARGET = {
+    bul: { x: -50, y: -93, isBasicAttack: true },
+    bul2: { x: -50, y: -93, isBasicAttack: false },
+    bul3: { x: -50, y: -93, isBasicAttack: false },
+  };
+  const TARGET_DISTANCE_RATIO = 0.40;
+
   const CLIPS = [
     { key: "idle", label: "待機", body: ["idle", "wait"] },
     { key: "move", label: "移動", body: ["walk"] },
     { key: "knockback", label: "被擊退", body: ["knockback"] },
-    { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], bullet: { part: "bul", names: ["_all", "normal", "finish"] } },
-    { key: "skill1", label: "技能1", body: ["s_attack_all"], ready: ["s_attack_ready"], bullet: { part: "bul2", names: ["_all", "normal", "finish"] } },
-    { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], bullet: { part: "bul3", names: ["_all", "normal", "finish"] } },
+    { key: "attack", label: "一般攻擊", body: ["attack_all"], trigger: ["attack"], bullet: "bul" },
+    { key: "skill1", label: "技能1", body: ["s_attack_all"], trigger: ["s_attack"], bullet: "bul2" },
+    { key: "skill2", label: "技能2", body: ["s2_attack_all"], trigger: ["s2_attack", "skill"], bullet: "bul3" },
     { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
 
@@ -36,7 +44,12 @@
 
   function text(value) { return value === null || value === undefined ? "" : String(value).trim(); }
   function escapeHtml(value) {
-    return text(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    return text(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
   function resourceUrl(path) { return `${RESOURCE_PRIMARY_BASE}${String(path || "").replace(/^\/+/, "")}`; }
   function legacyResourceUrl(path) {
@@ -74,6 +87,7 @@
     state.imageCache.set(key, promise);
     return promise;
   }
+
   function inferUnitIdFromModal(modalContent) {
     const img = modalContent.querySelector(".ranger-detail-image");
     const src = img?.getAttribute("src") || img?.src || "";
@@ -96,17 +110,52 @@
     const h = Number(canvas.h || 0) || 240;
     return { x, y, w, h, right: x + w, bottom: y + h };
   }
-  function unionBounds(meta, partNames) {
-    const rects = [...new Set(partNames)].map((name) => meta?.parts?.[name]).filter(Boolean).map(stageRect);
-    if (!rects.length) return { x: -160, y: -160, right: 160, bottom: 160, w: 320, h: 320 };
-    const x = Math.min(...rects.map((rect) => rect.x));
-    const y = Math.min(...rects.map((rect) => rect.y));
-    const right = Math.max(...rects.map((rect) => rect.right));
-    const bottom = Math.max(...rects.map((rect) => rect.bottom));
-    return { x, y, right, bottom, w: Math.max(1, right - x), h: Math.max(1, bottom - y) };
+  function bodyBounds(meta) {
+    const rect = stageRect(meta?.parts?.body);
+    return {
+      x: rect.x,
+      y: rect.y,
+      right: rect.right + 420,
+      bottom: rect.bottom,
+      w: Math.max(1, rect.w + 420),
+      h: Math.max(1, rect.h),
+    };
   }
   function animDuration(part, animResult) {
     return animResult ? animResult.anim.frame_count / Math.max(1, part?.anim_rate || 24) : 0;
+  }
+  function segmentStartTime(part, segmentNames) {
+    if (!part || !Array.isArray(part.segments)) return 0;
+    const segment = part.segments.find((item) => segmentNames.includes(item.name));
+    return segment ? Number(segment.start || 0) / Math.max(1, part.anim_rate || 24) : 0;
+  }
+  function projectileDurationSeconds(bodyPart, bulletPart, normalAnim, isBasicAttack) {
+    const normalCount = normalAnim?.anim?.frame_count || 0;
+    const bodyFps = Math.max(1, bodyPart?.anim_rate || 24);
+    if (isBasicAttack && normalCount <= 1) return 15 / bodyFps;
+    return Math.max(1, normalCount) / bodyFps;
+  }
+  function buildProjectile(meta, clip, bodyPart, bodyAnim, clipDuration) {
+    if (!clip.bullet) return null;
+    const bulletPart = meta?.parts?.[clip.bullet];
+    if (!bulletPart) return null;
+    const normalAnim = getAnim(bulletPart, ["normal", "_all"]);
+    if (!normalAnim) return null;
+    const finishAnim = getAnim(bulletPart, ["finish"]);
+    const config = PROJECTILE_TARGET[clip.bullet] || PROJECTILE_TARGET.bul;
+    const spawnTime = Math.min(clipDuration, segmentStartTime(bodyPart, clip.trigger || []));
+    const normalDuration = projectileDurationSeconds(bodyPart, bulletPart, normalAnim, config.isBasicAttack);
+    const finishDuration = finishAnim ? finishAnim.anim.frame_count / Math.max(1, bodyPart.anim_rate || 24) : 0;
+    return {
+      partName: clip.bullet,
+      normalAnimName: normalAnim.name,
+      finishAnimName: finishAnim?.name || "",
+      spawnTime,
+      normalDuration,
+      finishDuration,
+      targetOffsetX: config.x,
+      targetOffsetY: config.y,
+    };
   }
   function buildTrack(meta, clipKey) {
     const clip = CLIPS.find((item) => item.key === clipKey) || CLIPS[0];
@@ -119,34 +168,20 @@
         child.segments.forEach((segment) => segments.push({ ...segment, start: (segment.start || 0) + cursor }));
         cursor += child.duration || 0;
       });
-      return { key: clip.key, label: clip.label, segments, duration: cursor || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
+      return { key: clip.key, label: clip.label, segments, duration: cursor || 1 };
     }
 
-    const body = meta?.parts?.body;
-    const bodyAnim = getAnim(body, clip.body || []);
-    if (!bodyAnim) return { key: clip.key, label: clip.label, segments: [], duration: 0, partNames: [] };
-
-    const duration = animDuration(body, bodyAnim);
-    const segments = [{ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: clip.key === "idle" }];
-
-    if (clip.bullet) {
-      const bulletPart = meta?.parts?.[clip.bullet.part];
-      const bulletAnim = getAnim(bulletPart, clip.bullet.names || ["_all"]);
-      if (bulletAnim) {
-        const readyAnim = getAnim(body, clip.ready || []);
-        const start = Math.min(duration, animDuration(body, readyAnim));
-        const bulletDuration = animDuration(bulletPart, bulletAnim) || Math.max(0, duration - start);
-        segments.push({
-          partName: clip.bullet.part,
-          animName: bulletAnim.name,
-          start,
-          duration: bulletDuration,
-          loop: false,
-        });
-      }
-    }
-
-    return { key: clip.key, label: clip.label, segments, duration: duration || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
+    const bodyPart = meta?.parts?.body;
+    const bodyAnim = getAnim(bodyPart, clip.body || []);
+    if (!bodyAnim) return { key: clip.key, label: clip.label, segments: [], duration: 0 };
+    const duration = animDuration(bodyPart, bodyAnim) || 1;
+    const projectile = buildProjectile(meta, clip, bodyPart, bodyAnim, duration);
+    return {
+      key: clip.key,
+      label: clip.label,
+      segments: [{ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: clip.key === "idle", projectile }],
+      duration,
+    };
   }
   function availableClips(meta) {
     return CLIPS.map((clip) => ({ clip, track: buildTrack(meta, clip.key) })).filter(({ track }) => track.segments.length > 0);
@@ -159,6 +194,7 @@
     if (available.includes("idle")) return "idle";
     return available[0] || "";
   }
+
   function renderPanel(unitId, meta) {
     return `
       <section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}">
@@ -176,6 +212,7 @@
   function fallbackMissingPanel(unitId) {
     return `<section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}"><h3>角色動畫</h3><div class="empty-state small">尚未產生此角色的動畫 metadata。請確認 GitHub Actions 已完成 Build animation metadata。</div></section>`;
   }
+
   function getSpriteCanvas(part, atlas, imageName) {
     const cacheKey = `${part.png}|${imageName}`;
     if (state.spriteCache.has(cacheKey)) return state.spriteCache.get(cacheKey);
@@ -188,8 +225,12 @@
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     if (sprite.rotated) {
-      ctx.translate(sw / 2, sh / 2); ctx.rotate(-Math.PI / 2); ctx.drawImage(atlas, sx, sy, sh, sw, -sh / 2, -sw / 2, sh, sw);
-    } else ctx.drawImage(atlas, sx, sy, sw, sh, 0, 0, sw, sh);
+      ctx.translate(sw / 2, sh / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.drawImage(atlas, sx, sy, sh, sw, -sh / 2, -sw / 2, sh, sw);
+    } else {
+      ctx.drawImage(atlas, sx, sy, sw, sh, 0, 0, sw, sh);
+    }
     state.spriteCache.set(cacheKey, canvas);
     return canvas;
   }
@@ -211,17 +252,12 @@
     ctx.drawImage(spriteCanvas, -w / 2, -h / 2);
     ctx.restore();
   }
-  async function drawPartFrame(ctx, meta, partName, animName, elapsed, baseX, baseY, scale, loop) {
-    const part = meta?.parts?.[partName], anim = part?.animations?.[animName];
+  async function drawFrameAtOrigin(ctx, part, animName, frameIndex, originX, originY, scale) {
+    const anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return;
-    const atlas = await loadImage(part.png); if (!atlas) return;
-    const fps = Math.max(1, part.anim_rate || 24);
-    const rawFrame = Math.floor(elapsed * fps);
-    const frameIndex = loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, rawFrame);
-    const frame = anim.frames[frameIndex] || [];
-    const rect = stageRect(part);
-    const originX = baseX + rect.x * scale;
-    const originY = baseY + rect.y * scale;
+    const atlas = await loadImage(part.png);
+    if (!atlas) return;
+    const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
     for (const item of frame) {
       const [, resNum, objectMatrix, color] = item;
       const imageDef = part.images?.[resNum];
@@ -230,23 +266,76 @@
       if (spriteCanvas) drawSprite(ctx, spriteCanvas, objectMatrix, imageDef.m, color, originX, originY, scale);
     }
   }
+  async function drawBodySegment(ctx, meta, segment, elapsed, bodyOriginX, bodyOriginY, scale) {
+    const part = meta?.parts?.body;
+    if (!part) return;
+    const anim = part.animations?.[segment.animName];
+    if (!anim?.frames?.length) return;
+    const fps = Math.max(1, part.anim_rate || 24);
+    const rawFrame = Math.floor(elapsed * fps);
+    const frameIndex = segment.loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, rawFrame);
+    await drawFrameAtOrigin(ctx, part, segment.animName, frameIndex, bodyOriginX, bodyOriginY, scale);
+  }
+  async function drawProjectile(ctx, meta, projectile, projectileAge, bodyOriginX, bodyOriginY, targetDistance, scale) {
+    if (!projectile || projectileAge < 0) return;
+    const part = meta?.parts?.[projectile.partName];
+    if (!part) return;
+    const bodyFps = Math.max(1, meta?.parts?.body?.anim_rate || 24);
+    const startX = bodyOriginX;
+    const startY = bodyOriginY;
+    const endX = bodyOriginX - VIEWER_BODY_OFFSET.x * scale + targetDistance + projectile.targetOffsetX * scale;
+    const endY = bodyOriginY - VIEWER_BODY_OFFSET.y * scale + projectile.targetOffsetY * scale;
+
+    if (projectileAge < projectile.normalDuration) {
+      const normalAnim = part.animations?.[projectile.normalAnimName];
+      if (!normalAnim?.frames?.length) return;
+      const p = Math.min(1, Math.max(0, projectileAge / Math.max(0.001, projectile.normalDuration)));
+      const x = startX + (endX - startX) * p;
+      const y = startY + (endY - startY) * p;
+      const rawFrame = Math.floor(projectileAge * bodyFps);
+      const frameIndex = rawFrame % Math.max(1, normalAnim.frame_count);
+      await drawFrameAtOrigin(ctx, part, projectile.normalAnimName, frameIndex, x, y, scale);
+      return;
+    }
+
+    if (!projectile.finishAnimName) return;
+    const finishAnim = part.animations?.[projectile.finishAnimName];
+    if (!finishAnim?.frames?.length) return;
+    const finishAge = projectileAge - projectile.normalDuration;
+    if (finishAge > projectile.finishDuration) return;
+    const frameIndex = Math.min(finishAnim.frame_count - 1, Math.max(0, Math.floor(finishAge * bodyFps)));
+    await drawFrameAtOrigin(ctx, part, projectile.finishAnimName, frameIndex, endX, endY, scale);
+  }
   async function drawTrack(canvas, meta, track, elapsed) {
-    const ctx = canvas.getContext("2d"); if (!ctx || !track) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx || !track) return;
     const width = canvas.width, height = canvas.height;
-    const bounds = unionBounds(meta, track.partNames || ["body"]);
-    const fitScale = Math.min(width / bounds.w, height / bounds.h) * 0.78;
+    const bounds = bodyBounds(meta);
+    const fitScale = Math.min(width / bounds.w, height / bounds.h) * 0.82;
     const scale = fitScale * (state.zoom || 1);
     const baseX = (width - bounds.w * scale) / 2 - bounds.x * scale + state.panX;
     const baseY = (height - bounds.h * scale) / 2 - bounds.y * scale + state.panY;
+    const bodyRect = stageRect(meta?.parts?.body);
+    const bodyOriginX = baseX + bodyRect.x * scale;
+    const bodyOriginY = baseY + bodyRect.y * scale;
+    const targetDistance = width * TARGET_DISTANCE_RATIO;
 
     ctx.clearRect(0, 0, width, height);
     ctx.save(); ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(0, Math.round(height * 0.76), width, 1); ctx.restore();
+
     const t = track.duration ? elapsed % track.duration : elapsed;
     for (const segment of track.segments) {
-      const start = segment.start || 0, end = start + segment.duration;
-      if (t >= start && t <= end) await drawPartFrame(ctx, meta, segment.partName, segment.animName, t - start, baseX, baseY, scale, segment.loop);
+      const start = segment.start || 0;
+      const end = start + segment.duration;
+      if (t < start || t > end) continue;
+      const segmentAge = t - start;
+      await drawBodySegment(ctx, meta, segment, segmentAge, bodyOriginX, bodyOriginY, scale);
+      if (segment.projectile) {
+        await drawProjectile(ctx, meta, segment.projectile, segmentAge - segment.projectile.spawnTime, bodyOriginX, bodyOriginY, targetDistance, scale);
+      }
     }
   }
+
   function stopPlayback() { if (state.rafId) cancelAnimationFrame(state.rafId); state.rafId = 0; }
   function playLoop() {
     if (!state.activeCanvas || !state.activeMeta) return;
