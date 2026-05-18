@@ -43,5 +43,6 @@ jobs:
             echo "No animation metadata changes."
           else
             git commit -m "Build Ranger animation metadata"
+            git pull --rebase origin main
             git push
           fi
