@@ -23,9 +23,21 @@
   max-width: 720px;
   aspect-ratio: 16 / 9;
   border-radius: 14px;
+  cursor: grab;
+  touch-action: none;
   background:
     linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.04)),
     repeating-linear-gradient(45deg, rgba(120,120,120,0.08), rgba(120,120,120,0.08) 8px, transparent 8px, transparent 16px);
+}
+
+.ranger-animation-canvas.dragging {
+  cursor: grabbing;
+}
+
+.ranger-animation-hint {
+  margin: 8px 0 0;
+  color: var(--muted-text, #777);
+  font-size: 0.9rem;
 }
 
 .ranger-animation-controls {
