@@ -36,6 +36,10 @@
   margin-top: 12px;
 }
 
+.ranger-animation-controls.simplified {
+  grid-template-columns: minmax(180px, 1fr) minmax(180px, 0.7fr);
+}
+
 .ranger-animation-controls label {
   display: grid;
   gap: 4px;
@@ -46,6 +50,10 @@
 .ranger-animation-controls input,
 .ranger-animation-controls button {
   min-height: 36px;
+}
+
+.ranger-animation-zoom-percent {
+  font-weight: 600;
 }
 
 .ranger-animation-frame-info,
@@ -88,7 +96,11 @@
 
 .ranger-skill-card .skill-effect-table thead th,
 .ranger-talent-card .skill-effect-table thead th {
-  font-weight: 400;
+  font-weight: 700;
+}
+
+.skill-description {
+  margin-top: 4px;
 }
 
 .skill-meta-table th,
@@ -113,7 +125,8 @@
 }
 
 @media (max-width: 860px) {
-  .ranger-animation-grid {
+  .ranger-animation-grid,
+  .ranger-animation-controls.simplified {
     grid-template-columns: 1fr;
   }
 
