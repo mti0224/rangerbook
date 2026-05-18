@@ -55,6 +55,8 @@ class SAMParser:
         self.raw = path.read_bytes()
         self.pos = 0
         self.anim_rate = 24
+        self.x = 0.0
+        self.y = 0.0
         self.canvas_w = 0.0
         self.canvas_h = 0.0
         self.images: list[dict[str, Any]] = []
@@ -232,7 +234,12 @@ class SAMParser:
 
         return {
             "anim_rate": self.anim_rate,
-            "canvas": {"w": round(self.canvas_w, 3), "h": round(self.canvas_h, 3)},
+            "canvas": {
+                "x": round(self.x, 3),
+                "y": round(self.y, 3),
+                "w": round(self.canvas_w, 3),
+                "h": round(self.canvas_h, 3),
+            },
             "images": self.images,
             "segments": self.all_segments,
             "animations": {
