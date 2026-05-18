@@ -17,8 +17,8 @@ from __future__ import annotations
 import json
 import math
 import plistlib
+import re
 import struct
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -250,8 +250,21 @@ class SAMParser:
         }
 
 
+def stable_json(data: Any, *, pretty: bool = False) -> str:
+    if pretty:
+        return json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    return json.dumps(data, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
+
+def write_if_changed(path: Path, content: str) -> bool:
+    if path.exists() and path.read_text(encoding="utf-8") == content:
+        return False
+    path.write_text(content, encoding="utf-8")
+    return True
+
+
 def plist_rect(value: str) -> list[int]:
-    numbers = [int(item) for item in __import__("re").findall(r"-?\d+", value or "")]
+    numbers = [int(item) for item in re.findall(r"-?\d+", value or "")]
     return numbers[:4] if len(numbers) >= 4 else [0, 0, 0, 0]
 
 
@@ -316,7 +329,6 @@ def build_unit(unit_dir: Path) -> dict[str, Any] | None:
         "prefix": prefix,
         "resource_dir": str(unit_dir.relative_to(ROOT)).replace("\\", "/"),
         "thumbnail": str((unit_dir / f"{prefix}-thum.png").relative_to(ROOT)).replace("\\", "/") if (unit_dir / f"{prefix}-thum.png").exists() else "",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
         "startup": startup,
         "parts": parts,
     }
@@ -326,14 +338,18 @@ def main() -> int:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     units: dict[str, Any] = {}
     errors: list[dict[str, str]] = []
+    changed_files = 0
 
+    current_unit_ids = set()
     for unit_dir in sorted(path for path in RESOURCE_ROOT.iterdir() if path.is_dir()):
         try:
             data = build_unit(unit_dir)
             if not data:
                 continue
+            current_unit_ids.add(unit_dir.name)
             out_path = OUT_ROOT / f"{unit_dir.name}.json"
-            out_path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+            if write_if_changed(out_path, stable_json(data)):
+                changed_files += 1
             units[unit_dir.name] = {
                 "unit_id": unit_dir.name,
                 "prefix": data["prefix"],
@@ -343,18 +359,26 @@ def main() -> int:
                 "parts": sorted(data["parts"].keys()),
                 "startup": data["startup"],
             }
-        except Exception as exc:  # keep building the other units
+        except Exception as exc:
             errors.append({"unit_id": unit_dir.name, "error": str(exc)})
 
+    for old_meta in OUT_ROOT.glob("*.json"):
+        if old_meta.name == "index.json":
+            continue
+        if old_meta.stem not in current_unit_ids:
+            old_meta.unlink()
+            changed_files += 1
+
     index = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
         "resource_root": "res_from_emulator",
         "count": len(units),
         "units": units,
         "errors": errors,
     }
-    (OUT_ROOT / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"Built animation metadata for {len(units)} unit(s); errors={len(errors)}")
+    if write_if_changed(OUT_ROOT / "index.json", stable_json(index, pretty=True)):
+      changed_files += 1
+
+    print(f"Built animation metadata for {len(units)} unit(s); errors={len(errors)}; changed_files={changed_files}")
     if errors:
         for item in errors[:20]:
             print(f"ERROR {item['unit_id']}: {item['error']}")
