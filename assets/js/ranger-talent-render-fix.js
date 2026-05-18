@@ -51,12 +51,6 @@
     return `<h4 class="talent-title-with-icon">${icon}<span>${html(titleText || title)}</span></h4>`;
   }
 
-  function displayKey(key) {
-    return text(key)
-      .replace("條件搜尋分類", "條件搜尋分類")
-      .replace("效果搜尋分類", "效果搜尋分類");
-  }
-
   function renderPrimitive(value) {
     const valueText = text(value);
     return valueText ? html(valueText) : "-";
@@ -68,14 +62,16 @@
       return `<span>${html(items.map(text).filter(Boolean).join("、"))}</span>`;
     }
 
-    const headers = [...new Set(rows.flatMap((item) => Object.keys(item).filter((key) => !isNone(item[key]))))];
+    const preferred = ["觸發機率", "效果", "效果搜尋分類", "條件", "條件搜尋分類", "敘述"];
+    const discovered = [...new Set(rows.flatMap((item) => Object.keys(item).filter((key) => !isNone(item[key]))))];
+    const headers = [...preferred.filter((key) => discovered.includes(key)), ...discovered.filter((key) => !preferred.includes(key))];
     if (!headers.length) return "-";
 
     return `
       <div class="table-scroll">
         <table class="skill-effect-table talent-effect-table">
           <thead>
-            <tr>${headers.map((key) => `<th>${html(displayKey(key))}</th>`).join("")}</tr>
+            <tr>${headers.map((key) => `<th>${html(key)}</th>`).join("")}</tr>
           </thead>
           <tbody>
             ${rows.map((item) => `
@@ -88,9 +84,15 @@
   }
 
   function renderObjectAsDefinition(value) {
-    const rows = Object.entries(value || {}).filter(([, item]) => !isNone(item));
-    if (!rows.length) return "-";
-    return `<dl>${rows.map(([key, item]) => `<div><dt>${html(displayKey(key))}</dt><dd>${renderValue(item)}</dd></div>`).join("")}</dl>`;
+    const preferred = ["敘述", "觸發機率", "條件", "條件搜尋分類", "增益效果", "效果", "效果搜尋分類"];
+    const entries = Object.entries(value || {}).filter(([, item]) => !isNone(item));
+    const ordered = [
+      ...preferred.filter((key) => Object.prototype.hasOwnProperty.call(value || {}, key)).map((key) => [key, value[key]]),
+      ...entries.filter(([key]) => !preferred.includes(key))
+    ].filter(([, item]) => !isNone(item));
+    if (!ordered.length) return "-";
+
+    return `<dl>${ordered.map(([key, item]) => `<div><dt>${html(key)}</dt><dd>${renderValue(item)}</dd></div>`).join("")}</dl>`;
   }
 
   function renderValue(value) {
@@ -100,25 +102,42 @@
     return renderPrimitive(value);
   }
 
+  function renderBoostItem(value, index, key = "") {
+    let label = "";
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      label = text(value["效果"] || value["敘述"] || value.name || value.value || "");
+    } else {
+      label = text(value);
+    }
+    if (!label) label = renderValue(value);
+    else label = html(label);
+    const prefix = key && !/^\d+$/.test(text(key)) ? html(key) : "";
+    return `
+      <div class="talent-boost-row">
+        <dd class="talent-boost-value">
+          <img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();">
+          <span>${prefix}${label}</span>
+        </dd>
+      </div>
+    `;
+  }
+
   function renderBoostTalent(title, content) {
-    if (typeof content !== "object" || Array.isArray(content)) {
-      return `<article class="ranger-talent-card">${talentTitle(title, false)}<p>${renderPrimitive(content)}</p></article>`;
+    let rows = [];
+    if (Array.isArray(content)) {
+      rows = content.filter((value) => !isNone(value)).map((value, index) => renderBoostItem(value, index));
+    } else if (content && typeof content === "object") {
+      rows = Object.entries(content)
+        .filter(([, value]) => !isNone(value))
+        .map(([key, value], index) => renderBoostItem(value, index, key));
+    } else if (!isNone(content)) {
+      rows = [renderBoostItem(content, 0)];
     }
 
-    const rows = Object.entries(content).filter(([, value]) => !isNone(value));
     return `
       <article class="ranger-talent-card">
         ${talentTitle(title, false)}
-        <dl>
-          ${rows.map(([key, value], index) => `
-            <div class="talent-boost-row">
-              <dd class="talent-boost-value">
-                <img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();">
-                <span>${/^\d+$/.test(text(key)) ? renderValue(value) : `${html(key)}${renderValue(value)}`}</span>
-              </dd>
-            </div>
-          `).join("")}
-        </dl>
+        ${rows.length ? `<dl>${rows.join("")}</dl>` : `<div class="empty-state small">沒有強化才能資料。</div>`}
       </article>
     `;
   }
