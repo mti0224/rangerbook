@@ -1,14 +1,8 @@
 (() => {
   const DATA_URL = "../res/Rangers_data.json";
+  const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
   const TLT_ICON = (index) => `../assets/tlt_icon/tlt${index}.png`;
   let rowsPromise = null;
-
-  function rawText(value) {
-    if (value === null || value === undefined) return "";
-    if (typeof value === "string") return value;
-    if (typeof value === "number" || typeof value === "boolean") return String(value);
-    return "";
-  }
 
   function text(value) {
     if (value === null || value === undefined) return "";
@@ -18,7 +12,7 @@
   }
 
   function html(value) {
-    return rawText(value)
+    return text(value)
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
@@ -42,123 +36,6 @@
     return text(ranger?.["Ranger名稱"]) || getId(ranger) || "未命名角色";
   }
 
-  function talentTitle(title, withIcon = true) {
-    const titleText = text(title).replace(/\d+$/g, "");
-    const isMain = text(title).includes("主要才能");
-    const icon = withIcon && isMain
-      ? `<img class="talent-icon" src="${TLT_ICON(1)}" alt="" onerror="this.remove();">`
-      : "";
-    return `<h4 class="talent-title-with-icon">${icon}<span>${html(titleText || title)}</span></h4>`;
-  }
-
-  function renderPrimitive(value) {
-    const valueText = text(value);
-    return valueText ? html(valueText) : "-";
-  }
-
-  function renderArrayAsTable(items) {
-    const rows = items.filter((item) => item && typeof item === "object" && !Array.isArray(item));
-    if (!rows.length) {
-      return `<span>${html(items.map(text).filter(Boolean).join("、"))}</span>`;
-    }
-
-    const preferred = ["觸發機率", "效果", "效果搜尋分類", "條件", "條件搜尋分類", "敘述"];
-    const discovered = [...new Set(rows.flatMap((item) => Object.keys(item).filter((key) => !isNone(item[key]))))];
-    const headers = [...preferred.filter((key) => discovered.includes(key)), ...discovered.filter((key) => !preferred.includes(key))];
-    if (!headers.length) return "-";
-
-    return `
-      <div class="table-scroll">
-        <table class="skill-effect-table talent-effect-table">
-          <thead>
-            <tr>${headers.map((key) => `<th>${html(key)}</th>`).join("")}</tr>
-          </thead>
-          <tbody>
-            ${rows.map((item) => `
-              <tr>${headers.map((key) => `<td>${renderValue(item[key])}</td>`).join("")}</tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
-  }
-
-  function renderObjectAsDefinition(value) {
-    const preferred = ["敘述", "觸發機率", "條件", "條件搜尋分類", "增益效果", "效果", "效果搜尋分類"];
-    const entries = Object.entries(value || {}).filter(([, item]) => !isNone(item));
-    const ordered = [
-      ...preferred.filter((key) => Object.prototype.hasOwnProperty.call(value || {}, key)).map((key) => [key, value[key]]),
-      ...entries.filter(([key]) => !preferred.includes(key))
-    ].filter(([, item]) => !isNone(item));
-    if (!ordered.length) return "-";
-
-    return `<dl>${ordered.map(([key, item]) => `<div><dt>${html(key)}</dt><dd>${renderValue(item)}</dd></div>`).join("")}</dl>`;
-  }
-
-  function renderValue(value) {
-    if (isNone(value)) return "-";
-    if (Array.isArray(value)) return renderArrayAsTable(value);
-    if (typeof value === "object") return renderObjectAsDefinition(value);
-    return renderPrimitive(value);
-  }
-
-  function renderBoostItem(value, index, key = "") {
-    let label = "";
-    if (value && typeof value === "object" && !Array.isArray(value)) {
-      label = text(value["效果"] || value["敘述"] || value.name || value.value || "");
-    } else {
-      label = text(value);
-    }
-    if (!label) label = renderValue(value);
-    else label = html(label);
-    const prefix = key && !/^\d+$/.test(text(key)) ? html(key) : "";
-    return `
-      <div class="talent-boost-row">
-        <dd class="talent-boost-value">
-          <img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();">
-          <span>${prefix}${label}</span>
-        </dd>
-      </div>
-    `;
-  }
-
-  function renderBoostTalent(title, content) {
-    let rows = [];
-    if (Array.isArray(content)) {
-      rows = content.filter((value) => !isNone(value)).map((value, index) => renderBoostItem(value, index));
-    } else if (content && typeof content === "object") {
-      rows = Object.entries(content)
-        .filter(([, value]) => !isNone(value))
-        .map(([key, value], index) => renderBoostItem(value, index, key));
-    } else if (!isNone(content)) {
-      rows = [renderBoostItem(content, 0)];
-    }
-
-    return `
-      <article class="ranger-talent-card">
-        ${talentTitle(title, false)}
-        ${rows.length ? `<dl>${rows.join("")}</dl>` : `<div class="empty-state small">沒有強化才能資料。</div>`}
-      </article>
-    `;
-  }
-
-  function renderMainTalent(title, content) {
-    if (typeof content !== "object" || Array.isArray(content)) {
-      return `<article class="ranger-talent-card">${talentTitle(title)}<p>${renderPrimitive(content)}</p></article>`;
-    }
-    return `<article class="ranger-talent-card">${talentTitle(title)}${renderObjectAsDefinition(content)}</article>`;
-  }
-
-  function renderTalent(value) {
-    if (isNone(value)) return `<div class="empty-state small">沒有才能資料。</div>`;
-    if (typeof value === "string") return `<article class="ranger-talent-card">${talentTitle("主要才能")}<p>${html(value)}</p></article>`;
-
-    return `<div class="ranger-talent-list">${Object.entries(value).map(([title, content]) => {
-      const isBoost = text(title).includes("強化才能");
-      return isBoost ? renderBoostTalent(title, content) : renderMainTalent(title, content);
-    }).join("")}</div>`;
-  }
-
   function loadRows() {
     if (!rowsPromise) {
       rowsPromise = fetch(DATA_URL)
@@ -168,42 +45,187 @@
         })
         .then((raw) => Array.isArray(raw) ? raw : [])
         .catch((error) => {
-          console.error("Talent render fix failed to load ranger data", error);
+          console.error("Detail layout fix failed to load ranger data", error);
           return [];
         });
     }
     return rowsPromise;
   }
 
-  function findTalentSection(modalContent) {
-    return [...modalContent.querySelectorAll(".detail-section")]
-      .find((section) => text(section.querySelector("h3")?.textContent) === "才能");
+  function inferUnitIdFromModal(modalContent) {
+    const img = modalContent.querySelector(".ranger-detail-image");
+    const src = img?.getAttribute("src") || img?.src || "";
+    const match = src.match(/res(?:_from_emulator)?\/([^/]+)\//) || src.match(/\/([^/]+)\/[^/]+-thum/i);
+    return match ? decodeURIComponent(match[1]) : "";
   }
 
-  async function patchTalentSection() {
+  function findSection(modalContent, title) {
+    return [...modalContent.querySelectorAll(".detail-section")]
+      .find((section) => text(section.querySelector("h3")?.textContent) === title);
+  }
+
+  function table(headers, rows, className = "skill-effect-table") {
+    return `
+      <div class="table-scroll">
+        <table class="${className}">
+          <thead><tr>${headers.map((header) => `<th>${html(header)}</th>`).join("")}</tr></thead>
+          <tbody>
+            ${rows.map((row) => `<tr>${row.map((cell, index) => `${index === 0 ? "<th>" : "<td>"}${html(cell || "-")}${index === 0 ? "</th>" : "</td>"}`).join("")}</tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function getSkill(ranger, key) {
+    const value = ranger?.[key];
+    return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+  }
+
+  function renderSkillCard(skill, index) {
+    const effects = Array.isArray(skill?.["技能組"]) ? skill["技能組"] : [];
+    const icon = text(skill?.icon);
+    const meta = table(
+      ["發動率", "技能冷卻時間", "觸發基準"],
+      [[skill?.["發動機率"], skill?.["技能冷卻時間"], skill?.["觸發基準"]]]
+    );
+    const effectRows = effects.map((effect) => [
+      effect?.["效果"],
+      effect?.["係數"],
+      effect?.["有效時間"],
+      effect?.["範圍"]
+    ]);
+    const effectTable = effectRows.length
+      ? table(["技能效果", "係數", "時間", "範圍"], effectRows)
+      : `<div class="empty-state small">沒有技能效果資料。</div>`;
+
+    return `
+      <article class="ranger-skill-card">
+        <div class="ranger-icon-title">
+          ${icon ? `<img class="small-icon" src="${SKILL_ICON(icon)}" alt="" onerror="this.remove();">` : ""}
+          <h4>技能 ${index + 1}</h4>
+        </div>
+        ${meta}
+        ${effectTable}
+      </article>
+    `;
+  }
+
+  function renderSkills(ranger) {
+    const skills = [getSkill(ranger, "技能1"), getSkill(ranger, "技能2")].filter(Boolean);
+    if (!skills.length) return `<div class="empty-state small">沒有技能資料。</div>`;
+    return skills.map(renderSkillCard).join("");
+  }
+
+  function talentTitle(title, withIcon = true) {
+    const titleText = text(title).replace(/\d+$/g, "");
+    const isMain = text(title).includes("主要才能");
+    const icon = withIcon && isMain
+      ? `<img class="talent-icon" src="${TLT_ICON(1)}" alt="" onerror="this.remove();">`
+      : "";
+    return `<h4 class="talent-title-with-icon">${icon}<span>${html(titleText || title)}</span></h4>`;
+  }
+
+  function renderMainTalent(title, content) {
+    if (!content || typeof content !== "object" || Array.isArray(content)) {
+      return `<article class="ranger-talent-card">${talentTitle(title)}<p>${html(content)}</p></article>`;
+    }
+
+    const desc = text(content["敘述"]);
+    const chance = text(content["觸發機率"] || content["機率"] || content["觸發概率"]);
+    const condition = text(content["條件"]);
+    const gains = Array.isArray(content["增益效果"]) ? content["增益效果"] : [];
+    const conditionTable = (chance || condition)
+      ? table(["機率", "條件"], [[chance, condition]])
+      : "";
+    const gainTables = gains.map((gain) => {
+      const gainChance = text(gain?.["觸發機率"] || gain?.["機率"] || chance || "100%");
+      const gainText = text(gain?.["效果"] || gain?.["敘述"] || gain?.["效果搜尋分類"]);
+      return table(["機率", "增益效果"], [[gainChance, gainText]]);
+    }).join("");
+
+    return `
+      <article class="ranger-talent-card">
+        ${talentTitle(title)}
+        ${desc ? `<p class="preline">${html(desc)}</p>` : ""}
+        ${conditionTable}
+        ${gainTables}
+      </article>
+    `;
+  }
+
+  function boostText(value) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return text(value["效果"] || value["敘述"] || value.value || value.name || "");
+    }
+    return text(value);
+  }
+
+  function renderBoostTalent(title, content) {
+    const values = Array.isArray(content)
+      ? content
+      : (content && typeof content === "object" ? Object.values(content) : [content]);
+    const items = values.filter((value) => !isNone(value)).slice(0, 3);
+    if (!items.length) {
+      return `<article class="ranger-talent-card">${talentTitle(title, false)}<div class="empty-state small">沒有強化才能資料。</div></article>`;
+    }
+
+    return `
+      <article class="ranger-talent-card">
+        ${talentTitle(title, false)}
+        <div class="table-scroll">
+          <table class="skill-effect-table talent-boost-table">
+            <thead>
+              <tr>${items.map((_, index) => `<th><img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();"></th>`).join("")}</tr>
+            </thead>
+            <tbody>
+              <tr>${items.map((item) => `<td>${html(boostText(item) || "-")}</td>`).join("")}</tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderTalent(value) {
+    if (isNone(value)) return `<div class="empty-state small">沒有才能資料。</div>`;
+    if (typeof value === "string") {
+      return `<article class="ranger-talent-card">${talentTitle("主要才能")}<p>${html(value)}</p></article>`;
+    }
+    return `<div class="ranger-talent-list">${Object.entries(value).map(([title, content]) => {
+      return text(title).includes("強化才能") ? renderBoostTalent(title, content) : renderMainTalent(title, content);
+    }).join("")}</div>`;
+  }
+
+  async function patchDetailSections() {
     const modalContent = document.getElementById("rangerModalContent");
-    if (!modalContent || !modalContent.children.length || modalContent.dataset.talentPatchRunning === "true") return;
+    if (!modalContent || !modalContent.children.length || modalContent.dataset.detailLayoutPatchRunning === "true") return;
 
     const title = text(modalContent.querySelector("#rangerModalTitle")?.textContent);
-    const talentSection = findTalentSection(modalContent);
-    if (!title || !talentSection || talentSection.dataset.talentPatchApplied === title) return;
+    const unitId = inferUnitIdFromModal(modalContent);
+    const patchKey = `${unitId}|${title}`;
+    if (!title || modalContent.dataset.detailLayoutPatchApplied === patchKey) return;
 
-    modalContent.dataset.talentPatchRunning = "true";
+    modalContent.dataset.detailLayoutPatchRunning = "true";
     const rows = await loadRows();
-    const row = rows.find((ranger) => getName(ranger) === title || getId(ranger) === title);
-    if (row) {
-      const heading = talentSection.querySelector("h3")?.outerHTML || "<h3>才能</h3>";
-      talentSection.innerHTML = `${heading}${renderTalent(row["才能"])}`;
-      talentSection.dataset.talentPatchApplied = title;
+    const ranger = rows.find((item) => getId(item) === unitId || getName(item) === title);
+    if (ranger) {
+      const skillSection = findSection(modalContent, "技能");
+      if (skillSection) skillSection.innerHTML = `<h3>技能</h3>${renderSkills(ranger)}`;
+
+      const talentSection = findSection(modalContent, "才能");
+      if (talentSection) talentSection.innerHTML = `<h3>才能</h3>${renderTalent(ranger["才能"])}`;
+
+      modalContent.dataset.detailLayoutPatchApplied = patchKey;
     }
-    modalContent.dataset.talentPatchRunning = "false";
+    modalContent.dataset.detailLayoutPatchRunning = "false";
   }
 
-  const observer = new MutationObserver(() => window.setTimeout(patchTalentSection, 0));
+  const observer = new MutationObserver(() => window.setTimeout(patchDetailSections, 0));
 
   window.addEventListener("load", () => {
     const modalContent = document.getElementById("rangerModalContent");
     if (modalContent) observer.observe(modalContent, { childList: true, subtree: false });
-    patchTalentSection();
+    patchDetailSections();
   });
 })();
