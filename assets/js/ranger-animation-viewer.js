@@ -110,20 +110,6 @@
     return match ? decodeURIComponent(match[1]) : "";
   }
 
-  function startupRows(meta) {
-    const items = [
-      ["普通攻擊", meta?.startup?.normal_attack],
-      ["技能 1", meta?.startup?.skill_1],
-      ["技能 2", meta?.startup?.skill_2],
-    ];
-    return items.map(([label, item]) => {
-      const frames = Number(item?.frames || 0);
-      const seconds = Number(item?.seconds || 0);
-      const value = frames ? `${frames} 影格 / ${seconds.toFixed(3)} 秒` : "無資料";
-      return `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`;
-    }).join("");
-  }
-
   function animationOptions(meta) {
     const labels = {
       _all: "全部動畫",
@@ -158,33 +144,22 @@
     return `
       <section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}">
         <h3>動畫與技能前搖</h3>
-        <div class="ranger-animation-grid">
-          <div class="ranger-animation-player">
-            <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
-            <div class="ranger-animation-controls">
-              <label>
-                <span>動畫</span>
-                <select class="ranger-animation-select">${animationOptions(meta)}</select>
-              </label>
-              <button class="ranger-animation-play" type="button">播放</button>
-              <button class="ranger-animation-prev" type="button">上一影格</button>
-              <button class="ranger-animation-next" type="button">下一影格</button>
-              <label>
-                <span>縮放</span>
-                <input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1">
-              </label>
-            </div>
-            <p class="ranger-animation-frame-info">影格：-</p>
+        <div class="ranger-animation-player">
+          <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
+          <div class="ranger-animation-controls">
+            <label>
+              <span>動畫</span>
+              <select class="ranger-animation-select">${animationOptions(meta)}</select>
+            </label>
+            <button class="ranger-animation-play" type="button">播放</button>
+            <button class="ranger-animation-prev" type="button">上一影格</button>
+            <button class="ranger-animation-next" type="button">下一影格</button>
+            <label>
+              <span>縮放</span>
+              <input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1">
+            </label>
           </div>
-          <div class="ranger-animation-startup">
-            <h4>技能前搖資料</h4>
-            <div class="table-scroll">
-              <table class="skill-effect-table ranger-startup-table">
-                <tbody>${startupRows(meta)}</tbody>
-              </table>
-            </div>
-            <p class="ranger-animation-note">前搖以 body.sam 的 ready 段影格數除以原始 FPS 計算。</p>
-          </div>
+          <p class="ranger-animation-frame-info">影格：-</p>
         </div>
       </section>
     `;
