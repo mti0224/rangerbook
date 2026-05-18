@@ -1,8 +1,11 @@
 (() => {
   const DATA_URL = "../res/Rangers_data.json";
+  const ANIMATION_INDEX_URL = "../res/animation_meta/index.json";
   const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
   const TLT_ICON = (index) => `../assets/tlt_icon/tlt${index}.png`;
   let rowsPromise = null;
+  let animationIndexPromise = null;
+  const animationMetaCache = new Map();
 
   function text(value) {
     if (value === null || value === undefined) return "";
@@ -52,6 +55,40 @@
     return rowsPromise;
   }
 
+  function loadAnimationIndex() {
+    if (!animationIndexPromise) {
+      animationIndexPromise = fetch(ANIMATION_INDEX_URL)
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .catch(() => null);
+    }
+    return animationIndexPromise;
+  }
+
+  async function loadAnimationMeta(unitId) {
+    if (!unitId) return null;
+    if (animationMetaCache.has(unitId)) return animationMetaCache.get(unitId);
+    const index = await loadAnimationIndex();
+    const metaPath = index?.units?.[unitId]?.meta;
+    if (!metaPath) {
+      animationMetaCache.set(unitId, null);
+      return null;
+    }
+    const meta = await fetch(`../${metaPath}`)
+      .then((res) => res.ok ? res.json() : null)
+      .catch(() => null);
+    animationMetaCache.set(unitId, meta);
+    return meta;
+  }
+
+  function startupSeconds(meta, skillIndex) {
+    const key = skillIndex === 0 ? "skill_1" : "skill_2";
+    const seconds = Number(meta?.startup?.[key]?.seconds || 0);
+    return seconds ? seconds.toFixed(2) : "-";
+  }
+
   function inferUnitIdFromModal(modalContent) {
     const img = modalContent.querySelector(".ranger-detail-image");
     const src = img?.getAttribute("src") || img?.src || "";
@@ -66,11 +103,11 @@
 
   function table(headers, rows, className = "skill-effect-table") {
     return `
-      <div class="table-scroll">
+      <div class="table-scroll detail-table-scroll">
         <table class="${className}">
           <thead><tr>${headers.map((header) => `<th>${html(header)}</th>`).join("")}</tr></thead>
           <tbody>
-            ${rows.map((row) => `<tr>${row.map((cell, index) => `${index === 0 ? "<th>" : "<td>"}${html(cell || "-")}${index === 0 ? "</th>" : "</td>"}`).join("")}</tr>`).join("")}
+            ${rows.map((row) => `<tr>${row.map((cell) => `<td>${html(cell || "-")}</td>`).join("")}</tr>`).join("")}
           </tbody>
         </table>
       </div>
@@ -82,12 +119,13 @@
     return value && typeof value === "object" && !Array.isArray(value) ? value : null;
   }
 
-  function renderSkillCard(skill, index) {
+  function renderSkillCard(skill, index, animationMeta) {
     const effects = Array.isArray(skill?.["技能組"]) ? skill["技能組"] : [];
     const icon = text(skill?.icon);
     const meta = table(
-      ["發動率", "技能冷卻時間", "觸發基準"],
-      [[skill?.["發動機率"], skill?.["技能冷卻時間"], skill?.["觸發基準"]]]
+      ["發動率", "技能冷卻時間", "觸發基準", "技能前搖時間(秒)"],
+      [[skill?.["發動機率"], skill?.["技能冷卻時間"], skill?.["觸發基準"], startupSeconds(animationMeta, index)]],
+      "skill-effect-table skill-meta-table"
     );
     const effectRows = effects.map((effect) => [
       effect?.["效果"],
@@ -96,7 +134,7 @@
       effect?.["範圍"]
     ]);
     const effectTable = effectRows.length
-      ? table(["技能效果", "係數", "時間", "範圍"], effectRows)
+      ? table(["技能效果", "係數", "時間", "範圍"], effectRows, "skill-effect-table skill-detail-table")
       : `<div class="empty-state small">沒有技能效果資料。</div>`;
 
     return `
@@ -111,10 +149,10 @@
     `;
   }
 
-  function renderSkills(ranger) {
+  function renderSkills(ranger, animationMeta) {
     const skills = [getSkill(ranger, "技能1"), getSkill(ranger, "技能2")].filter(Boolean);
     if (!skills.length) return `<div class="empty-state small">沒有技能資料。</div>`;
-    return skills.map(renderSkillCard).join("");
+    return skills.map((skill, index) => renderSkillCard(skill, index, animationMeta)).join("");
   }
 
   function talentTitle(title, withIcon = true) {
@@ -136,12 +174,12 @@
     const condition = text(content["條件"]);
     const gains = Array.isArray(content["增益效果"]) ? content["增益效果"] : [];
     const conditionTable = (chance || condition)
-      ? table(["機率", "條件"], [[chance, condition]])
+      ? table(["機率", "條件"], [[chance, condition]], "skill-effect-table talent-main-table")
       : "";
     const gainTables = gains.map((gain) => {
       const gainChance = text(gain?.["觸發機率"] || gain?.["機率"] || chance || "100%");
       const gainText = text(gain?.["效果"] || gain?.["敘述"] || gain?.["效果搜尋分類"]);
-      return table(["機率", "增益效果"], [[gainChance, gainText]]);
+      return table(["機率", "增益效果"], [[gainChance, gainText]], "skill-effect-table talent-main-table");
     }).join("");
 
     return `
@@ -173,7 +211,7 @@
     return `
       <article class="ranger-talent-card">
         ${talentTitle(title, false)}
-        <div class="table-scroll">
+        <div class="table-scroll detail-table-scroll">
           <table class="skill-effect-table talent-boost-table">
             <thead>
               <tr>${items.map((_, index) => `<th><img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();"></th>`).join("")}</tr>
@@ -207,11 +245,11 @@
     if (!title || modalContent.dataset.detailLayoutPatchApplied === patchKey) return;
 
     modalContent.dataset.detailLayoutPatchRunning = "true";
-    const rows = await loadRows();
+    const [rows, animationMeta] = await Promise.all([loadRows(), loadAnimationMeta(unitId)]);
     const ranger = rows.find((item) => getId(item) === unitId || getName(item) === title);
     if (ranger) {
       const skillSection = findSection(modalContent, "技能");
-      if (skillSection) skillSection.innerHTML = `<h3>技能</h3>${renderSkills(ranger)}`;
+      if (skillSection) skillSection.innerHTML = `<h3>技能</h3>${renderSkills(ranger, animationMeta)}`;
 
       const talentSection = findSection(modalContent, "才能");
       if (talentSection) talentSection.innerHTML = `<h3>才能</h3>${renderTalent(ranger["才能"])}`;
