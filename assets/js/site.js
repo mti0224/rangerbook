@@ -1,13 +1,26 @@
 (() => {
   const LEGACY_RES_BASE = "https://rangers.lerico.net/res/";
-  const PRIMARY_RES_BASE = "https://rangerbook.warmycat.com/res_from_emulator/";
+  const PRIMARY_RES_BASE = "https://res.warmycat.com/";
+  const OLD_PRIMARY_RES_BASE = "https://rangerbook.warmycat.com/res_from_emulator/";
+
+  function stripLegacyPrefix(absoluteUrl) {
+    if (absoluteUrl.startsWith(LEGACY_RES_BASE)) return absoluteUrl.slice(LEGACY_RES_BASE.length);
+    if (absoluteUrl.startsWith(OLD_PRIMARY_RES_BASE)) return absoluteUrl.slice(OLD_PRIMARY_RES_BASE.length);
+    if (absoluteUrl.startsWith(PRIMARY_RES_BASE)) return absoluteUrl.slice(PRIMARY_RES_BASE.length);
+    return "";
+  }
+
+  function normalizeResourcePath(path) {
+    return String(path || "").replace(/^\/+/, "").replace(/^res_from_emulator\//, "");
+  }
 
   function normalizeResourceUrl(value) {
     if (!value || typeof value !== "string") return value;
     try {
       const absoluteUrl = new URL(value, window.location.href).href;
-      if (!absoluteUrl.startsWith(LEGACY_RES_BASE)) return value;
-      return PRIMARY_RES_BASE + absoluteUrl.slice(LEGACY_RES_BASE.length);
+      const resourcePath = stripLegacyPrefix(absoluteUrl);
+      if (!resourcePath) return value;
+      return PRIMARY_RES_BASE + normalizeResourcePath(resourcePath);
     } catch {
       return value;
     }
@@ -18,8 +31,9 @@
     try {
       const absoluteUrl = new URL(value, window.location.href).href;
       if (absoluteUrl.startsWith(LEGACY_RES_BASE)) return absoluteUrl;
-      if (absoluteUrl.startsWith(PRIMARY_RES_BASE)) return LEGACY_RES_BASE + absoluteUrl.slice(PRIMARY_RES_BASE.length);
-      return "";
+      const resourcePath = stripLegacyPrefix(absoluteUrl);
+      if (!resourcePath) return "";
+      return LEGACY_RES_BASE + normalizeResourcePath(resourcePath);
     } catch {
       return "";
     }
