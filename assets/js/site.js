@@ -1,4 +1,109 @@
 (() => {
+  const LEGACY_RES_BASE = "https://rangers.lerico.net/res/";
+  const PRIMARY_RES_BASE = "https://rangerbook.warmycat.com/res_from_emulator/";
+
+  function normalizeResourceUrl(value) {
+    if (!value || typeof value !== "string") return value;
+    try {
+      const absoluteUrl = new URL(value, window.location.href).href;
+      if (!absoluteUrl.startsWith(LEGACY_RES_BASE)) return value;
+      return PRIMARY_RES_BASE + absoluteUrl.slice(LEGACY_RES_BASE.length);
+    } catch {
+      return value;
+    }
+  }
+
+  function legacyResourceUrl(value) {
+    if (!value || typeof value !== "string") return "";
+    try {
+      const absoluteUrl = new URL(value, window.location.href).href;
+      if (absoluteUrl.startsWith(LEGACY_RES_BASE)) return absoluteUrl;
+      if (absoluteUrl.startsWith(PRIMARY_RES_BASE)) return LEGACY_RES_BASE + absoluteUrl.slice(PRIMARY_RES_BASE.length);
+      return "";
+    } catch {
+      return "";
+    }
+  }
+
+  function patchImage(img) {
+    if (!(img instanceof HTMLImageElement)) return;
+    const currentSrc = img.getAttribute("src");
+    const fallbackSrc = legacyResourceUrl(currentSrc || img.src);
+    if (!fallbackSrc) return;
+    const primarySrc = normalizeResourceUrl(currentSrc || img.src);
+    if (!primarySrc || primarySrc === currentSrc) return;
+    img.dataset.resourceFallbackSrc = fallbackSrc;
+    img.dataset.resourcePrimarySrc = primarySrc;
+    img.setAttribute("src", primarySrc);
+  }
+
+  const srcDescriptor = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
+  if (srcDescriptor?.set && srcDescriptor?.get) {
+    Object.defineProperty(HTMLImageElement.prototype, "src", {
+      configurable: true,
+      enumerable: srcDescriptor.enumerable,
+      get() {
+        return srcDescriptor.get.call(this);
+      },
+      set(value) {
+        const fallbackSrc = legacyResourceUrl(value);
+        if (fallbackSrc) {
+          this.dataset.resourceFallbackSrc = fallbackSrc;
+          this.dataset.resourcePrimarySrc = normalizeResourceUrl(value);
+          return srcDescriptor.set.call(this, this.dataset.resourcePrimarySrc);
+        }
+        return srcDescriptor.set.call(this, value);
+      }
+    });
+  }
+
+  const nativeSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function (name, value) {
+    if (this instanceof HTMLImageElement && String(name).toLowerCase() === "src") {
+      const fallbackSrc = legacyResourceUrl(String(value));
+      if (fallbackSrc) {
+        this.dataset.resourceFallbackSrc = fallbackSrc;
+        this.dataset.resourcePrimarySrc = normalizeResourceUrl(String(value));
+        return nativeSetAttribute.call(this, name, this.dataset.resourcePrimarySrc);
+      }
+    }
+    return nativeSetAttribute.call(this, name, value);
+  };
+
+  document.addEventListener("error", (event) => {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement)) return;
+    const fallbackSrc = img.dataset.resourceFallbackSrc;
+    if (!fallbackSrc || img.dataset.resourceFallbackTried === "true") return;
+    img.dataset.resourceFallbackTried = "true";
+    img.src = fallbackSrc;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node instanceof HTMLImageElement) patchImage(node);
+        if (node instanceof Element) node.querySelectorAll?.("img").forEach(patchImage);
+      });
+      if (mutation.type === "attributes" && mutation.target instanceof HTMLImageElement) {
+        patchImage(mutation.target);
+      }
+    });
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["src"]
+  });
+
+  document.querySelectorAll("img").forEach(patchImage);
+})();
+
+(() => {
   const mount = document.getElementById("site-header");
   if (!mount) return;
 
