@@ -1,7 +1,8 @@
 (() => {
   const INDEX_URL = "../res/animation_meta/index.json";
-  const RESOURCE_PRIMARY_BASE = "https://rangerbook.warmycat.com/";
+  const RESOURCE_PRIMARY_BASE = "https://res.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
+  const OLD_PRIMARY_PREFIX = "res_from_emulator/";
 
   const VIEWER_BODY_OFFSET = { x: -130, y: -88 };
   const PROJECTILE_TARGET = {
@@ -54,11 +55,11 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
   }
-  function resourceUrl(path) { return `${RESOURCE_PRIMARY_BASE}${String(path || "").replace(/^\/+/, "")}`; }
-  function legacyResourceUrl(path) {
-    const normalized = String(path || "").replace(/^\/+/, "");
-    return normalized.startsWith("res_from_emulator/") ? RESOURCE_FALLBACK_BASE + normalized.slice("res_from_emulator/".length) : "";
+  function normalizeResourcePath(path) {
+    return String(path || "").replace(/^\/+/, "").replace(new RegExp(`^${OLD_PRIMARY_PREFIX}`), "");
   }
+  function resourceUrl(path) { return `${RESOURCE_PRIMARY_BASE}${normalizeResourcePath(path)}`; }
+  function legacyResourceUrl(path) { return `${RESOURCE_FALLBACK_BASE}${normalizeResourcePath(path)}`; }
   function loadIndex() {
     if (!state.indexPromise) state.indexPromise = fetch(INDEX_URL).then((res) => res.ok ? res.json() : null).catch(() => null);
     return state.indexPromise;
@@ -74,18 +75,20 @@
     return meta;
   }
   function loadImage(path) {
-    const key = path || "";
+    const normalizedPath = normalizeResourcePath(path);
+    const key = normalizedPath || "";
     if (state.imageCache.has(key)) return state.imageCache.get(key);
     const promise = new Promise((resolve, reject) => {
       const img = new Image();
-      const fallback = legacyResourceUrl(path);
+      const primary = resourceUrl(normalizedPath);
+      const fallback = legacyResourceUrl(normalizedPath);
       img.crossOrigin = "anonymous";
       img.onload = () => resolve(img);
       img.onerror = () => {
         if (fallback && img.src !== fallback) { img.src = fallback; return; }
-        reject(new Error(`Image failed: ${path}`));
+        reject(new Error(`Image failed: ${normalizedPath}`));
       };
-      img.src = resourceUrl(path);
+      img.src = primary;
     }).catch(() => null);
     state.imageCache.set(key, promise);
     return promise;
@@ -224,7 +227,7 @@
   }
 
   function getSpriteCanvas(part, atlas, imageName) {
-    const cacheKey = `${part.png}|${imageName}`;
+    const cacheKey = `${normalizeResourcePath(part.png)}|${imageName}`;
     if (state.spriteCache.has(cacheKey)) return state.spriteCache.get(cacheKey);
     const sprite = part.sprites?.[imageName];
     if (!sprite) return null;
