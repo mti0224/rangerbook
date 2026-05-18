@@ -101,10 +101,16 @@
       .find((section) => text(section.querySelector("h3")?.textContent) === title);
   }
 
-  function table(headers, rows, className = "skill-effect-table") {
+  function colgroup(widths) {
+    if (!Array.isArray(widths) || !widths.length) return "";
+    return `<colgroup>${widths.map((width) => `<col style="width:${width}">`).join("")}</colgroup>`;
+  }
+
+  function table(headers, rows, className = "skill-effect-table", widths = []) {
     return `
       <div class="table-scroll detail-table-scroll">
         <table class="${className}">
+          ${colgroup(widths)}
           <thead><tr>${headers.map((header) => `<th>${html(header)}</th>`).join("")}</tr></thead>
           <tbody>
             ${rows.map((row) => `<tr>${row.map((cell) => `<td>${html(cell || "-")}</td>`).join("")}</tr>`).join("")}
@@ -119,13 +125,23 @@
     return value && typeof value === "object" && !Array.isArray(value) ? value : null;
   }
 
+  function skillName(skill, index) {
+    return text(skill?.["技能名稱"] || skill?.["名稱"] || skill?.name) || `技能 ${index + 1}`;
+  }
+
+  function skillDescription(skill) {
+    return text(skill?.["技能敘述"] || skill?.["技能說明"] || skill?.["敘述"] || skill?.["描述"] || skill?.description || "");
+  }
+
   function renderSkillCard(skill, index, animationMeta) {
     const effects = Array.isArray(skill?.["技能組"]) ? skill["技能組"] : [];
     const icon = text(skill?.icon);
+    const desc = skillDescription(skill);
     const meta = table(
       ["發動率", "技能冷卻時間", "觸發基準", "技能前搖時間(秒)"],
       [[skill?.["發動機率"], skill?.["技能冷卻時間"], skill?.["觸發基準"], startupSeconds(animationMeta, index)]],
-      "skill-effect-table skill-meta-table"
+      "skill-effect-table skill-meta-table",
+      ["25%", "25%", "25%", "25%"]
     );
     const effectRows = effects.map((effect) => [
       effect?.["效果"],
@@ -141,7 +157,10 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${icon ? `<img class="small-icon" src="${SKILL_ICON(icon)}" alt="" onerror="this.remove();">` : ""}
-          <h4>技能 ${index + 1}</h4>
+          <div>
+            <h4>技能 ${index + 1}：${html(skillName(skill, index))}</h4>
+            ${desc ? `<p class="preline skill-description">${html(desc)}</p>` : ""}
+          </div>
         </div>
         ${meta}
         ${effectTable}
@@ -174,12 +193,12 @@
     const condition = text(content["條件"]);
     const gains = Array.isArray(content["增益效果"]) ? content["增益效果"] : [];
     const conditionTable = (chance || condition)
-      ? table(["機率", "條件"], [[chance, condition]], "skill-effect-table talent-main-table")
+      ? table(["機率", "條件"], [[chance, condition]], "skill-effect-table talent-main-table", ["28.5714%", "71.4286%"])
       : "";
     const gainTables = gains.map((gain) => {
       const gainChance = text(gain?.["觸發機率"] || gain?.["機率"] || chance || "100%");
       const gainText = text(gain?.["效果"] || gain?.["敘述"] || gain?.["效果搜尋分類"]);
-      return table(["機率", "增益效果"], [[gainChance, gainText]], "skill-effect-table talent-main-table");
+      return table(["機率", "增益效果"], [[gainChance, gainText]], "skill-effect-table talent-main-table", ["28.5714%", "71.4286%"]);
     }).join("");
 
     return `
@@ -213,6 +232,7 @@
         ${talentTitle(title, false)}
         <div class="table-scroll detail-table-scroll">
           <table class="skill-effect-table talent-boost-table">
+            ${colgroup(["33.3333%", "33.3333%", "33.3333%"])}
             <thead>
               <tr>${items.map((_, index) => `<th><img class="talent-icon talent-inline-icon" src="${TLT_ICON(index + 2)}" alt="" onerror="this.remove();"></th>`).join("")}</tr>
             </thead>
