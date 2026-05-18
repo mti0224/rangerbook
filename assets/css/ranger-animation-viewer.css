@@ -59,6 +59,59 @@
   white-space: nowrap;
 }
 
+.ranger-skill-card .detail-table-scroll,
+.ranger-talent-card .detail-table-scroll {
+  margin-top: 12px;
+}
+
+.ranger-skill-card .detail-table-scroll + .detail-table-scroll,
+.ranger-talent-card .detail-table-scroll + .detail-table-scroll {
+  margin-top: 14px;
+}
+
+.ranger-skill-card .skill-effect-table,
+.ranger-talent-card .skill-effect-table {
+  width: 100%;
+  table-layout: fixed;
+  font-size: 1rem;
+}
+
+.ranger-skill-card .skill-effect-table th,
+.ranger-skill-card .skill-effect-table td,
+.ranger-talent-card .skill-effect-table th,
+.ranger-talent-card .skill-effect-table td {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.55;
+  vertical-align: middle;
+}
+
+.ranger-skill-card .skill-effect-table thead th,
+.ranger-talent-card .skill-effect-table thead th {
+  font-weight: 400;
+}
+
+.skill-meta-table th,
+.skill-meta-table td {
+  width: 25%;
+}
+
+.talent-main-table th:first-child,
+.talent-main-table td:first-child {
+  width: 28.5714%;
+}
+
+.talent-main-table th:nth-child(2),
+.talent-main-table td:nth-child(2) {
+  width: 71.4286%;
+}
+
+.talent-boost-table th,
+.talent-boost-table td {
+  width: 33.3333%;
+  text-align: center;
+}
+
 @media (max-width: 860px) {
   .ranger-animation-grid {
     grid-template-columns: 1fr;
