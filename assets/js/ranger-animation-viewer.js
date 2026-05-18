@@ -9,11 +9,11 @@
     indexPromise: null,
     metaCache: new Map(),
     imageCache: new Map(),
+    spriteCache: new Map(),
     rafId: 0,
     playing: false,
     startedAt: 0,
     activeCanvas: null,
-    activeContext: null,
     activeMeta: null,
     activePart: "body",
     activeAnim: "_all",
@@ -33,14 +33,6 @@
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
-  }
-
-  function rootPrefix() {
-    return window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
-  }
-
-  function absoluteSiteUrl(path) {
-    return `${window.location.origin}${rootPrefix()}${String(path || "").replace(/^\/+/, "")}`;
   }
 
   function resourceUrl(path) {
@@ -150,7 +142,10 @@
       finish: "finish",
     };
     const options = [];
-    Object.entries(meta?.parts || {}).forEach(([partName, part]) => {
+    const preferred = ["body", "bul", "bul2", "bul3"];
+    preferred.forEach((partName) => {
+      const part = meta?.parts?.[partName];
+      if (!part) return;
       Object.keys(part.animations || {}).forEach((animName) => {
         const label = `${partName}：${labels[animName] || animName}`;
         options.push(`<option value="${escapeHtml(`${partName}|${animName}`)}">${escapeHtml(label)}</option>`);
@@ -204,15 +199,64 @@
     `;
   }
 
-  function multiplyMatrix(a, b) {
-    return [
-      a[0] * b[0] + a[1] * b[2],
-      a[0] * b[1] + a[1] * b[3],
-      a[2] * b[0] + a[3] * b[2],
-      a[2] * b[1] + a[3] * b[3],
-      a[0] * b[4] + a[1] * b[5] + a[4],
-      a[2] * b[4] + a[3] * b[5] + a[5],
-    ];
+  function getSpriteCanvas(part, atlas, imageName) {
+    const cacheKey = `${part.png}|${imageName}`;
+    if (state.spriteCache.has(cacheKey)) return state.spriteCache.get(cacheKey);
+
+    const sprite = part.sprites?.[imageName];
+    if (!sprite) return null;
+    const [sx, sy, sw, sh] = sprite.rect || [];
+    if (!sw || !sh) return null;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = sw;
+    canvas.height = sh;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    if (sprite.rotated) {
+      ctx.translate(sw / 2, sh / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.drawImage(atlas, sx, sy, sh, sw, -sh / 2, -sw / 2, sh, sw);
+    } else {
+      ctx.drawImage(atlas, sx, sy, sw, sh, 0, 0, sw, sh);
+    }
+
+    state.spriteCache.set(cacheKey, canvas);
+    return canvas;
+  }
+
+  function drawSpriteLikePygame(ctx, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, zoom) {
+    const [m00, m01, m10, m11, m02, m12] = objectMatrix;
+    const [i00, i01, i10, i11, i02, i12] = imageMatrix;
+    const w = spriteCanvas.width;
+    const h = spriteCanvas.height;
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+
+    const postCx = i00 * cx + i01 * cy + i02;
+    const postCy = i10 * cx + i11 * cy + i12;
+    const worldCx = m00 * postCx + m01 * postCy + m02;
+    const worldCy = m10 * postCx + m11 * postCy + m12;
+
+    const f00 = m00 * i00 + m01 * i10;
+    const f01 = m00 * i01 + m01 * i11;
+    const f10 = m10 * i00 + m11 * i10;
+    const f11 = m10 * i01 + m11 * i11;
+    const det = f00 * f11 - f01 * f10;
+    const scaleX = Math.hypot(f00, f10);
+    const scaleY = Math.hypot(f01, f11);
+    const flipX = det < 0;
+    const angle = flipX ? Math.atan2(-f10, -f00) : Math.atan2(f10, f00);
+    const alpha = Array.isArray(color) ? Number(color[3] ?? 255) / 255 : 1;
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+    ctx.translate(originX + worldCx * zoom, originY + worldCy * zoom);
+    ctx.rotate(angle);
+    ctx.scale((flipX ? -1 : 1) * scaleX * zoom, scaleY * zoom);
+    ctx.drawImage(spriteCanvas, -w / 2, -h / 2);
+    ctx.restore();
   }
 
   async function drawFrame(canvas, meta, partName, animName, frameIndex) {
@@ -221,50 +265,29 @@
     const anim = part?.animations?.[animName];
     if (!ctx || !part || !anim?.frames?.length) return;
 
-    const img = await loadImage(part.png);
-    if (!img) return;
+    const atlas = await loadImage(part.png);
+    if (!atlas) return;
 
     const width = canvas.width;
     const height = canvas.height;
     const zoom = state.zoom || 1;
     const originX = width * 0.5 + DEFAULT_BODY_OFFSET_X * zoom;
-    const originY = height * 0.76 + DEFAULT_BODY_OFFSET_Y * zoom;
+    const originY = height * 0.78 + DEFAULT_BODY_OFFSET_Y * zoom;
     const frame = anim.frames[frameIndex % anim.frames.length] || [];
 
     ctx.clearRect(0, 0, width, height);
     ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,0.04)";
-    ctx.fillRect(0, height * 0.76, width, 1);
+    ctx.fillStyle = "rgba(255,255,255,0.08)";
+    ctx.fillRect(0, Math.round(height * 0.78), width, 1);
     ctx.restore();
 
     for (const item of frame) {
       const [, resNum, objectMatrix, color] = item;
       const imageDef = part.images?.[resNum];
-      if (!imageDef) continue;
-      const sprite = part.sprites?.[imageDef.name];
-      if (!sprite) continue;
-      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) / 255 : 1;
-      if (alpha <= 0) continue;
-
-      const matrix = multiplyMatrix(objectMatrix, imageDef.m);
-      const [sx, sy, sw, sh] = sprite.rect;
-      const rotated = sprite.rotated;
-      const drawW = rotated ? sh : sw;
-      const drawH = rotated ? sw : sh;
-
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
-      ctx.translate(originX, originY);
-      ctx.scale(zoom, zoom);
-      ctx.transform(matrix[0], matrix[2], matrix[1], matrix[3], matrix[4], matrix[5]);
-
-      if (rotated) {
-        ctx.rotate(-Math.PI / 2);
-        ctx.drawImage(img, sx, sy, sh, sw, -drawH / 2, -drawW / 2, drawH, drawW);
-      } else {
-        ctx.drawImage(img, sx, sy, sw, sh, -drawW / 2, -drawH / 2, drawW, drawH);
-      }
-      ctx.restore();
+      if (!imageDef || !Array.isArray(objectMatrix) || !Array.isArray(imageDef.m)) continue;
+      const spriteCanvas = getSpriteCanvas(part, atlas, imageDef.name);
+      if (!spriteCanvas) continue;
+      drawSpriteLikePygame(ctx, spriteCanvas, objectMatrix, imageDef.m, color, originX, originY, zoom);
     }
   }
 
