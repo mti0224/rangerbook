@@ -31,6 +31,36 @@
     return !valueText || valueText === "無" || valueText === "(無)" || valueText === "-";
   }
 
+  function itemText(value) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return text(
+        value["效果"] ||
+        value["增益效果"] ||
+        value["條件"] ||
+        value["敘述"] ||
+        value["描述"] ||
+        value["效果搜尋分類"] ||
+        value.value ||
+        value.name ||
+        ""
+      );
+    }
+    return text(value);
+  }
+
+  function itemChance(value, fallback = "100%") {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return text(value["觸發機率"] || value["機率"] || value["觸發概率"] || fallback);
+    }
+    return fallback;
+  }
+
+  function toItems(value) {
+    if (Array.isArray(value)) return value.filter((item) => !isNone(item));
+    if (isNone(value)) return [];
+    return [value];
+  }
+
   function getId(ranger) {
     return text(ranger?.ranger_id || ranger?.unitCode || ranger?.id || "");
   }
@@ -189,24 +219,28 @@
     }
 
     const desc = text(content["敘述"]);
-    const chance = text(content["觸發機率"] || content["機率"] || content["觸發概率"]);
-    const condition = text(content["條件"]);
-    const gains = Array.isArray(content["增益效果"]) ? content["增益效果"] : [];
-    const conditionTable = (chance || condition)
-      ? table(["機率", "條件"], [[chance, condition]], "skill-effect-table talent-main-table", ["28.5714%", "71.4286%"])
+    const chance = text(content["觸發機率"] || content["機率"] || content["觸發概率"] || "100%");
+    const conditions = toItems(content["條件"]);
+    const gains = toItems(content["增益效果"]);
+
+    const conditionRows = conditions.map((condition) => [itemChance(condition, chance), itemText(condition)]);
+    if (!conditionRows.length && chance) conditionRows.push([chance, "-"]);
+
+    const gainRows = gains.map((gain) => [itemChance(gain, chance || "100%"), itemText(gain)]);
+
+    const conditionTable = conditionRows.length
+      ? table(["機率", "條件"], conditionRows, "skill-effect-table talent-main-table", ["28.5714%", "71.4286%"])
       : "";
-    const gainTables = gains.map((gain) => {
-      const gainChance = text(gain?.["觸發機率"] || gain?.["機率"] || chance || "100%");
-      const gainText = text(gain?.["效果"] || gain?.["敘述"] || gain?.["效果搜尋分類"]);
-      return table(["機率", "增益效果"], [[gainChance, gainText]], "skill-effect-table talent-main-table", ["28.5714%", "71.4286%"]);
-    }).join("");
+    const gainTable = gainRows.length
+      ? table(["機率", "增益效果"], gainRows, "skill-effect-table talent-main-table", ["28.5714%", "71.4286%"])
+      : "";
 
     return `
       <article class="ranger-talent-card">
         ${talentTitle(title)}
         ${desc ? `<p class="preline">${html(desc)}</p>` : ""}
         ${conditionTable}
-        ${gainTables}
+        ${gainTable}
       </article>
     `;
   }
