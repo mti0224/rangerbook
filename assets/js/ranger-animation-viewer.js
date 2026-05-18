@@ -2,17 +2,15 @@
   const INDEX_URL = "../res/animation_meta/index.json";
   const RESOURCE_PRIMARY_BASE = "https://rangerbook.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
-  const DEFAULT_BODY_OFFSET_X = -130;
-  const DEFAULT_BODY_OFFSET_Y = -88;
 
   const CLIPS = [
-    { key: "wait", label: "待機", body: ["wait"] },
+    { key: "idle", label: "待機", body: ["idle", "wait"] },
     { key: "move", label: "移動", body: ["move"] },
-    { key: "knockback", label: "被擊退", body: ["hit", "damage", "knockback", "down", "finish"] },
-    { key: "attack", label: "一般攻擊", body: ["attack_ready", "attack"], bullet: { part: "bul", names: ["_all"] } },
-    { key: "skill1", label: "技能1", body: ["s_attack_ready", "s_attack"], bullet: { part: "bul2", names: ["_all"] } },
-    { key: "skill2", label: "技能2", body: ["s2_attack_ready", "s2_attack"], bullet: { part: "bul3", names: ["_all"] } },
-    { key: "full", label: "完整", sequence: ["move", "wait", "attack", "skill1", "skill2", "knockback"] },
+    { key: "knockback", label: "被擊退", body: ["knockback", "hit", "damage", "down", "finish"] },
+    { key: "attack", label: "一般攻擊", body: ["attack_all", "attack_ready", "attack"], bullet: { part: "bul", names: ["_all", "normal", "finish"] } },
+    { key: "skill1", label: "技能1", body: ["s_attack_all", "s_attack_ready", "s_attack"], bullet: { part: "bul2", names: ["_all", "normal", "finish"] } },
+    { key: "skill2", label: "技能2", body: ["s2_attack_all", "s2_attack_ready", "s2_attack"], bullet: { part: "bul3", names: ["_all", "normal", "finish"] } },
+    { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
 
   const state = {
@@ -25,8 +23,15 @@
     activeCanvas: null,
     activeSection: null,
     activeMeta: null,
-    activeClip: "wait",
+    activeClip: "idle",
     zoom: 1,
+    panX: 0,
+    panY: 0,
+    dragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    dragPanX: 0,
+    dragPanY: 0,
   };
 
   function text(value) { return value === null || value === undefined ? "" : String(value).trim(); }
@@ -39,9 +44,7 @@
     return normalized.startsWith("res_from_emulator/") ? RESOURCE_FALLBACK_BASE + normalized.slice("res_from_emulator/".length) : "";
   }
   function loadIndex() {
-    if (!state.indexPromise) {
-      state.indexPromise = fetch(INDEX_URL).then((res) => res.ok ? res.json() : null).catch(() => null);
-    }
+    if (!state.indexPromise) state.indexPromise = fetch(INDEX_URL).then((res) => res.ok ? res.json() : null).catch(() => null);
     return state.indexPromise;
   }
   async function loadMeta(unitId) {
@@ -85,6 +88,23 @@
     }
     return null;
   }
+  function stageRect(part) {
+    const canvas = part?.canvas || {};
+    const x = Number(canvas.x || 0);
+    const y = Number(canvas.y || 0);
+    const w = Number(canvas.w || 0) || 240;
+    const h = Number(canvas.h || 0) || 240;
+    return { x, y, w, h, right: x + w, bottom: y + h };
+  }
+  function unionBounds(meta, partNames) {
+    const rects = [...new Set(partNames)].map((name) => meta?.parts?.[name]).filter(Boolean).map(stageRect);
+    if (!rects.length) return { x: -160, y: -160, right: 160, bottom: 160, w: 320, h: 320 };
+    const x = Math.min(...rects.map((rect) => rect.x));
+    const y = Math.min(...rects.map((rect) => rect.y));
+    const right = Math.max(...rects.map((rect) => rect.right));
+    const bottom = Math.max(...rects.map((rect) => rect.bottom));
+    return { x, y, right, bottom, w: Math.max(1, right - x), h: Math.max(1, bottom - y) };
+  }
   function buildTrack(meta, clipKey) {
     const clip = CLIPS.find((item) => item.key === clipKey) || CLIPS[0];
     if (clip.sequence) {
@@ -95,28 +115,28 @@
         child.segments.forEach((segment) => segments.push({ ...segment, start: (segment.start || 0) + cursor }));
         cursor += child.duration || 0;
       });
-      return { key: clip.key, label: clip.label, segments, duration: cursor || 1 };
+      return { key: clip.key, label: clip.label, segments, duration: cursor || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
     }
     const body = meta?.parts?.body;
-    const bodyAnim = getAnim(body, clip.body || ["wait", "_all"]);
+    const bodyAnim = getAnim(body, clip.body || ["idle", "wait", "_all"]);
     const segments = [];
     if (bodyAnim) {
       const duration = bodyAnim.anim.frame_count / Math.max(1, body.anim_rate || 24);
-      segments.push({ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: false });
+      segments.push({ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: clip.key === "idle" });
       if (clip.bullet) {
         const bulletPart = meta?.parts?.[clip.bullet.part];
         const bulletAnim = getAnim(bulletPart, clip.bullet.names || ["_all"]);
         if (bulletAnim) segments.push({ partName: clip.bullet.part, animName: bulletAnim.name, start: 0, duration, loop: true });
       }
-      return { key: clip.key, label: clip.label, segments, duration: duration || 1 };
+      return { key: clip.key, label: clip.label, segments, duration: duration || 1, partNames: [...new Set(segments.map((s) => s.partName))] };
     }
-    const fallback = getAnim(body, ["wait", "_all"]);
+    const fallback = getAnim(body, ["idle", "wait", "_all"]);
     if (fallback) {
       const duration = fallback.anim.frame_count / Math.max(1, body.anim_rate || 24);
       segments.push({ partName: "body", animName: fallback.name, start: 0, duration, loop: true });
-      return { key: clip.key, label: clip.label, segments, duration };
+      return { key: clip.key, label: clip.label, segments, duration, partNames: ["body"] };
     }
-    return { key: clip.key, label: clip.label, segments: [], duration: 1 };
+    return { key: clip.key, label: clip.label, segments: [], duration: 1, partNames: [] };
   }
   function clipOptions(meta) {
     return CLIPS.map((clip) => {
@@ -130,6 +150,7 @@
         <h3>角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
+          <p class="ranger-animation-hint">可拖曳畫面平移角色動畫位置。</p>
           <div class="ranger-animation-controls simplified">
             <label><span>動畫</span><select class="ranger-animation-select">${clipOptions(meta)}</select></label>
             <label class="ranger-animation-zoom-label"><span>縮放 <strong class="ranger-animation-zoom-percent">100%</strong></span><input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
@@ -157,7 +178,7 @@
     state.spriteCache.set(cacheKey, canvas);
     return canvas;
   }
-  function drawSprite(ctx, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, zoom) {
+  function drawSprite(ctx, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, scale) {
     const [m00, m01, m10, m11, m02, m12] = objectMatrix;
     const [i00, i01, i10, i11, i02, i12] = imageMatrix;
     const w = spriteCanvas.width, h = spriteCanvas.height, cx = w * 0.5, cy = h * 0.5;
@@ -167,9 +188,15 @@
     const det = f00 * f11 - f01 * f10, scaleX = Math.hypot(f00, f10), scaleY = Math.hypot(f01, f11), flipX = det < 0;
     const angle = flipX ? Math.atan2(-f10, -f00) : Math.atan2(f10, f00);
     const alpha = Array.isArray(color) ? Number(color[3] ?? 255) / 255 : 1;
-    ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, alpha)); ctx.translate(originX + worldCx * zoom, originY + worldCy * zoom); ctx.rotate(angle); ctx.scale((flipX ? -1 : 1) * scaleX * zoom, scaleY * zoom); ctx.drawImage(spriteCanvas, -w / 2, -h / 2); ctx.restore();
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+    ctx.translate(originX + worldCx * scale, originY + worldCy * scale);
+    ctx.rotate(angle);
+    ctx.scale((flipX ? -1 : 1) * scaleX * scale, scaleY * scale);
+    ctx.drawImage(spriteCanvas, -w / 2, -h / 2);
+    ctx.restore();
   }
-  async function drawPartFrame(ctx, meta, partName, animName, elapsed, originX, originY, zoom, loop) {
+  async function drawPartFrame(ctx, meta, partName, animName, elapsed, baseX, baseY, scale, loop) {
     const part = meta?.parts?.[partName], anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return;
     const atlas = await loadImage(part.png); if (!atlas) return;
@@ -177,23 +204,32 @@
     const rawFrame = Math.floor(elapsed * fps);
     const frameIndex = loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, rawFrame);
     const frame = anim.frames[frameIndex] || [];
+    const rect = stageRect(part);
+    const originX = baseX + rect.x * scale;
+    const originY = baseY + rect.y * scale;
     for (const item of frame) {
       const [, resNum, objectMatrix, color] = item;
       const imageDef = part.images?.[resNum];
       if (!imageDef || !Array.isArray(objectMatrix) || !Array.isArray(imageDef.m)) continue;
       const spriteCanvas = getSpriteCanvas(part, atlas, imageDef.name);
-      if (spriteCanvas) drawSprite(ctx, spriteCanvas, objectMatrix, imageDef.m, color, originX, originY, zoom);
+      if (spriteCanvas) drawSprite(ctx, spriteCanvas, objectMatrix, imageDef.m, color, originX, originY, scale);
     }
   }
   async function drawTrack(canvas, meta, track, elapsed) {
     const ctx = canvas.getContext("2d"); if (!ctx || !track) return;
-    const width = canvas.width, height = canvas.height, zoom = state.zoom || 1;
-    const originX = width * 0.5 + DEFAULT_BODY_OFFSET_X * zoom, originY = height * 0.78 + DEFAULT_BODY_OFFSET_Y * zoom;
-    ctx.clearRect(0, 0, width, height); ctx.save(); ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(0, Math.round(height * 0.78), width, 1); ctx.restore();
+    const width = canvas.width, height = canvas.height;
+    const bounds = unionBounds(meta, track.partNames || ["body"]);
+    const fitScale = Math.min(width / bounds.w, height / bounds.h) * 0.78;
+    const scale = fitScale * (state.zoom || 1);
+    const baseX = (width - bounds.w * scale) / 2 - bounds.x * scale + state.panX;
+    const baseY = (height - bounds.h * scale) / 2 - bounds.y * scale + state.panY;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.save(); ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(0, Math.round(height * 0.76), width, 1); ctx.restore();
     const t = track.duration ? elapsed % track.duration : elapsed;
     for (const segment of track.segments) {
       const start = segment.start || 0, end = start + segment.duration;
-      if (t >= start && t <= end) await drawPartFrame(ctx, meta, segment.partName, segment.animName, t - start, originX, originY, zoom, segment.loop);
+      if (t >= start && t <= end) await drawPartFrame(ctx, meta, segment.partName, segment.animName, t - start, baseX, baseY, scale, segment.loop);
     }
   }
   function stopPlayback() { if (state.rafId) cancelAnimationFrame(state.rafId); state.rafId = 0; }
@@ -206,11 +242,34 @@
   function startPlayback(section) {
     stopPlayback(); state.activeSection = section; state.activeCanvas = section.querySelector(".ranger-animation-canvas"); state.startedAt = performance.now(); state.rafId = requestAnimationFrame(playLoop);
   }
+  function bindDrag(canvas) {
+    canvas.addEventListener("pointerdown", (event) => {
+      state.dragging = true;
+      state.dragStartX = event.clientX;
+      state.dragStartY = event.clientY;
+      state.dragPanX = state.panX;
+      state.dragPanY = state.panY;
+      canvas.setPointerCapture?.(event.pointerId);
+      canvas.classList.add("dragging");
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!state.dragging) return;
+      state.panX = state.dragPanX + event.clientX - state.dragStartX;
+      state.panY = state.dragPanY + event.clientY - state.dragStartY;
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach((name) => canvas.addEventListener(name, (event) => {
+      state.dragging = false;
+      canvas.releasePointerCapture?.(event.pointerId);
+      canvas.classList.remove("dragging");
+    }));
+  }
   function bindPanel(section, meta) {
     const select = section.querySelector(".ranger-animation-select"), zoom = section.querySelector(".ranger-animation-zoom"), zoomText = section.querySelector(".ranger-animation-zoom-percent"), canvas = section.querySelector(".ranger-animation-canvas");
     if (!select || !canvas) return;
-    state.activeMeta = meta; state.activeCanvas = canvas; state.activeClip = select.value || "wait";
-    select.addEventListener("change", () => { state.activeClip = select.value || "wait"; startPlayback(section); });
+    state.activeMeta = meta; state.activeCanvas = canvas; state.activeClip = select.value || "idle";
+    state.panX = 0; state.panY = 0;
+    bindDrag(canvas);
+    select.addEventListener("change", () => { state.activeClip = select.value || "idle"; startPlayback(section); });
     zoom?.addEventListener("input", () => { state.zoom = Number(zoom.value) || 1; if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`; });
     if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
     startPlayback(section);
