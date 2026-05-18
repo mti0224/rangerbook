@@ -197,8 +197,6 @@ class SAMParser:
             snapshot: list[list[Any]] = []
             for obj_num in sorted(objects.keys()):
                 obj = objects[obj_num]
-                if not obj.get("moved", False):
-                    continue
                 snapshot.append([
                     obj_num,
                     obj["res"],
