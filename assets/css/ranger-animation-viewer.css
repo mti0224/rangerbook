@@ -1,0 +1,74 @@
+.ranger-animation-section {
+  overflow: hidden;
+}
+
+.ranger-animation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ranger-animation-player,
+.ranger-animation-startup {
+  border: 1px solid var(--border-color, rgba(120, 120, 120, 0.25));
+  border-radius: 16px;
+  padding: 14px;
+  background: var(--card-bg, rgba(255, 255, 255, 0.04));
+}
+
+.ranger-animation-canvas {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.04)),
+    repeating-linear-gradient(45deg, rgba(120,120,120,0.08), rgba(120,120,120,0.08) 8px, transparent 8px, transparent 16px);
+}
+
+.ranger-animation-controls {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) repeat(3, auto);
+  gap: 10px;
+  align-items: end;
+  margin-top: 12px;
+}
+
+.ranger-animation-controls label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.ranger-animation-controls select,
+.ranger-animation-controls input,
+.ranger-animation-controls button {
+  min-height: 36px;
+}
+
+.ranger-animation-frame-info,
+.ranger-animation-note {
+  margin: 10px 0 0;
+  color: var(--muted-text, #777);
+  font-size: 0.92rem;
+}
+
+.ranger-startup-table th {
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .ranger-animation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ranger-animation-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ranger-animation-controls label:first-child {
+    grid-column: 1 / -1;
+  }
+}
