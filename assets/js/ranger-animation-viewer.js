@@ -405,11 +405,16 @@
     if (!select || !canvas) return;
     const defaultKey = defaultClipKey(meta);
     if (defaultKey) select.value = defaultKey;
+    if (zoom) zoom.value = "1";
     state.activeMeta = meta; state.activeCanvas = canvas; state.activeClip = select.value || defaultKey;
+    state.zoom = Number(zoom?.value) || 1;
     state.panX = 0; state.panY = 0;
     bindDrag(canvas);
     select.addEventListener("change", () => { state.activeClip = select.value || defaultKey; startPlayback(section); });
-    zoom?.addEventListener("input", () => { state.zoom = Number(zoom.value) || 1; if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`; });
+    zoom?.addEventListener("input", () => {
+      state.zoom = Number(zoom.value) || 1;
+      if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
+    });
     if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
     startPlayback(section);
   }
