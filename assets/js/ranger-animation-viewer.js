@@ -4,14 +4,6 @@
   const RESOURCE_PRIMARY_BASE = "https://res.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
-
-  const PROJECTILE_SOURCE_ANCHOR = { x: 0.78, y: 0.38 };
-  const PROJECTILE_TARGET = {
-    bul: { x: 0, y: 0, isBasicAttack: true },
-    bul2: { x: 0, y: 0, isBasicAttack: false },
-    bul3: { x: 0, y: 0, isBasicAttack: false },
-  };
-  const TARGET_DISTANCE_RATIO = 0.40;
   const FRAME_INTERVAL_MS = 1000 / 30;
 
   const CLIPS = [
@@ -30,8 +22,6 @@
     imageCache: new Map(),
     spriteCache: new Map(),
     trackCache: new WeakMap(),
-    frameBoundsCache: new WeakMap(),
-    animationBoundsCache: new WeakMap(),
     rafId: 0,
     startedAt: 0,
     lastDrawAt: 0,
@@ -68,20 +58,28 @@
   }
   function resourceUrl(path) { return `${RESOURCE_PRIMARY_BASE}${normalizeResourcePath(path)}`; }
   function legacyResourceUrl(path) { return `${RESOURCE_FALLBACK_BASE}${normalizeResourcePath(path)}`; }
+
   function loadIndex() {
-    if (!state.indexPromise) state.indexPromise = fetch(INDEX_URL).then((res) => res.ok ? res.json() : null).catch(() => null);
+    if (!state.indexPromise) {
+      state.indexPromise = fetch(INDEX_URL).then((res) => res.ok ? res.json() : null).catch(() => null);
+    }
     return state.indexPromise;
   }
+
   async function loadMeta(unitId) {
     if (!unitId) return null;
     if (state.metaCache.has(unitId)) return state.metaCache.get(unitId);
     const index = await loadIndex();
     const entry = index?.units?.[unitId];
-    if (!entry?.meta) return null;
+    if (!entry?.meta) {
+      state.metaCache.set(unitId, null);
+      return null;
+    }
     const meta = await fetch(animationMetaUrl(entry.meta, unitId)).then((res) => res.ok ? res.json() : null).catch(() => null);
     state.metaCache.set(unitId, meta);
     return meta;
   }
+
   function loadImage(path) {
     const normalizedPath = normalizeResourcePath(path);
     const key = normalizedPath || "";
@@ -108,6 +106,7 @@
     const match = src.match(/res(?:_from_emulator)?\/([^/]+)\//) || src.match(/\/([^/]+)\/[^/]+-thum/i);
     return match ? decodeURIComponent(match[1]) : "";
   }
+
   function getAnim(part, names) {
     if (!part) return null;
     for (const name of names) {
@@ -116,6 +115,7 @@
     }
     return null;
   }
+
   function stageRect(part) {
     const canvas = part?.canvas || {};
     const x = Number(canvas.x || 0);
@@ -124,17 +124,19 @@
     const h = Number(canvas.h || 0) || 240;
     return { x, y, w, h, right: x + w, bottom: y + h };
   }
-  function bodyBounds(meta) {
-    const rect = stageRect(meta?.parts?.body);
-    return {
-      x: rect.x,
-      y: rect.y,
-      right: rect.right + 420,
-      bottom: rect.bottom,
-      w: Math.max(1, rect.w + 420),
-      h: Math.max(1, rect.h),
-    };
+
+  function viewportBounds(meta) {
+    const parts = [meta?.parts?.body, meta?.parts?.bul, meta?.parts?.bul2, meta?.parts?.bul3].filter(Boolean);
+    const rects = parts.map(stageRect);
+    if (!rects.length) return { x: 0, y: 0, right: 640, bottom: 360, w: 640, h: 360 };
+    const bodyRect = stageRect(meta?.parts?.body);
+    const minX = Math.min(...rects.map((rect) => rect.x), bodyRect.x);
+    const minY = Math.min(...rects.map((rect) => rect.y), bodyRect.y);
+    const maxX = Math.max(...rects.map((rect) => rect.right), bodyRect.right + 420);
+    const maxY = Math.max(...rects.map((rect) => rect.bottom), bodyRect.bottom);
+    return { x: minX, y: minY, right: maxX, bottom: maxY, w: Math.max(1, maxX - minX), h: Math.max(1, maxY - minY) };
   }
+
   function animDuration(part, animResult) {
     return animResult ? animResult.anim.frame_count / Math.max(1, part?.anim_rate || 24) : 0;
   }
@@ -154,12 +156,7 @@
     if (absoluteStart > 0 && absoluteStart < clipDuration) return absoluteStart;
     return 0;
   }
-  function projectileDurationSeconds(bodyPart, normalAnim, isBasicAttack) {
-    const normalCount = normalAnim?.anim?.frame_count || 0;
-    const bodyFps = Math.max(1, bodyPart?.anim_rate || 24);
-    if (isBasicAttack && normalCount <= 1) return 15 / bodyFps;
-    return Math.max(1, normalCount) / bodyFps;
-  }
+
   function buildProjectile(meta, clip, bodyPart, clipDuration) {
     if (!clip.bullet) return null;
     const bulletPart = meta?.parts?.[clip.bullet];
@@ -167,10 +164,9 @@
     const normalAnim = getAnim(bulletPart, ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]);
     if (!normalAnim) return null;
     const finishAnim = getAnim(bulletPart, ["finish", "hit", "end"]);
-    const config = PROJECTILE_TARGET[clip.bullet] || PROJECTILE_TARGET.bul;
     const spawnTime = projectileSpawnTime(bodyPart, clip, clipDuration);
-    const normalDuration = projectileDurationSeconds(bodyPart, normalAnim, config.isBasicAttack);
-    const finishDuration = finishAnim ? finishAnim.anim.frame_count / Math.max(1, bodyPart.anim_rate || 24) : 0;
+    const normalDuration = animDuration(bulletPart, normalAnim);
+    const finishDuration = finishAnim ? animDuration(bulletPart, finishAnim) : 0;
     return {
       partName: clip.bullet,
       normalAnimName: normalAnim.name,
@@ -178,10 +174,10 @@
       spawnTime,
       normalDuration,
       finishDuration,
-      targetOffsetX: config.x,
-      targetOffsetY: config.y,
+      duration: normalDuration + finishDuration,
     };
   }
+
   function computeTrack(meta, clipKey) {
     const clip = CLIPS.find((item) => item.key === clipKey) || CLIPS[0];
     if (clip.sequence) {
@@ -199,15 +195,18 @@
     const bodyPart = meta?.parts?.body;
     const bodyAnim = getAnim(bodyPart, clip.body || []);
     if (!bodyAnim) return { key: clip.key, label: clip.label, segments: [], duration: 0 };
-    const duration = animDuration(bodyPart, bodyAnim) || 1;
-    const projectile = buildProjectile(meta, clip, bodyPart, duration);
+    const bodyDuration = animDuration(bodyPart, bodyAnim) || 1;
+    const projectile = buildProjectile(meta, clip, bodyPart, bodyDuration);
+    const projectileEnd = projectile ? projectile.spawnTime + projectile.duration : 0;
+    const duration = Math.max(bodyDuration, projectileEnd, 1);
     return {
       key: clip.key,
       label: clip.label,
-      segments: [{ partName: "body", animName: bodyAnim.name, start: 0, duration, loop: clip.key === "idle", projectile }],
+      segments: [{ partName: "body", animName: bodyAnim.name, start: 0, duration, bodyDuration, loop: clip.key === "idle", projectile }],
       duration,
     };
   }
+
   function buildTrack(meta, clipKey) {
     if (!meta) return { key: clipKey, label: clipKey, segments: [], duration: 0 };
     if (!state.trackCache.has(meta)) state.trackCache.set(meta, new Map());
@@ -215,6 +214,7 @@
     if (!cache.has(clipKey)) cache.set(clipKey, computeTrack(meta, clipKey));
     return cache.get(clipKey);
   }
+
   function availableClips(meta) {
     return CLIPS.map((clip) => ({ clip, track: buildTrack(meta, clip.key) })).filter(({ track }) => track.segments.length > 0);
   }
@@ -253,7 +253,8 @@
     const [sx, sy, sw, sh] = sprite.rect || [];
     if (!sw || !sh) return null;
     const canvas = document.createElement("canvas");
-    canvas.width = sw; canvas.height = sh;
+    canvas.width = sw;
+    canvas.height = sh;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     if (sprite.rotated) {
@@ -266,91 +267,26 @@
     state.spriteCache.set(cacheKey, canvas);
     return canvas;
   }
-  function transformPoint(objectMatrix, imageMatrix, x, y) {
-    const [m00, m01, m10, m11, m02, m12] = objectMatrix;
-    const [i00, i01, i10, i11, i02, i12] = imageMatrix;
-    const postX = i00 * x + i01 * y + i02;
-    const postY = i10 * x + i11 * y + i12;
-    return {
-      x: m00 * postX + m01 * postY + m02,
-      y: m10 * postX + m11 * postY + m12,
-    };
-  }
-  function frameBounds(part, animName, frameIndex) {
-    const anim = part?.animations?.[animName];
-    if (!part || !anim?.frames?.length) return null;
-    if (!state.frameBoundsCache.has(part)) state.frameBoundsCache.set(part, new Map());
-    const cache = state.frameBoundsCache.get(part);
-    const key = `${animName}:${frameIndex}`;
-    if (cache.has(key)) return cache.get(key);
 
-    const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (const item of frame) {
-      const [, resNum, objectMatrix] = item;
-      const imageDef = part.images?.[resNum];
-      const sprite = imageDef ? part.sprites?.[imageDef.name] : null;
-      if (!imageDef || !sprite || !Array.isArray(objectMatrix) || !Array.isArray(imageDef.m)) continue;
-      const [, , sw, sh] = sprite.rect || [];
-      if (!sw || !sh) continue;
-      [[0, 0], [sw, 0], [0, sh], [sw, sh]].forEach(([x, y]) => {
-        const point = transformPoint(objectMatrix, imageDef.m, x, y);
-        minX = Math.min(minX, point.x);
-        minY = Math.min(minY, point.y);
-        maxX = Math.max(maxX, point.x);
-        maxY = Math.max(maxY, point.y);
-      });
-    }
-    const bounds = Number.isFinite(minX) ? {
-      minX,
-      minY,
-      maxX,
-      maxY,
-      width: Math.max(1, maxX - minX),
-      height: Math.max(1, maxY - minY),
-      centerX: (minX + maxX) / 2,
-      centerY: (minY + maxY) / 2,
-    } : null;
-    cache.set(key, bounds);
-    return bounds;
-  }
-  function animationBounds(part, animName) {
-    const anim = part?.animations?.[animName];
-    if (!part || !anim?.frames?.length) return null;
-    if (!state.animationBoundsCache.has(part)) state.animationBoundsCache.set(part, new Map());
-    const cache = state.animationBoundsCache.get(part);
-    if (cache.has(animName)) return cache.get(animName);
-
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (let index = 0; index < anim.frame_count; index += 1) {
-      const bounds = frameBounds(part, animName, index);
-      if (!bounds) continue;
-      minX = Math.min(minX, bounds.minX);
-      minY = Math.min(minY, bounds.minY);
-      maxX = Math.max(maxX, bounds.maxX);
-      maxY = Math.max(maxY, bounds.maxY);
-    }
-    const bounds = Number.isFinite(minX) ? {
-      minX,
-      minY,
-      maxX,
-      maxY,
-      width: Math.max(1, maxX - minX),
-      height: Math.max(1, maxY - minY),
-      centerX: (minX + maxX) / 2,
-      centerY: (minY + maxY) / 2,
-    } : null;
-    cache.set(animName, bounds);
-    return bounds;
-  }
   function drawSprite(ctx, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, scale) {
     const [m00, m01, m10, m11, m02, m12] = objectMatrix;
     const [i00, i01, i10, i11, i02, i12] = imageMatrix;
-    const w = spriteCanvas.width, h = spriteCanvas.height, cx = w * 0.5, cy = h * 0.5;
-    const postCx = i00 * cx + i01 * cy + i02, postCy = i10 * cx + i11 * cy + i12;
-    const worldCx = m00 * postCx + m01 * postCy + m02, worldCy = m10 * postCx + m11 * postCy + m12;
-    const f00 = m00 * i00 + m01 * i10, f01 = m00 * i01 + m01 * i11, f10 = m10 * i00 + m11 * i10, f11 = m10 * i01 + m11 * i11;
-    const det = f00 * f11 - f01 * f10, scaleX = Math.hypot(f00, f10), scaleY = Math.hypot(f01, f11), flipX = det < 0;
+    const w = spriteCanvas.width;
+    const h = spriteCanvas.height;
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+    const postCx = i00 * cx + i01 * cy + i02;
+    const postCy = i10 * cx + i11 * cy + i12;
+    const worldCx = m00 * postCx + m01 * postCy + m02;
+    const worldCy = m10 * postCx + m11 * postCy + m12;
+    const f00 = m00 * i00 + m01 * i10;
+    const f01 = m00 * i01 + m01 * i11;
+    const f10 = m10 * i00 + m11 * i10;
+    const f11 = m10 * i01 + m11 * i11;
+    const det = f00 * f11 - f01 * f10;
+    const scaleX = Math.hypot(f00, f10);
+    const scaleY = Math.hypot(f01, f11);
+    const flipX = det < 0;
     const angle = flipX ? Math.atan2(-f10, -f00) : Math.atan2(f10, f00);
     const alpha = Array.isArray(color) ? Number(color[3] ?? 255) / 255 : 1;
     ctx.save();
@@ -361,11 +297,15 @@
     ctx.drawImage(spriteCanvas, -w / 2, -h / 2);
     ctx.restore();
   }
-  async function drawFrameAtOrigin(ctx, part, animName, frameIndex, originX, originY, scale) {
+
+  async function drawSamLayer(ctx, part, animName, frameIndex, baseX, baseY, scale) {
     const anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return false;
     const atlas = await loadImage(part.png);
     if (!atlas) return false;
+    const rect = stageRect(part);
+    const originX = baseX + rect.x * scale;
+    const originY = baseY + rect.y * scale;
     const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
     let drawn = false;
     for (const item of frame) {
@@ -373,105 +313,75 @@
       const imageDef = part.images?.[resNum];
       if (!imageDef || !Array.isArray(objectMatrix) || !Array.isArray(imageDef.m)) continue;
       const spriteCanvas = getSpriteCanvas(part, atlas, imageDef.name);
-      if (spriteCanvas) {
-        drawSprite(ctx, spriteCanvas, objectMatrix, imageDef.m, color, originX, originY, scale);
-        drawn = true;
-      }
+      if (!spriteCanvas) continue;
+      drawSprite(ctx, spriteCanvas, objectMatrix, imageDef.m, color, originX, originY, scale);
+      drawn = true;
     }
     return drawn;
   }
-  async function drawFrameAtCenter(ctx, part, animName, frameIndex, centerX, centerY, scale) {
-    const bounds = animationBounds(part, animName) || frameBounds(part, animName, frameIndex);
-    const originX = centerX - (bounds?.centerX || 0) * scale;
-    const originY = centerY - (bounds?.centerY || 0) * scale;
-    return drawFrameAtOrigin(ctx, part, animName, frameIndex, originX, originY, scale);
-  }
-  function frameIndexForSegment(part, segment, elapsed) {
-    const anim = part?.animations?.[segment.animName];
-    if (!part || !anim?.frames?.length) return 0;
-    const fps = Math.max(1, part.anim_rate || 24);
-    const rawFrame = Math.floor(elapsed * fps);
-    return segment.loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, rawFrame);
-  }
-  async function drawBodySegment(ctx, meta, segment, elapsed, bodyOriginX, bodyOriginY, scale) {
-    const part = meta?.parts?.body;
-    if (!part) return;
-    const anim = part.animations?.[segment.animName];
-    if (!anim?.frames?.length) return;
-    const frameIndex = frameIndexForSegment(part, segment, elapsed);
-    await drawFrameAtOrigin(ctx, part, segment.animName, frameIndex, bodyOriginX, bodyOriginY, scale);
-  }
-  async function drawProjectile(ctx, meta, projectile, projectileAge, bodyOriginX, bodyOriginY, targetDistance, scale, bodySegment) {
-    if (!projectile || projectileAge < 0) return;
-    const part = meta?.parts?.[projectile.partName];
-    const bodyPart = meta?.parts?.body;
-    if (!part || !bodyPart || !bodySegment) return;
-    const bodyFps = Math.max(1, bodyPart.anim_rate || 24);
-    const bodyFrameIndex = frameIndexForSegment(bodyPart, bodySegment, projectile.spawnTime);
-    const bodyFrameBounds = frameBounds(bodyPart, bodySegment.animName, bodyFrameIndex);
-    const bodyRect = stageRect(bodyPart);
-    const minX = bodyFrameBounds?.minX ?? 0;
-    const minY = bodyFrameBounds?.minY ?? 0;
-    const width = bodyFrameBounds?.width ?? bodyRect.w;
-    const height = bodyFrameBounds?.height ?? bodyRect.h;
-    const sourceX = bodyOriginX + (minX + width * PROJECTILE_SOURCE_ANCHOR.x) * scale;
-    const sourceY = bodyOriginY + (minY + height * PROJECTILE_SOURCE_ANCHOR.y) * scale;
-    const startX = sourceX;
-    const startY = sourceY;
-    const endX = sourceX + targetDistance + projectile.targetOffsetX * scale;
-    const endY = sourceY + projectile.targetOffsetY * scale;
 
-    if (projectileAge < projectile.normalDuration) {
-      const normalAnim = part.animations?.[projectile.normalAnimName];
-      if (!normalAnim?.frames?.length) return;
-      const p = Math.min(1, Math.max(0, projectileAge / Math.max(0.001, projectile.normalDuration)));
-      const x = startX + (endX - startX) * p;
-      const y = startY + (endY - startY) * p;
-      const rawFrame = Math.floor(projectileAge * bodyFps);
-      const frameIndex = rawFrame % Math.max(1, normalAnim.frame_count);
-      await drawFrameAtCenter(ctx, part, projectile.normalAnimName, frameIndex, x, y, scale);
+  function frameIndex(part, animName, elapsed, loop = false) {
+    const anim = part?.animations?.[animName];
+    if (!part || !anim?.frames?.length) return 0;
+    const rawFrame = Math.floor(elapsed * Math.max(1, part.anim_rate || 24));
+    return loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, Math.max(0, rawFrame));
+  }
+
+  async function drawSegment(ctx, meta, segment, segmentAge, baseX, baseY, scale) {
+    const bodyPart = meta?.parts?.body;
+    if (!bodyPart) return;
+    const bodyAge = segment.loop ? segmentAge : Math.min(segmentAge, Math.max(0, (segment.bodyDuration || segment.duration) - 0.001));
+    const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
+    await drawSamLayer(ctx, bodyPart, segment.animName, bodyFrame, baseX, baseY, scale);
+
+    const projectile = segment.projectile;
+    if (!projectile) return;
+    const projectileAge = segmentAge - projectile.spawnTime;
+    if (projectileAge < 0 || projectileAge > projectile.duration) return;
+    const bulletPart = meta?.parts?.[projectile.partName];
+    if (!bulletPart) return;
+
+    if (projectileAge < projectile.normalDuration || !projectile.finishAnimName) {
+      const animAge = Math.max(0, projectileAge);
+      const bulletFrame = frameIndex(bulletPart, projectile.normalAnimName, animAge, false);
+      await drawSamLayer(ctx, bulletPart, projectile.normalAnimName, bulletFrame, baseX, baseY, scale);
       return;
     }
 
-    if (!projectile.finishAnimName) return;
-    const finishAnim = part.animations?.[projectile.finishAnimName];
-    if (!finishAnim?.frames?.length) return;
     const finishAge = projectileAge - projectile.normalDuration;
-    if (finishAge > projectile.finishDuration) return;
-    const frameIndex = Math.min(finishAnim.frame_count - 1, Math.max(0, Math.floor(finishAge * bodyFps)));
-    await drawFrameAtCenter(ctx, part, projectile.finishAnimName, frameIndex, endX, endY, scale);
+    const finishFrame = frameIndex(bulletPart, projectile.finishAnimName, finishAge, false);
+    await drawSamLayer(ctx, bulletPart, projectile.finishAnimName, finishFrame, baseX, baseY, scale);
   }
+
   async function drawTrack(canvas, meta, track, elapsed) {
     const ctx = canvas.getContext("2d");
     if (!ctx || !track) return;
-    const width = canvas.width, height = canvas.height;
-    const bounds = bodyBounds(meta);
-    const fitScale = Math.min(width / bounds.w, height / bounds.h) * 0.82;
-    const scale = fitScale * (state.zoom || 1);
+    const width = canvas.width;
+    const height = canvas.height;
+    const bounds = viewportBounds(meta);
+    const scale = Math.min(width / bounds.w, height / bounds.h) * 0.82 * (state.zoom || 1);
     const baseX = (width - bounds.w * scale) / 2 - bounds.x * scale + state.panX;
     const baseY = (height - bounds.h * scale) / 2 - bounds.y * scale + state.panY;
-    const bodyRect = stageRect(meta?.parts?.body);
-    const bodyOriginX = baseX + bodyRect.x * scale;
-    const bodyOriginY = baseY + bodyRect.y * scale;
-    const targetDistance = width * TARGET_DISTANCE_RATIO;
 
     ctx.clearRect(0, 0, width, height);
-    ctx.save(); ctx.fillStyle = "rgba(255,255,255,0.08)"; ctx.fillRect(0, Math.round(height * 0.76), width, 1); ctx.restore();
+    ctx.save();
+    ctx.fillStyle = "rgba(255,255,255,0.08)";
+    ctx.fillRect(0, Math.round(height * 0.76), width, 1);
+    ctx.restore();
 
     const t = track.duration ? elapsed % track.duration : elapsed;
     for (const segment of track.segments) {
       const start = segment.start || 0;
       const end = start + segment.duration;
       if (t < start || t > end) continue;
-      const segmentAge = t - start;
-      await drawBodySegment(ctx, meta, segment, segmentAge, bodyOriginX, bodyOriginY, scale);
-      if (segment.projectile) {
-        await drawProjectile(ctx, meta, segment.projectile, segmentAge - segment.projectile.spawnTime, bodyOriginX, bodyOriginY, targetDistance, scale, segment);
-      }
+      await drawSegment(ctx, meta, segment, t - start, baseX, baseY, scale);
     }
   }
 
-  function stopPlayback() { if (state.rafId) cancelAnimationFrame(state.rafId); state.rafId = 0; }
+  function stopPlayback() {
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    state.rafId = 0;
+  }
   function playLoop(timestamp) {
     if (!state.activeCanvas || !state.activeMeta) return;
     if (!timestamp || timestamp - state.lastDrawAt >= FRAME_INTERVAL_MS) {
@@ -489,6 +399,7 @@
     state.lastDrawAt = 0;
     state.rafId = requestAnimationFrame(playLoop);
   }
+
   function bindDrag(canvas) {
     canvas.addEventListener("pointerdown", (event) => {
       state.dragging = true;
@@ -510,17 +421,27 @@
       canvas.classList.remove("dragging");
     }));
   }
+
   function bindPanel(section, meta) {
-    const select = section.querySelector(".ranger-animation-select"), zoom = section.querySelector(".ranger-animation-zoom"), zoomText = section.querySelector(".ranger-animation-zoom-percent"), canvas = section.querySelector(".ranger-animation-canvas");
+    const select = section.querySelector(".ranger-animation-select");
+    const zoom = section.querySelector(".ranger-animation-zoom");
+    const zoomText = section.querySelector(".ranger-animation-zoom-percent");
+    const canvas = section.querySelector(".ranger-animation-canvas");
     if (!select || !canvas) return;
     const defaultKey = defaultClipKey(meta);
     if (defaultKey) select.value = defaultKey;
     if (zoom) zoom.value = "1";
-    state.activeMeta = meta; state.activeCanvas = canvas; state.activeClip = select.value || defaultKey;
+    state.activeMeta = meta;
+    state.activeCanvas = canvas;
+    state.activeClip = select.value || defaultKey;
     state.zoom = Number(zoom?.value) || 1;
-    state.panX = 0; state.panY = 0;
+    state.panX = 0;
+    state.panY = 0;
     bindDrag(canvas);
-    select.addEventListener("change", () => { state.activeClip = select.value || defaultKey; startPlayback(section); });
+    select.addEventListener("change", () => {
+      state.activeClip = select.value || defaultKey;
+      startPlayback(section);
+    });
     zoom?.addEventListener("input", () => {
       state.zoom = Number(zoom.value) || 1;
       if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
@@ -528,6 +449,7 @@
     if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
     startPlayback(section);
   }
+
   async function patchModal() {
     const modalContent = document.getElementById("rangerModalContent");
     if (!modalContent || !modalContent.children.length) return;
@@ -538,6 +460,7 @@
     const section = modalContent.querySelector(`.ranger-animation-section[data-animation-unit-id="${CSS.escape(unitId)}"]`);
     if (section && meta) bindPanel(section, meta);
   }
+
   function onlyAnimationPanelAdded(mutations) {
     return mutations.length > 0 && mutations.every((mutation) => {
       const added = [...mutation.addedNodes].filter((node) => node.nodeType === Node.ELEMENT_NODE);
@@ -545,10 +468,18 @@
       return removed.length === 0 && added.length > 0 && added.every((node) => node.classList?.contains("ranger-animation-section"));
     });
   }
+
   const observer = new MutationObserver((mutations) => {
     if (!onlyAnimationPanelAdded(mutations)) stopPlayback();
     window.setTimeout(patchModal, 0);
   });
-  window.addEventListener("load", () => { const modalContent = document.getElementById("rangerModalContent"); if (modalContent) observer.observe(modalContent, { childList: true }); patchModal(); });
-  document.addEventListener("click", (event) => { if (event.target?.id === "rangerModalCloseBtn" || event.target?.id === "rangerModal") stopPlayback(); });
+
+  window.addEventListener("load", () => {
+    const modalContent = document.getElementById("rangerModalContent");
+    if (modalContent) observer.observe(modalContent, { childList: true });
+    patchModal();
+  });
+  document.addEventListener("click", (event) => {
+    if (event.target?.id === "rangerModalCloseBtn" || event.target?.id === "rangerModal") stopPlayback();
+  });
 })();
