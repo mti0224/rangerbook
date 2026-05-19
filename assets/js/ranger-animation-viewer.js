@@ -5,6 +5,8 @@
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
   const FRAME_INTERVAL_MS = 1000 / 30;
+  const PROJECTILE_LAYER_TRAVEL_DISTANCE = 420;
+  const MIN_PROJECTILE_TRAVEL_SECONDS = 0.5;
 
   const CLIPS = [
     { key: "idle", label: "待機", body: ["idle", "wait"] },
@@ -132,7 +134,7 @@
     const bodyRect = stageRect(meta?.parts?.body);
     const minX = Math.min(...rects.map((rect) => rect.x), bodyRect.x);
     const minY = Math.min(...rects.map((rect) => rect.y), bodyRect.y);
-    const maxX = Math.max(...rects.map((rect) => rect.right), bodyRect.right + 420);
+    const maxX = Math.max(...rects.map((rect) => rect.right + PROJECTILE_LAYER_TRAVEL_DISTANCE), bodyRect.right + PROJECTILE_LAYER_TRAVEL_DISTANCE);
     const maxY = Math.max(...rects.map((rect) => rect.bottom), bodyRect.bottom);
     return { x: minX, y: minY, right: maxX, bottom: maxY, w: Math.max(1, maxX - minX), h: Math.max(1, maxY - minY) };
   }
@@ -165,7 +167,7 @@
     if (!normalAnim) return null;
     const finishAnim = getAnim(bulletPart, ["finish", "hit", "end"]);
     const spawnTime = projectileSpawnTime(bodyPart, clip, clipDuration);
-    const normalDuration = animDuration(bulletPart, normalAnim);
+    const normalDuration = Math.max(animDuration(bulletPart, normalAnim), MIN_PROJECTILE_TRAVEL_SECONDS);
     const finishDuration = finishAnim ? animDuration(bulletPart, finishAnim) : 0;
     return {
       partName: clip.bullet,
@@ -298,14 +300,14 @@
     ctx.restore();
   }
 
-  async function drawSamLayer(ctx, part, animName, frameIndex, baseX, baseY, scale) {
+  async function drawSamLayer(ctx, part, animName, frameIndex, baseX, baseY, scale, offsetX = 0, offsetY = 0) {
     const anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return false;
     const atlas = await loadImage(part.png);
     if (!atlas) return false;
     const rect = stageRect(part);
-    const originX = baseX + rect.x * scale;
-    const originY = baseY + rect.y * scale;
+    const originX = baseX + (rect.x + offsetX) * scale;
+    const originY = baseY + (rect.y + offsetY) * scale;
     const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
     let drawn = false;
     for (const item of frame) {
@@ -343,14 +345,15 @@
 
     if (projectileAge < projectile.normalDuration || !projectile.finishAnimName) {
       const animAge = Math.max(0, projectileAge);
-      const bulletFrame = frameIndex(bulletPart, projectile.normalAnimName, animAge, false);
-      await drawSamLayer(ctx, bulletPart, projectile.normalAnimName, bulletFrame, baseX, baseY, scale);
+      const bulletFrame = frameIndex(bulletPart, projectile.normalAnimName, animAge, true);
+      const progress = Math.min(1, Math.max(0, projectileAge / Math.max(0.001, projectile.normalDuration)));
+      await drawSamLayer(ctx, bulletPart, projectile.normalAnimName, bulletFrame, baseX, baseY, scale, PROJECTILE_LAYER_TRAVEL_DISTANCE * progress, 0);
       return;
     }
 
     const finishAge = projectileAge - projectile.normalDuration;
     const finishFrame = frameIndex(bulletPart, projectile.finishAnimName, finishAge, false);
-    await drawSamLayer(ctx, bulletPart, projectile.finishAnimName, finishFrame, baseX, baseY, scale);
+    await drawSamLayer(ctx, bulletPart, projectile.finishAnimName, finishFrame, baseX, baseY, scale, PROJECTILE_LAYER_TRAVEL_DISTANCE, 0);
   }
 
   async function drawTrack(canvas, meta, track, elapsed) {
