@@ -20,7 +20,7 @@
 .ranger-animation-canvas {
   display: block;
   width: 100%;
-  max-width: 720px;
+  max-width: none;
   aspect-ratio: 16 / 9;
   border-radius: 14px;
   cursor: grab;
