@@ -123,7 +123,7 @@
   function startupSeconds(meta, skillIndex) {
     const key = skillIndex === 0 ? "skill_1" : "skill_2";
     const seconds = Number(meta?.startup?.[key]?.seconds || 0);
-    return seconds ? seconds.toFixed(2) : "-";
+    return seconds ? `${seconds.toFixed(2)}秒` : "-";
   }
 
   function inferUnitIdFromModal(modalContent) {
@@ -175,7 +175,7 @@
     const icon = text(skill?.icon);
     const desc = skillDescription(skill);
     const meta = table(
-      ["發動率", "技能冷卻時間", "觸發基準", "技能前搖時間(秒)"],
+      ["發動率", "技能冷卻時間", "觸發基準", "前搖時間"],
       [[skill?.["發動機率"], skill?.["技能冷卻時間"], skill?.["觸發基準"], startupSeconds(animationMeta, index)]],
       "skill-effect-table skill-meta-table",
       ["25%", "25%", "25%", "25%"]
