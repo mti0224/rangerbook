@@ -428,7 +428,17 @@
     const section = modalContent.querySelector(`.ranger-animation-section[data-animation-unit-id="${CSS.escape(unitId)}"]`);
     if (section && meta) bindPanel(section, meta);
   }
-  const observer = new MutationObserver(() => { stopPlayback(); window.setTimeout(patchModal, 0); });
+  function onlyAnimationPanelAdded(mutations) {
+    return mutations.length > 0 && mutations.every((mutation) => {
+      const added = [...mutation.addedNodes].filter((node) => node.nodeType === Node.ELEMENT_NODE);
+      const removed = [...mutation.removedNodes].filter((node) => node.nodeType === Node.ELEMENT_NODE);
+      return removed.length === 0 && added.length > 0 && added.every((node) => node.classList?.contains("ranger-animation-section"));
+    });
+  }
+  const observer = new MutationObserver((mutations) => {
+    if (!onlyAnimationPanelAdded(mutations)) stopPlayback();
+    window.setTimeout(patchModal, 0);
+  });
   window.addEventListener("load", () => { const modalContent = document.getElementById("rangerModalContent"); if (modalContent) observer.observe(modalContent, { childList: true }); patchModal(); });
   document.addEventListener("click", (event) => { if (event.target?.id === "rangerModalCloseBtn" || event.target?.id === "rangerModal") stopPlayback(); });
 })();
