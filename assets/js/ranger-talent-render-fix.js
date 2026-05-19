@@ -1,6 +1,7 @@
 (() => {
   const DATA_URL = "../res/Rangers_data.json";
-  const ANIMATION_INDEX_URL = "../res/animation_meta/index.json";
+  const ANIMATION_META_BASE = "https://res.warmycat.com/animation_meta/";
+  const ANIMATION_INDEX_URL = `${ANIMATION_META_BASE}index.json`;
   const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
   const TLT_ICON = (index) => `../assets/tlt_icon/tlt${index}.png`;
   let rowsPromise = null;
@@ -61,6 +62,12 @@
     return [value];
   }
 
+  function animationMetaUrl(metaPath, unitId) {
+    const raw = text(metaPath);
+    const filename = raw ? raw.split("/").pop() : `${unitId}.json`;
+    return `${ANIMATION_META_BASE}${encodeURIComponent(filename)}`;
+  }
+
   function getId(ranger) {
     return text(ranger?.ranger_id || ranger?.unitCode || ranger?.id || "");
   }
@@ -106,7 +113,7 @@
       animationMetaCache.set(unitId, null);
       return null;
     }
-    const meta = await fetch(`../${metaPath}`)
+    const meta = await fetch(animationMetaUrl(metaPath, unitId))
       .then((res) => res.ok ? res.json() : null)
       .catch(() => null);
     animationMetaCache.set(unitId, meta);
