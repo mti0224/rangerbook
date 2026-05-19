@@ -3,6 +3,8 @@
   const INDEX_URL = `${ROOT}res/Ranger_index.json`;
   const DATA_URL = `${ROOT}res/Rangers_data.json`;
   const ABILITY_DATA_URL = `${ROOT}res/%E8%83%BD%E5%8A%9B.json`;
+  const ANIMATION_META_BASE = "https://res.warmycat.com/animation_meta/";
+  const ANIMATION_INDEX_URL = `${ANIMATION_META_BASE}index.json`;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const TLT_ICON = (index) => `${ROOT}assets/tlt_icon/tlt${index}.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
@@ -13,10 +15,13 @@
     fullMap: new Map(),
     abilityMap: {},
     abilityByName: new Map(),
+    animationIndex: null,
+    animationMetaCache: new Map(),
     left: null,
     right: null,
     indexPromise: null,
     fullPromise: null,
+    animationIndexPromise: null,
     indexLoaded: false,
     fullLoaded: false,
     highlightBetter: false,
@@ -82,6 +87,47 @@
 
   const getSkillEffects = (skill) => skill && Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
 
+  function animationMetaUrl(metaPath, unitId) {
+    const rawPath = text(metaPath);
+    const filename = rawPath ? rawPath.split("/").pop() : `${unitId}.json`;
+    return `${ANIMATION_META_BASE}${encodeURIComponent(filename)}`;
+  }
+
+  async function loadAnimationIndex() {
+    if (state.animationIndex) return state.animationIndex;
+    if (state.animationIndexPromise) return state.animationIndexPromise;
+    state.animationIndexPromise = fetch(ANIMATION_INDEX_URL, { cache: "force-cache" })
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        state.animationIndex = data;
+        return data;
+      })
+      .catch(() => null);
+    return state.animationIndexPromise;
+  }
+
+  async function loadAnimationMeta(unitId) {
+    if (!unitId) return null;
+    if (state.animationMetaCache.has(unitId)) return state.animationMetaCache.get(unitId);
+    const index = await loadAnimationIndex();
+    const metaPath = index?.units?.[unitId]?.meta;
+    if (!metaPath) {
+      state.animationMetaCache.set(unitId, null);
+      return null;
+    }
+    const meta = await fetch(animationMetaUrl(metaPath, unitId), { cache: "force-cache" })
+      .then((res) => res.ok ? res.json() : null)
+      .catch(() => null);
+    state.animationMetaCache.set(unitId, meta);
+    return meta;
+  }
+
+  function startupValue(meta, skillKey) {
+    const startupKey = skillKey === "技能1" ? "skill_1" : "skill_2";
+    const seconds = Number(meta?.startup?.[startupKey]?.seconds || 0);
+    return seconds ? `${seconds.toFixed(2)}秒` : "-";
+  }
+
   function skillRange(skill) {
     const ranges = getSkillEffects(skill).map((effect) => text(effect?.["範圍"])).filter((value) => value && value !== "-");
     if (!ranges.length) return "-";
@@ -91,12 +137,13 @@
     return html(max.value);
   }
 
-  function skillMetaValue(skill, field) {
-    if (!skill) return "-";
-    if (field === "名稱") return fmt(skill["技能名稱"] || skill.name || "-");
-    if (field === "發動率") return fmt(skill["發動機率"] || skill["技能發動率"] || skill["技能發動機率"]);
-    if (field === "冷卻") return fmt(skill["技能冷卻時間"] || skill["冷卻時間"]);
-    if (field === "觸發基準") return fmt(skill["觸發基準"] || skill["觸發條件"] || skill["基準"]);
+  function skillMetaValue(skill, field, animationMeta = null, skillKey = "") {
+    if (!skill && field !== "前搖時間") return "-";
+    if (field === "名稱") return fmt(skill?.["技能名稱"] || skill?.name || "-");
+    if (field === "發動率") return fmt(skill?.["發動機率"] || skill?.["技能發動率"] || skill?.["技能發動機率"]);
+    if (field === "冷卻") return fmt(skill?.["技能冷卻時間"] || skill?.["冷卻時間"]);
+    if (field === "觸發基準") return fmt(skill?.["觸發基準"] || skill?.["觸發條件"] || skill?.["基準"]);
+    if (field === "前搖時間") return startupValue(animationMeta, skillKey);
     if (field === "技能範圍") return skillRange(skill);
     return "-";
   }
@@ -263,13 +310,16 @@
   }
 
   function skillSection(title, key) {
-    const leftSkill = getSkill(state.left, leftSkillKey(key));
+    const leftKey = leftSkillKey(key);
+    const leftSkill = getSkill(state.left, leftKey);
     const rightSkill = getSkill(state.right, key);
-    const metaFields = ["名稱", "發動率", "冷卻", "觸發基準", "技能範圍"];
+    const leftMeta = state.left ? state.animationMetaCache.get(getId(state.left)) : null;
+    const rightMeta = state.right ? state.animationMetaCache.get(getId(state.right)) : null;
+    const metaFields = ["名稱", "發動率", "冷卻", "觸發基準", "前搖時間", "技能範圍"];
     const leftEffects = getSkillEffects(leftSkill);
     const rightEffects = getSkillEffects(rightSkill);
     const effectCount = Math.max(leftEffects.length, rightEffects.length);
-    const metaRows = metaFields.map((field) => `<tr><th>${html(field)}</th><td colspan="3">${skillMetaValue(leftSkill, field)}</td><td colspan="3">${skillMetaValue(rightSkill, field)}</td></tr>`);
+    const metaRows = metaFields.map((field) => `<tr><th>${html(field)}</th><td colspan="3">${skillMetaValue(leftSkill, field, leftMeta, leftKey)}</td><td colspan="3">${skillMetaValue(rightSkill, field, rightMeta, key)}</td></tr>`);
     const effectRows = [];
     if (effectCount) {
       effectRows.push(`<tr class="compare-skill-subhead"><th>技能效果</th><td>效果</td><td>係數</td><td>時間</td><td>效果</td><td>係數</td><td>時間</td></tr>`);
@@ -415,6 +465,12 @@
     return state.fullPromise;
   }
 
+  async function ensureCompareAnimationMeta() {
+    const ids = [getId(state.left), getId(state.right)].filter(Boolean);
+    if (!ids.length) return;
+    await Promise.all(ids.map((id) => loadAnimationMeta(id)));
+  }
+
   function filterRows(query) {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -466,6 +522,8 @@
       els.rightInput.value = getName(ranger);
     }
     renderSuggestions(side);
+    renderResult();
+    await ensureCompareAnimationMeta();
     renderResult();
   }
 
