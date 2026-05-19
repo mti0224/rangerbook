@@ -1,5 +1,6 @@
 (() => {
-  const INDEX_URL = "../res/animation_meta/index.json";
+  const ANIMATION_META_BASE = "https://res.warmycat.com/animation_meta/";
+  const INDEX_URL = `${ANIMATION_META_BASE}index.json`;
   const RESOURCE_PRIMARY_BASE = "https://res.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
@@ -58,6 +59,11 @@
   function normalizeResourcePath(path) {
     return String(path || "").replace(/^\/+/, "").replace(new RegExp(`^${OLD_PRIMARY_PREFIX}`), "");
   }
+  function animationMetaUrl(metaPath, unitId) {
+    const raw = text(metaPath);
+    const filename = raw ? raw.split("/").pop() : `${unitId}.json`;
+    return `${ANIMATION_META_BASE}${encodeURIComponent(filename)}`;
+  }
   function resourceUrl(path) { return `${RESOURCE_PRIMARY_BASE}${normalizeResourcePath(path)}`; }
   function legacyResourceUrl(path) { return `${RESOURCE_FALLBACK_BASE}${normalizeResourcePath(path)}`; }
   function loadIndex() {
@@ -70,7 +76,7 @@
     const index = await loadIndex();
     const entry = index?.units?.[unitId];
     if (!entry?.meta) return null;
-    const meta = await fetch(`../${entry.meta}`).then((res) => res.ok ? res.json() : null).catch(() => null);
+    const meta = await fetch(animationMetaUrl(entry.meta, unitId)).then((res) => res.ok ? res.json() : null).catch(() => null);
     state.metaCache.set(unitId, meta);
     return meta;
   }
