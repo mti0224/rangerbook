@@ -5,11 +5,11 @@
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
 
-  const VIEWER_BODY_OFFSET = { x: -130, y: -88 };
+  const PROJECTILE_SOURCE_RATIO = { x: 0.58, y: 0.52 };
   const PROJECTILE_TARGET = {
-    bul: { x: -50, y: -93, isBasicAttack: true },
-    bul2: { x: -50, y: -93, isBasicAttack: false },
-    bul3: { x: -50, y: -93, isBasicAttack: false },
+    bul: { x: 0, y: 0, isBasicAttack: true },
+    bul2: { x: 0, y: 0, isBasicAttack: false },
+    bul3: { x: 0, y: 0, isBasicAttack: false },
   };
   const TARGET_DISTANCE_RATIO = 0.40;
   const FRAME_INTERVAL_MS = 1000 / 30;
@@ -316,11 +316,13 @@
     const part = meta?.parts?.[projectile.partName];
     if (!part) return;
     const bodyFps = Math.max(1, meta?.parts?.body?.anim_rate || 24);
-    const bulletRect = stageRect(part);
-    const startX = bodyOriginX + VIEWER_BODY_OFFSET.x * scale - bulletRect.x * scale;
-    const startY = bodyOriginY + VIEWER_BODY_OFFSET.y * scale - bulletRect.y * scale;
-    const endX = bodyOriginX + targetDistance + projectile.targetOffsetX * scale - bulletRect.x * scale;
-    const endY = bodyOriginY + projectile.targetOffsetY * scale - bulletRect.y * scale;
+    const bodyRect = stageRect(meta?.parts?.body);
+    const sourceX = bodyOriginX + bodyRect.w * PROJECTILE_SOURCE_RATIO.x * scale;
+    const sourceY = bodyOriginY + bodyRect.h * PROJECTILE_SOURCE_RATIO.y * scale;
+    const startX = sourceX;
+    const startY = sourceY;
+    const endX = sourceX + targetDistance + projectile.targetOffsetX * scale;
+    const endY = sourceY + projectile.targetOffsetY * scale;
 
     if (projectileAge < projectile.normalDuration) {
       const normalAnim = part.animations?.[projectile.normalAnimName];
