@@ -1,13 +1,6 @@
 name: Build animation metadata
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'res_from_emulator/**'
-      - 'scripts/build_animation_data.py'
-      - '.github/workflows/build_animation_data.yml'
   workflow_dispatch:
 
 permissions:
