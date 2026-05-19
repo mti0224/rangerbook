@@ -5,7 +5,7 @@
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
 
-  const PROJECTILE_SOURCE_RATIO = { x: 0.58, y: 0.52 };
+  const PROJECTILE_SOURCE_ANCHOR = { x: 0.78, y: 0.38 };
   const PROJECTILE_TARGET = {
     bul: { x: 0, y: 0, isBasicAttack: true },
     bul2: { x: 0, y: 0, isBasicAttack: false },
@@ -30,6 +30,7 @@
     imageCache: new Map(),
     spriteCache: new Map(),
     trackCache: new WeakMap(),
+    frameBoundsCache: new WeakMap(),
     rafId: 0,
     startedAt: 0,
     lastDrawAt: 0,
@@ -264,6 +265,54 @@
     state.spriteCache.set(cacheKey, canvas);
     return canvas;
   }
+  function transformPoint(objectMatrix, imageMatrix, x, y) {
+    const [m00, m01, m10, m11, m02, m12] = objectMatrix;
+    const [i00, i01, i10, i11, i02, i12] = imageMatrix;
+    const postX = i00 * x + i01 * y + i02;
+    const postY = i10 * x + i11 * y + i12;
+    return {
+      x: m00 * postX + m01 * postY + m02,
+      y: m10 * postX + m11 * postY + m12,
+    };
+  }
+  function frameBounds(part, animName, frameIndex) {
+    const anim = part?.animations?.[animName];
+    if (!part || !anim?.frames?.length) return null;
+    if (!state.frameBoundsCache.has(part)) state.frameBoundsCache.set(part, new Map());
+    const cache = state.frameBoundsCache.get(part);
+    const key = `${animName}:${frameIndex}`;
+    if (cache.has(key)) return cache.get(key);
+
+    const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const item of frame) {
+      const [, resNum, objectMatrix] = item;
+      const imageDef = part.images?.[resNum];
+      const sprite = imageDef ? part.sprites?.[imageDef.name] : null;
+      if (!imageDef || !sprite || !Array.isArray(objectMatrix) || !Array.isArray(imageDef.m)) continue;
+      const [, , sw, sh] = sprite.rect || [];
+      if (!sw || !sh) continue;
+      [[0, 0], [sw, 0], [0, sh], [sw, sh]].forEach(([x, y]) => {
+        const point = transformPoint(objectMatrix, imageDef.m, x, y);
+        minX = Math.min(minX, point.x);
+        minY = Math.min(minY, point.y);
+        maxX = Math.max(maxX, point.x);
+        maxY = Math.max(maxY, point.y);
+      });
+    }
+    const bounds = Number.isFinite(minX) ? {
+      minX,
+      minY,
+      maxX,
+      maxY,
+      width: Math.max(1, maxX - minX),
+      height: Math.max(1, maxY - minY),
+      centerX: (minX + maxX) / 2,
+      centerY: (minY + maxY) / 2,
+    } : null;
+    cache.set(key, bounds);
+    return bounds;
+  }
   function drawSprite(ctx, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, scale) {
     const [m00, m01, m10, m11, m02, m12] = objectMatrix;
     const [i00, i01, i10, i11, i02, i12] = imageMatrix;
@@ -301,24 +350,42 @@
     }
     return drawn;
   }
+  async function drawFrameAtCenter(ctx, part, animName, frameIndex, centerX, centerY, scale) {
+    const bounds = frameBounds(part, animName, frameIndex);
+    const originX = centerX - (bounds?.centerX || 0) * scale;
+    const originY = centerY - (bounds?.centerY || 0) * scale;
+    return drawFrameAtOrigin(ctx, part, animName, frameIndex, originX, originY, scale);
+  }
+  function frameIndexForSegment(part, segment, elapsed) {
+    const anim = part?.animations?.[segment.animName];
+    if (!part || !anim?.frames?.length) return 0;
+    const fps = Math.max(1, part.anim_rate || 24);
+    const rawFrame = Math.floor(elapsed * fps);
+    return segment.loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, rawFrame);
+  }
   async function drawBodySegment(ctx, meta, segment, elapsed, bodyOriginX, bodyOriginY, scale) {
     const part = meta?.parts?.body;
     if (!part) return;
     const anim = part.animations?.[segment.animName];
     if (!anim?.frames?.length) return;
-    const fps = Math.max(1, part.anim_rate || 24);
-    const rawFrame = Math.floor(elapsed * fps);
-    const frameIndex = segment.loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, rawFrame);
+    const frameIndex = frameIndexForSegment(part, segment, elapsed);
     await drawFrameAtOrigin(ctx, part, segment.animName, frameIndex, bodyOriginX, bodyOriginY, scale);
   }
-  async function drawProjectile(ctx, meta, projectile, projectileAge, bodyOriginX, bodyOriginY, targetDistance, scale) {
+  async function drawProjectile(ctx, meta, projectile, projectileAge, bodyOriginX, bodyOriginY, targetDistance, scale, bodySegment, bodySegmentAge) {
     if (!projectile || projectileAge < 0) return;
     const part = meta?.parts?.[projectile.partName];
-    if (!part) return;
-    const bodyFps = Math.max(1, meta?.parts?.body?.anim_rate || 24);
-    const bodyRect = stageRect(meta?.parts?.body);
-    const sourceX = bodyOriginX + bodyRect.w * PROJECTILE_SOURCE_RATIO.x * scale;
-    const sourceY = bodyOriginY + bodyRect.h * PROJECTILE_SOURCE_RATIO.y * scale;
+    const bodyPart = meta?.parts?.body;
+    if (!part || !bodyPart || !bodySegment) return;
+    const bodyFps = Math.max(1, bodyPart.anim_rate || 24);
+    const bodyFrameIndex = frameIndexForSegment(bodyPart, bodySegment, bodySegmentAge);
+    const bodyFrameBounds = frameBounds(bodyPart, bodySegment.animName, bodyFrameIndex);
+    const bodyRect = stageRect(bodyPart);
+    const minX = bodyFrameBounds?.minX ?? 0;
+    const minY = bodyFrameBounds?.minY ?? 0;
+    const width = bodyFrameBounds?.width ?? bodyRect.w;
+    const height = bodyFrameBounds?.height ?? bodyRect.h;
+    const sourceX = bodyOriginX + (minX + width * PROJECTILE_SOURCE_ANCHOR.x) * scale;
+    const sourceY = bodyOriginY + (minY + height * PROJECTILE_SOURCE_ANCHOR.y) * scale;
     const startX = sourceX;
     const startY = sourceY;
     const endX = sourceX + targetDistance + projectile.targetOffsetX * scale;
@@ -332,7 +399,7 @@
       const y = startY + (endY - startY) * p;
       const rawFrame = Math.floor(projectileAge * bodyFps);
       const frameIndex = rawFrame % Math.max(1, normalAnim.frame_count);
-      await drawFrameAtOrigin(ctx, part, projectile.normalAnimName, frameIndex, x, y, scale);
+      await drawFrameAtCenter(ctx, part, projectile.normalAnimName, frameIndex, x, y, scale);
       return;
     }
 
@@ -342,7 +409,7 @@
     const finishAge = projectileAge - projectile.normalDuration;
     if (finishAge > projectile.finishDuration) return;
     const frameIndex = Math.min(finishAnim.frame_count - 1, Math.max(0, Math.floor(finishAge * bodyFps)));
-    await drawFrameAtOrigin(ctx, part, projectile.finishAnimName, frameIndex, endX, endY, scale);
+    await drawFrameAtCenter(ctx, part, projectile.finishAnimName, frameIndex, endX, endY, scale);
   }
   async function drawTrack(canvas, meta, track, elapsed) {
     const ctx = canvas.getContext("2d");
@@ -369,7 +436,7 @@
       const segmentAge = t - start;
       await drawBodySegment(ctx, meta, segment, segmentAge, bodyOriginX, bodyOriginY, scale);
       if (segment.projectile) {
-        await drawProjectile(ctx, meta, segment.projectile, segmentAge - segment.projectile.spawnTime, bodyOriginX, bodyOriginY, targetDistance, scale);
+        await drawProjectile(ctx, meta, segment.projectile, segmentAge - segment.projectile.spawnTime, bodyOriginX, bodyOriginY, targetDistance, scale, segment, segmentAge);
       }
     }
   }
