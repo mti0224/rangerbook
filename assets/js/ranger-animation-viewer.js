@@ -31,6 +31,7 @@
     spriteCache: new Map(),
     trackCache: new WeakMap(),
     frameBoundsCache: new WeakMap(),
+    animationBoundsCache: new WeakMap(),
     rafId: 0,
     startedAt: 0,
     lastDrawAt: 0,
@@ -313,6 +314,35 @@
     cache.set(key, bounds);
     return bounds;
   }
+  function animationBounds(part, animName) {
+    const anim = part?.animations?.[animName];
+    if (!part || !anim?.frames?.length) return null;
+    if (!state.animationBoundsCache.has(part)) state.animationBoundsCache.set(part, new Map());
+    const cache = state.animationBoundsCache.get(part);
+    if (cache.has(animName)) return cache.get(animName);
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (let index = 0; index < anim.frame_count; index += 1) {
+      const bounds = frameBounds(part, animName, index);
+      if (!bounds) continue;
+      minX = Math.min(minX, bounds.minX);
+      minY = Math.min(minY, bounds.minY);
+      maxX = Math.max(maxX, bounds.maxX);
+      maxY = Math.max(maxY, bounds.maxY);
+    }
+    const bounds = Number.isFinite(minX) ? {
+      minX,
+      minY,
+      maxX,
+      maxY,
+      width: Math.max(1, maxX - minX),
+      height: Math.max(1, maxY - minY),
+      centerX: (minX + maxX) / 2,
+      centerY: (minY + maxY) / 2,
+    } : null;
+    cache.set(animName, bounds);
+    return bounds;
+  }
   function drawSprite(ctx, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, scale) {
     const [m00, m01, m10, m11, m02, m12] = objectMatrix;
     const [i00, i01, i10, i11, i02, i12] = imageMatrix;
@@ -351,7 +381,7 @@
     return drawn;
   }
   async function drawFrameAtCenter(ctx, part, animName, frameIndex, centerX, centerY, scale) {
-    const bounds = frameBounds(part, animName, frameIndex);
+    const bounds = animationBounds(part, animName) || frameBounds(part, animName, frameIndex);
     const originX = centerX - (bounds?.centerX || 0) * scale;
     const originY = centerY - (bounds?.centerY || 0) * scale;
     return drawFrameAtOrigin(ctx, part, animName, frameIndex, originX, originY, scale);
@@ -371,13 +401,13 @@
     const frameIndex = frameIndexForSegment(part, segment, elapsed);
     await drawFrameAtOrigin(ctx, part, segment.animName, frameIndex, bodyOriginX, bodyOriginY, scale);
   }
-  async function drawProjectile(ctx, meta, projectile, projectileAge, bodyOriginX, bodyOriginY, targetDistance, scale, bodySegment, bodySegmentAge) {
+  async function drawProjectile(ctx, meta, projectile, projectileAge, bodyOriginX, bodyOriginY, targetDistance, scale, bodySegment) {
     if (!projectile || projectileAge < 0) return;
     const part = meta?.parts?.[projectile.partName];
     const bodyPart = meta?.parts?.body;
     if (!part || !bodyPart || !bodySegment) return;
     const bodyFps = Math.max(1, bodyPart.anim_rate || 24);
-    const bodyFrameIndex = frameIndexForSegment(bodyPart, bodySegment, bodySegmentAge);
+    const bodyFrameIndex = frameIndexForSegment(bodyPart, bodySegment, projectile.spawnTime);
     const bodyFrameBounds = frameBounds(bodyPart, bodySegment.animName, bodyFrameIndex);
     const bodyRect = stageRect(bodyPart);
     const minX = bodyFrameBounds?.minX ?? 0;
@@ -436,7 +466,7 @@
       const segmentAge = t - start;
       await drawBodySegment(ctx, meta, segment, segmentAge, bodyOriginX, bodyOriginY, scale);
       if (segment.projectile) {
-        await drawProjectile(ctx, meta, segment.projectile, segmentAge - segment.projectile.spawnTime, bodyOriginX, bodyOriginY, targetDistance, scale, segment, segmentAge);
+        await drawProjectile(ctx, meta, segment.projectile, segmentAge - segment.projectile.spawnTime, bodyOriginX, bodyOriginY, targetDistance, scale, segment);
       }
     }
   }
