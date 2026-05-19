@@ -5,16 +5,26 @@
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
   const FRAME_INTERVAL_MS = 1000 / 30;
-  const PROJECTILE_LAYER_TRAVEL_DISTANCE = 420;
-  const MIN_PROJECTILE_TRAVEL_SECONDS = 0.5;
+
+  const RANGER_X_RATIO = 0.50;
+  const TARGET_X_RATIO = 0.90;
+  const GROUND_Y_RATIO = 0.80;
+  const BODY_OFFSET_X = -130;
+  const BODY_OFFSET_Y = -88;
+  const BUL_TARGET_X = -50;
+  const BUL_TARGET_Y = -93;
+  const BUL2_TARGET_X = -50;
+  const BUL2_TARGET_Y = -93;
+  const BUL3_TARGET_X = -50;
+  const BUL3_TARGET_Y = -93;
 
   const CLIPS = [
     { key: "idle", label: "待機", body: ["idle", "wait"] },
     { key: "move", label: "移動", body: ["walk"] },
     { key: "knockback", label: "被擊退", body: ["knockback"] },
-    { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], trigger: ["attack"], bullet: "bul" },
-    { key: "skill1", label: "技能1", body: ["s_attack_all"], ready: ["s_attack_ready"], trigger: ["s_attack"], bullet: "bul2" },
-    { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], trigger: ["s2_attack", "skill"], bullet: "bul3" },
+    { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], trigger: ["attack"], bullet: "bul", targetX: BUL_TARGET_X, targetY: BUL_TARGET_Y, isBasicAttack: true },
+    { key: "skill1", label: "技能1", body: ["s_attack_all"], ready: ["s_attack_ready"], trigger: ["s_attack"], bullet: "bul2", targetX: BUL2_TARGET_X, targetY: BUL2_TARGET_Y, isBasicAttack: false },
+    { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], trigger: ["s2_attack", "skill"], bullet: "bul3", targetX: BUL3_TARGET_X, targetY: BUL3_TARGET_Y, isBasicAttack: false },
     { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
 
@@ -118,27 +128,6 @@
     return null;
   }
 
-  function stageRect(part) {
-    const canvas = part?.canvas || {};
-    const x = Number(canvas.x || 0);
-    const y = Number(canvas.y || 0);
-    const w = Number(canvas.w || 0) || 240;
-    const h = Number(canvas.h || 0) || 240;
-    return { x, y, w, h, right: x + w, bottom: y + h };
-  }
-
-  function viewportBounds(meta) {
-    const parts = [meta?.parts?.body, meta?.parts?.bul, meta?.parts?.bul2, meta?.parts?.bul3].filter(Boolean);
-    const rects = parts.map(stageRect);
-    if (!rects.length) return { x: 0, y: 0, right: 640, bottom: 360, w: 640, h: 360 };
-    const bodyRect = stageRect(meta?.parts?.body);
-    const minX = Math.min(...rects.map((rect) => rect.x), bodyRect.x);
-    const minY = Math.min(...rects.map((rect) => rect.y), bodyRect.y);
-    const maxX = Math.max(...rects.map((rect) => rect.right + PROJECTILE_LAYER_TRAVEL_DISTANCE), bodyRect.right + PROJECTILE_LAYER_TRAVEL_DISTANCE);
-    const maxY = Math.max(...rects.map((rect) => rect.bottom), bodyRect.bottom);
-    return { x: minX, y: minY, right: maxX, bottom: maxY, w: Math.max(1, maxX - minX), h: Math.max(1, maxY - minY) };
-  }
-
   function animDuration(part, animResult) {
     return animResult ? animResult.anim.frame_count / Math.max(1, part?.anim_rate || 24) : 0;
   }
@@ -167,8 +156,12 @@
     if (!normalAnim) return null;
     const finishAnim = getAnim(bulletPart, ["finish", "hit", "end"]);
     const spawnTime = projectileSpawnTime(bodyPart, clip, clipDuration);
-    const normalDuration = Math.max(animDuration(bulletPart, normalAnim), MIN_PROJECTILE_TRAVEL_SECONDS);
-    const finishDuration = finishAnim ? animDuration(bulletPart, finishAnim) : 0;
+    const normalFrameCount = normalAnim.anim.frame_count || 0;
+    const bodyFps = Math.max(1, bodyPart?.anim_rate || 24);
+    const normalDuration = clip.isBasicAttack && normalFrameCount <= 1
+      ? 15 / bodyFps
+      : Math.max(1, normalFrameCount) / bodyFps;
+    const finishDuration = finishAnim ? finishAnim.anim.frame_count / bodyFps : 0;
     return {
       partName: clip.bullet,
       normalAnimName: normalAnim.name,
@@ -177,6 +170,8 @@
       normalDuration,
       finishDuration,
       duration: normalDuration + finishDuration,
+      targetX: clip.targetX || 0,
+      targetY: clip.targetY || 0,
     };
   }
 
@@ -300,14 +295,11 @@
     ctx.restore();
   }
 
-  async function drawSamLayer(ctx, part, animName, frameIndex, baseX, baseY, scale, offsetX = 0, offsetY = 0) {
+  async function drawSamFrame(ctx, part, animName, frameIndex, originX, originY, scale) {
     const anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return false;
     const atlas = await loadImage(part.png);
     if (!atlas) return false;
-    const rect = stageRect(part);
-    const originX = baseX + (rect.x + offsetX) * scale;
-    const originY = baseY + (rect.y + offsetY) * scale;
     const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
     let drawn = false;
     for (const item of frame) {
@@ -329,12 +321,17 @@
     return loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, Math.max(0, rawFrame));
   }
 
-  async function drawSegment(ctx, meta, segment, segmentAge, baseX, baseY, scale) {
+  function lerp(start, end, p) {
+    const t = Math.min(1, Math.max(0, p));
+    return start + (end - start) * t;
+  }
+
+  async function drawSegment(ctx, meta, segment, segmentAge, layout, scale) {
     const bodyPart = meta?.parts?.body;
     if (!bodyPart) return;
     const bodyAge = segment.loop ? segmentAge : Math.min(segmentAge, Math.max(0, (segment.bodyDuration || segment.duration) - 0.001));
     const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
-    await drawSamLayer(ctx, bodyPart, segment.animName, bodyFrame, baseX, baseY, scale);
+    await drawSamFrame(ctx, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, scale);
 
     const projectile = segment.projectile;
     if (!projectile) return;
@@ -343,17 +340,21 @@
     const bulletPart = meta?.parts?.[projectile.partName];
     if (!bulletPart) return;
 
+    const startX = layout.rangerX + BODY_OFFSET_X * scale;
+    const startY = layout.groundY + BODY_OFFSET_Y * scale;
+    const endX = layout.targetX + projectile.targetX * scale;
+    const endY = layout.groundY + projectile.targetY * scale;
+
     if (projectileAge < projectile.normalDuration || !projectile.finishAnimName) {
-      const animAge = Math.max(0, projectileAge);
-      const bulletFrame = frameIndex(bulletPart, projectile.normalAnimName, animAge, true);
-      const progress = Math.min(1, Math.max(0, projectileAge / Math.max(0.001, projectile.normalDuration)));
-      await drawSamLayer(ctx, bulletPart, projectile.normalAnimName, bulletFrame, baseX, baseY, scale, PROJECTILE_LAYER_TRAVEL_DISTANCE * progress, 0);
+      const bulletFrame = frameIndex(bulletPart, projectile.normalAnimName, projectileAge, true);
+      const progress = projectileAge / Math.max(0.001, projectile.normalDuration);
+      await drawSamFrame(ctx, bulletPart, projectile.normalAnimName, bulletFrame, lerp(startX, endX, progress), lerp(startY, endY, progress), scale);
       return;
     }
 
     const finishAge = projectileAge - projectile.normalDuration;
     const finishFrame = frameIndex(bulletPart, projectile.finishAnimName, finishAge, false);
-    await drawSamLayer(ctx, bulletPart, projectile.finishAnimName, finishFrame, baseX, baseY, scale, PROJECTILE_LAYER_TRAVEL_DISTANCE, 0);
+    await drawSamFrame(ctx, bulletPart, projectile.finishAnimName, finishFrame, endX, endY, scale);
   }
 
   async function drawTrack(canvas, meta, track, elapsed) {
@@ -361,15 +362,19 @@
     if (!ctx || !track) return;
     const width = canvas.width;
     const height = canvas.height;
-    const bounds = viewportBounds(meta);
-    const scale = Math.min(width / bounds.w, height / bounds.h) * 0.82 * (state.zoom || 1);
-    const baseX = (width - bounds.w * scale) / 2 - bounds.x * scale + state.panX;
-    const baseY = (height - bounds.h * scale) / 2 - bounds.y * scale + state.panY;
+    const scale = Math.min(width / 1400, height / 750) * 2.28 * (state.zoom || 1);
+    const layout = {
+      rangerX: width * RANGER_X_RATIO + state.panX,
+      targetX: width * TARGET_X_RATIO + state.panX,
+      groundY: height * GROUND_Y_RATIO + state.panY,
+    };
+    layout.bodyOriginX = layout.rangerX + BODY_OFFSET_X * scale;
+    layout.bodyOriginY = layout.groundY + BODY_OFFSET_Y * scale;
 
     ctx.clearRect(0, 0, width, height);
     ctx.save();
     ctx.fillStyle = "rgba(255,255,255,0.08)";
-    ctx.fillRect(0, Math.round(height * 0.76), width, 1);
+    ctx.fillRect(0, Math.round(layout.groundY), width, 1);
     ctx.restore();
 
     const t = track.duration ? elapsed % track.duration : elapsed;
@@ -377,7 +382,7 @@
       const start = segment.start || 0;
       const end = start + segment.duration;
       if (t < start || t > end) continue;
-      await drawSegment(ctx, meta, segment, t - start, baseX, baseY, scale);
+      await drawSegment(ctx, meta, segment, t - start, layout, scale);
     }
   }
 
