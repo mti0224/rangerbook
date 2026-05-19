@@ -18,9 +18,9 @@
     { key: "idle", label: "待機", body: ["idle", "wait"] },
     { key: "move", label: "移動", body: ["walk"] },
     { key: "knockback", label: "被擊退", body: ["knockback"] },
-    { key: "attack", label: "一般攻擊", body: ["attack_all"], trigger: ["attack"], bullet: "bul" },
-    { key: "skill1", label: "技能1", body: ["s_attack_all"], trigger: ["s_attack"], bullet: "bul2" },
-    { key: "skill2", label: "技能2", body: ["s2_attack_all"], trigger: ["s2_attack", "skill"], bullet: "bul3" },
+    { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], trigger: ["attack"], bullet: "bul" },
+    { key: "skill1", label: "技能1", body: ["s_attack_all"], ready: ["s_attack_ready"], trigger: ["s_attack"], bullet: "bul2" },
+    { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], trigger: ["s2_attack", "skill"], bullet: "bul3" },
     { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
 
@@ -136,10 +136,21 @@
   function animDuration(part, animResult) {
     return animResult ? animResult.anim.frame_count / Math.max(1, part?.anim_rate || 24) : 0;
   }
+  function rawAnimDuration(part, names) {
+    const found = getAnim(part, names || []);
+    return found ? animDuration(part, found) : 0;
+  }
   function segmentStartTime(part, segmentNames) {
     if (!part || !Array.isArray(part.segments)) return 0;
     const segment = part.segments.find((item) => segmentNames.includes(item.name));
     return segment ? Number(segment.start || 0) / Math.max(1, part.anim_rate || 24) : 0;
+  }
+  function projectileSpawnTime(bodyPart, clip, clipDuration) {
+    const readyDuration = rawAnimDuration(bodyPart, clip.ready || []);
+    if (readyDuration > 0) return Math.min(readyDuration, Math.max(0, clipDuration - 0.001));
+    const absoluteStart = segmentStartTime(bodyPart, clip.trigger || []);
+    if (absoluteStart > 0 && absoluteStart < clipDuration) return absoluteStart;
+    return 0;
   }
   function projectileDurationSeconds(bodyPart, normalAnim, isBasicAttack) {
     const normalCount = normalAnim?.anim?.frame_count || 0;
@@ -151,11 +162,11 @@
     if (!clip.bullet) return null;
     const bulletPart = meta?.parts?.[clip.bullet];
     if (!bulletPart) return null;
-    const normalAnim = getAnim(bulletPart, ["normal", "_all"]);
+    const normalAnim = getAnim(bulletPart, ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]);
     if (!normalAnim) return null;
-    const finishAnim = getAnim(bulletPart, ["finish"]);
+    const finishAnim = getAnim(bulletPart, ["finish", "hit", "end"]);
     const config = PROJECTILE_TARGET[clip.bullet] || PROJECTILE_TARGET.bul;
-    const spawnTime = Math.min(clipDuration, segmentStartTime(bodyPart, clip.trigger || []));
+    const spawnTime = projectileSpawnTime(bodyPart, clip, clipDuration);
     const normalDuration = projectileDurationSeconds(bodyPart, normalAnim, config.isBasicAttack);
     const finishDuration = finishAnim ? finishAnim.anim.frame_count / Math.max(1, bodyPart.anim_rate || 24) : 0;
     return {
