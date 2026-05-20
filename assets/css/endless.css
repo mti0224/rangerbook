@@ -124,6 +124,10 @@
   min-width: 0;
 }
 
+.endless-gimmick-table {
+  table-layout: auto;
+}
+
 .endless-stage-table th,
 .endless-stage-table td {
   padding: 0.65rem 0.6rem;
@@ -161,9 +165,14 @@
   text-align: left !important;
 }
 
-.endless-gimmick-icon-cell {
-  width: 5.2rem !important;
+.endless-gimmick-table .endless-gimmick-icon-cell {
+  width: 4.15rem !important;
+  min-width: 4.15rem !important;
+  max-width: 4.15rem !important;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
   text-align: center !important;
+  white-space: nowrap;
 }
 
 .endless-gimmick-icon {
@@ -315,8 +324,12 @@ html[data-theme="dark"] .endless-stage-table th {
     width: 7.2rem !important;
   }
 
-  .endless-gimmick-icon-cell {
-    width: 3.8rem !important;
+  .endless-gimmick-table .endless-gimmick-icon-cell {
+    width: 3.3rem !important;
+    min-width: 3.3rem !important;
+    max-width: 3.3rem !important;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
   }
 
   .endless-gimmick-icon {
