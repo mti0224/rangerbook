@@ -179,6 +179,25 @@
     return `<h2 class="endless-detail-section-title">${escapeHtml(title)}</h2>`;
   }
 
+  function renderStageNav(stage) {
+    const index = state.stages.findIndex((item) => item.no === stage.no);
+    const prev = index > 0 ? state.stages[index - 1] : null;
+    const next = index >= 0 && index < state.stages.length - 1 ? state.stages[index + 1] : null;
+    return `
+      <nav class="endless-stage-nav" aria-label="無限之塔關卡切換">
+        ${prev ? `<a class="endless-stage-nav-link" href="${stageUrl(prev.no)}">← 上一關<span>第 ${prev.no} 層</span></a>` : `<span class="endless-stage-nav-link disabled">← 上一關</span>`}
+        ${next ? `<a class="endless-stage-nav-link" href="${stageUrl(next.no)}">下一關 →<span>第 ${next.no} 層</span></a>` : `<span class="endless-stage-nav-link disabled">下一關 →</span>`}
+      </nav>
+    `;
+  }
+
+  function updateStageNav(stage) {
+    const head = stageTitle?.closest(".endless-stage-head");
+    if (!head) return;
+    head.querySelector(".endless-stage-nav")?.remove();
+    stageTitle.insertAdjacentHTML("afterend", renderStageNav(stage));
+  }
+
   function renderStageInfoTable(stage) {
     const stageType = text(stage.info?.["樓層類型"]);
     const infoRows = [
@@ -276,6 +295,7 @@
     if (stageGrid) stageGrid.hidden = true;
     stageDetail.hidden = false;
     stageTitle.textContent = `第 ${stage.no} 層`;
+    updateStageNav(stage);
 
     stageTable.innerHTML = `
       ${renderStageInfoTable(stage)}
