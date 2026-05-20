@@ -1,0 +1,73 @@
+.update-page .page-title {
+  margin-bottom: 1.25rem;
+}
+
+.update-log-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.update-log-card {
+  padding: 1.25rem 1.45rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.10);
+}
+
+.update-log-card h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: #111827;
+}
+
+.update-log-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #374151;
+  font-size: 1rem;
+  line-height: 1.8;
+  font-weight: 650;
+}
+
+.update-log-card li::before {
+  content: "•";
+  margin-right: 0.5rem;
+  color: #2563eb;
+  font-weight: 900;
+}
+
+.update-log-loading,
+.update-log-empty {
+  margin: 0;
+  padding: 1.25rem 1.45rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  color: #6b7280;
+  font-weight: 650;
+}
+
+[data-theme="dark"] .update-log-card h2 {
+  color: #f9fafb;
+}
+
+[data-theme="dark"] .update-log-card ul {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .update-log-loading,
+[data-theme="dark"] .update-log-empty {
+  color: #9ca3af;
+}
+
+@media (max-width: 620px) {
+  .update-log-card,
+  .update-log-loading,
+  .update-log-empty {
+    padding: 1.05rem 1.1rem;
+    border-radius: 20px;
+  }
+}
