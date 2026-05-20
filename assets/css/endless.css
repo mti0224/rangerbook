@@ -91,6 +91,12 @@
   font-weight: 850;
 }
 
+.endless-detail-section-title {
+  margin: 1.35rem 0 0.65rem;
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
 .endless-table-wrap {
   margin-top: 1rem;
   overflow-x: auto;
@@ -100,12 +106,22 @@
   box-shadow: var(--shadow);
 }
 
+.endless-stage-info-wrap,
+.endless-gimmick-table-wrap {
+  margin-top: 0;
+}
+
 .endless-stage-table {
   width: 100%;
   min-width: 600px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
+}
+
+.endless-stage-info-table,
+.endless-gimmick-table {
+  min-width: 0;
 }
 
 .endless-stage-table th,
@@ -130,6 +146,42 @@
   padding-left: 0.35rem;
   padding-right: 0.35rem;
   text-align: center;
+}
+
+.endless-stage-info-table th,
+.endless-stage-info-table td,
+.endless-gimmick-table th,
+.endless-gimmick-table td {
+  width: auto !important;
+  text-align: left !important;
+}
+
+.endless-stage-info-table th:first-child {
+  width: 11rem !important;
+  text-align: left !important;
+}
+
+.endless-gimmick-icon-cell {
+  width: 5.2rem !important;
+  text-align: center !important;
+}
+
+.endless-gimmick-icon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+  border-radius: 0.9rem;
+  background: #f3f4f6;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.endless-gimmick-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .endless-stage-table tr:last-child td {
@@ -203,7 +255,8 @@ html[data-theme="dark"] .endless-table-wrap,
 html[data-theme="dark"] .endless-stage-table,
 html[data-theme="dark"] .endless-line-stat,
 html[data-theme="dark"] .endless-entry-icon,
-html[data-theme="dark"] .endless-enemy-thumb {
+html[data-theme="dark"] .endless-enemy-thumb,
+html[data-theme="dark"] .endless-gimmick-icon {
   background: var(--panel) !important;
   border-color: var(--line) !important;
   color: var(--text) !important;
@@ -240,6 +293,11 @@ html[data-theme="dark"] .endless-stage-table th {
     min-width: 500px;
   }
 
+  .endless-stage-info-table,
+  .endless-gimmick-table {
+    min-width: 0;
+  }
+
   .endless-stage-table th,
   .endless-stage-table td {
     padding: 0.52rem 0.45rem;
@@ -251,6 +309,20 @@ html[data-theme="dark"] .endless-stage-table th {
     width: 3.1rem;
     padding-left: 0.24rem;
     padding-right: 0.24rem;
+  }
+
+  .endless-stage-info-table th:first-child {
+    width: 7.2rem !important;
+  }
+
+  .endless-gimmick-icon-cell {
+    width: 3.8rem !important;
+  }
+
+  .endless-gimmick-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.7rem;
   }
 
   .endless-enemy-cell {
