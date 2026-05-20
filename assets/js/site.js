@@ -199,7 +199,7 @@
           <a href="${rootPrefix}endless/">無限之塔</a>
           <a href="${rootPrefix}eventStageEnemy/">活動關卡</a>
           <a href="${rootPrefix}adventEnemy/">降臨關卡</a>
-          <a href="${rootPrefix}labyrinthEnemy/">迷宮</a>
+          <a href="${rootPrefix}labyrinth/">迷宮</a>
           <a href="${rootPrefix}ability/">能力</a>
           <a href="${rootPrefix}about/">關於本站</a>
         </nav>
