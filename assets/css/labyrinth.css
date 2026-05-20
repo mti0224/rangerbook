@@ -37,8 +37,13 @@
 }
 
 .labyrinth-artifact-card .ability-icon-wrap,
-.labyrinth-artifact-detail-head .ability-icon-wrap {
-  background: transparent;
+.labyrinth-artifact-detail-head .ability-icon-wrap,
+.labyrinth-artifact-icon-wrap,
+.labyrinth-artifact-icon-wrap.large {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .labyrinth-artifact-icon-wrap {
@@ -49,6 +54,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 0 !important;
 }
 
 .labyrinth-artifact-icon-wrap.large {
@@ -81,17 +87,22 @@
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: middle;
+  background: var(--panel);
+  color: var(--text);
 }
 
-.labyrinth-score-table th {
-  width: 45%;
+.labyrinth-score-table thead th {
   background: #eef2ff;
   color: #3730a3;
   font-weight: 900;
 }
 
-.labyrinth-score-table td {
-  font-weight: 850;
+.labyrinth-score-table tbody td {
+  font-weight: 400;
+}
+
+.labyrinth-score-table tbody td:first-child {
+  width: 45%;
 }
 
 .labyrinth-score-table tr:last-child th,
@@ -126,7 +137,13 @@ html[data-theme="dark"] .labyrinth-entry-card:hover {
   border-color: #475569 !important;
 }
 
-html[data-theme="dark"] .labyrinth-score-table th {
+html[data-theme="dark"] .labyrinth-score-table th,
+html[data-theme="dark"] .labyrinth-score-table td {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .labyrinth-score-table thead th {
   background: #1e3a5f !important;
   color: #bfdbfe !important;
 }
