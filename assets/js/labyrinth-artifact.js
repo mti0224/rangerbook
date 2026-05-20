@@ -12,6 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const searchInput = $("artifactSearchInput");
   const categoryFilter = $("artifactCategoryFilter");
+  const gradeFilter = $("artifactGradeFilter");
   const resetBtn = $("artifactResetBtn");
   const resultCount = $("artifactResultCount");
   const artifactList = $("artifactList");
@@ -59,15 +60,16 @@
   function toRows(raw) {
     return Object.entries(raw || {}).map(([name, item]) => {
       const scores = item?.["分數"] && typeof item["分數"] === "object" ? item["分數"] : {};
+      const grade = getGrade(name);
       const searchBlob = [
         name,
-        getGrade(name),
+        grade,
         item?.["分類"],
         item?.["效果"],
         ...Object.keys(scores),
         ...Object.values(scores)
       ].map(text).join(" ").toLowerCase();
-      return { name, item, scores, searchBlob };
+      return { name, item, scores, grade, searchBlob };
     });
   }
 
@@ -75,21 +77,27 @@
     return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
   }
 
-  function fillCategoryFilter() {
-    const current = categoryFilter.value;
-    const values = uniqueSorted(state.rows.map((row) => text(row.item?.["分類"])));
-    categoryFilter.innerHTML = `<option value="">全部</option>` + values
+  function fillSelect(select, values) {
+    const current = select.value;
+    select.innerHTML = `<option value="">全部</option>` + values
       .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
       .join("");
-    if (values.includes(current)) categoryFilter.value = current;
+    if (values.includes(current)) select.value = current;
+  }
+
+  function buildFilters() {
+    fillSelect(categoryFilter, uniqueSorted(state.rows.map((row) => text(row.item?.["分類"]))));
+    fillSelect(gradeFilter, uniqueSorted(state.rows.map((row) => row.grade)));
   }
 
   function applyFilters() {
     const q = searchInput.value.trim().toLowerCase();
     const category = categoryFilter.value;
+    const grade = gradeFilter.value;
     state.filtered = state.rows.filter((row) => {
       if (q && !row.searchBlob.includes(q)) return false;
       if (category && text(row.item?.["分類"]) !== category) return false;
+      if (grade && row.grade !== grade) return false;
       return true;
     });
     renderList();
@@ -118,10 +126,6 @@
               ${category ? `<span class="tag ${categoryClass(category)}">${escapeHtml(category)}</span>` : ""}
             </div>
             ${item["效果"] ? `<p class="desc">${escapeHtml(item["效果"])}</p>` : ""}
-            <div class="mini-meta">
-              ${getGrade(row.name) ? `<span>${escapeHtml(getGrade(row.name))}級</span>` : ""}
-              <span>${Object.keys(row.scores).length.toLocaleString("zh-Hant")} 種分數</span>
-            </div>
           </div>
         </button>
       `;
@@ -155,7 +159,7 @@
           <tbody>
             ${entries.map(([label, value]) => `
               <tr>
-                <th>${escapeHtml(label)}</th>
+                <td>${escapeHtml(label)}</td>
                 <td>${formatValue(value)}</td>
               </tr>
             `).join("")}
@@ -212,7 +216,7 @@
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.rows = toRows(await res.json());
       state.filtered = [...state.rows];
-      fillCategoryFilter();
+      buildFilters();
       renderList();
     } catch (error) {
       artifactList.innerHTML = `<div class="empty-state">資料載入失敗，請確認「迷宮遺物.json」是否已放在 /res 資料夾。</div>`;
@@ -222,9 +226,11 @@
 
   searchInput?.addEventListener("input", applyFilters);
   categoryFilter?.addEventListener("change", applyFilters);
+  gradeFilter?.addEventListener("change", applyFilters);
   resetBtn?.addEventListener("click", () => {
     searchInput.value = "";
     categoryFilter.value = "";
+    gradeFilter.value = "";
     applyFilters();
   });
   modalCloseBtn?.addEventListener("click", closeModal);
