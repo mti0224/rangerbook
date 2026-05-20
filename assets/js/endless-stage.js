@@ -6,13 +6,9 @@
   const ENEMY_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
+  const GIMMICK_ICON = (icon) => `${ROOT}assets/endless_icon/${encodeURIComponent(icon)}`;
 
-  const state = {
-    stages: [],
-    enemyMap: new Map(),
-    abilityMap: {},
-    currentStage: null
-  };
+  const state = { stages: [], enemyMap: new Map(), abilityMap: {}, currentStage: null };
 
   const $ = (id) => document.getElementById(id);
   const stageGrid = $("endlessStageGrid");
@@ -85,6 +81,40 @@
     return match ? Number(match[0]) : fallback;
   }
 
+  function getStageRows(value) {
+    if (Array.isArray(value)) return value;
+    if (value && typeof value === "object") {
+      if (Array.isArray(value["敵人生產線"])) return value["敵人生產線"];
+      if (Array.isArray(value["生產線"])) return value["生產線"];
+      if (Array.isArray(value.rows)) return value.rows;
+    }
+    return [];
+  }
+
+  function getStageInfo(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    return {
+      "地圖長度": value["地圖長度"] ?? value.mapLength ?? value["mapLength"],
+      "羽毛消耗量": value["羽毛消耗量"] ?? value.featherCost ?? value["featherCost"]
+    };
+  }
+
+  function getStageGimmicks(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+    return Object.keys(value)
+      .map((key) => {
+        const match = key.match(/^機關(\d+)$/);
+        if (!match) return null;
+        const no = Number(match[1]);
+        const description = value[key];
+        const icon = value[`機關${no}_icon`] || value[`機關${no}icon`] || "";
+        if (!description) return null;
+        return { no, description, icon };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.no - b.no);
+  }
+
   function stageUrl(n) {
     return `${ROOT}endless/stage/end${n}`;
   }
@@ -93,7 +123,9 @@
     if (raw && typeof raw === "object" && !Array.isArray(raw)) {
       return Object.entries(raw).map(([key, value], index) => ({
         no: getStageNoFromKey(key, index + 1),
-        rows: Array.isArray(value) ? value : [],
+        rows: getStageRows(value),
+        info: getStageInfo(value),
+        gimmicks: getStageGimmicks(value),
         raw: { key, value }
       })).sort((a, b) => a.no - b.no);
     }
@@ -101,11 +133,12 @@
     if (Array.isArray(raw)) {
       return raw.map((value, index) => ({
         no: index + 1,
-        rows: Array.isArray(value) ? value : Array.isArray(value?.["生產線"]) ? value["生產線"] : [value],
+        rows: getStageRows(value).length ? getStageRows(value) : [value],
+        info: getStageInfo(value),
+        gimmicks: getStageGimmicks(value),
         raw: value
       }));
     }
-
     return [];
   }
 
@@ -115,7 +148,6 @@
       stageGrid.innerHTML = `<div class="empty-state">找不到無限之塔關卡資料。</div>`;
       return;
     }
-
     stageGrid.innerHTML = state.stages.map((stage) => `
       <a class="endless-stage-card" href="${stageUrl(stage.no)}" data-stage-no="${stage.no}">
         <span>第 ${stage.no} 層</span>
@@ -134,14 +166,59 @@
     `;
   }
 
-  function renderStageDetail(stage) {
-    if (!stageDetail || !stageTitle || !stageTable) return;
-    state.currentStage = stage;
-    if (stageGrid) stageGrid.hidden = true;
-    stageDetail.hidden = false;
-    stageTitle.textContent = `第 ${stage.no} 層`;
+  function renderSectionTitle(title) {
+    return `<h2 class="endless-detail-section-title">${escapeHtml(title)}</h2>`;
+  }
 
-    stageTable.innerHTML = `
+  function renderStageInfoTable(stage) {
+    const infoRows = [
+      ["地圖長度", stage.info?.["地圖長度"]],
+      ["羽毛消耗量", stage.info?.["羽毛消耗量"]]
+    ].filter(([, value]) => value !== null && value !== undefined && value !== "");
+    if (!infoRows.length) return "";
+    return `
+      ${renderSectionTitle("關卡資訊")}
+      <div class="endless-table-wrap endless-stage-info-wrap">
+        <table class="endless-stage-table endless-stage-info-table">
+          <tbody>
+            ${infoRows.map(([label, value]) => `
+              <tr>
+                <th>${escapeHtml(label)}</th>
+                <td>${formatValue(value)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function renderGimmickTable(stage) {
+    if (!stage.gimmicks?.length) return "";
+    return `
+      ${renderSectionTitle("機關")}
+      <div class="endless-table-wrap endless-gimmick-table-wrap">
+        <table class="endless-stage-table endless-gimmick-table">
+          <tbody>
+            ${stage.gimmicks.map((gimmick) => `
+              <tr>
+                <td class="endless-gimmick-icon-cell">
+                  <div class="endless-gimmick-icon">
+                    ${gimmick.icon ? `<img src="${GIMMICK_ICON(gimmick.icon)}" alt="" loading="lazy" onerror="this.closest('.endless-gimmick-icon').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
+                  </div>
+                </td>
+                <td>${formatValue(gimmick.description)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function renderEnemyLineTable(stage) {
+    return `
+      ${renderSectionTitle("敵人生產線")}
       <div class="endless-table-wrap">
         <table class="endless-stage-table">
           <thead>
@@ -167,6 +244,20 @@
         </table>
       </div>
     `;
+  }
+
+  function renderStageDetail(stage) {
+    if (!stageDetail || !stageTitle || !stageTable) return;
+    state.currentStage = stage;
+    if (stageGrid) stageGrid.hidden = true;
+    stageDetail.hidden = false;
+    stageTitle.textContent = `第 ${stage.no} 層`;
+
+    stageTable.innerHTML = `
+      ${renderStageInfoTable(stage)}
+      ${renderGimmickTable(stage)}
+      ${renderEnemyLineTable(stage)}
+    `;
 
     stageTable.querySelectorAll(".endless-detail-btn").forEach((button) => {
       button.addEventListener("click", () => {
@@ -189,20 +280,8 @@
     return `
       <div class="table-scroll skill-meta-table-wrap enemy-skill-meta-table-wrap">
         <table class="skill-meta-table enemy-skill-meta-table">
-          <thead>
-            <tr>
-              <th>發動率</th>
-              <th>技能冷卻時間</th>
-              <th>觸發基準</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>${escapeHtml(skill["發動機率"] || "-")}</td>
-              <td>${escapeHtml(skill["技能冷卻時間"] || "-")}</td>
-              <td>${escapeHtml(skill["觸發基準"] || "-")}</td>
-            </tr>
-          </tbody>
+          <thead><tr><th>發動率</th><th>技能冷卻時間</th><th>觸發基準</th></tr></thead>
+          <tbody><tr><td>${escapeHtml(skill["發動機率"] || "-")}</td><td>${escapeHtml(skill["技能冷卻時間"] || "-")}</td><td>${escapeHtml(skill["觸發基準"] || "-")}</td></tr></tbody>
         </table>
       </div>
     `;
@@ -215,9 +294,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div>
-            <h4>技能 ${index + 1}</h4>
-          </div>
+          <div><h4>技能 ${index + 1}</h4></div>
         </div>
         ${renderSkillMetaTable(skill)}
         ${renderSkillTable(skill)}
@@ -434,12 +511,8 @@
   }
 
   modalCloseBtn?.addEventListener("click", closeModal);
-  modal?.addEventListener("click", (event) => {
-    if (event.target === modal) closeModal();
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !modal.hidden) closeModal();
-  });
+  modal?.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !modal.hidden) closeModal(); });
 
   init();
 })();
