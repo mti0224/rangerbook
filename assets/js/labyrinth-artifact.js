@@ -1,6 +1,7 @@
 (() => {
   const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const DATA_URL = `${ROOT}res/%E8%BF%B7%E5%AE%AE%E9%81%BA%E7%89%A9.json`;
+  const ARTIFACT_ICON_BASE = `${ROOT}assets/labyrinth_artifact_icon/`;
 
   const state = {
     rows: [],
@@ -41,7 +42,7 @@
 
   function normalizeIconPath(path) {
     const clean = text(path).replace(/^\/+/, "");
-    return clean ? `${ROOT}assets/${clean}` : "";
+    return clean ? `${ARTIFACT_ICON_BASE}${clean}` : "";
   }
 
   function getGrade(name) {
