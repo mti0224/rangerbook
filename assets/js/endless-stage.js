@@ -62,6 +62,10 @@
     return "";
   }
 
+  function hasValue(value) {
+    return value !== null && value !== undefined && value !== "";
+  }
+
   function getEnemyId(row) {
     return text(pick(row, ["敵人id", "敵人ID", "敵人", "enemy", "enemyId", "unitCode", "ranger_id", "id"]));
   }
@@ -94,8 +98,13 @@
   function getStageInfo(value) {
     if (!value || typeof value !== "object" || Array.isArray(value)) return {};
     return {
+      "樓層類型": value["樓層類型"] ?? value.stageType ?? value["stageType"],
       "地圖長度": value["地圖長度"] ?? value.mapLength ?? value["mapLength"],
-      "羽毛消耗量": value["羽毛消耗量"] ?? value.featherCost ?? value["featherCost"]
+      "時間限制": value["時間限制"] ?? value.timeLimit ?? value["timeLimit"],
+      "羽毛消耗量": value["羽毛消耗量"] ?? value.featherCost ?? value["featherCost"],
+      "拯救數量": value["拯救數量"] ?? value.rescueCount ?? value["rescueCount"],
+      "塔城體力": value["塔城體力"] ?? value.towerHp ?? value["towerHp"],
+      "牢籠體力": value["牢籠體力"] ?? value.cageHp ?? value["cageHp"]
     };
   }
 
@@ -171,17 +180,32 @@
   }
 
   function renderStageInfoTable(stage) {
+    const stageType = text(stage.info?.["樓層類型"]);
     const infoRows = [
+      ["樓層類型", stage.info?.["樓層類型"]],
       ["地圖長度", stage.info?.["地圖長度"]],
+      ["時間限制", stage.info?.["時間限制"]],
       ["羽毛消耗量", stage.info?.["羽毛消耗量"]]
-    ].filter(([, value]) => value !== null && value !== undefined && value !== "");
-    if (!infoRows.length) return "";
+    ];
+
+    if (stageType === "破壞牢籠" || stageType === "拯救關卡") {
+      infoRows.push(["拯救數量", stage.info?.["拯救數量"]]);
+    }
+    if (stageType === "破壞塔城") {
+      infoRows.push(["塔城體力", stage.info?.["塔城體力"]]);
+    }
+    if (stageType === "破壞牢籠") {
+      infoRows.push(["牢籠體力", stage.info?.["牢籠體力"]]);
+    }
+
+    const visibleRows = infoRows.filter(([, value]) => hasValue(value));
+    if (!visibleRows.length) return "";
     return `
       ${renderSectionTitle("關卡資訊")}
       <div class="endless-table-wrap endless-stage-info-wrap">
         <table class="endless-stage-table endless-stage-info-table">
           <tbody>
-            ${infoRows.map(([label, value]) => `
+            ${visibleRows.map(([label, value]) => `
               <tr>
                 <th>${escapeHtml(label)}</th>
                 <td>${formatValue(value)}</td>
