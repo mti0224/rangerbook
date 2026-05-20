@@ -91,6 +91,45 @@
   font-weight: 850;
 }
 
+.endless-stage-nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.endless-stage-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--primary-dark);
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.endless-stage-nav-link span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.endless-stage-nav-link:hover {
+  background: #f8fbff;
+  border-color: #bfdbfe;
+}
+
+.endless-stage-nav-link.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  color: var(--muted);
+}
+
 .endless-detail-section-title {
   margin: 1.35rem 0 0.65rem;
   font-size: 1.3rem;
@@ -265,14 +304,16 @@ html[data-theme="dark"] .endless-stage-table,
 html[data-theme="dark"] .endless-line-stat,
 html[data-theme="dark"] .endless-entry-icon,
 html[data-theme="dark"] .endless-enemy-thumb,
-html[data-theme="dark"] .endless-gimmick-icon {
+html[data-theme="dark"] .endless-gimmick-icon,
+html[data-theme="dark"] .endless-stage-nav-link {
   background: var(--panel) !important;
   border-color: var(--line) !important;
   color: var(--text) !important;
 }
 
 html[data-theme="dark"] .endless-stage-card:hover,
-html[data-theme="dark"] .endless-entry-card:hover {
+html[data-theme="dark"] .endless-entry-card:hover,
+html[data-theme="dark"] .endless-stage-nav-link:hover {
   background: var(--hover-panel, #1f2a3d) !important;
   border-color: #475569 !important;
 }
@@ -296,6 +337,17 @@ html[data-theme="dark"] .endless-stage-table th {
   .endless-stage-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .endless-stage-nav {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+
+  .endless-stage-nav-link {
+    padding: 0.48rem 0.65rem;
+    font-size: 0.86rem;
   }
 
   .endless-stage-table {
