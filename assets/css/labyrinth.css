@@ -1,0 +1,159 @@
+.labyrinth-entry-grid {
+  margin-top: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.labyrinth-entry-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 5.8rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.labyrinth-entry-card:hover {
+  background: #f8fbff;
+  border-color: #bfdbfe;
+}
+
+.labyrinth-entry-card h2 {
+  margin: 0 0 0.15rem;
+  font-size: 1.2rem;
+}
+
+.labyrinth-entry-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.labyrinth-placeholder {
+  margin-top: 1rem;
+}
+
+.labyrinth-artifact-card .ability-icon-wrap,
+.labyrinth-artifact-detail-head .ability-icon-wrap {
+  background: transparent;
+}
+
+.labyrinth-artifact-icon-wrap {
+  overflow: visible;
+}
+
+.labyrinth-artifact-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.labyrinth-artifact-icon-wrap.large {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.labyrinth-artifact-detail-head {
+  align-items: center;
+}
+
+.labyrinth-score-table-wrap {
+  margin-top: 0.7rem;
+}
+
+.labyrinth-score-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+}
+
+.labyrinth-score-table th,
+.labyrinth-score-table td {
+  padding: 0.75rem 0.85rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.labyrinth-score-table th {
+  width: 45%;
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 900;
+}
+
+.labyrinth-score-table td {
+  font-weight: 850;
+}
+
+.labyrinth-score-table tr:last-child th,
+.labyrinth-score-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.labyrinth-score-table th:last-child,
+.labyrinth-score-table td:last-child {
+  border-right: 0;
+}
+
+.tag-buff {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tag-debuff {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+html[data-theme="dark"] .labyrinth-entry-card,
+html[data-theme="dark"] .labyrinth-score-table {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="dark"] .labyrinth-entry-card:hover {
+  background: var(--hover-panel, #1f2a3d) !important;
+  border-color: #475569 !important;
+}
+
+html[data-theme="dark"] .labyrinth-score-table th {
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
+}
+
+html[data-theme="dark"] .tag-buff {
+  background: #064e3b;
+  color: #bbf7d0;
+}
+
+html[data-theme="dark"] .tag-debuff {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+@media (max-width: 620px) {
+  .labyrinth-entry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .labyrinth-artifact-icon-wrap.large {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .labyrinth-score-table th,
+  .labyrinth-score-table td {
+    padding: 0.6rem 0.55rem;
+    font-size: 0.88rem;
+  }
+}
