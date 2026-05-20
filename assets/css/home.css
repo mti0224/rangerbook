@@ -21,7 +21,7 @@
 
 .home-update-heading h2 {
   margin: 0;
-  font-size: clamp(1.45rem, 2.5vw, 2.1rem);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
   line-height: 1.15;
   color: #111827;
 }
@@ -30,14 +30,14 @@
   margin: 0 0 0.45rem;
   font-size: 1.05rem;
   font-weight: 850;
-  color: #1f2937;
+  color: #6b7280;
 }
 
 .home-update-list {
   margin: 0;
   padding: 0;
   list-style: none;
-  color: #374151;
+  color: #6b7280;
   font-size: 1rem;
   line-height: 1.75;
   font-weight: 650;
@@ -46,7 +46,7 @@
 .home-update-list li::before {
   content: "•";
   margin-right: 0.45rem;
-  color: #2563eb;
+  color: #6b7280;
   font-weight: 900;
 }
 
@@ -131,15 +131,13 @@
 }
 
 [data-theme="dark"] .home-update-heading h2,
-[data-theme="dark"] .home-update-date,
 [data-theme="dark"] .home-tool-content h2 {
   color: #f9fafb;
 }
 
-[data-theme="dark"] .home-update-list {
-  color: #d1d5db;
-}
-
+[data-theme="dark"] .home-update-date,
+[data-theme="dark"] .home-update-list,
+[data-theme="dark"] .home-update-list li::before,
 [data-theme="dark"] .home-update-loading,
 [data-theme="dark"] .home-update-error,
 [data-theme="dark"] .home-tool-content p {
