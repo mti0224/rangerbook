@@ -78,6 +78,9 @@
       if (url.includes("hsEnemy_data.json")) {
         return window.__originalFetchForLabyrinthEnemy("../../res/labyrinthEnemy_data.json", options);
       }
+      if (url.includes("%E8%83%BD%E5%8A%9B.json") || url.includes("能力.json")) {
+        return window.__originalFetchForLabyrinthEnemy("../../res/%E8%83%BD%E5%8A%9B.json", options);
+      }
       return window.__originalFetchForLabyrinthEnemy(resource, options);
     };
   </script>
