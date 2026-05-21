@@ -28,7 +28,12 @@
   }
 
   function escapeHtml(value) {
-    return text(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    return text(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   function formatValue(value) {
@@ -38,6 +43,10 @@
     const n = Number(raw.replaceAll(",", ""));
     if (Number.isFinite(n) && /^-?\d+(\.\d+)?$/.test(raw.replaceAll(",", ""))) return n.toLocaleString("zh-Hant");
     return escapeHtml(raw);
+  }
+
+  function hasValue(value) {
+    return value !== null && value !== undefined && value !== "";
   }
 
   function parseStageKey(key) {
@@ -120,6 +129,37 @@
     `).join("");
   }
 
+  function renderSectionTitle(title) {
+    return `<h2 class="endless-detail-section-title">${escapeHtml(title)}</h2>`;
+  }
+
+  function renderStageInfoTable(stage, difficultyName, detail) {
+    const rows = [
+      ["關卡類型", detail["關卡類型"]],
+      ["地圖長度", detail["地圖長度"]],
+      ["時間限制", detail["時間限制"]],
+      ["我方塔城體力", detail["我方塔城體力"]],
+      ["敵方塔城體力", detail["敵方塔城體力"]]
+    ].filter(([, value]) => hasValue(value));
+
+    if (!rows.length) return "";
+    return `
+      ${renderSectionTitle("關卡資訊")}
+      <div class="endless-table-wrap endless-stage-info-wrap labyrinth-stage-info-wrap">
+        <table class="endless-stage-table endless-stage-info-table labyrinth-stage-info-table">
+          <tbody>
+            ${rows.map(([label, value]) => `
+              <tr>
+                <th>${escapeHtml(label)}</th>
+                <td>${formatValue(value)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
   function renderEnemyCell(row) {
     const id = getEnemyId(row);
     return `
@@ -170,15 +210,9 @@
     const lineGroups = Object.entries(lines);
 
     stageContent.innerHTML = `
-      <section class="labyrinth-stage-info-card">
-        <div class="ranger-stat-grid">
-          ${renderStat("關卡", `關卡 ${stage.key}`)}
-          ${renderStat("難度", difficultyName)}
-          ${renderStat("關卡類型", detail["關卡類型"])}
-        </div>
-      </section>
+      ${renderStageInfoTable(stage, difficultyName, detail)}
 
-      <h2 class="endless-detail-section-title">敵人生產線</h2>
+      ${renderSectionTitle("敵人生產線")}
       ${lineGroups.length ? lineGroups.map(([groupName, rows]) => `
         <section class="hs-condition-section labyrinth-line-section">
           <h3 class="hs-condition-title"><span class="hs-condition-label">${escapeHtml(groupName)}</span></h3>
