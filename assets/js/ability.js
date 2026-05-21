@@ -73,8 +73,10 @@
     return text === "(無)" ? "" : text;
   }
 
-  function getAbilityName(item) {
-    return displayText(item["名稱"]) || "未命名能力";
+  function getAbilityName(item, code = "") {
+    const name = displayText(item["名稱"]);
+    if (name) return name;
+    return isAdminMode() && code ? code : "未命名能力";
   }
 
   function getAbilityDescription(item) {
@@ -100,12 +102,13 @@
         const effects = getEffects(item);
         const tag = getAbilityTag(item);
         const searchBlob = [
+          code,
           item["覺醒能力"],
           item["一般敵人能力"],
           item["迷宮敵人能力"],
           item["小隊"],
           tag.label,
-          getAbilityName(item),
+          getAbilityName(item, code),
           getAbilityDescription(item),
           ...effects.flatMap(effect => [
             effect.label,
@@ -172,7 +175,7 @@
 
     abilityList.innerHTML = state.filtered.map(row => {
       const item = row.item;
-      const title = getAbilityName(item);
+      const title = getAbilityName(item, row.code);
       const description = getAbilityDescription(item);
       const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
       const firstEffect = row.effects[0] || {};
@@ -216,7 +219,7 @@
 
   function renderAbilityDetail(row) {
     const item = row.item;
-    const title = getAbilityName(item);
+    const title = getAbilityName(item, row.code);
     const description = getAbilityDescription(item);
     const iconUrl = item.icon ? ICON_BASE + encodeURIComponent(item.icon) : "";
     const tag = getAbilityTag(item, true);
