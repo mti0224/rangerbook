@@ -2009,7 +2009,7 @@
             ],
             "icon": "skill_icon_hsk8007_bunnyking.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2124,7 +2124,7 @@
             ],
             "icon": "skill_icon_hsk8008_sano.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2239,7 +2239,7 @@
             ],
             "icon": "skill_icon_hsk8009_bigflower.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2354,7 +2354,7 @@
             ],
             "icon": "skill_icon_sk8010_dudu.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2469,7 +2469,7 @@
             ],
             "icon": "skill_icon_hsk1313_cony.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2584,7 +2584,7 @@
             ],
             "icon": "skill_icon_usk81012_paku.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2699,7 +2699,7 @@
             ],
             "icon": "skill_icon_usk81013_p7.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "攻擊吸收：智慧",
         "abilityCode2": "ab301_absorb_int",
@@ -2814,7 +2814,7 @@
             ],
             "icon": "skill_icon_hsk81014_wink.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -2929,7 +2929,7 @@
             ],
             "icon": "skill_icon_hsk81015_tulu.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "無",
         "abilityCode2": "",
@@ -3044,7 +3044,7 @@
             ],
             "icon": "skill_icon_hsk1379_au.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3159,7 +3159,7 @@
             ],
             "icon": "skill_icon_hsk81017_baron.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3274,7 +3274,7 @@
             ],
             "icon": "skill_icon_hsk81018_gabriel.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3389,7 +3389,7 @@
             ],
             "icon": "skill_icon_hsk81020_ubis.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3504,7 +3504,7 @@
             ],
             "icon": "skill_icon_hsk81021_engine.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3619,7 +3619,7 @@
             ],
             "icon": "skill_icon_hsk81022_camcam.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3734,7 +3734,7 @@
             ],
             "icon": "skill_icon_hsk81023_bongo.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3849,7 +3849,7 @@
             ],
             "icon": "skill_icon_hsk81024_torres.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -3964,7 +3964,7 @@
             ],
             "icon": "skill_icon_hsk81025_torres.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -4079,7 +4079,7 @@
             ],
             "icon": "skill_icon_usk81026-kimura.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -4194,7 +4194,7 @@
             ],
             "icon": "skill_icon_usk81027-jackjim.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -4309,7 +4309,7 @@
             ],
             "icon": "skill_icon_usk81028-rio.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
@@ -4424,7 +4424,7 @@
             ],
             "icon": "skill_icon_usk81029-drpaimon.png"
         },
-        "能力1": "ab225_aMirror3",
+        "能力1": "抵抗：傷害反射3",
         "abilityCode": "ab225_aMirror3",
         "能力2": "變身抗性",
         "abilityCode2": "ab222_aPolymorph",
