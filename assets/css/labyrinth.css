@@ -55,7 +55,7 @@
 
 .labyrinth-stage-row-grid {
   display: grid;
-  grid-template-columns: repeat(var(--labyrinth-stage-cols, 4), minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(4.8rem, 1fr));
   gap: 0.65rem;
   min-width: 0;
 }
@@ -76,12 +76,6 @@
 .labyrinth-stage-card:hover {
   background: #f8fbff;
   border-color: #bfdbfe;
-}
-
-.labyrinth-stage-card.placeholder {
-  visibility: hidden;
-  pointer-events: none;
-  box-shadow: none;
 }
 
 .labyrinth-difficulty-controls {
@@ -239,6 +233,7 @@ html[data-theme="dark"] .tag-debuff {
   }
 
   .labyrinth-stage-row-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.35rem;
   }
 
