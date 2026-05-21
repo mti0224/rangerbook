@@ -358,7 +358,7 @@
         <div><h2 id="labyrinthEnemyLineModalTitle">${escapeHtml(id || "未知敵人")}</h2><div class="ranger-tags detail-tags">${[enemy["Ranger星數"], enemy["類型"], enemy["屬性"]].filter(Boolean).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div></div>
       </div>
       <section class="detail-section"><h3>生產線資訊</h3><div class="ranger-stat-grid">
-        ${renderStat("難度", difficulty)}${renderStat("觸發時間", groupName)}${renderStat("初登場時間", row["初登場時間"])}${renderStat("再生產間距", row["再生產間距"])}${renderStat("生產上限", row["生產上限"] || row["數量上限"])}
+        ${renderStat("難度", difficulty)}${renderStat("條件", groupName)}${renderStat("初登場時間", row["初登場時間"])}${renderStat("再生產間距", row["再生產間距"])}${renderStat("生產上限", row["生產上限"] || row["數量上限"])}
       </div></section>
       <section class="detail-section"><h3>敵人詳細資訊</h3><div class="ranger-stat-grid">
         ${renderStat("體力", detail["體力"] || enemy["體力"])}${renderStat("物理攻擊力", detail["物理攻擊力"] || enemy["物理攻擊力"])}${renderStat("魔法攻擊力", detail["魔法攻擊力"] || enemy["魔法攻擊力"])}${renderStat("物理防禦力", detail["物理防禦力"] || enemy["物理防禦力"])}${renderStat("魔法防禦力", detail["魔法防禦力"] || enemy["魔法防禦力"])}${renderStat("攻擊範圍", detail["攻擊範圍"] || enemy["攻擊範圍"])}${renderStat("濺射範圍", detail["濺射範圍"] || enemy["濺射範圍"])}${renderStat("技能抗性", detail["技能抗性"] || enemy["技能抗性"])}${renderStat("爆擊機率", detail["爆擊機率"] || enemy["爆擊機率"])}${renderStat("爆擊傷害", detail["爆擊傷害"] || enemy["爆擊傷害"])}${renderStat("閃避機率", detail["閃避機率"] || enemy["閃避機率"])}${renderStat("技能閃避機率", detail["技能閃避機率"] || enemy["技能閃避機率"])}${renderStat("命中率", detail["命中率"] || enemy["命中率"])}${renderStat("技能命中率", detail["技能命中率"] || enemy["技能命中率"])}
