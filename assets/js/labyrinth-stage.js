@@ -109,7 +109,6 @@
 
     stageGrid.innerHTML = [...rowMap.entries()].sort((a, b) => a[0] - b[0]).map(([rowNo, stages]) => `
       <section class="labyrinth-stage-row" aria-label="迷宮第 ${rowNo} 行">
-        <h2>第 ${rowNo} 行</h2>
         <div class="labyrinth-stage-row-grid">
           ${stages.sort((a, b) => a.col - b.col).map((stage) => `
             <a class="labyrinth-stage-card" href="${stageUrl(stage.row, stage.col)}">
