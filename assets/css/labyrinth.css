@@ -74,6 +74,53 @@
   border-color: #bfdbfe;
 }
 
+.labyrinth-stage-help-link-wrap {
+  margin-top: 0.7rem;
+}
+
+.labyrinth-stage-help-link {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 900;
+  color: var(--primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.labyrinth-tutorial-topbar {
+  margin: 1.2rem 0 0.6rem;
+}
+
+.labyrinth-tutorial-card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.labyrinth-tutorial-image {
+  width: 100%;
+  max-width: 760px;
+  display: block;
+  margin: 0 auto 1rem;
+  border-radius: 1rem;
+  object-fit: contain;
+}
+
+.labyrinth-tutorial-text {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.labyrinth-tutorial-text p {
+  margin: 0.35rem 0;
+}
+
 .labyrinth-difficulty-controls {
   margin-top: 1rem;
   display: flex;
@@ -190,6 +237,7 @@
 
 html[data-theme="dark"] .labyrinth-entry-card,
 html[data-theme="dark"] .labyrinth-stage-card,
+html[data-theme="dark"] .labyrinth-tutorial-card,
 html[data-theme="dark"] .labyrinth-score-table {
   background: var(--panel) !important;
   border-color: var(--line) !important;
@@ -238,6 +286,19 @@ html[data-theme="dark"] .tag-debuff {
     padding: 0.42rem 0.15rem;
     border-radius: 0.7rem;
     font-size: 0.76rem;
+  }
+
+  .labyrinth-tutorial-card {
+    padding: 0.7rem;
+  }
+
+  .labyrinth-tutorial-image {
+    border-radius: 0.75rem;
+  }
+
+  .labyrinth-tutorial-text {
+    font-size: 0.92rem;
+    line-height: 1.65;
   }
 
   .labyrinth-artifact-icon-wrap.large {
