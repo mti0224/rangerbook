@@ -55,12 +55,14 @@
 
 .labyrinth-stage-row-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(4.8rem, 1fr));
+  grid-template-columns: repeat(auto-fill, 7.6rem);
+  justify-content: start;
   gap: 0.65rem;
   min-width: 0;
 }
 
 .labyrinth-stage-card {
+  width: 7.6rem;
   min-height: 4.6rem;
   display: grid;
   place-items: center;
@@ -233,11 +235,13 @@ html[data-theme="dark"] .tag-debuff {
   }
 
   .labyrinth-stage-row-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, 1fr);
+    justify-content: start;
     gap: 0.35rem;
   }
 
   .labyrinth-stage-card {
+    width: 100%;
     min-height: 3.35rem;
     padding: 0.48rem 0.2rem;
     border-radius: 0.75rem;
