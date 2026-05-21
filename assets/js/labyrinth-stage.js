@@ -52,12 +52,21 @@
   }
 
   function stageUrl(row, col) {
-    return `${ROOT}labyrinth/stage/laby_${row}_${col}`;
+    return `${ROOT}labyrinth/stage/?stage=laby_${row}_${col}`;
+  }
+
+  function parseLabySlug(value) {
+    const match = text(value).match(/laby_(\d+)_(\d+)/);
+    return match ? `${Number(match[1])}-${Number(match[2])}` : "";
   }
 
   function getRequestedStageKey() {
-    const match = window.location.pathname.match(/\/labyrinth\/stage\/laby_(\d+)_(\d+)\/?$/);
-    return match ? `${Number(match[1])}-${Number(match[2])}` : "";
+    const pathMatch = window.location.pathname.match(/\/labyrinth\/stage\/laby_(\d+)_(\d+)\/?$/);
+    if (pathMatch) return `${Number(pathMatch[1])}-${Number(pathMatch[2])}`;
+    const queryStage = new URLSearchParams(window.location.search).get("stage");
+    const queryKey = parseLabySlug(queryStage);
+    if (queryKey) return queryKey;
+    return parseLabySlug(window.location.hash);
   }
 
   function parseStageData(raw) {
@@ -93,25 +102,20 @@
     }
 
     const rowMap = new Map();
-    let maxCol = 3;
     state.stages.forEach((stage) => {
-      if (!rowMap.has(stage.row)) rowMap.set(stage.row, new Map());
-      rowMap.get(stage.row).set(stage.col, stage);
-      maxCol = Math.max(maxCol, stage.col);
+      if (!rowMap.has(stage.row)) rowMap.set(stage.row, []);
+      rowMap.get(stage.row).push(stage);
     });
 
-    stageGrid.innerHTML = [...rowMap.entries()].sort((a, b) => a[0] - b[0]).map(([rowNo, colMap]) => `
+    stageGrid.innerHTML = [...rowMap.entries()].sort((a, b) => a[0] - b[0]).map(([rowNo, stages]) => `
       <section class="labyrinth-stage-row" aria-label="迷宮第 ${rowNo} 行">
         <h2>第 ${rowNo} 行</h2>
-        <div class="labyrinth-stage-row-grid" style="--labyrinth-stage-cols:${maxCol}">
-          ${Array.from({ length: maxCol }, (_, index) => {
-            const colNo = index + 1;
-            const stage = colMap.get(colNo);
-            return stage ? `
-              <a class="labyrinth-stage-card" href="${stageUrl(stage.row, stage.col)}" style="grid-column:${stage.col}">
-                <span>關卡 ${stage.row}-${stage.col}</span>
-              </a>` : `<div class="labyrinth-stage-card placeholder" aria-hidden="true" style="grid-column:${colNo}"></div>`;
-          }).join("")}
+        <div class="labyrinth-stage-row-grid">
+          ${stages.sort((a, b) => a.col - b.col).map((stage) => `
+            <a class="labyrinth-stage-card" href="${stageUrl(stage.row, stage.col)}">
+              <span>關卡 ${stage.row}-${stage.col}</span>
+            </a>
+          `).join("")}
         </div>
       </section>
     `).join("");
