@@ -5,23 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>迷宮關卡資訊｜LINE Rangers Database</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/ranger.css">
+  <link rel="stylesheet" href="../../assets/css/ranger-ability-effect-merge.css">
+  <link rel="stylesheet" href="../../assets/css/hsEnemy.css">
+  <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
+  <link rel="stylesheet" href="../../assets/css/endless.css">
+  <link rel="stylesheet" href="../../assets/css/hs-stage.css">
   <link rel="stylesheet" href="../../assets/css/labyrinth.css">
 </head>
 <body>
   <div id="site-header"></div>
 
-  <main class="page">
+  <main class="page ranger-page">
     <section class="page-title">
       <p class="eyebrow">LINE Rangers Database</p>
       <h1>迷宮關卡資訊</h1>
-      <p>此頁面保留供未來更新。</p>
+      <p>選擇關卡後查看該關卡各難度的敵人生產線資訊。</p>
     </section>
 
-    <section class="empty-state labyrinth-placeholder">
-      迷宮關卡資訊頁面準備中。
+    <section id="labyrinthStageGrid" class="labyrinth-stage-grid" aria-label="迷宮關卡選擇"></section>
+
+    <section id="labyrinthStageDetail" hidden>
+      <div class="endless-stage-head labyrinth-stage-head">
+        <h1 id="labyrinthStageTitle" class="endless-stage-title"></h1>
+        <a class="endless-back-link" href="../stage/">返回關卡選擇</a>
+      </div>
+
+      <section id="labyrinthDifficultyControls" class="labyrinth-difficulty-controls" hidden>
+        <label>
+          <span>選擇難度</span>
+          <select id="labyrinthDifficultySelect"></select>
+        </label>
+      </section>
+
+      <div id="labyrinthStageContent"></div>
     </section>
   </main>
 
+  <div id="labyrinthEnemyLineModal" class="modal-backdrop" hidden>
+    <div class="modal-panel ranger-modal-panel" role="dialog" aria-modal="true" aria-labelledby="labyrinthEnemyLineModalTitle">
+      <button id="labyrinthEnemyLineModalCloseBtn" class="modal-close" type="button" aria-label="關閉敵人詳細資料">×</button>
+      <div id="labyrinthEnemyLineModalContent"></div>
+    </div>
+  </div>
+
   <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/labyrinth-stage.js"></script>
+  <script src="../../assets/js/card-tag-colors.js"></script>
 </body>
 </html>
