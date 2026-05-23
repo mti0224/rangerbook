@@ -221,8 +221,7 @@
       ? table(
         ["技能效果", "係數", "時間", "範圍", "作用於\n活動關卡", "作用於\n副本"],
         effectRows,
-        "skill-effect-table skill-detail-table",
-        ["28%", "12%", "12%", "12%", "18%", "18%"]
+        "skill-effect-table skill-detail-table"
       )
       : `<div class="empty-state small">沒有技能效果資料。</div>`;
 
