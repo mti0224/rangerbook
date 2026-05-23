@@ -24,6 +24,10 @@
       .replaceAll("'", "&#039;");
   }
 
+  function headerHtml(value) {
+    return html(value).replaceAll("\n", "<br>");
+  }
+
   function isNone(value) {
     if (value === null || value === undefined) return true;
     if (Array.isArray(value)) return value.length === 0;
@@ -148,7 +152,7 @@
       <div class="table-scroll detail-table-scroll">
         <table class="${className}">
           ${colgroup(widths)}
-          <thead><tr>${headers.map((header) => `<th>${html(header)}</th>`).join("")}</tr></thead>
+          <thead><tr>${headers.map((header) => `<th>${headerHtml(header)}</th>`).join("")}</tr></thead>
           <tbody>
             ${rows.map((row) => `<tr>${row.map((cell) => `<td>${html(cell || "-")}</td>`).join("")}</tr>`).join("")}
           </tbody>
