@@ -66,6 +66,20 @@
     return [value];
   }
 
+  function conditionKeyNo(key) {
+    if (key === "條件") return 1;
+    const match = text(key).match(/^條件(\d+)$/);
+    return match ? Number(match[1]) : 9999;
+  }
+
+  function collectConditionItems(content) {
+    if (!content || typeof content !== "object" || Array.isArray(content)) return [];
+    return Object.entries(content)
+      .filter(([key]) => key === "條件" || /^條件\d+$/.test(key))
+      .sort(([a], [b]) => conditionKeyNo(a) - conditionKeyNo(b))
+      .flatMap(([, value]) => toItems(value));
+  }
+
   function animationMetaUrl(metaPath, unitId) {
     const raw = text(metaPath);
     const filename = raw ? raw.split("/").pop() : `${unitId}.json`;
@@ -147,6 +161,17 @@
     return `<colgroup>${widths.map((width) => `<col style="width:${width}">`).join("")}</colgroup>`;
   }
 
+  function renderCell(cell) {
+    if (cell && typeof cell === "object" && !Array.isArray(cell)) {
+      if (cell.skip) return "";
+      const attrs = [];
+      if (cell.rowspan) attrs.push(`rowspan="${Number(cell.rowspan) || 1}"`);
+      if (cell.className) attrs.push(`class="${html(cell.className)}"`);
+      return `<td ${attrs.join(" ")}>${html(cell.value || "-")}</td>`;
+    }
+    return `<td>${html(cell || "-")}</td>`;
+  }
+
   function table(headers, rows, className = "skill-effect-table", widths = []) {
     return `
       <div class="table-scroll detail-table-scroll">
@@ -154,7 +179,7 @@
           ${colgroup(widths)}
           <thead><tr>${headers.map((header) => `<th>${headerHtml(header)}</th>`).join("")}</tr></thead>
           <tbody>
-            ${rows.map((row) => `<tr>${row.map((cell) => `<td>${html(cell || "-")}</td>`).join("")}</tr>`).join("")}
+            ${rows.map((row) => `<tr>${row.map(renderCell).join("")}</tr>`).join("")}
           </tbody>
         </table>
       </div>
@@ -238,10 +263,13 @@
 
     const desc = text(content["敘述"]);
     const chance = text(content["觸發機率"] || content["機率"] || content["觸發概率"] || "100%");
-    const conditions = toItems(content["條件"]);
+    const conditions = collectConditionItems(content);
     const gains = toItems(content["增益效果"]);
 
-    const conditionRows = conditions.map((condition) => [itemChance(condition, chance), itemText(condition)]);
+    const conditionRows = conditions.map((condition, index) => [
+      index === 0 ? { value: itemChance(condition, chance), rowspan: conditions.length } : { skip: true },
+      itemText(condition)
+    ]);
     if (!conditionRows.length && chance) conditionRows.push([chance, "-"]);
 
     const gainRows = gains.map((gain) => [itemChance(gain, chance || "100%"), itemText(gain)]);
