@@ -22,6 +22,14 @@
   font-size: 1.05rem;
 }
 
+.site-settings-icon {
+  width: 1.38rem;
+  height: 1.38rem;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .site-settings-toggle:hover {
   background: #dbeafe;
   color: var(--primary-dark);
