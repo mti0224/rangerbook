@@ -144,6 +144,8 @@
   const THEME_KEY = "rangerbook-theme";
   const basePrefix = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const rootPrefix = basePrefix;
+  const SETTING_ICON_LIGHT = `${rootPrefix}assets/setting_icon/setting_light.png`;
+  const SETTING_ICON_DARK = `${rootPrefix}assets/setting_icon/setting_dark.png`;
 
   function ensureSiteIcon() {
     const iconHref = `${rootPrefix}assets/main_icon/icon.png`;
@@ -176,6 +178,9 @@
     localStorage.setItem(THEME_KEY, theme);
     const text = theme === "dark" ? "深色模式" : "淺色模式";
     document.querySelectorAll(".theme-current-mode").forEach((el) => { el.textContent = text; });
+    document.querySelectorAll(".site-settings-icon").forEach((img) => {
+      img.src = theme === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT;
+    });
     const toggle = document.querySelector(".theme-toggle-row");
     toggle?.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   }
@@ -185,7 +190,7 @@
 
   loadStylesheet("header-responsive.css", "20260429c");
   loadStylesheet("mobile-interaction-fix.css", "20260430c");
-  loadStylesheet("theme-toggle.css", "20260501b");
+  loadStylesheet("theme-toggle.css", "20260525a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
@@ -205,7 +210,9 @@
         </nav>
         <div class="site-actions">
           <div class="site-settings">
-            <button class="site-settings-toggle" type="button" aria-label="開啟設定" aria-expanded="false">⚙</button>
+            <button class="site-settings-toggle" type="button" aria-label="開啟設定" aria-expanded="false">
+              <img class="site-settings-icon" src="${getStoredTheme() === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT}" alt="" aria-hidden="true" loading="eager">
+            </button>
             <div class="site-settings-menu" role="menu">
               <button class="theme-toggle-row" type="button" role="menuitem" aria-pressed="false">
                 <span class="theme-toggle-label">
