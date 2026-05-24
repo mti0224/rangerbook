@@ -23,7 +23,7 @@
     { key: "move", label: "移動", body: ["walk"] },
     { key: "knockback", label: "被擊退", body: ["knockback"] },
     { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], trigger: ["attack"], bullet: "bul", targetX: BUL_TARGET_X, targetY: BUL_TARGET_Y, isBasicAttack: true },
-    { key: "skill1", label: "技能1", body: ["s_attack_all"], ready: ["s_attack_ready"], trigger: ["s_attack"], bullet: "bul2", targetX: BUL2_TARGET_X, targetY: BUL2_TARGET_Y, isBasicAttack: false },
+    { key: "skill1", label: "技能1", body: ["s_attack_all", "s_action_attack_all"], ready: ["s_attack_ready", "s_action_attack_1"], trigger: ["s_attack", "s_action_attack_2", "s_action_attack_3"], bullet: "bul2", targetX: BUL2_TARGET_X, targetY: BUL2_TARGET_Y, isBasicAttack: false },
     { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], trigger: ["s2_attack", "skill"], bullet: "bul3", targetX: BUL3_TARGET_X, targetY: BUL3_TARGET_Y, isBasicAttack: false },
     { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
