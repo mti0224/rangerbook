@@ -10,7 +10,8 @@
   const state = {
     stages: [],
     enemyMap: new Map(),
-    abilityMap: {}
+    abilityMap: {},
+    currentStage: null
   };
 
   const $ = (id) => document.getElementById(id);
@@ -47,6 +48,10 @@
     return escapeHtml(raw);
   }
 
+  function hasValue(value) {
+    return value !== null && value !== undefined && value !== "";
+  }
+
   function getStageNoFromKey(key, fallback) {
     const match = text(key).match(/\d+/);
     return match ? Number(match[0]) : fallback;
@@ -63,12 +68,18 @@
   function parseStageData(raw) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return [];
     return Object.entries(raw).map(([key, value], index) => {
-      const conditions = value && typeof value === "object" && !Array.isArray(value)
-        ? Object.entries(value).map(([condition, rows]) => ({ condition, rows: Array.isArray(rows) ? rows : [] }))
-        : [];
+      const detail = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+      const lineData = detail["敵人生產線"] && typeof detail["敵人生產線"] === "object" && !Array.isArray(detail["敵人生產線"])
+        ? detail["敵人生產線"]
+        : {};
+      const conditions = Object.entries(lineData).map(([condition, rows]) => ({
+        condition,
+        rows: Array.isArray(rows) ? rows : []
+      }));
       return {
         no: getStageNoFromKey(key, index + 1),
         key,
+        detail,
         conditions
       };
     }).sort((a, b) => a.no - b.no);
@@ -86,6 +97,39 @@
   function getLineDetail(row) {
     const detail = row?.["詳細資訊"];
     return detail && typeof detail === "object" ? detail : {};
+  }
+
+  function renderSectionTitle(title) {
+    return `<h2 class="endless-detail-section-title">${escapeHtml(title)}</h2>`;
+  }
+
+  function renderStageInfoTable(stage) {
+    const detail = stage.detail || {};
+    const rows = [
+      ["地圖長度", detail["地圖長度"]],
+      ["羽毛消耗量", detail["羽毛消耗量"]],
+      ["角色EXP", detail["角色EXP"]],
+      ["玩家EXP", detail["玩家EXP"]],
+      ["金幣", detail["金幣"]],
+      ["塔城體力", detail["塔城體力"]]
+    ].filter(([, value]) => hasValue(value));
+
+    if (!rows.length) return "";
+    return `
+      ${renderSectionTitle("關卡資訊")}
+      <div class="endless-table-wrap endless-stage-info-wrap hs-stage-info-wrap">
+        <table class="endless-stage-table endless-stage-info-table hs-stage-info-table">
+          <tbody>
+            ${rows.map(([label, value]) => `
+              <tr>
+                <th>${escapeHtml(label)}</th>
+                <td>${formatValue(value)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
   }
 
   function renderStageGrid() {
@@ -144,16 +188,21 @@
 
   function renderStageDetail(stage) {
     if (!stageDetail || !stageTitle || !stageConditions) return;
+    state.currentStage = stage;
     if (stageGrid) stageGrid.hidden = true;
     stageDetail.hidden = false;
     stageTitle.textContent = `困難關卡第 ${stage.no} 關`;
 
-    stageConditions.innerHTML = stage.conditions.length ? stage.conditions.map((group, index) => `
-      <section class="hs-condition-section">
-        <h3 class="hs-condition-title"><span class="hs-condition-label">${escapeHtml(group.condition)}</span></h3>
-        ${renderLineTable(group.rows, index)}
-      </section>
-    `).join("") : `<div class="empty-state">這個關卡沒有生產線資料。</div>`;
+    stageConditions.innerHTML = `
+      ${renderStageInfoTable(stage)}
+      ${renderSectionTitle("敵人生產線")}
+      ${stage.conditions.length ? stage.conditions.map((group, index) => `
+        <section class="hs-condition-section">
+          <h3 class="hs-condition-title"><span class="hs-condition-label">${escapeHtml(group.condition)}</span></h3>
+          ${renderLineTable(group.rows, index)}
+        </section>
+      `).join("") : `<div class="empty-state">這個關卡沒有生產線資料。</div>`}
+    `;
 
     stageConditions.querySelectorAll(".hs-line-detail-btn").forEach((button) => {
       button.addEventListener("click", () => {
@@ -367,8 +416,13 @@
   }
 
   function getRequestedStageNo() {
-    const match = window.location.pathname.match(/\/hs\/stage\/hs(\d{1,3})\/?$/);
-    return match ? Number(match[1]) : 0;
+    const pathMatch = window.location.pathname.match(/\/hs\/stage\/hs(\d{1,3})\/?$/);
+    if (pathMatch) return Number(pathMatch[1]);
+    const queryStage = new URLSearchParams(window.location.search).get("stage");
+    const queryMatch = text(queryStage).match(/hs(\d{1,3})/i);
+    if (queryMatch) return Number(queryMatch[1]);
+    const hashMatch = window.location.hash.match(/hs(\d{1,3})/i);
+    return hashMatch ? Number(hashMatch[1]) : 0;
   }
 
   async function init() {
