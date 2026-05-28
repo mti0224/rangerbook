@@ -5,8 +5,19 @@
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const SKILL_ICON = (icon) => `https://rangers.lerico.net/res/skill_icon/${encodeURIComponent(icon)}`;
   const TLT_ICON = (index) => `../assets/tlt_icon/tlt${index}.png`;
+  const ANIMATION_META_BASE = "https://res.warmycat.com/animation_meta/";
+  const ANIMATION_INDEX_URL = `${ANIMATION_META_BASE}index.json`;
 
-  const state = { rows: [], filtered: [], abilityMap: {}, selectedId: "", page: 1, pageSize: 60 };
+  const state = {
+    rows: [],
+    filtered: [],
+    abilityMap: {},
+    selectedId: "",
+    page: 1,
+    pageSize: 60,
+    animationIndexPromise: null,
+    animationMetaCache: new Map()
+  };
   const $ = (id) => document.getElementById(id);
   const els = {
     search: $("rangerSearchInput"), star: $("starFilter"), type: $("typeFilter"), element: $("elementFilter"), special: $("specialFilter"),
@@ -45,6 +56,39 @@
     const parts = text(value).replaceAll("-", "/").split("/").map(Number);
     if (parts.length < 3 || parts.some(Number.isNaN)) return 0;
     return new Date(parts[0], parts[1] - 1, parts[2]).getTime() || 0;
+  }
+  function animationMetaUrl(metaPath, unitId) {
+    const raw = text(metaPath);
+    const filename = raw ? raw.split("/").pop() : `${unitId}.json`;
+    return `${ANIMATION_META_BASE}${encodeURIComponent(filename)}`;
+  }
+  function loadAnimationIndex() {
+    if (!state.animationIndexPromise) {
+      state.animationIndexPromise = fetch(ANIMATION_INDEX_URL)
+        .then((res) => res.ok ? res.json() : null)
+        .catch(() => null);
+    }
+    return state.animationIndexPromise;
+  }
+  async function loadAnimationMeta(unitId) {
+    if (!unitId) return null;
+    if (state.animationMetaCache.has(unitId)) return state.animationMetaCache.get(unitId);
+    const index = await loadAnimationIndex();
+    const metaPath = index?.units?.[unitId]?.meta;
+    if (!metaPath) {
+      state.animationMetaCache.set(unitId, null);
+      return null;
+    }
+    const meta = await fetch(animationMetaUrl(metaPath, unitId))
+      .then((res) => res.ok ? res.json() : null)
+      .catch(() => null);
+    state.animationMetaCache.set(unitId, meta);
+    return meta;
+  }
+  function startupSeconds(animationMeta, skillIndex) {
+    const key = skillIndex === 0 ? "skill_1" : "skill_2";
+    const seconds = Number(animationMeta?.startup?.[key]?.seconds || 0);
+    return seconds ? `${seconds.toFixed(2)}秒` : "-";
   }
   function getSkill(r, key) { const v = r[key]; return v && typeof v === "object" && !Array.isArray(v) ? v : null; }
   function skillEffects(r) {
@@ -212,18 +256,23 @@
     }
     return "-";
   }
-  function skillMetaTable(skill) {
-    return `<div class="table-scroll skill-meta-table-wrap"><table class="skill-meta-table"><thead><tr><th>發動率</th><th>技能冷卻時間</th><th>觸發基準</th><th>前搖時間</th></tr></thead><tbody><tr><td>${html(skillValue(skill, ["發動機率", "技能發動率", "技能發動機率"]))}</td><td>${html(skillValue(skill, ["技能冷卻時間", "冷卻時間"]))}</td><td>${html(skillValue(skill, ["觸發基準", "觸發條件", "基準"]))}</td><td>${html(skillValue(skill, ["前搖時間", "技能前搖時間", "前搖", "startup", "startupTime"]))}</td></tr></tbody></table></div>`;
+  function skillStartupValue(skill, animationMeta, skillIndex) {
+    const directValue = skillValue(skill, ["前搖時間", "技能前搖時間", "前搖", "startup", "startupTime"]);
+    if (directValue !== "-") return directValue;
+    return startupSeconds(animationMeta, skillIndex);
+  }
+  function skillMetaTable(skill, animationMeta, skillIndex) {
+    return `<div class="table-scroll skill-meta-table-wrap"><table class="skill-meta-table"><thead><tr><th>發動率</th><th>技能冷卻時間</th><th>觸發基準</th><th>前搖時間</th></tr></thead><tbody><tr><td>${html(skillValue(skill, ["發動機率", "技能發動率", "技能發動機率"]))}</td><td>${html(skillValue(skill, ["技能冷卻時間", "冷卻時間"]))}</td><td>${html(skillValue(skill, ["觸發基準", "觸發條件", "基準"]))}</td><td>${html(skillStartupValue(skill, animationMeta, skillIndex))}</td></tr></tbody></table></div>`;
   }
   function skillTable(skill) {
     const effects = Array.isArray(skill["技能組"]) ? skill["技能組"] : [];
     if (!effects.length) return `<div class="empty-state small">沒有技能效果資料。</div>`;
     return `<div class="table-scroll"><table class="skill-effect-table"><thead><tr><th>技能效果</th><th>係數</th><th>時間</th><th>範圍</th><th><span class="break-header">作用於<br>活動關卡</span></th><th><span class="break-header">作用於<br>副本</span></th></tr></thead><tbody>${effects.map((e) => `<tr><th>${html(e["效果"] || "-")}</th><td>${html(e["係數"] || "-")}</td><td>${html(e["有效時間"] || "-")}</td><td>${html(e["範圍"] || "-")}</td><td>${html(e["適用於活動關卡"] || "-")}</td><td>${html(e["適用於守護神"] || "-")}</td></tr>`).join("")}</tbody></table></div>`;
   }
-  function renderSkills(r) {
+  function renderSkills(r, animationMeta) {
     const skills = [getSkill(r, "技能1"), getSkill(r, "技能2")].filter(Boolean);
     if (!skills.length) return `<div class="empty-state small">沒有技能資料。</div>`;
-    return skills.map((s, i) => `<article class="ranger-skill-card"><div class="ranger-icon-title">${s.icon ? `<img class="small-icon" src="${SKILL_ICON(s.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>技能 ${i + 1}：${html(s["技能名稱"] || "未命名技能")}</h4>${description(s["技能敘述"], "ranger-skill-description")}</div></div>${skillMetaTable(s)}${skillTable(s)}</article>`).join("");
+    return skills.map((s, i) => `<article class="ranger-skill-card"><div class="ranger-icon-title">${s.icon ? `<img class="small-icon" src="${SKILL_ICON(s.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>技能 ${i + 1}：${html(s["技能名稱"] || "未命名技能")}</h4>${description(s["技能敘述"], "ranger-skill-description")}</div></div>${skillMetaTable(s, animationMeta, i)}${skillTable(s)}</article>`).join("");
   }
   function abilityTable(effects) {
     if (!effects.length) return "";
@@ -272,15 +321,17 @@
     const content = Object.entries(value).map(([title, data]) => text(title).includes("強化才能") ? renderBoostTalent(title, data) : renderNormalTalent(title, data, ranger)).join("");
     return content ? `<div class="ranger-talent-list">${content}</div>` : "";
   }
-  function detail(r) {
+  function detail(r, animationMeta) {
     const id = getId(r);
-    return `<div class="ranger-detail-head"><div class="ranger-detail-image-wrap"><img class="ranger-detail-image" src="${RANGER_IMAGE(id)}" alt="" onerror="this.closest('.ranger-detail-image-wrap').classList.add('missing-icon'); this.remove();"></div><div><h2 id="rangerModalTitle">${html(getName(r))}</h2><div class="ranger-tags detail-tags">${[r["Ranger星數"], r["類型"], r["屬性"], isYes(r["nft角色"]) ? "NFT" : "", isYes(r["降臨關卡角色"]) ? "降臨" : ""].filter(Boolean).map((v) => `<span>${html(v)}</span>`).join("")}</div><p class="ranger-date">登場時間：${html(r["登場時間"] || "-")}</p>${description(r["角色敘述"], "ranger-description")}</div></div><section class="detail-section"><h3>基本數值</h3><div class="ranger-stat-grid">${["體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "生產礦物費用", "Ranger再生產時間", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"].map((k) => stat(k === "Ranger再生產時間" ? "再生產時間" : k, r[k])).join("")}</div></section><section class="detail-section"><h3>技能</h3>${renderSkills(r)}</section><section class="detail-section"><h3>能力</h3>${abilityCards(normalAbilities(r), "沒有能力資料。")}</section><section class="detail-section"><h3>覺醒能力</h3>${abilityCards(awakeAbilities(r), "沒有覺醒能力資料。")}</section><section class="detail-section"><h3>才能</h3>${renderTalent(r["才能"], r) || `<div class="empty-state small">沒有才能資料。</div>`}</section>`;
+    return `<div class="ranger-detail-head"><div class="ranger-detail-image-wrap"><img class="ranger-detail-image" src="${RANGER_IMAGE(id)}" alt="" onerror="this.closest('.ranger-detail-image-wrap').classList.add('missing-icon'); this.remove();"></div><div><h2 id="rangerModalTitle">${html(getName(r))}</h2><div class="ranger-tags detail-tags">${[r["Ranger星數"], r["類型"], r["屬性"], isYes(r["nft角色"]) ? "NFT" : "", isYes(r["降臨關卡角色"]) ? "降臨" : ""].filter(Boolean).map((v) => `<span>${html(v)}</span>`).join("")}</div><p class="ranger-date">登場時間：${html(r["登場時間"] || "-")}</p>${description(r["角色敘述"], "ranger-description")}</div></div><section class="detail-section"><h3>基本數值</h3><div class="ranger-stat-grid">${["體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "生產礦物費用", "Ranger再生產時間", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性", "爆擊機率", "爆擊傷害", "閃避機率", "技能閃避機率", "命中率", "技能命中率"].map((k) => stat(k === "Ranger再生產時間" ? "再生產時間" : k, r[k])).join("")}</div></section><section class="detail-section"><h3>技能</h3>${renderSkills(r, animationMeta)}</section><section class="detail-section"><h3>能力</h3>${abilityCards(normalAbilities(r), "沒有能力資料。")}</section><section class="detail-section"><h3>覺醒能力</h3>${abilityCards(awakeAbilities(r), "沒有覺醒能力資料。")}</section><section class="detail-section"><h3>才能</h3>${renderTalent(r["才能"], r) || `<div class="empty-state small">沒有才能資料。</div>`}</section>`;
   }
-  function openRanger(id) {
+  async function openRanger(id) {
     state.selectedId = id;
     const row = state.rows.find(({ ranger }) => getId(ranger) === id);
     if (!row) return;
-    els.modalContent.innerHTML = detail(row.ranger);
+    const animationMeta = await loadAnimationMeta(id);
+    if (state.selectedId !== id) return;
+    els.modalContent.innerHTML = detail(row.ranger, animationMeta);
     els.modal.hidden = false;
     document.body.classList.add("modal-open");
     els.modal.scrollTop = 0; modalPanel.scrollTop = 0; els.modalContent.scrollTop = 0;
@@ -295,6 +346,7 @@
       state.abilityMap = aRes && aRes.ok ? await aRes.json() : {};
       state.rows = (Array.isArray(raw) ? raw : []).map((ranger, index) => ({ ranger, index, date: parseDate(ranger["登場時間"]), search: searchBlob(ranger) })).sort((a, b) => (b.date - a.date) || (a.index - b.index));
       state.filtered = [...state.rows];
+      loadAnimationIndex();
       fillSelect(els.star, state.rows.map((x) => x.ranger["Ranger星數"]));
       fillSelect(els.type, state.rows.map((x) => x.ranger["類型"]));
       fillSelect(els.element, state.rows.map((x) => x.ranger["屬性"]));
