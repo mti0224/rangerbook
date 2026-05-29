@@ -11361,11 +11361,144 @@
         "element": "暗"
     },
     {
+        "id": "u1602e-sh",
+        "name": "櫻 遙",
+        "star": "8星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1602h-sh",
+        "name": "風鈴的新風 櫻 遙",
+        "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1602u-sh",
+        "name": "一年一班級長 櫻 遙",
+        "star": "終極進化8星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1603e-sh",
+        "name": "對頂點的渴望 櫻 遙",
+        "star": "9星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1604e-uh",
+        "name": "梅宮 一",
+        "star": "8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1604h-uh",
+        "name": "絕對的大哥 梅宮 一",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1604u-uh",
+        "name": "防風鈴總代表 梅宮 一",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1605e-uh",
+        "name": "天台的園藝家 梅宮 一",
+        "star": "9星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1606e-sh",
+        "name": "蘇枋隼飛",
+        "star": "8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1606h-sh",
+        "name": "獨眼的策士 蘇枋隼飛",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1606u-sh",
+        "name": "一年一班副級長 蘇枋隼飛",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1607e-sh",
+        "name": "神祕的微笑 蘇枋隼飛",
+        "star": "9星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1608e-kr",
+        "name": "梶 蓮",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1608h-kr",
+        "name": "爆音耳機 梶 蓮",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1608u-kr",
+        "name": "多聞衆二年級級長 梶 蓮",
+        "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1609e-kr",
+        "name": "寡言的領導者 梶 蓮",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
         "id": "u160e-cobe",
         "name": "粉紅甜心柯比",
         "star": "6星",
         "type": "力量型",
-        "element": "無"
+        "element": "光"
+    },
+    {
+        "id": "u1610e-sk",
+        "name": "杉下京太郎",
+        "star": "8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1610h-sk",
+        "name": "狂暴的瘋狗 杉下京太郎",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1610u-sk",
+        "name": "頂點的狂信徒 杉下京太郎",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "水"
     },
     {
         "id": "u161e-styne",
