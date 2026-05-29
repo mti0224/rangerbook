@@ -167,6 +167,22 @@
   function splitRows(value) {
     return valueText(value).split(/\n+/).map((row) => row.trim()).filter(Boolean);
   }
+  function conditionKeyOrder(key) {
+    const keyText = text(key);
+    if (keyText === "條件" || keyText === "觸發條件") return 1;
+    const match = keyText.match(/^(?:條件|觸發條件)(\d+)$/);
+    return match ? Number(match[1]) : 9999;
+  }
+  function isMainTalentConditionKey(key) {
+    return /^(?:條件|觸發條件)\d*$/.test(text(key));
+  }
+  function collectMainTalentConditions(content) {
+    if (!content || typeof content !== "object" || Array.isArray(content)) return [];
+    return Object.entries(content)
+      .filter(([key, value]) => isMainTalentConditionKey(key) && !isNone(value))
+      .sort(([a], [b]) => conditionKeyOrder(a) - conditionKeyOrder(b))
+      .flatMap(([, value]) => splitRows(value));
+  }
   function parseMainTalentEffects(value, fallbackProbability = "-") {
     if (isNone(value)) return [];
     if (Array.isArray(value)) return value.flatMap((entry) => parseMainTalentEffects(entry, fallbackProbability));
@@ -293,7 +309,7 @@
     if (typeof content !== "object" || content === null) return `<article class="ranger-talent-card">${talentTitle(title, true)}<p>${html(valueText(content))}</p></article>`;
     const talentDesc = getFirstText(content, ["主要才能敘述", "敘述", "描述", "說明"]) || getFirstText(ranger, ["主要才能敘述", "敘述", "描述", "說明"]);
     const probability = valueText(getExactValue(content, ["觸發機率", "發動機率", "機率"])) || "-";
-    const conditionRows = splitRows(getExactValue(content, ["條件", "觸發條件"]));
+    const conditionRows = collectMainTalentConditions(content);
     const conditions = conditionRows.length ? conditionRows : ["無特定條件"];
     const effectValue = getExactValue(content, ["增益效果", "效果", "觸發效果", "效果列表"]);
     const effects = parseMainTalentEffects(effectValue, probability);
