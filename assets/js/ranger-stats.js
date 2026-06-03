@@ -2,16 +2,24 @@
   const DATA_URL = "../../res/Rangers_data.json";
   const CONFIG_URL = "../../res/ranger_stats_config.json";
   const TYPES = ["力量", "敏捷", "智慧"];
-  const STAT_COLUMNS = [
-    { key: "魔法攻擊力", label: "平均魔法攻擊力" },
-    { key: "物理攻擊力", label: "平均物理攻擊力" },
-    { key: "體力", label: "平均體力" }
+  const STAT_ROWS = [
+    { key: "物理攻擊力", label: "物理攻擊力" },
+    { key: "魔法攻擊力", label: "魔法攻擊力" },
+    { key: "體力", label: "體力" }
+  ];
+  const STANDARD_COLUMNS = [
+    { key: "min", label: "底標" },
+    { key: "q1", label: "後標" },
+    { key: "median", label: "均標" },
+    { key: "q3", label: "前標" },
+    { key: "max", label: "頂標" },
+    { key: "avg", label: "平均" }
   ];
   const EXCLUDED_ABILITY_NAMES = ["對空迎擊", "飛翔能力"];
 
   const STAR_BUCKETS = [
-    { key: "super8", label: "超進化8星", test: isSuper8 },
-    { key: "star9", label: "9星", test: isStar9 }
+    { key: "super8", label: "超進化平均數據", test: isSuper8 },
+    { key: "star9", label: "九星數據", test: isStar9 }
   ];
 
   const els = {
@@ -111,10 +119,6 @@
     return true;
   }
 
-  function emptyBucket() {
-    return { count: 0, sums: Object.fromEntries(STAT_COLUMNS.map((col) => [col.key, 0])) };
-  }
-
   function rowType(ranger) {
     const value = text(ranger["類型"]);
     return TYPES.find((type) => value.includes(type)) || value;
@@ -129,41 +133,68 @@
     return text(ranger["Ranger星數"]).includes("9");
   }
 
-  function summarize(rows, type) {
-    const result = Object.fromEntries(STAR_BUCKETS.map((bucket) => [bucket.key, emptyBucket()]));
-    rows.forEach((ranger) => {
-      if (rowType(ranger) !== type) return;
-      const bucket = STAR_BUCKETS.find((item) => item.test(ranger));
-      if (!bucket) return;
-      const target = result[bucket.key];
-      target.count += 1;
-      STAT_COLUMNS.forEach((col) => {
-        target.sums[col.key] += numberValue(ranger[col.key]);
-      });
-    });
-    return result;
+  function percentile(sortedValues, ratio) {
+    if (!sortedValues.length) return NaN;
+    if (sortedValues.length === 1) return sortedValues[0];
+    const index = (sortedValues.length - 1) * ratio;
+    const lower = Math.floor(index);
+    const upper = Math.ceil(index);
+    if (lower === upper) return sortedValues[lower];
+    const weight = index - lower;
+    return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
   }
 
-  function renderTable(summary) {
-    const rows = STAR_BUCKETS.map((bucket) => {
-      const item = summary[bucket.key];
-      return `<tr>
-        <th>${html(bucket.label)}</th>
-        <td>${formatCount(item.count)}</td>
-        ${STAT_COLUMNS.map((col) => `<td>${item.count ? formatNumber(item.sums[col.key] / item.count) : "-"}</td>`).join("")}
-      </tr>`;
-    }).join("");
+  function summarizeValues(values) {
+    const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+    const sum = sorted.reduce((total, value) => total + value, 0);
+    return {
+      count: sorted.length,
+      min: sorted.length ? sorted[0] : NaN,
+      q1: percentile(sorted, 0.25),
+      median: percentile(sorted, 0.5),
+      q3: percentile(sorted, 0.75),
+      max: sorted.length ? sorted[sorted.length - 1] : NaN,
+      avg: sorted.length ? sum / sorted.length : NaN
+    };
+  }
 
-    els.table.innerHTML = `<table class="stats-table">
-      <thead>
-        <tr>
-          <th>星級分類</th>
-          <th>統計數量</th>
-          ${STAT_COLUMNS.map((col) => `<th>${html(col.label)}</th>`).join("")}
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+  function bucketRows(rows, type, bucket) {
+    return rows.filter((ranger) => rowType(ranger) === type && bucket.test(ranger));
+  }
+
+  function summarizeBucket(rows) {
+    return Object.fromEntries(STAT_ROWS.map((stat) => [
+      stat.key,
+      summarizeValues(rows.map((ranger) => numberValue(ranger[stat.key])).filter((value) => value > 0))
+    ]));
+  }
+
+  function renderStatsTable(bucket, rows) {
+    const summary = summarizeBucket(rows);
+    return `<section class="stats-subsection">
+      <h3>${html(bucket.label)}</h3>
+      <p class="stats-count">統計數量：${formatCount(rows.length)}</p>
+      <div class="stats-table-wrap">
+        <table class="stats-table stats-standard-table">
+          <thead>
+            <tr>
+              <th></th>
+              ${STANDARD_COLUMNS.map((col) => `<th>${html(col.label)}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            ${STAT_ROWS.map((stat) => `<tr>
+              <th>${html(stat.label)}</th>
+              ${STANDARD_COLUMNS.map((col) => `<td>${formatNumber(summary[stat.key][col.key])}</td>`).join("")}
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>`;
+  }
+
+  function renderTables(rows) {
+    els.table.innerHTML = STAR_BUCKETS.map((bucket) => renderStatsTable(bucket, bucketRows(rows, state.selectedType, bucket))).join("");
   }
 
   function setActiveType(type) {
@@ -183,8 +214,8 @@
     els.included.textContent = formatCount(included.length);
     els.excluded.textContent = formatCount(excluded);
     els.range.textContent = `${state.config.start_date || state.config.startDate || state.config["起始日期"] || "最早"} ～ ${formatDate(state.now)}`;
-    els.title.textContent = `${state.selectedType}平均數值`;
-    renderTable(summarize(included, state.selectedType));
+    els.title.textContent = "平均數據";
+    renderTables(included);
   }
 
   function normalizeRows(raw) {
