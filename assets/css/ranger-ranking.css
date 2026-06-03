@@ -66,6 +66,10 @@
   font-size: 1.1rem;
 }
 
+#rankingPaginationBar {
+  margin-bottom: 1rem;
+}
+
 .ranking-list {
   display: grid;
   gap: 0.8rem;
@@ -74,7 +78,7 @@
 .ranking-card {
   width: 100%;
   display: grid;
-  grid-template-columns: 4.4rem 1fr;
+  grid-template-columns: auto 66px minmax(0, 1fr) auto;
   gap: 0.9rem;
   align-items: center;
   color: var(--text);
@@ -90,16 +94,33 @@
   border-color: #bfdbfe;
 }
 
+.ranking-card-left {
+  display: contents;
+}
+
 .ranking-rank {
-  width: 3.4rem;
-  height: 3.4rem;
+  min-width: 2.2rem;
+  color: var(--primary-dark);
+  font-size: 1.05rem;
+  font-weight: 950;
+  text-align: left;
+}
+
+.ranking-thumb-wrap {
+  width: 58px;
+  height: 58px;
+  border-radius: 1rem;
+  background: #f3f4f6;
+  border: 1px solid var(--line);
   display: grid;
   place-items: center;
-  border-radius: 1rem;
-  background: #eef2ff;
-  color: #3730a3;
-  font-size: 1.1rem;
-  font-weight: 950;
+  overflow: hidden;
+}
+
+.ranking-thumb {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .ranking-card-main {
@@ -125,11 +146,13 @@
   text-underline-offset: 0.2rem;
 }
 
-.ranking-card-title-row strong {
-  flex: 0 0 auto;
+.ranking-value {
+  align-self: center;
+  justify-self: end;
   color: var(--primary-dark);
-  font-size: 1.22rem;
-  line-height: 1.35;
+  font-size: 1.28rem;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .ranking-card-meta {
@@ -148,55 +171,6 @@
   font-weight: 750;
 }
 
-.ranking-pagination {
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.ranking-page-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-
-.ranking-page-button,
-.ranking-page-nav {
-  min-width: 2.4rem;
-  min-height: 2.4rem;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--panel);
-  color: var(--text);
-  font-weight: 900;
-  box-shadow: none;
-}
-
-.ranking-page-button:hover,
-.ranking-page-button.active,
-.ranking-page-nav:hover:not(:disabled) {
-  background: #eef2ff;
-  color: #3730a3;
-  border-color: #bfdbfe;
-}
-
-.ranking-page-nav:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-
-.ranking-page-gap {
-  padding: 0 0.2rem;
-  color: var(--muted);
-  font-weight: 900;
-}
-
 .ranking-empty {
   padding: 1rem;
   border: 1px solid var(--line);
@@ -211,8 +185,7 @@ html[data-theme="dark"] .ranking-controls,
 html[data-theme="dark"] .ranking-controls select,
 html[data-theme="dark"] .ranking-card,
 html[data-theme="dark"] .ranking-empty,
-html[data-theme="dark"] .ranking-page-button,
-html[data-theme="dark"] .ranking-page-nav {
+html[data-theme="dark"] .ranking-thumb-wrap {
   background: var(--panel) !important;
   color: var(--text) !important;
   border-color: var(--line) !important;
@@ -225,10 +198,7 @@ html[data-theme="dark"] .ranking-section h2 {
 }
 
 html[data-theme="dark"] .ranking-metric-button:hover,
-html[data-theme="dark"] .ranking-metric-button.active,
-html[data-theme="dark"] .ranking-page-button:hover,
-html[data-theme="dark"] .ranking-page-button.active,
-html[data-theme="dark"] .ranking-page-nav:hover:not(:disabled) {
+html[data-theme="dark"] .ranking-metric-button.active {
   background: #e8eefc !important;
   color: #312e81 !important;
   border-color: #bfdbfe !important;
@@ -239,14 +209,14 @@ html[data-theme="dark"] .ranking-card:hover {
   border-color: #475569 !important;
 }
 
-html[data-theme="dark"] .ranking-rank,
 html[data-theme="dark"] .ranking-card-meta span {
   background: #1e3a5f !important;
   color: #bfdbfe !important;
 }
 
+html[data-theme="dark"] .ranking-rank,
 html[data-theme="dark"] .ranking-card-title-row h3 a,
-html[data-theme="dark"] .ranking-card-title-row strong {
+html[data-theme="dark"] .ranking-value {
   color: #bfdbfe !important;
 }
 
@@ -266,15 +236,11 @@ html[data-theme="dark"] .ranking-card-title-row strong {
   }
 
   .ranking-card {
-    grid-template-columns: 3.6rem 1fr;
+    grid-template-columns: auto 58px minmax(0, 1fr);
   }
 
-  .ranking-rank {
-    width: 2.8rem;
-    height: 2.8rem;
-  }
-
-  .ranking-card-title-row {
-    display: grid;
+  .ranking-value {
+    grid-column: 3;
+    justify-self: start;
   }
 }
