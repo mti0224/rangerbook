@@ -8,11 +8,11 @@
     { key: "體力", label: "體力" }
   ];
   const STANDARD_COLUMNS = [
-    { key: "min", label: "底標" },
+    { key: "p12", label: "底標" },
     { key: "q1", label: "後標" },
     { key: "median", label: "均標" },
     { key: "q3", label: "前標" },
-    { key: "max", label: "頂標" },
+    { key: "p88", label: "頂標" },
     { key: "avg", label: "平均" }
   ];
   const EXCLUDED_ABILITY_NAMES = ["對空迎擊", "飛翔能力"];
@@ -149,11 +149,11 @@
     const sum = sorted.reduce((total, value) => total + value, 0);
     return {
       count: sorted.length,
-      min: sorted.length ? sorted[0] : NaN,
+      p12: percentile(sorted, 0.12),
       q1: percentile(sorted, 0.25),
       median: percentile(sorted, 0.5),
       q3: percentile(sorted, 0.75),
-      max: sorted.length ? sorted[sorted.length - 1] : NaN,
+      p88: percentile(sorted, 0.88),
       avg: sorted.length ? sum / sorted.length : NaN
     };
   }
