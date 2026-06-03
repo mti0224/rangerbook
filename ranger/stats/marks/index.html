@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var prefix = window.location.pathname.includes('/rangerbook/') ? '/rangerbook/ranger/stats/marks/' : '/ranger/stats/marks/';
+      document.write('<base href="' + prefix + '">');
+    })();
+  </script>
+  <title>什麼是五標？｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../../../assets/css/style.css">
+  <link rel="stylesheet" href="../../../assets/css/ranger-stats.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-stats-page">
+    <section class="page-title">
+      <p class="eyebrow">Ranger Statistics Guide</p>
+      <h1>什麼是五標？</h1>
+      <p>五標是把一組數值整理成幾個代表位置，用來快速判斷資料的大致分布。</p>
+      <a class="stats-help-link" href="../">← 返回 Rangers統計資料</a>
+    </section>
+
+    <section class="stats-section marks-section">
+      <h2>本站五標定義</h2>
+      <div class="marks-content">
+        <p>在 Rangers 統計資料中，五標用來描述指定類型與星級角色的數值分布。</p>
+        <div class="stats-table-wrap">
+          <table class="stats-table stats-marks-table">
+            <thead>
+              <tr>
+                <th>名稱</th>
+                <th>意義</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th>底標</th><td>第 12 百分位，約代表偏低但不是最低端的數值。</td></tr>
+              <tr><th>後標</th><td>第 25 百分位，也就是第一四分位數。</td></tr>
+              <tr><th>均標</th><td>第 50 百分位，也就是中位數。</td></tr>
+              <tr><th>前標</th><td>第 75 百分位，也就是第三四分位數。</td></tr>
+              <tr><th>頂標</th><td>第 88 百分位，約代表偏高但不是最高端的數值。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section marks-section">
+      <h2>簡單範例</h2>
+      <div class="marks-content">
+        <p>假設有 20 筆資料：1、2、3、...、20。</p>
+        <div class="stats-table-wrap">
+          <table class="stats-table stats-marks-table">
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>底標</th>
+                <th>後標</th>
+                <th>均標</th>
+                <th>前標</th>
+                <th>頂標</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>1～20</th>
+                <td>約 3</td>
+                <td>約 6</td>
+                <td>約 10.5</td>
+                <td>約 15</td>
+                <td>約 18</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>因此五標可以讓你不用只看平均值，也能看出資料的低段、中段與高段落點。</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../../assets/js/site.js"></script>
+</body>
+</html>
