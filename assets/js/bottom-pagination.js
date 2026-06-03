@@ -6,10 +6,13 @@
   function getListAnchor(topBar) {
     let node = topBar?.nextElementSibling;
     while (node) {
-      if (node.matches?.(".ranger-list-layout, .layout.modal-list-layout") || node.querySelector?.(".ranger-list, .ability-list, .gear-list")) return node;
+      if (
+        node.matches?.(".ranger-list-layout, .layout.modal-list-layout, .ranger-list, .ability-list, .gear-list, .ranking-list") ||
+        node.querySelector?.(".ranger-list, .ability-list, .gear-list, .ranking-list")
+      ) return node;
       node = node.nextElementSibling;
     }
-    return document.querySelector(".ranger-list-layout, .layout.modal-list-layout") || topBar;
+    return document.querySelector(".ranger-list-layout, .layout.modal-list-layout, .ranking-list") || topBar;
   }
 
   function ensureBottomBar() {
