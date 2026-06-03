@@ -1,0 +1,211 @@
+.ranking-metric-tabs {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.ranking-metric-button {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 900;
+  box-shadow: var(--shadow);
+}
+
+.ranking-metric-button:hover,
+.ranking-metric-button.active {
+  border-color: #bfdbfe;
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.ranking-controls {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.ranking-controls label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.ranking-controls select {
+  min-height: 2.55rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.ranking-summary {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.ranking-summary > div {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.ranking-summary span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.ranking-summary strong {
+  display: block;
+  color: var(--primary-dark);
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
+
+.ranking-section {
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.ranking-section h2 {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  background: #eef2ff;
+  color: #3730a3;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.1rem;
+}
+
+.ranking-table-wrap {
+  overflow-x: auto;
+}
+
+.ranking-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.ranking-table th,
+.ranking-table td {
+  padding: 0.78rem 0.85rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.ranking-table thead th {
+  background: #f8fafc;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.ranking-table tbody th {
+  color: var(--primary-dark);
+}
+
+.ranking-table tbody th a {
+  color: var(--primary-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.ranking-table tr:last-child th,
+.ranking-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.ranking-table th:last-child,
+.ranking-table td:last-child {
+  border-right: 0;
+}
+
+.ranking-empty {
+  padding: 1rem;
+  color: var(--muted);
+}
+
+html[data-theme="dark"] .ranking-metric-button,
+html[data-theme="dark"] .ranking-controls,
+html[data-theme="dark"] .ranking-controls select,
+html[data-theme="dark"] .ranking-summary > div,
+html[data-theme="dark"] .ranking-section {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .ranking-section h2 {
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .ranking-metric-button:hover,
+html[data-theme="dark"] .ranking-metric-button.active {
+  background: #e8eefc !important;
+  color: #312e81 !important;
+  border-color: #bfdbfe !important;
+}
+
+html[data-theme="dark"] .ranking-table th,
+html[data-theme="dark"] .ranking-table td {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .ranking-table thead th {
+  background: #111827 !important;
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .ranking-table tbody th,
+html[data-theme="dark"] .ranking-table tbody th a {
+  background: #111827 !important;
+  color: #bfdbfe !important;
+}
+
+@media (max-width: 900px) {
+  .ranking-metric-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ranking-controls,
+  .ranking-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .ranking-metric-tabs {
+    grid-template-columns: 1fr;
+  }
+}
