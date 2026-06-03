@@ -2,16 +2,17 @@
   const DATA_URL = "../../res/Rangers_data.json";
   const CONFIG_URL = "../../res/ranger_stats_config.json";
   const TYPES = ["力量", "敏捷", "智慧"];
-  const STAR_BUCKETS = [
-    { key: "super8", label: "超進化8星", test: (ranger) => text(ranger["Ranger星數"]).includes("8") && text(ranger["Ranger星數"]).includes("超") },
-    { key: "star9", label: "9星", test: (ranger) => text(ranger["Ranger星數"]).includes("9") }
-  ];
   const STAT_COLUMNS = [
     { key: "魔法攻擊力", label: "平均魔法攻擊力" },
     { key: "物理攻擊力", label: "平均物理攻擊力" },
     { key: "體力", label: "平均體力" }
   ];
   const EXCLUDED_ABILITY_NAMES = ["對空迎擊", "飛翔能力"];
+
+  const STAR_BUCKETS = [
+    { key: "super8", label: "超進化8星", test: isSuper8 },
+    { key: "star9", label: "9星", test: isStar9 }
+  ];
 
   const els = {
     included: document.getElementById("statsIncludedCount"),
@@ -74,8 +75,9 @@
   }
 
   function parseDateValue(value) {
-    const raw = text(value).replaceAll("-", "/");
-    const parts = raw.split("/").map(Number);
+    if (value instanceof Date) return value.getTime() || 0;
+    const raw = text(value);
+    const parts = raw.match(/\d+/g)?.slice(0, 3).map(Number) || [];
     if (parts.length < 3 || parts.some(Number.isNaN)) return 0;
     return new Date(parts[0], parts[1] - 1, parts[2]).getTime() || 0;
   }
@@ -103,8 +105,9 @@
 
   function inRange(ranger, startTime, endTime) {
     const t = parseDateValue(ranger["登場時間"]);
-    if (startTime && (!t || t < startTime)) return false;
-    if (endTime && (!t || t > endTime)) return false;
+    if (!t) return false;
+    if (startTime && t < startTime) return false;
+    if (endTime && t > endTime) return false;
     return true;
   }
 
@@ -112,10 +115,24 @@
     return { count: 0, sums: Object.fromEntries(STAT_COLUMNS.map((col) => [col.key, 0])) };
   }
 
+  function rowType(ranger) {
+    const value = text(ranger["類型"]);
+    return TYPES.find((type) => value.includes(type)) || value;
+  }
+
+  function isSuper8(ranger) {
+    const star = text(ranger["Ranger星數"]);
+    return star.includes("8") && (star.includes("超") || star.includes("究極") || star.toLowerCase().includes("ultra"));
+  }
+
+  function isStar9(ranger) {
+    return text(ranger["Ranger星數"]).includes("9");
+  }
+
   function summarize(rows, type) {
     const result = Object.fromEntries(STAR_BUCKETS.map((bucket) => [bucket.key, emptyBucket()]));
     rows.forEach((ranger) => {
-      if (text(ranger["類型"]) !== type) return;
+      if (rowType(ranger) !== type) return;
       const bucket = STAR_BUCKETS.find((item) => item.test(ranger));
       if (!bucket) return;
       const target = result[bucket.key];
@@ -170,6 +187,15 @@
     renderTable(summarize(included, state.selectedType));
   }
 
+  function normalizeRows(raw) {
+    if (Array.isArray(raw)) return raw;
+    if (!raw || typeof raw !== "object") return [];
+    for (const key of ["data", "rows", "rangers", "items"]) {
+      if (Array.isArray(raw[key])) return raw[key];
+    }
+    return Object.values(raw).filter((item) => item && typeof item === "object" && !Array.isArray(item));
+  }
+
   async function init() {
     try {
       const [dataRes, configRes] = await Promise.all([
@@ -178,7 +204,7 @@
       ]);
       if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
       const raw = await dataRes.json();
-      state.rows = Array.isArray(raw) ? raw : [];
+      state.rows = normalizeRows(raw);
       if (configRes && configRes.ok) {
         const config = await configRes.json();
         state.config = config && typeof config === "object" ? config : state.config;
