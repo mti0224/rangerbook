@@ -18,8 +18,8 @@
   const EXCLUDED_ABILITY_NAMES = ["對空迎擊", "飛翔能力"];
 
   const STAR_BUCKETS = [
-    { key: "super8", label: "超進化平均數據", test: isSuper8 },
-    { key: "star9", label: "九星數據", test: isStar9 }
+    { key: "super8", label: "超進化數據統計", test: isSuper8 },
+    { key: "star9", label: "九星數據統計", test: isStar9 }
   ];
 
   const els = {
