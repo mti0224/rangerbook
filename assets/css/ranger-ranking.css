@@ -178,90 +178,14 @@
   box-shadow: var(--shadow);
 }
 
-.ranking-modal-panel {
-  max-width: min(760px, calc(100vw - 2rem));
+#rankingModal.modal-backdrop {
+  z-index: 1500;
 }
 
-.ranking-modal-head {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding-right: 2rem;
-}
-
-.ranking-modal-image-wrap {
-  width: 86px;
-  height: 86px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 1.2rem;
-  background: #f3f4f6;
-}
-
-.ranking-modal-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.ranking-modal-rank {
-  margin: 0 0 0.2rem;
-  color: var(--primary-dark);
-  font-weight: 900;
-}
-
-.ranking-modal-head h2 {
-  margin: 0 0 0.45rem;
-  font-size: 1.45rem;
-}
-
-.ranking-modal-section {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  background: var(--panel);
-}
-
-.ranking-modal-section h3 {
-  margin: 0 0 0.7rem;
-  color: var(--primary-dark);
-}
-
-.ranking-modal-main-value {
-  color: var(--primary-dark);
-  font-size: 2rem;
-  font-weight: 950;
-  line-height: 1.2;
-}
-
-.ranking-modal-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
-.ranking-modal-stat {
-  padding: 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0.85rem;
-  background: #f8fafc;
-}
-
-.ranking-modal-stat span {
-  display: block;
-  margin-bottom: 0.25rem;
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 800;
-}
-
-.ranking-modal-stat strong {
-  color: var(--text);
-  font-size: 1.05rem;
+#rankingModal .ranking-modal-panel {
+  z-index: 1501;
+  width: min(980px, 100%);
+  max-width: min(980px, calc(100vw - 2rem));
 }
 
 html[data-theme="dark"] .ranking-metric-button,
@@ -269,10 +193,7 @@ html[data-theme="dark"] .ranking-controls,
 html[data-theme="dark"] .ranking-controls select,
 html[data-theme="dark"] .ranking-card,
 html[data-theme="dark"] .ranking-empty,
-html[data-theme="dark"] .ranking-thumb-wrap,
-html[data-theme="dark"] .ranking-modal-image-wrap,
-html[data-theme="dark"] .ranking-modal-section,
-html[data-theme="dark"] .ranking-modal-stat {
+html[data-theme="dark"] .ranking-thumb-wrap {
   background: var(--panel) !important;
   color: var(--text) !important;
   border-color: var(--line) !important;
@@ -303,10 +224,7 @@ html[data-theme="dark"] .ranking-card-meta span {
 
 html[data-theme="dark"] .ranking-rank,
 html[data-theme="dark"] .ranking-card-title-row h3,
-html[data-theme="dark"] .ranking-value,
-html[data-theme="dark"] .ranking-modal-rank,
-html[data-theme="dark"] .ranking-modal-section h3,
-html[data-theme="dark"] .ranking-modal-main-value {
+html[data-theme="dark"] .ranking-value {
   color: #bfdbfe !important;
 }
 
@@ -332,11 +250,5 @@ html[data-theme="dark"] .ranking-modal-main-value {
   .ranking-value {
     grid-column: 3;
     justify-self: start;
-  }
-
-  .ranking-modal-head,
-  .ranking-modal-stat-grid {
-    display: grid;
-    grid-template-columns: 1fr;
   }
 }
