@@ -11,6 +11,7 @@
   </script>
   <title>Rangers數據排名｜LINE Rangers Database</title>
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/ranger-pagination.css">
   <link rel="stylesheet" href="../../assets/css/ranger-ranking.css">
 </head>
 <body>
@@ -65,12 +66,28 @@
 
     <section class="ranking-section">
       <h2 id="rankingTitle">總攻擊力排名</h2>
-      <div id="rankingList" class="ranking-list"></div>
-      <nav id="rankingPagination" class="ranking-pagination" aria-label="排名分頁"></nav>
+      <section class="pagination-bar" id="rankingPaginationBar">
+        <div class="pagination-info" id="paginationInfo"></div>
+        <div class="pagination-actions">
+          <label class="pagination-size">
+            <span>每頁顯示</span>
+            <select id="paginationSize">
+              <option value="30">30</option>
+              <option value="60" selected>60</option>
+              <option value="120">120</option>
+            </select>
+          </label>
+          <button id="paginationPrev" type="button">上一頁</button>
+          <div id="paginationPages" class="pagination-pages"></div>
+          <button id="paginationNext" type="button">下一頁</button>
+        </div>
+      </section>
+      <div id="rankingList" class="ranking-list ability-list"></div>
     </section>
   </main>
 
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/ranger-ranking.js"></script>
+  <script src="../../assets/js/bottom-pagination.js"></script>
 </body>
 </html>
