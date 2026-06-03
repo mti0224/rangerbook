@@ -74,12 +74,38 @@
   overflow-x: auto;
 }
 
+.stats-subsection {
+  border-bottom: 1px solid var(--line);
+}
+
+.stats-subsection:last-child {
+  border-bottom: 0;
+}
+
+.stats-subsection h3 {
+  margin: 0;
+  padding: 0.9rem 1rem 0.25rem;
+  color: var(--primary-dark);
+  font-size: 1.05rem;
+}
+
+.stats-count {
+  margin: 0;
+  padding: 0 1rem 0.75rem;
+  color: var(--muted);
+  font-weight: 800;
+}
+
 .stats-table {
   width: 100%;
   min-width: 760px;
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
+}
+
+.stats-standard-table {
+  min-width: 860px;
 }
 
 .stats-table th,
