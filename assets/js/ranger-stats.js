@@ -3,9 +3,8 @@
   const CONFIG_URL = "../../res/ranger_stats_config.json";
   const TYPES = ["力量", "敏捷", "智慧"];
   const STAT_ROWS = [
-    { key: "物理攻擊力", label: "物理攻擊力" },
-    { key: "魔法攻擊力", label: "魔法攻擊力" },
-    { key: "體力", label: "體力" }
+    { key: "總攻擊力", label: "總攻擊力", value: totalAttackValue },
+    { key: "體力", label: "體力", value: (ranger) => numberValue(ranger["體力"]) }
   ];
   const STANDARD_COLUMNS = [
     { key: "p12", label: "底標" },
@@ -62,6 +61,10 @@
     const normalized = text(value).replaceAll(",", "").replace(/[+％%秒點]/g, "");
     const match = normalized.match(/-?\d+(?:\.\d+)?/);
     return match ? Number(match[0]) : 0;
+  }
+
+  function totalAttackValue(ranger) {
+    return numberValue(ranger["物理攻擊力"]) + numberValue(ranger["魔法攻擊力"]);
   }
 
   function formatNumber(value) {
@@ -164,7 +167,7 @@
   function summarizeBucket(rows) {
     return Object.fromEntries(STAT_ROWS.map((stat) => [
       stat.key,
-      summarizeValues(rows.map((ranger) => numberValue(ranger[stat.key])).filter((value) => value > 0))
+      summarizeValues(rows.map((ranger) => stat.value(ranger)).filter((value) => value > 0))
     ]));
   }
 
