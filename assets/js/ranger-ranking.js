@@ -32,7 +32,10 @@
     paginationSize: document.getElementById("paginationSize"),
     paginationPrev: document.getElementById("paginationPrev"),
     paginationNext: document.getElementById("paginationNext"),
-    paginationPages: document.getElementById("paginationPages")
+    paginationPages: document.getElementById("paginationPages"),
+    modal: document.getElementById("rankingModal"),
+    modalContent: document.getElementById("rankingModalContent"),
+    modalClose: document.getElementById("rankingModalCloseBtn")
   };
 
   const state = {
@@ -109,6 +112,12 @@
     return text(ranger.ranger_id || ranger.id || ranger.unitCode || ranger["unitCode"] || ranger["代碼"] || "");
   }
 
+  function imageMarkup(code, className = "ranking-thumb") {
+    return code
+      ? `<img class="${className}" src="${RANGER_IMAGE(code)}" alt="" loading="lazy" onerror="this.closest('.ranking-thumb-wrap, .ranking-modal-image-wrap').classList.add('missing-icon'); this.remove();">`
+      : `<span class="no-icon">無圖</span>`;
+  }
+
   function matchType(ranger, selectedType) {
     if (!selectedType) return true;
     return rowType(ranger) === selectedType;
@@ -146,19 +155,17 @@
   function renderCard(item, rank) {
     const code = rangerCode(item.ranger);
     const name = rangerName(item.ranger);
-    const nameCell = code ? `<a href="../ranger/?id=${encodeURIComponent(code)}">${html(name)}</a>` : html(name);
-    const imageUrl = code ? RANGER_IMAGE(code) : "";
 
-    return `<article class="ranking-card ranger-card" data-ranger-id="${html(code || name)}">
+    return `<button class="ranking-card ranger-card" type="button" data-ranger-id="${html(code || name)}" data-rank="${rank}">
       <div class="ranking-card-left">
         <div class="ranking-rank">${formatCount(rank)}</div>
         <div class="ranking-thumb-wrap ranger-thumb-wrap">
-          ${imageUrl ? `<img class="ranking-thumb ranger-thumb" src="${imageUrl}" alt="" loading="lazy" onerror="this.closest('.ranking-thumb-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
+          ${imageMarkup(code)}
         </div>
       </div>
       <div class="ranking-card-main">
         <div class="ranking-card-title-row">
-          <h3>${nameCell}</h3>
+          <h3>${html(name)}</h3>
         </div>
         <div class="ranking-card-meta mini-meta">
           <span>${html(rowType(item.ranger) || "-")}</span>
@@ -167,7 +174,7 @@
         </div>
       </div>
       <strong class="ranking-value">${formatNumber(item.value)}</strong>
-    </article>`;
+    </button>`;
   }
 
   function makePageButtons(totalPages) {
@@ -204,6 +211,14 @@
     window.scrollTo({ top, behavior: "smooth" });
   }
 
+  function bindCardEvents() {
+    els.list.querySelectorAll(".ranking-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        openRangerModal(card.dataset.rangerId || "", Number(card.dataset.rank) || 0);
+      });
+    });
+  }
+
   function applyPagination(resetPage = true) {
     const total = state.filtered.length;
     if (!total) {
@@ -223,6 +238,7 @@
     const pageRows = state.filtered.slice(start, end);
 
     els.list.innerHTML = pageRows.map((item, index) => renderCard(item, start + index + 1)).join("");
+    bindCardEvents();
     els.paginationInfo.textContent = `第 ${state.page} / ${totalPages} 頁，顯示第 ${start + 1}–${Math.min(end, total)} 筆，共 ${total} 筆`;
     els.paginationPrev.disabled = state.page <= 1;
     els.paginationNext.disabled = state.page >= totalPages;
@@ -239,6 +255,60 @@
 
     els.title.textContent = `${metric.label}排名`;
     applyPagination(resetPage);
+  }
+
+  function modalStat(label, value) {
+    return `<div class="ranking-modal-stat"><span>${html(label)}</span><strong>${html(value)}</strong></div>`;
+  }
+
+  function openRangerModal(id, rank) {
+    const item = state.filtered.find((entry) => rangerCode(entry.ranger) === id || rangerName(entry.ranger) === id);
+    if (!item) return;
+
+    const ranger = item.ranger;
+    const code = rangerCode(ranger);
+    const name = rangerName(ranger);
+    const metric = METRICS[state.metric] || METRICS.totalAttack;
+
+    els.modalContent.innerHTML = `
+      <div class="ranking-modal-head">
+        <div class="ranking-modal-image-wrap">
+          ${imageMarkup(code, "ranking-modal-image")}
+        </div>
+        <div>
+          <p class="ranking-modal-rank">第 ${formatCount(rank)} 名</p>
+          <h2 id="rankingModalTitle">${html(name)}</h2>
+          <div class="ranking-card-meta mini-meta">
+            <span>${html(rowType(ranger) || "-")}</span>
+            <span>${html(rowElement(ranger) || "-")}</span>
+            <span>${html(rowStar(ranger) || "-")}</span>
+          </div>
+        </div>
+      </div>
+      <section class="ranking-modal-section">
+        <h3>${html(metric.label)}排名數據</h3>
+        <div class="ranking-modal-main-value">${formatNumber(item.value)}</div>
+      </section>
+      <section class="ranking-modal-section">
+        <h3>基本數據</h3>
+        <div class="ranking-modal-stat-grid">
+          ${modalStat("總攻擊力", formatNumber(METRICS.totalAttack.value(ranger)))}
+          ${modalStat("體力", formatNumber(METRICS.hp.value(ranger)))}
+          ${modalStat("攻擊範圍", formatNumber(METRICS.range.value(ranger)))}
+          ${modalStat("移動速度", formatNumber(METRICS.speed.value(ranger)))}
+        </div>
+      </section>
+    `;
+    els.modal.hidden = false;
+    document.body.classList.add("modal-open");
+    els.modalClose?.focus();
+  }
+
+  function closeModal() {
+    if (!els.modal || els.modal.hidden) return;
+    els.modal.hidden = true;
+    els.modalContent.innerHTML = "";
+    document.body.classList.remove("modal-open");
   }
 
   async function init() {
@@ -281,6 +351,14 @@
     state.page += 1;
     applyPagination(false);
     scrollToListTop();
+  });
+
+  els.modalClose?.addEventListener("click", closeModal);
+  els.modal?.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.matches("[data-ranking-modal-close]")) closeModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeModal();
   });
 
   init();
