@@ -1,6 +1,11 @@
 (() => {
   const DATA_URL = "../../res/Rangers_data.json";
+  const CONFIG_URL = "../../res/ranger_stats_config.json";
   const TYPES = ["力量", "敏捷", "智慧"];
+  const STAR_BUCKETS = [
+    { key: "super8", label: "超進化8星", test: (ranger) => text(ranger["Ranger星數"]).includes("8") && text(ranger["Ranger星數"]).includes("超") },
+    { key: "star9", label: "9星", test: (ranger) => text(ranger["Ranger星數"]).includes("9") }
+  ];
   const STAT_COLUMNS = [
     { key: "魔法攻擊力", label: "平均魔法攻擊力" },
     { key: "物理攻擊力", label: "平均物理攻擊力" },
@@ -9,17 +14,20 @@
   const EXCLUDED_ABILITY_NAMES = ["對空迎擊", "飛翔能力"];
 
   const els = {
-    start: document.getElementById("statsStartDate"),
-    end: document.getElementById("statsEndDate"),
-    apply: document.getElementById("statsApplyBtn"),
-    reset: document.getElementById("statsResetBtn"),
     included: document.getElementById("statsIncludedCount"),
     excluded: document.getElementById("statsExcludedCount"),
     range: document.getElementById("statsRangeLabel"),
-    table: document.getElementById("statsTableWrap")
+    title: document.getElementById("statsCurrentTypeTitle"),
+    table: document.getElementById("statsTableWrap"),
+    typeButtons: [...document.querySelectorAll(".stats-type-button")]
   };
 
-  const state = { rows: [] };
+  const state = {
+    rows: [],
+    config: { start_date: "" },
+    selectedType: "力量",
+    now: new Date()
+  };
 
   function rawText(value) {
     if (value === null || value === undefined) return "";
@@ -57,6 +65,14 @@
     return Number(value || 0).toLocaleString("zh-Hant");
   }
 
+  function formatDate(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "-";
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
   function parseDateValue(value) {
     const raw = text(value).replaceAll("-", "/");
     const parts = raw.split("/").map(Number);
@@ -64,13 +80,8 @@
     return new Date(parts[0], parts[1] - 1, parts[2]).getTime() || 0;
   }
 
-  function dateInputTime(value, isEnd = false) {
-    if (!value) return 0;
-    const parts = value.split("-").map(Number);
-    if (parts.length < 3 || parts.some(Number.isNaN)) return 0;
-    const date = new Date(parts[0], parts[1] - 1, parts[2]);
-    if (isEnd) date.setHours(23, 59, 59, 999);
-    return date.getTime() || 0;
+  function parseConfigStartTime() {
+    return parseDateValue(state.config.start_date || state.config.startDate || state.config["起始日期"] || "");
   }
 
   function abilityName(value) {
@@ -97,24 +108,30 @@
     return true;
   }
 
-  function summarize(rows) {
-    const result = Object.fromEntries(TYPES.map((type) => [type, { count: 0, sums: Object.fromEntries(STAT_COLUMNS.map((col) => [col.key, 0])) }]));
+  function emptyBucket() {
+    return { count: 0, sums: Object.fromEntries(STAT_COLUMNS.map((col) => [col.key, 0])) };
+  }
+
+  function summarize(rows, type) {
+    const result = Object.fromEntries(STAR_BUCKETS.map((bucket) => [bucket.key, emptyBucket()]));
     rows.forEach((ranger) => {
-      const type = text(ranger["類型"]);
-      if (!result[type]) return;
-      result[type].count += 1;
+      if (text(ranger["類型"]) !== type) return;
+      const bucket = STAR_BUCKETS.find((item) => item.test(ranger));
+      if (!bucket) return;
+      const target = result[bucket.key];
+      target.count += 1;
       STAT_COLUMNS.forEach((col) => {
-        result[type].sums[col.key] += numberValue(ranger[col.key]);
+        target.sums[col.key] += numberValue(ranger[col.key]);
       });
     });
     return result;
   }
 
   function renderTable(summary) {
-    const rows = TYPES.map((type) => {
-      const item = summary[type];
+    const rows = STAR_BUCKETS.map((bucket) => {
+      const item = summary[bucket.key];
       return `<tr>
-        <th>${html(type)}</th>
+        <th>${html(bucket.label)}</th>
         <td>${formatCount(item.count)}</td>
         ${STAT_COLUMNS.map((col) => `<td>${item.count ? formatNumber(item.sums[col.key] / item.count) : "-"}</td>`).join("")}
       </tr>`;
@@ -123,7 +140,7 @@
     els.table.innerHTML = `<table class="stats-table">
       <thead>
         <tr>
-          <th>角色類型</th>
+          <th>星級分類</th>
           <th>統計數量</th>
           ${STAT_COLUMNS.map((col) => `<th>${html(col.label)}</th>`).join("")}
         </tr>
@@ -132,27 +149,40 @@
     </table>`;
   }
 
+  function setActiveType(type) {
+    state.selectedType = TYPES.includes(type) ? type : "力量";
+    els.typeButtons.forEach((button) => {
+      button.classList.toggle("active", button.dataset.type === state.selectedType);
+    });
+  }
+
   function render() {
-    const startTime = dateInputTime(els.start.value, false);
-    const endTime = dateInputTime(els.end.value, true);
+    const startTime = parseConfigStartTime();
+    const endTime = state.now.getTime();
     const ranged = state.rows.filter((ranger) => inRange(ranger, startTime, endTime));
     const included = ranged.filter((ranger) => !isExcluded(ranger));
     const excluded = ranged.length - included.length;
 
     els.included.textContent = formatCount(included.length);
     els.excluded.textContent = formatCount(excluded);
-    els.range.textContent = els.start.value || els.end.value
-      ? `${els.start.value || "最早"} ～ ${els.end.value || "最新"}`
-      : "全部時間";
-    renderTable(summarize(included));
+    els.range.textContent = `${state.config.start_date || state.config.startDate || state.config["起始日期"] || "最早"} ～ ${formatDate(state.now)}`;
+    els.title.textContent = `${state.selectedType}平均數值`;
+    renderTable(summarize(included, state.selectedType));
   }
 
   async function init() {
     try {
-      const res = await fetch(DATA_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const raw = await res.json();
+      const [dataRes, configRes] = await Promise.all([
+        fetch(DATA_URL),
+        fetch(CONFIG_URL).catch(() => null)
+      ]);
+      if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
+      const raw = await dataRes.json();
       state.rows = Array.isArray(raw) ? raw : [];
+      if (configRes && configRes.ok) {
+        const config = await configRes.json();
+        state.config = config && typeof config === "object" ? config : state.config;
+      }
       render();
     } catch (error) {
       els.table.innerHTML = `<div class="stats-empty">資料載入失敗，請稍後再試。</div>`;
@@ -160,14 +190,12 @@
     }
   }
 
-  els.apply?.addEventListener("click", render);
-  els.reset?.addEventListener("click", () => {
-    els.start.value = "";
-    els.end.value = "";
-    render();
+  els.typeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveType(button.dataset.type);
+      render();
+    });
   });
-  els.start?.addEventListener("change", render);
-  els.end?.addEventListener("change", render);
 
   init();
 })();
