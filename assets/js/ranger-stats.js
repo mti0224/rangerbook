@@ -26,8 +26,7 @@
     included: document.getElementById("statsIncludedCount"),
     excluded: document.getElementById("statsExcludedCount"),
     range: document.getElementById("statsRangeLabel"),
-    title: document.getElementById("statsCurrentTypeTitle"),
-    table: document.getElementById("statsTableWrap"),
+    sections: document.getElementById("statsSections"),
     typeButtons: [...document.querySelectorAll(".stats-type-button")]
   };
 
@@ -169,10 +168,10 @@
     ]));
   }
 
-  function renderStatsTable(bucket, rows) {
+  function renderStatsSection(bucket, rows) {
     const summary = summarizeBucket(rows);
-    return `<section class="stats-subsection">
-      <h3>${html(bucket.label)}</h3>
+    return `<section class="stats-section">
+      <h2>${html(bucket.label)}</h2>
       <div class="stats-table-wrap">
         <table class="stats-table stats-standard-table">
           <thead>
@@ -193,7 +192,7 @@
   }
 
   function renderTables(rows) {
-    els.table.innerHTML = STAR_BUCKETS.map((bucket) => renderStatsTable(bucket, bucketRows(rows, state.selectedType, bucket))).join("");
+    els.sections.innerHTML = STAR_BUCKETS.map((bucket) => renderStatsSection(bucket, bucketRows(rows, state.selectedType, bucket))).join("");
   }
 
   function setActiveType(type) {
@@ -213,7 +212,6 @@
     els.included.textContent = formatCount(included.length);
     els.excluded.textContent = formatCount(excluded);
     els.range.textContent = `${state.config.start_date || state.config.startDate || state.config["起始日期"] || "最早"} ～ ${formatDate(state.now)}`;
-    els.title.textContent = "平均數據";
     renderTables(included);
   }
 
@@ -241,7 +239,7 @@
       }
       render();
     } catch (error) {
-      els.table.innerHTML = `<div class="stats-empty">資料載入失敗，請稍後再試。</div>`;
+      els.sections.innerHTML = `<div class="stats-empty">資料載入失敗，請稍後再試。</div>`;
       console.error(error);
     }
   }
