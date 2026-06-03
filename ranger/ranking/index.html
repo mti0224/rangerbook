@@ -34,7 +34,8 @@
       <label>
         <span>類型</span>
         <select id="rankingTypeFilter">
-          <option value="智慧" selected>智慧</option>
+          <option value="" selected>全部</option>
+          <option value="智慧">智慧</option>
           <option value="敏捷">敏捷</option>
           <option value="力量">力量</option>
         </select>
@@ -62,24 +63,10 @@
       </label>
     </section>
 
-    <section class="ranking-summary" aria-label="排名摘要">
-      <div>
-        <span>目前排名</span>
-        <strong id="rankingMetricLabel">總攻擊力</strong>
-      </div>
-      <div>
-        <span>符合角色數</span>
-        <strong id="rankingResultCount">0</strong>
-      </div>
-      <div>
-        <span>目前條件</span>
-        <strong id="rankingConditionLabel">智慧 / 全部 / 全部</strong>
-      </div>
-    </section>
-
     <section class="ranking-section">
       <h2 id="rankingTitle">總攻擊力排名</h2>
-      <div id="rankingTableWrap" class="ranking-table-wrap"></div>
+      <div id="rankingList" class="ranking-list"></div>
+      <nav id="rankingPagination" class="ranking-pagination" aria-label="排名分頁"></nav>
     </section>
   </main>
 
