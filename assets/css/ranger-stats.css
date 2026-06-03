@@ -28,22 +28,15 @@
   line-height: 1.25;
 }
 
-.stats-help-link {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  margin-top: 0.4rem;
-  padding: 0.55rem 0.9rem;
-  border: 1px solid #bfdbfe;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: #3730a3;
-  font-weight: 900;
+.stats-help-text {
+  margin: 0.55rem 0 0;
 }
 
-.stats-help-link:hover {
-  background: #dbeafe;
-  color: #1d4ed8;
+.stats-help-text a {
+  color: var(--primary-dark);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
 }
 
 .stats-type-tabs {
@@ -149,6 +142,50 @@
   border-right: 0;
 }
 
+.stats-tutorial-head {
+  margin-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stats-tutorial-title {
+  margin: 0;
+  font-size: clamp(1.45rem, 3vw, 2.1rem);
+}
+
+.stats-back-link {
+  color: var(--primary-dark);
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.stats-tutorial-card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.stats-tutorial-text {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  color: var(--text);
+  font-size: 1.16rem;
+  line-height: 1.9;
+  text-align: left;
+}
+
+.stats-tutorial-text p {
+  margin: 0.42rem 0;
+}
+
 .marks-content {
   padding: 1rem;
 }
@@ -170,7 +207,8 @@
 
 html[data-theme="dark"] .stats-summary > div,
 html[data-theme="dark"] .stats-section,
-html[data-theme="dark"] .stats-type-button {
+html[data-theme="dark"] .stats-type-button,
+html[data-theme="dark"] .stats-tutorial-card {
   background: var(--panel) !important;
   color: var(--text) !important;
   border-color: var(--line) !important;
@@ -182,7 +220,11 @@ html[data-theme="dark"] .stats-section h2 {
   border-color: var(--line) !important;
 }
 
-html[data-theme="dark"] .stats-help-link,
+html[data-theme="dark"] .stats-help-text a,
+html[data-theme="dark"] .stats-back-link {
+  color: var(--primary-dark) !important;
+}
+
 html[data-theme="dark"] .stats-type-button:hover,
 html[data-theme="dark"] .stats-type-button.active {
   background: #e8eefc !important;
