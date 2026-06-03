@@ -140,8 +140,6 @@
   color: var(--primary-dark);
   font-size: 1.05rem;
   line-height: 1.35;
-  text-decoration: underline;
-  text-underline-offset: 0.2rem;
 }
 
 .ranking-value {
