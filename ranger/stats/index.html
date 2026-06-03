@@ -21,20 +21,7 @@
     <section class="page-title">
       <p class="eyebrow">LINE Rangers Database</p>
       <h1>Rangers統計資料</h1>
-      <p>依指定登場時間區間，統計力量、敏捷、智慧角色的平均魔法攻擊力、物理攻擊力與體力。</p>
-    </section>
-
-    <section class="stats-controls" aria-label="統計篩選條件">
-      <label>
-        <span>開始日期</span>
-        <input id="statsStartDate" type="date">
-      </label>
-      <label>
-        <span>結束日期</span>
-        <input id="statsEndDate" type="date">
-      </label>
-      <button id="statsApplyBtn" type="button">套用區間</button>
-      <button id="statsResetBtn" type="button">全部時間</button>
+      <p>依設定檔指定的起始日期到目前時間，統計各類型角色的平均魔法攻擊力、物理攻擊力與體力。</p>
     </section>
 
     <section class="stats-summary" aria-label="統計摘要">
@@ -48,18 +35,24 @@
       </div>
       <div>
         <span>目前區間</span>
-        <strong id="statsRangeLabel">全部時間</strong>
+        <strong id="statsRangeLabel">載入中</strong>
       </div>
     </section>
 
+    <section class="stats-type-tabs" aria-label="角色類型切換">
+      <button class="stats-type-button active" type="button" data-type="力量">力量</button>
+      <button class="stats-type-button" type="button" data-type="敏捷">敏捷</button>
+      <button class="stats-type-button" type="button" data-type="智慧">智慧</button>
+    </section>
+
     <section class="stats-section">
-      <h2>平均數值</h2>
+      <h2 id="statsCurrentTypeTitle">力量平均數值</h2>
       <div id="statsTableWrap" class="stats-table-wrap"></div>
     </section>
 
     <section class="stats-section">
       <h2>排除規則</h2>
-      <p class="stats-note">統計時會排除持有「對空迎擊」或「飛翔能力」的角色。</p>
+      <p class="stats-note">統計時會排除持有「對空迎擊」或「飛翔能力」的角色。時間區間由 <code>res/ranger_stats_config.json</code> 控制起始日期，截止時間為瀏覽當下。</p>
     </section>
   </main>
 
