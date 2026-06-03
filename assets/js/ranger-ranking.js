@@ -1,6 +1,6 @@
 (() => {
   const DATA_URL = "../../res/Rangers_data.json";
-  const PAGE_SIZE = 20;
+  const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const METRICS = {
     totalAttack: {
       label: "總攻擊力",
@@ -27,13 +27,20 @@
     starFilter: document.getElementById("rankingStarFilter"),
     title: document.getElementById("rankingTitle"),
     list: document.getElementById("rankingList"),
-    pagination: document.getElementById("rankingPagination")
+    paginationBar: document.getElementById("rankingPaginationBar"),
+    paginationInfo: document.getElementById("paginationInfo"),
+    paginationSize: document.getElementById("paginationSize"),
+    paginationPrev: document.getElementById("paginationPrev"),
+    paginationNext: document.getElementById("paginationNext"),
+    paginationPages: document.getElementById("paginationPages")
   };
 
   const state = {
     rows: [],
+    filtered: [],
     metric: "totalAttack",
-    page: 1
+    page: 1,
+    pageSize: 60
   };
 
   function rawText(value) {
@@ -95,11 +102,11 @@
   }
 
   function rangerName(ranger) {
-    return text(ranger["名稱"] || ranger["Ranger名稱"] || ranger.name || ranger.id || ranger.unitCode || "-");
+    return text(ranger["Ranger名稱"] || ranger["名稱"] || ranger.name || ranger.id || ranger.unitCode || "-");
   }
 
   function rangerCode(ranger) {
-    return text(ranger.id || ranger.unitCode || ranger["unitCode"] || ranger["代碼"] || "");
+    return text(ranger.ranger_id || ranger.id || ranger.unitCode || ranger["unitCode"] || ranger["代碼"] || "");
   }
 
   function matchType(ranger, selectedType) {
@@ -122,7 +129,7 @@
     return true;
   }
 
-  function filteredRows() {
+  function buildFilteredRows() {
     const type = els.typeFilter.value;
     const element = els.elementFilter.value;
     const star = els.starFilter.value;
@@ -140,85 +147,98 @@
     const code = rangerCode(item.ranger);
     const name = rangerName(item.ranger);
     const nameCell = code ? `<a href="../ranger/?id=${encodeURIComponent(code)}">${html(name)}</a>` : html(name);
-    const metric = METRICS[state.metric];
+    const imageUrl = code ? RANGER_IMAGE(code) : "";
 
-    return `<article class="ranking-card">
-      <div class="ranking-rank">${formatCount(rank)}</div>
+    return `<article class="ranking-card ranger-card" data-ranger-id="${html(code || name)}">
+      <div class="ranking-card-left">
+        <div class="ranking-rank">${formatCount(rank)}</div>
+        <div class="ranking-thumb-wrap ranger-thumb-wrap">
+          ${imageUrl ? `<img class="ranking-thumb ranger-thumb" src="${imageUrl}" alt="" loading="lazy" onerror="this.closest('.ranking-thumb-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
+        </div>
+      </div>
       <div class="ranking-card-main">
         <div class="ranking-card-title-row">
           <h3>${nameCell}</h3>
-          <strong>${formatNumber(item.value)}</strong>
         </div>
-        <div class="ranking-card-meta">
-          <span>${html(metric.label)}</span>
+        <div class="ranking-card-meta mini-meta">
           <span>${html(rowType(item.ranger) || "-")}</span>
           <span>${html(rowElement(item.ranger) || "-")}</span>
           <span>${html(rowStar(item.ranger) || "-")}</span>
         </div>
       </div>
+      <strong class="ranking-value">${formatNumber(item.value)}</strong>
     </article>`;
   }
 
-  function renderList(rows) {
-    if (!rows.length) {
-      els.list.innerHTML = `<div class="ranking-empty">沒有符合條件的角色。</div>`;
+  function makePageButtons(totalPages) {
+    if (totalPages <= 1) {
+      els.paginationPages.innerHTML = "";
       return;
     }
 
-    const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-    state.page = Math.min(Math.max(1, state.page), totalPages);
-    const start = (state.page - 1) * PAGE_SIZE;
-    const pageRows = rows.slice(start, start + PAGE_SIZE);
-    els.list.innerHTML = pageRows.map((item, index) => renderCard(item, start + index + 1)).join("");
-  }
+    const pages = new Set([1, totalPages, state.page - 1, state.page, state.page + 1]);
+    const ordered = [...pages]
+      .filter((page) => page >= 1 && page <= totalPages)
+      .sort((a, b) => a - b);
 
-  function renderPagination(rows) {
-    const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-    if (!rows.length || totalPages <= 1) {
-      els.pagination.innerHTML = "";
-      return;
-    }
+    const parts = [];
+    let last = 0;
+    ordered.forEach((page) => {
+      if (page - last > 1) parts.push(`<span class="pagination-ellipsis">…</span>`);
+      parts.push(`<button class="pagination-page ${page === state.page ? "active" : ""}" type="button" data-page="${page}">${formatCount(page)}</button>`);
+      last = page;
+    });
 
-    const pageButtons = Array.from({ length: totalPages }, (_, index) => index + 1)
-      .filter((page) => page === 1 || page === totalPages || Math.abs(page - state.page) <= 2)
-      .map((page, index, pages) => {
-        const gap = index > 0 && page - pages[index - 1] > 1 ? `<span class="ranking-page-gap">...</span>` : "";
-        return `${gap}<button class="ranking-page-button${page === state.page ? " active" : ""}" type="button" data-page="${page}">${formatCount(page)}</button>`;
-      }).join("");
-
-    els.pagination.innerHTML = `
-      <button class="ranking-page-nav" type="button" data-page="${state.page - 1}" ${state.page <= 1 ? "disabled" : ""}>上一頁</button>
-      <div class="ranking-page-buttons">${pageButtons}</div>
-      <button class="ranking-page-nav" type="button" data-page="${state.page + 1}" ${state.page >= totalPages ? "disabled" : ""}>下一頁</button>
-    `;
-
-    els.pagination.querySelectorAll("button[data-page]").forEach((button) => {
+    els.paginationPages.innerHTML = parts.join("");
+    els.paginationPages.querySelectorAll(".pagination-page").forEach((button) => {
       button.addEventListener("click", () => {
-        const nextPage = Number(button.dataset.page);
-        if (!Number.isFinite(nextPage)) return;
-        state.page = Math.min(Math.max(1, nextPage), totalPages);
-        render();
-        document.querySelector(".ranking-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        state.page = Number(button.dataset.page) || 1;
+        applyPagination(false);
+        scrollToListTop();
       });
     });
   }
 
-  function render() {
+  function scrollToListTop() {
+    const top = Math.max(0, els.list.getBoundingClientRect().top + window.scrollY - 120);
+    window.scrollTo({ top, behavior: "smooth" });
+  }
+
+  function applyPagination(resetPage = true) {
+    const total = state.filtered.length;
+    if (!total) {
+      els.paginationBar.hidden = true;
+      els.list.innerHTML = `<div class="ranking-empty empty-state">沒有符合條件的角色。</div>`;
+      return;
+    }
+
+    els.paginationBar.hidden = false;
+    state.pageSize = Number(els.paginationSize.value) || 60;
+    const totalPages = Math.max(1, Math.ceil(total / state.pageSize));
+    if (resetPage) state.page = 1;
+    state.page = Math.min(Math.max(1, state.page), totalPages);
+
+    const start = (state.page - 1) * state.pageSize;
+    const end = start + state.pageSize;
+    const pageRows = state.filtered.slice(start, end);
+
+    els.list.innerHTML = pageRows.map((item, index) => renderCard(item, start + index + 1)).join("");
+    els.paginationInfo.textContent = `第 ${state.page} / ${totalPages} 頁，顯示第 ${start + 1}–${Math.min(end, total)} 筆，共 ${total} 筆`;
+    els.paginationPrev.disabled = state.page <= 1;
+    els.paginationNext.disabled = state.page >= totalPages;
+    makePageButtons(totalPages);
+  }
+
+  function render(resetPage = true) {
     const metric = METRICS[state.metric] || METRICS.totalAttack;
-    const rows = filteredRows();
+    state.filtered = buildFilteredRows();
 
     els.metricButtons.forEach((button) => {
       button.classList.toggle("active", button.dataset.metric === state.metric);
     });
 
     els.title.textContent = `${metric.label}排名`;
-    renderList(rows);
-    renderPagination(rows);
-  }
-
-  function resetPageAndRender() {
-    state.page = 1;
-    render();
+    applyPagination(resetPage);
   }
 
   async function init() {
@@ -226,10 +246,10 @@
       const res = await fetch(DATA_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.rows = normalizeRows(await res.json());
-      render();
+      render(true);
     } catch (error) {
-      els.list.innerHTML = `<div class="ranking-empty">資料載入失敗，請稍後再試。</div>`;
-      els.pagination.innerHTML = "";
+      els.list.innerHTML = `<div class="ranking-empty empty-state">資料載入失敗，請稍後再試。</div>`;
+      els.paginationBar.hidden = true;
       console.error(error);
     }
   }
@@ -237,12 +257,30 @@
   els.metricButtons.forEach((button) => {
     button.addEventListener("click", () => {
       state.metric = METRICS[button.dataset.metric] ? button.dataset.metric : "totalAttack";
-      resetPageAndRender();
+      render(true);
     });
   });
 
   [els.typeFilter, els.elementFilter, els.starFilter].forEach((select) => {
-    select.addEventListener("change", resetPageAndRender);
+    select.addEventListener("change", () => render(true));
+  });
+
+  els.paginationSize.addEventListener("change", () => {
+    state.page = 1;
+    applyPagination(false);
+    scrollToListTop();
+  });
+
+  els.paginationPrev.addEventListener("click", () => {
+    state.page -= 1;
+    applyPagination(false);
+    scrollToListTop();
+  });
+
+  els.paginationNext.addEventListener("click", () => {
+    state.page += 1;
+    applyPagination(false);
+    scrollToListTop();
   });
 
   init();
