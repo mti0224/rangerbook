@@ -97,8 +97,14 @@
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
   word-break: break-word;
+}
+
+.stats-table th:first-child,
+.stats-table td:first-child {
+  width: 8.5rem;
+  white-space: nowrap;
 }
 
 .stats-table th {
