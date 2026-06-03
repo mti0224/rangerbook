@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      var prefix = window.location.pathname.includes('/rangerbook/') ? '/rangerbook/ranger/ranking/' : '/ranger/ranking/';
+      document.write('<base href="' + prefix + '">');
+    })();
+  </script>
+  <title>Rangers數據排名｜LINE Rangers Database</title>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/ranger-ranking.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="page ranger-ranking-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>Rangers數據排名</h1>
+      <p>依指定條件篩選角色，查看總攻擊力、體力、攻擊範圍與移動速度排名。</p>
+    </section>
+
+    <section class="ranking-metric-tabs" aria-label="排名數據切換">
+      <button class="ranking-metric-button active" type="button" data-metric="totalAttack">總攻擊力</button>
+      <button class="ranking-metric-button" type="button" data-metric="hp">體力</button>
+      <button class="ranking-metric-button" type="button" data-metric="range">攻擊範圍</button>
+      <button class="ranking-metric-button" type="button" data-metric="speed">移動速度</button>
+    </section>
+
+    <section class="ranking-controls" aria-label="排名篩選器">
+      <label>
+        <span>類型</span>
+        <select id="rankingTypeFilter">
+          <option value="智慧" selected>智慧</option>
+          <option value="敏捷">敏捷</option>
+          <option value="力量">力量</option>
+        </select>
+      </label>
+      <label>
+        <span>屬性</span>
+        <select id="rankingElementFilter">
+          <option value="">全部</option>
+          <option value="光">光</option>
+          <option value="暗">暗</option>
+          <option value="水">水</option>
+          <option value="火">火</option>
+          <option value="木">木</option>
+        </select>
+      </label>
+      <label>
+        <span>星級</span>
+        <select id="rankingStarFilter">
+          <option value="">全部</option>
+          <option value="star9">九星</option>
+          <option value="super8">超進化8星</option>
+          <option value="ultimate8">終極進化8星</option>
+          <option value="star8">8星</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="ranking-summary" aria-label="排名摘要">
+      <div>
+        <span>目前排名</span>
+        <strong id="rankingMetricLabel">總攻擊力</strong>
+      </div>
+      <div>
+        <span>符合角色數</span>
+        <strong id="rankingResultCount">0</strong>
+      </div>
+      <div>
+        <span>目前條件</span>
+        <strong id="rankingConditionLabel">智慧 / 全部 / 全部</strong>
+      </div>
+    </section>
+
+    <section class="ranking-section">
+      <h2 id="rankingTitle">總攻擊力排名</h2>
+      <div id="rankingTableWrap" class="ranking-table-wrap"></div>
+    </section>
+  </main>
+
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/ranger-ranking.js"></script>
+</body>
+</html>
