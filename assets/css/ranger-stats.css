@@ -132,6 +132,44 @@
   color: var(--muted);
 }
 
+html[data-theme="dark"] .stats-summary > div,
+html[data-theme="dark"] .stats-section,
+html[data-theme="dark"] .stats-type-button {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .stats-section h2 {
+  background: #1e3a5f !important;
+  color: #bfdbfe !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .stats-type-button:hover,
+html[data-theme="dark"] .stats-type-button.active {
+  background: #e8eefc !important;
+  color: #312e81 !important;
+  border-color: #bfdbfe !important;
+}
+
+html[data-theme="dark"] .stats-table th,
+html[data-theme="dark"] .stats-table td {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] .stats-table thead th {
+  background: #111827 !important;
+  color: var(--muted) !important;
+}
+
+html[data-theme="dark"] .stats-table tbody th {
+  background: #111827 !important;
+  color: #bfdbfe !important;
+}
+
 @media (max-width: 760px) {
   .stats-summary,
   .stats-type-tabs {
