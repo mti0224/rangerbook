@@ -173,7 +173,6 @@
     const summary = summarizeBucket(rows);
     return `<section class="stats-subsection">
       <h3>${html(bucket.label)}</h3>
-      <p class="stats-count">統計數量：${formatCount(rows.length)}</p>
       <div class="stats-table-wrap">
         <table class="stats-table stats-standard-table">
           <thead>
