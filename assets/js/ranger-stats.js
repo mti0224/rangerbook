@@ -176,7 +176,7 @@
         <table class="stats-table stats-standard-table">
           <thead>
             <tr>
-              <th></th>
+              <th>項目</th>
               ${STANDARD_COLUMNS.map((col) => `<th>${html(col.label)}</th>`).join("")}
             </tr>
           </thead>
