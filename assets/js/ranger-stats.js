@@ -4,9 +4,7 @@
   const TYPES = ["力量", "敏捷", "智慧"];
   const STAT_ROWS = [
     { key: "總攻擊力", label: "總攻擊力", value: totalAttackValue },
-    { key: "體力", label: "體力", value: (ranger) => numberValue(ranger["體力"]) }
-  ];
-  const GENERAL_ROWS = [
+    { key: "體力", label: "體力", value: (ranger) => numberValue(ranger["體力"]) },
     { key: "生產礦物費用", label: "生產礦物費用", value: (ranger) => numberValue(ranger["生產礦物費用"]), descending: true },
     { key: "攻擊範圍", label: "攻擊範圍", value: (ranger) => numberValue(ranger["攻擊範圍"]), descendingTypes: ["力量"] }
   ];
@@ -168,10 +166,6 @@
     return rows.filter((ranger) => rowType(ranger) === type && bucket.test(ranger));
   }
 
-  function typeRows(rows, type) {
-    return rows.filter((ranger) => rowType(ranger) === type);
-  }
-
   function shouldUseDescending(stat, type) {
     return Boolean(stat.descending || stat.descendingTypes?.includes(type));
   }
@@ -210,9 +204,9 @@
   }
 
   function renderTables(rows) {
-    const starSections = STAR_BUCKETS.map((bucket) => renderStatsSection(bucket.label, bucketRows(rows, state.selectedType, bucket), STAT_ROWS, state.selectedType));
-    const generalSection = renderStatsSection("綜合數據", typeRows(rows, state.selectedType), GENERAL_ROWS, state.selectedType);
-    els.sections.innerHTML = [...starSections, generalSection].join("");
+    els.sections.innerHTML = STAR_BUCKETS
+      .map((bucket) => renderStatsSection(bucket.label, bucketRows(rows, state.selectedType, bucket), STAT_ROWS, state.selectedType))
+      .join("");
   }
 
   function setActiveType(type) {
