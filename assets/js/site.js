@@ -1,4 +1,20 @@
 (() => {
+  const GA_MEASUREMENT_ID = "G-RPSQY1WHPP";
+
+  if (!window.gtag) {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", GA_MEASUREMENT_ID);
+  }
+})();
+
+(() => {
   const LEGACY_RES_BASE = "https://rangers.lerico.net/res/";
   const PRIMARY_RES_BASE = "https://res.warmycat.com/";
   const OLD_PRIMARY_RES_BASE = "https://rangerbook.warmycat.com/res_from_emulator/";
