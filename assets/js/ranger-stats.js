@@ -6,6 +6,10 @@
     { key: "總攻擊力", label: "總攻擊力", value: totalAttackValue },
     { key: "體力", label: "體力", value: (ranger) => numberValue(ranger["體力"]) }
   ];
+  const GENERAL_ROWS = [
+    { key: "生產礦物費用", label: "生產礦物費用", value: (ranger) => numberValue(ranger["生產礦物費用"]) },
+    { key: "攻擊範圍", label: "攻擊範圍", value: (ranger) => numberValue(ranger["攻擊範圍"]) }
+  ];
   const STANDARD_COLUMNS = [
     { key: "p12", label: "底標" },
     { key: "q1", label: "後標" },
@@ -164,17 +168,21 @@
     return rows.filter((ranger) => rowType(ranger) === type && bucket.test(ranger));
   }
 
-  function summarizeBucket(rows) {
-    return Object.fromEntries(STAT_ROWS.map((stat) => [
+  function typeRows(rows, type) {
+    return rows.filter((ranger) => rowType(ranger) === type);
+  }
+
+  function summarizeBucket(rows, stats = STAT_ROWS) {
+    return Object.fromEntries(stats.map((stat) => [
       stat.key,
       summarizeValues(rows.map((ranger) => stat.value(ranger)).filter((value) => value > 0))
     ]));
   }
 
-  function renderStatsSection(bucket, rows) {
-    const summary = summarizeBucket(rows);
+  function renderStatsSection(label, rows, stats = STAT_ROWS) {
+    const summary = summarizeBucket(rows, stats);
     return `<section class="stats-section">
-      <h2>${html(bucket.label)}</h2>
+      <h2>${html(label)}</h2>
       <div class="stats-table-wrap">
         <table class="stats-table stats-standard-table">
           <thead>
@@ -184,7 +192,7 @@
             </tr>
           </thead>
           <tbody>
-            ${STAT_ROWS.map((stat) => `<tr>
+            ${stats.map((stat) => `<tr>
               <th>${html(stat.label)}</th>
               ${STANDARD_COLUMNS.map((col) => `<td>${formatNumber(summary[stat.key][col.key])}</td>`).join("")}
             </tr>`).join("")}
@@ -195,7 +203,9 @@
   }
 
   function renderTables(rows) {
-    els.sections.innerHTML = STAR_BUCKETS.map((bucket) => renderStatsSection(bucket, bucketRows(rows, state.selectedType, bucket))).join("");
+    const starSections = STAR_BUCKETS.map((bucket) => renderStatsSection(bucket.label, bucketRows(rows, state.selectedType, bucket)));
+    const generalSection = renderStatsSection("綜合數據", typeRows(rows, state.selectedType), GENERAL_ROWS);
+    els.sections.innerHTML = [...starSections, generalSection].join("");
   }
 
   function setActiveType(type) {
