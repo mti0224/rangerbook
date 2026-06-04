@@ -7,8 +7,8 @@
     { key: "體力", label: "體力", value: (ranger) => numberValue(ranger["體力"]) }
   ];
   const GENERAL_ROWS = [
-    { key: "生產礦物費用", label: "生產礦物費用", value: (ranger) => numberValue(ranger["生產礦物費用"]) },
-    { key: "攻擊範圍", label: "攻擊範圍", value: (ranger) => numberValue(ranger["攻擊範圍"]) }
+    { key: "生產礦物費用", label: "生產礦物費用", value: (ranger) => numberValue(ranger["生產礦物費用"]), descending: true },
+    { key: "攻擊範圍", label: "攻擊範圍", value: (ranger) => numberValue(ranger["攻擊範圍"]), descendingTypes: ["力量"] }
   ];
   const STANDARD_COLUMNS = [
     { key: "p12", label: "底標" },
@@ -150,8 +150,8 @@
     return sortedValues[lower] * (1 - weight) + sortedValues[upper] * weight;
   }
 
-  function summarizeValues(values) {
-    const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+  function summarizeValues(values, descending = false) {
+    const sorted = values.filter(Number.isFinite).sort((a, b) => descending ? b - a : a - b);
     const sum = sorted.reduce((total, value) => total + value, 0);
     return {
       count: sorted.length,
@@ -172,15 +172,22 @@
     return rows.filter((ranger) => rowType(ranger) === type);
   }
 
-  function summarizeBucket(rows, stats = STAT_ROWS) {
+  function shouldUseDescending(stat, type) {
+    return Boolean(stat.descending || stat.descendingTypes?.includes(type));
+  }
+
+  function summarizeBucket(rows, stats = STAT_ROWS, type = "") {
     return Object.fromEntries(stats.map((stat) => [
       stat.key,
-      summarizeValues(rows.map((ranger) => stat.value(ranger)).filter((value) => value > 0))
+      summarizeValues(
+        rows.map((ranger) => stat.value(ranger)).filter((value) => value > 0),
+        shouldUseDescending(stat, type)
+      )
     ]));
   }
 
-  function renderStatsSection(label, rows, stats = STAT_ROWS) {
-    const summary = summarizeBucket(rows, stats);
+  function renderStatsSection(label, rows, stats = STAT_ROWS, type = "") {
+    const summary = summarizeBucket(rows, stats, type);
     return `<section class="stats-section">
       <h2>${html(label)}</h2>
       <div class="stats-table-wrap">
@@ -203,8 +210,8 @@
   }
 
   function renderTables(rows) {
-    const starSections = STAR_BUCKETS.map((bucket) => renderStatsSection(bucket.label, bucketRows(rows, state.selectedType, bucket)));
-    const generalSection = renderStatsSection("綜合數據", typeRows(rows, state.selectedType), GENERAL_ROWS);
+    const starSections = STAR_BUCKETS.map((bucket) => renderStatsSection(bucket.label, bucketRows(rows, state.selectedType, bucket), STAT_ROWS, state.selectedType));
+    const generalSection = renderStatsSection("綜合數據", typeRows(rows, state.selectedType), GENERAL_ROWS, state.selectedType);
     els.sections.innerHTML = [...starSections, generalSection].join("");
   }
 
