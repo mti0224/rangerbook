@@ -139,16 +139,18 @@
     if (!modal || modal.hidden || !content) return;
 
     const id = getCurrentGearId();
-    if (!id || content.dataset.skillPlusFixedFor === id) return;
-
-    const gear = (await loadGears()).get(id);
-    if (!gear) return;
+    if (!id) return;
 
     const section = [...content.querySelectorAll(".detail-section")]
       .find((el) => el.querySelector("h3")?.textContent.trim() === "Skill+");
     if (!section) return;
+    if (content.dataset.skillPlusFixedFor === id && section.dataset.skillPlusFixed === "true") return;
+
+    const gear = (await loadGears()).get(id);
+    if (!gear) return;
 
     section.innerHTML = `<h3>Skill+</h3>${renderSkillPlus(getSkillPlus(gear))}`;
+    section.dataset.skillPlusFixed = "true";
     content.dataset.skillPlusFixedFor = id;
   }
 
