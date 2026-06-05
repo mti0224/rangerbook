@@ -46,6 +46,24 @@
       <button class="stats-type-button" type="button" data-type="智慧">智慧</button>
     </section>
 
+    <details id="statsTrendPanel" class="stats-trend-panel">
+      <summary>五標與平均趨勢圖</summary>
+      <div class="stats-trend-content">
+        <div class="stats-trend-controls">
+          <label>
+            <span>選擇數據</span>
+            <select id="statsTrendMetricSelect"></select>
+          </label>
+          <p id="statsTrendRangeText" class="stats-trend-range">載入中</p>
+        </div>
+        <div class="stats-trend-chart-wrap">
+          <canvas id="statsTrendChart" width="960" height="420" aria-label="五標與平均趨勢圖"></canvas>
+        </div>
+        <div id="statsTrendLegend" class="stats-trend-legend" aria-label="圖例"></div>
+        <p id="statsTrendEmpty" class="stats-trend-empty" hidden>沒有足夠資料可以繪製圖表。</p>
+      </div>
+    </details>
+
     <div id="statsSections" class="stats-sections" aria-label="統計表格"></div>
   </main>
 
