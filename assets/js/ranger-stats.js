@@ -2,6 +2,7 @@
   const DATA_URL = "../../res/Rangers_data.json";
   const CONFIG_URL = "../../res/ranger_stats_config.json";
   const TYPES = ["力量", "敏捷", "智慧"];
+  const WINDOW_MONTHS = 30;
   const STAT_ROWS = [
     { key: "總攻擊力", label: "總攻擊力", value: totalAttackValue },
     { key: "體力", label: "體力", value: (ranger) => numberValue(ranger["體力"]) },
@@ -19,23 +20,40 @@
   const EXCLUDED_ABILITY_NAMES = ["對空迎擊", "飛翔能力"];
 
   const STAR_BUCKETS = [
-    { key: "super8", label: "超進化數據統計", test: isSuper8 },
-    { key: "star9", label: "九星數據統計", test: isStar9 }
+    { key: "super8", label: "超進化", sectionLabel: "超進化數據統計", test: isSuper8 },
+    { key: "star9", label: "九星", sectionLabel: "九星數據統計", test: isStar9 }
   ];
+
+  const LINE_DEFS = [
+    { key: "p12", label: "底標" },
+    { key: "q1", label: "後標" },
+    { key: "median", label: "均標" },
+    { key: "q3", label: "前標" },
+    { key: "p88", label: "頂標" },
+    { key: "avg", label: "平均" }
+  ];
+  const LINE_COLORS = ["#2563eb", "#16a34a", "#9333ea", "#f97316", "#dc2626", "#0f172a"];
 
   const els = {
     included: document.getElementById("statsIncludedCount"),
     excluded: document.getElementById("statsExcludedCount"),
     range: document.getElementById("statsRangeLabel"),
     sections: document.getElementById("statsSections"),
-    typeButtons: [...document.querySelectorAll(".stats-type-button")]
+    typeButtons: [...document.querySelectorAll(".stats-type-button")],
+    trendPanel: document.getElementById("statsTrendPanel"),
+    trendSelect: document.getElementById("statsTrendMetricSelect"),
+    trendRange: document.getElementById("statsTrendRangeText"),
+    trendCanvas: document.getElementById("statsTrendChart"),
+    trendLegend: document.getElementById("statsTrendLegend"),
+    trendEmpty: document.getElementById("statsTrendEmpty")
   };
 
   const state = {
     rows: [],
     config: { start_date: "" },
     selectedType: "力量",
-    now: new Date()
+    now: new Date(),
+    includedRows: []
   };
 
   function rawText(value) {
@@ -86,6 +104,11 @@
     return `${y}-${m}-${d}`;
   }
 
+  function formatMonth(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "-";
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+  }
+
   function parseDateValue(value) {
     if (value instanceof Date) return value.getTime() || 0;
     const raw = text(value);
@@ -96,6 +119,23 @@
 
   function parseConfigStartTime() {
     return parseDateValue(state.config.start_date || state.config.startDate || state.config["起始日期"] || "");
+  }
+
+  function configStartDate() {
+    const startTime = parseConfigStartTime();
+    return startTime ? new Date(startTime) : null;
+  }
+
+  function monthStart(date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+
+  function addMonths(date, months) {
+    return new Date(date.getFullYear(), date.getMonth() + months, 1);
+  }
+
+  function endOfMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
   }
 
   function abilityName(value) {
@@ -205,8 +245,169 @@
 
   function renderTables(rows) {
     els.sections.innerHTML = STAR_BUCKETS
-      .map((bucket) => renderStatsSection(bucket.label, bucketRows(rows, state.selectedType, bucket), STAT_ROWS, state.selectedType))
+      .map((bucket) => renderStatsSection(bucket.sectionLabel, bucketRows(rows, state.selectedType, bucket), STAT_ROWS, state.selectedType))
       .join("");
+  }
+
+  function trendOptions() {
+    return STAR_BUCKETS.flatMap((bucket) => STAT_ROWS.map((stat) => ({ bucket, stat })));
+  }
+
+  function renderTrendOptions() {
+    if (!els.trendSelect) return;
+    const current = els.trendSelect.value;
+    els.trendSelect.innerHTML = trendOptions().map(({ bucket, stat }) => {
+      const value = `${bucket.key}::${stat.key}`;
+      return `<option value="${html(value)}">${html(bucket.label)}｜${html(stat.label)}</option>`;
+    }).join("");
+    if (current && [...els.trendSelect.options].some((option) => option.value === current)) els.trendSelect.value = current;
+  }
+
+  function selectedTrendOption() {
+    const [bucketKey, statKey] = text(els.trendSelect?.value || "").split("::");
+    const bucket = STAR_BUCKETS.find((item) => item.key === bucketKey) || STAR_BUCKETS[0];
+    const stat = STAT_ROWS.find((item) => item.key === statKey) || STAT_ROWS[0];
+    return { bucket, stat };
+  }
+
+  function trendMonths() {
+    const start = monthStart(configStartDate() || state.now);
+    const end = monthStart(state.now);
+    const months = [];
+    for (let cursor = start; cursor <= end; cursor = addMonths(cursor, 1)) months.push(cursor);
+    return months;
+  }
+
+  function trendRowsForMonth(rows, type, bucket, month) {
+    const windowStart = addMonths(month, -WINDOW_MONTHS);
+    const windowEnd = endOfMonth(month);
+    return rows.filter((ranger) => {
+      const t = parseDateValue(ranger["登場時間"]);
+      return t && t >= windowStart.getTime() && t <= windowEnd.getTime() && rowType(ranger) === type && bucket.test(ranger);
+    });
+  }
+
+  function trendData() {
+    const { bucket, stat } = selectedTrendOption();
+    const months = trendMonths();
+    return months.map((month) => {
+      const rows = trendRowsForMonth(state.rows.filter((ranger) => !isExcluded(ranger)), state.selectedType, bucket, month);
+      const summary = summarizeValues(rows.map((ranger) => stat.value(ranger)).filter((value) => value > 0), shouldUseDescending(stat, state.selectedType));
+      return { month, label: formatMonth(month), count: summary.count, summary };
+    });
+  }
+
+  function setupCanvas(canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(640, Math.floor(rect.width || canvas.clientWidth || 960));
+    const height = Math.max(320, Math.floor(width * 0.44));
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(width * ratio);
+    canvas.height = Math.floor(height * ratio);
+    canvas.style.height = `${height}px`;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    return { ctx, width, height };
+  }
+
+  function drawTrendChart() {
+    if (!els.trendCanvas || !els.trendPanel?.open) return;
+    const points = trendData();
+    const valid = points.filter((point) => point.count > 0);
+    els.trendEmpty.hidden = valid.length > 0;
+    els.trendCanvas.hidden = valid.length === 0;
+    els.trendLegend.hidden = valid.length === 0;
+
+    const { bucket, stat } = selectedTrendOption();
+    const startText = points[0]?.label || "-";
+    const endText = points[points.length - 1]?.label || "-";
+    els.trendRange.textContent = `${bucket.label}｜${state.selectedType}｜${stat.label}｜${startText} ～ ${endText}（每月資料集：該月往前 ${WINDOW_MONTHS} 個月）`;
+    if (!valid.length) return;
+
+    const { ctx, width, height } = setupCanvas(els.trendCanvas);
+    const pad = { top: 26, right: 26, bottom: 54, left: 82 };
+    const plotW = width - pad.left - pad.right;
+    const plotH = height - pad.top - pad.bottom;
+    const values = valid.flatMap((point) => LINE_DEFS.map((line) => point.summary[line.key]).filter(Number.isFinite));
+    let min = Math.min(...values);
+    let max = Math.max(...values);
+    if (min === max) {
+      min = Math.max(0, min - 1);
+      max += 1;
+    }
+    const span = max - min;
+    min = Math.max(0, min - span * 0.08);
+    max = max + span * 0.08;
+
+    const x = (index) => pad.left + (points.length === 1 ? plotW / 2 : (plotW * index) / (points.length - 1));
+    const y = (value) => pad.top + plotH - ((value - min) / (max - min)) * plotH;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--panel") || "#fff";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.strokeStyle = "#e5e7eb";
+    ctx.lineWidth = 1;
+    ctx.fillStyle = "#64748b";
+    ctx.font = "12px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    for (let i = 0; i <= 4; i++) {
+      const yy = pad.top + (plotH * i) / 4;
+      const value = max - ((max - min) * i) / 4;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, yy);
+      ctx.lineTo(width - pad.right, yy);
+      ctx.stroke();
+      ctx.fillText(formatNumber(value), 10, yy + 4);
+    }
+
+    ctx.strokeStyle = "#94a3b8";
+    ctx.beginPath();
+    ctx.moveTo(pad.left, pad.top);
+    ctx.lineTo(pad.left, pad.top + plotH);
+    ctx.lineTo(width - pad.right, pad.top + plotH);
+    ctx.stroke();
+
+    const labelStep = Math.max(1, Math.ceil(points.length / 8));
+    ctx.fillStyle = "#64748b";
+    points.forEach((point, index) => {
+      if (index % labelStep !== 0 && index !== points.length - 1) return;
+      ctx.save();
+      ctx.translate(x(index), pad.top + plotH + 18);
+      ctx.rotate(-Math.PI / 6);
+      ctx.textAlign = "right";
+      ctx.fillText(point.label, 0, 0);
+      ctx.restore();
+    });
+
+    LINE_DEFS.forEach((line, lineIndex) => {
+      ctx.strokeStyle = LINE_COLORS[lineIndex];
+      ctx.fillStyle = LINE_COLORS[lineIndex];
+      ctx.lineWidth = line.key === "avg" ? 3 : 2;
+      ctx.beginPath();
+      let started = false;
+      points.forEach((point, index) => {
+        const value = point.summary[line.key];
+        if (!Number.isFinite(value)) return;
+        const xx = x(index);
+        const yy = y(value);
+        if (!started) {
+          ctx.moveTo(xx, yy);
+          started = true;
+        } else {
+          ctx.lineTo(xx, yy);
+        }
+      });
+      ctx.stroke();
+      points.forEach((point, index) => {
+        const value = point.summary[line.key];
+        if (!Number.isFinite(value)) return;
+        ctx.beginPath();
+        ctx.arc(x(index), y(value), 2.7, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    });
+
+    els.trendLegend.innerHTML = LINE_DEFS.map((line, index) => `<span><i style="background:${LINE_COLORS[index]}"></i>${html(line.label)}</span>`).join("");
   }
 
   function setActiveType(type) {
@@ -222,11 +423,14 @@
     const ranged = state.rows.filter((ranger) => inRange(ranger, startTime, endTime));
     const included = ranged.filter((ranger) => !isExcluded(ranger));
     const excluded = ranged.length - included.length;
+    state.includedRows = included;
 
     els.included.textContent = formatCount(included.length);
     els.excluded.textContent = formatCount(excluded);
     els.range.textContent = `${state.config.start_date || state.config.startDate || state.config["起始日期"] || "最早"} ～ ${formatDate(state.now)}`;
     renderTables(included);
+    renderTrendOptions();
+    drawTrendChart();
   }
 
   function normalizeRows(raw) {
@@ -251,6 +455,7 @@
         const config = await configRes.json();
         state.config = config && typeof config === "object" ? config : state.config;
       }
+      renderTrendOptions();
       render();
     } catch (error) {
       els.sections.innerHTML = `<div class="stats-empty">資料載入失敗，請稍後再試。</div>`;
@@ -264,6 +469,9 @@
       render();
     });
   });
+  els.trendPanel?.addEventListener("toggle", () => drawTrendChart());
+  els.trendSelect?.addEventListener("change", () => drawTrendChart());
+  window.addEventListener("resize", () => drawTrendChart());
 
   init();
 })();
