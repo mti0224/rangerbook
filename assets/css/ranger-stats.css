@@ -63,6 +63,107 @@
   color: #3730a3;
 }
 
+.stats-trend-panel {
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.stats-trend-panel summary {
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 1.05rem;
+  font-weight: 950;
+  user-select: none;
+}
+
+.stats-trend-content {
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.stats-trend-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px) minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: end;
+  margin-bottom: 0.85rem;
+}
+
+.stats-trend-controls label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.stats-trend-controls select {
+  min-height: 2.55rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--panel);
+  color: var(--text);
+  font-weight: 800;
+}
+
+.stats-trend-range {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-weight: 750;
+}
+
+.stats-trend-chart-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+}
+
+.stats-trend-chart-wrap canvas {
+  display: block;
+  width: 100%;
+  min-width: 760px;
+}
+
+.stats-trend-legend {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.9rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.stats-trend-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.stats-trend-legend i {
+  width: 1.4rem;
+  height: 0.25rem;
+  display: inline-block;
+  border-radius: 999px;
+}
+
+.stats-trend-empty {
+  margin: 0.85rem 0 0;
+  padding: 1rem;
+  color: var(--muted);
+  border: 1px dashed #cbd5e1;
+  border-radius: 1rem;
+  text-align: center;
+}
+
 .stats-sections {
   display: grid;
   gap: 1rem;
@@ -208,13 +309,17 @@
 html[data-theme="dark"] .stats-summary > div,
 html[data-theme="dark"] .stats-section,
 html[data-theme="dark"] .stats-type-button,
-html[data-theme="dark"] .stats-tutorial-card {
+html[data-theme="dark"] .stats-tutorial-card,
+html[data-theme="dark"] .stats-trend-panel,
+html[data-theme="dark"] .stats-trend-controls select,
+html[data-theme="dark"] .stats-trend-chart-wrap {
   background: var(--panel) !important;
   color: var(--text) !important;
   border-color: var(--line) !important;
 }
 
-html[data-theme="dark"] .stats-section h2 {
+html[data-theme="dark"] .stats-section h2,
+html[data-theme="dark"] .stats-trend-panel summary {
   background: #1e3a5f !important;
   color: #bfdbfe !important;
   border-color: var(--line) !important;
@@ -251,7 +356,8 @@ html[data-theme="dark"] .stats-table tbody th {
 
 @media (max-width: 760px) {
   .stats-summary,
-  .stats-type-tabs {
+  .stats-type-tabs,
+  .stats-trend-controls {
     grid-template-columns: 1fr;
   }
 }
