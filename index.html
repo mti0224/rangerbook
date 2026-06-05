@@ -3,136 +3,99 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LINE Rangers 資料站｜LINE Rangers Database</title>
-  <meta name="description" content="LINE Rangers 資料站提供角色、裝備、能力、關卡敵人、PvP 等資料查詢，方便玩家快速查看各項詳細數據。">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="LINE Rangers 資料站">
-  <meta property="og:title" content="LINE Rangers 資料站">
-  <meta property="og:description" content="查詢 LINE Rangers 的角色、裝備、能力、關卡敵人與 PvP 資料。">
-  <meta property="og:url" content="https://rangerbook.warmycat.com/">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="LINE Rangers 資料站">
-  <meta name="twitter:description" content="查詢 LINE Rangers 的角色、裝備、能力、關卡敵人與 PvP 資料。">
-  <link rel="icon" type="image/png" href="./assets/main_icon/icon.png">
-  <link rel="stylesheet" href="./assets/css/style.css">
-  <link rel="stylesheet" href="./assets/css/home.css">
+  <title>LR PvP Rank Usage</title>
+  <meta name="description" content="LINE Rangers 傳奇段位 PvP 角色使用率統計工具">
+  <link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
-  <div id="site-header"></div>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">LINE Rangers Tool</p>
+      <h1>LR PvP Rank Usage</h1>
+      <p class="subtitle">統計 PvP 排行榜玩家隊伍中的角色使用率，並產生 Discord 公告文字。</p>
+    </div>
+  </header>
 
-  <main class="page home-page">
-    <section class="hero">
-      <p class="eyebrow">LINE Rangers Database</p>
-      <h1>LINE Rangers 資料站</h1>
-      <p class="hero-text">
-        提供 LINE Rangers 的角色、裝備、能力、困難關卡、無限之塔、活動關卡、降臨關卡與迷宮資料查詢，方便快速查看各項詳細數據。
-      </p>
+  <main class="page">
+    <section class="panel controls">
+      <h2>統計設定</h2>
+
+      <div class="form-grid">
+        <label>
+          段位
+          <select id="leagueSelect">
+            <option value="LEGEND" selected>傳奇 LEGEND</option>
+            <option value="MASTER_1">大師1 MASTER_1</option>
+            <option value="MASTER_2">大師2 MASTER_2</option>
+            <option value="MASTER_3">大師3 MASTER_3</option>
+            <option value="DIAMOND_1">鑽石1 DIAMOND_1</option>
+            <option value="DIAMOND_2">鑽石2 DIAMOND_2</option>
+            <option value="DIAMOND_3">鑽石3 DIAMOND_3</option>
+            <option value="GOLD_1">黃金1 GOLD_1</option>
+          </select>
+        </label>
+
+        <label>
+          Discord 日期標題
+          <input id="dateInput" type="text" placeholder="例如：6/5">
+        </label>
+
+        <label>
+          統計玩家數
+          <select id="limitSelect">
+            <option value="10">前 10 名</option>
+            <option value="50">前 50 名</option>
+            <option value="100" selected>前 100 名</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="button-row">
+        <button id="runBtn" type="button">開始統計</button>
+        <button id="copyBtn" type="button" disabled>複製 Discord 文字</button>
+        <button id="downloadBtn" type="button" disabled>下載 JSON</button>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <p id="statusText">尚未開始</p>
+      </div>
     </section>
 
-    <section class="home-update-card" aria-labelledby="homeUpdateTitle">
-      <div class="home-update-heading">
-        <h2 id="homeUpdateTitle">更新日誌</h2>
+    <section class="panel">
+      <h2>統計結果</h2>
+      <div class="result-grid">
+        <article>
+          <h3>前 10 名玩家</h3>
+          <pre id="top10Output">尚無資料</pre>
+        </article>
+        <article>
+          <h3>前 50 名玩家</h3>
+          <pre id="top50Output">尚無資料</pre>
+        </article>
+        <article>
+          <h3>前 100 名玩家</h3>
+          <pre id="top100Output">尚無資料</pre>
+        </article>
+        <article>
+          <h3>目前統計範圍</h3>
+          <pre id="allOutput">尚無資料</pre>
+        </article>
       </div>
-      <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite">
-        <p class="home-update-loading">更新日誌載入中...</p>
-      </div>
-      <a class="home-update-more" href="./update/">查看更多...</a>
     </section>
 
-    <section class="home-tool-grid" aria-label="資料查詢入口">
-      <a class="home-tool-card" href="./ranger/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/rangerIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>Rangers角色</h2>
-          <p>查詢每隻角色的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./pvp/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/pvpicon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>PvP</h2>
-          <p>查看 PvP 排行榜與角色使用率</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./gear/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/gearIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>裝備</h2>
-          <p>查詢裝備的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./ability/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/abilityIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>能力</h2>
-          <p>查詢能力的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./hs/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/hsIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>困難關卡</h2>
-          <p>查詢困難關卡敵人與關卡資訊</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./endless/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/infIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>無限之塔</h2>
-          <p>查詢無限之塔敵人與關卡資訊</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./eventStageEnemy/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/eventStageIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>活動關卡</h2>
-          <p>查詢活動關卡中敵人的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./adventEnemy/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/adventIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>降臨關卡</h2>
-          <p>查詢降臨關卡中敵人的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./labyrinth/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/labyrinthIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>迷宮</h2>
-          <p>查詢迷宮敵人、關卡與遺物資訊</p>
-        </div>
-      </a>
+    <section class="panel">
+      <h2>Discord 公告文字</h2>
+      <textarea id="discordOutput" readonly placeholder="統計完成後會出現在這裡"></textarea>
     </section>
   </main>
 
-  <script src="./assets/js/site.js"></script>
-  <script src="./assets/js/home-update.js"></script>
+  <footer class="site-footer">
+    <p>Data source: rangers.lerico.net API</p>
+  </footer>
+
+  <script src="./assets/app.js"></script>
 </body>
 </html>
