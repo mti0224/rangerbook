@@ -53,13 +53,17 @@
       const unitId = selectedId || inferUnitId();
       if (!unitId) return;
 
-      let linkWrap = modalContent.querySelector(".ranger-detail-link-wrap");
-      if (!linkWrap) {
-        linkWrap = document.createElement("p");
+      let link = modalContent.querySelector(".ranger-detail-link-wrap a");
+      if (!link) {
+        const linkWrap = document.createElement("p");
         linkWrap.className = "ranger-detail-link-wrap";
+        link = document.createElement("a");
+        link.textContent = "查看詳細資料";
+        linkWrap.appendChild(link);
         modalContent.appendChild(linkWrap);
       }
-      linkWrap.innerHTML = `<a href="${detailUrl(unitId)}">查看詳細資料</a>`;
+      const href = detailUrl(unitId);
+      if (link.getAttribute("href") !== href) link.setAttribute("href", href);
 
       if (!modalContent.querySelector("[data-ranger-summary-blocker]")) {
         const blocker = document.createElement("span");
@@ -84,7 +88,7 @@
     const intro = document.querySelector(".page-title p:last-child");
     if (title) title.textContent = "角色詳細資料";
     if (intro) intro.textContent = `角色 ID：${detailId}`;
-    document.title = `角色詳細資料｜LINE Rangers Database`;
+    document.title = "角色詳細資料｜LINE Rangers Database";
 
     const main = document.querySelector("main.ranger-page");
     if (!main || !modal || !modalContent || !list || !search) return;
@@ -102,10 +106,6 @@
     let phase = 0;
     let openRequested = false;
 
-    function escaped(value) {
-      return window.CSS?.escape ? window.CSS.escape(value) : value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
-    }
-
     function processList() {
       const failure = list.querySelector(".empty-state")?.textContent || "";
       if (failure.includes("資料載入失敗")) {
@@ -121,7 +121,8 @@
       }
 
       if (phase === 1 && !openRequested) {
-        const card = list.querySelector(`.ranger-card[data-ranger-id="${escaped(detailId)}"]`);
+        const card = [...list.querySelectorAll(".ranger-card[data-ranger-id]")]
+          .find((item) => item.dataset.rangerId === detailId);
         if (card) {
           openRequested = true;
           phase = 2;
