@@ -3,21 +3,31 @@
   min-width: 0;
 }
 
-.ranger-detail-link-wrap {
-  margin: 0.8rem 0 0;
-  text-align: right;
-}
-
-.ranger-detail-link-wrap a,
-.ranger-detail-navigation a {
+.ranger-detail-link {
+  float: right;
+  margin-left: 0.75rem;
   color: var(--accent, #4f46e5);
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 0.18em;
+  white-space: nowrap;
 }
 
 .ranger-detail-navigation {
-  margin: 1rem 0;
+  margin: 1.2rem 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ranger-detail-navigation .endless-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--primary-dark);
+  font-weight: 850;
 }
 
 .ranger-detail-loading {
@@ -32,6 +42,7 @@
 body.ranger-detail-page .ranger-controls,
 body.ranger-detail-page .summary-bar,
 body.ranger-detail-page #rangerPaginationBar,
+body.ranger-detail-page #bottomPaginationBar,
 body.ranger-detail-page .ranger-list-layout,
 body.ranger-detail-page #rangerModal {
   display: none !important;
@@ -51,7 +62,11 @@ body.ranger-detail-page.modal-open {
 }
 
 @media (max-width: 620px) {
-  .ranger-detail-link-wrap {
-    margin-top: 0.65rem;
+  .ranger-detail-navigation {
+    justify-content: flex-start;
+  }
+
+  .ranger-detail-link {
+    margin-left: 0.5rem;
   }
 }

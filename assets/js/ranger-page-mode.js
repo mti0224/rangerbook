@@ -54,18 +54,20 @@
       if (!unitId) return;
 
       const summaryArea = modalContent.querySelector(".ranger-detail-head > div:not(.ranger-detail-image-wrap)");
-      let linkWrap = modalContent.querySelector(".ranger-detail-link-wrap");
-      let link = linkWrap?.querySelector("a");
-      if (!linkWrap) {
-        linkWrap = document.createElement("p");
-        linkWrap.className = "ranger-detail-link-wrap";
+      const lastLine = summaryArea?.querySelector(".ranger-description")
+        || summaryArea?.querySelector(".ranger-date")
+        || summaryArea;
+      modalContent.querySelector(".ranger-detail-link-wrap")?.remove();
+
+      let link = modalContent.querySelector(".ranger-detail-link");
+      if (!link) {
         link = document.createElement("a");
+        link.className = "ranger-detail-link";
         link.textContent = "查看詳細資料";
-        linkWrap.appendChild(link);
       }
-      if (summaryArea && linkWrap.parentElement !== summaryArea) summaryArea.appendChild(linkWrap);
+      if (lastLine && link.parentElement !== lastLine) lastLine.appendChild(link);
       const href = detailUrl(unitId);
-      if (link?.getAttribute("href") !== href) link?.setAttribute("href", href);
+      if (link.getAttribute("href") !== href) link.setAttribute("href", href);
 
       if (!modalContent.querySelector("[data-ranger-summary-blocker]")) {
         const blocker = document.createElement("span");
@@ -97,7 +99,7 @@
 
     const navigation = document.createElement("div");
     navigation.className = "ranger-detail-navigation";
-    navigation.innerHTML = `<a href="${root}ranger/ranger/">← 返回角色列表</a>`;
+    navigation.innerHTML = `<a class="endless-back-link" href="${root}ranger/ranger/">返回角色列表</a>`;
 
     const status = document.createElement("div");
     status.className = "ranger-detail-loading";
@@ -107,6 +109,13 @@
     detailContent.className = "ranger-detail-content";
     detailContent.appendChild(modalContent);
     main.append(navigation, status, detailContent);
+
+    function removePagination() {
+      document.querySelectorAll("#rangerPaginationBar, #bottomPaginationBar").forEach((bar) => bar.remove());
+    }
+
+    new MutationObserver(removePagination).observe(document.body, { childList: true, subtree: true });
+    removePagination();
 
     let phase = 0;
     let openRequested = false;
@@ -146,6 +155,7 @@
       status.hidden = true;
       detailContent.hidden = false;
       document.body.classList.remove("modal-open");
+      removePagination();
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
