@@ -1,4 +1,32 @@
 (() => {
+  const path = window.location.pathname;
+  const rootPath = path.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const detailMatch = path.match(/^(?:\/rangerbook)?\/ranger\/ranger\/([^/]+)\/?$/);
+
+  if (detailMatch) {
+    const rangerId = decodeURIComponent(detailMatch[1]);
+    window.location.replace(`${rootPath}ranger/ranger/?detail=${encodeURIComponent(rangerId)}`);
+    return;
+  }
+
+  const isRangerPage = /^(?:\/rangerbook)?\/ranger\/ranger\/?$/.test(path);
+  if (isRangerPage) {
+    if (!document.querySelector('link[data-ranger-page-mode]')) {
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = `${rootPath}assets/css/ranger-page-mode.css`;
+      stylesheet.dataset.rangerPageMode = "";
+      document.head.appendChild(stylesheet);
+    }
+
+    if (!document.querySelector('script[data-ranger-page-mode]')) {
+      const script = document.createElement("script");
+      script.src = `${rootPath}assets/js/ranger-page-mode.js`;
+      script.dataset.rangerPageMode = "";
+      document.body.appendChild(script);
+    }
+  }
+
   const classMap = new Map([
     ["力量型", "tag-type-power"],
     ["敏捷型", "tag-type-agility"],
