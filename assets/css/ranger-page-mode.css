@@ -1,5 +1,10 @@
+.ranger-detail-head > div:not(.ranger-detail-image-wrap) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .ranger-detail-link-wrap {
-  margin: 1.25rem 0 0;
+  margin: 0.8rem 0 0;
   text-align: right;
 }
 
@@ -12,7 +17,7 @@
 }
 
 .ranger-detail-navigation {
-  margin: 0 0 1rem;
+  margin: 1rem 0;
 }
 
 .ranger-detail-loading {
@@ -27,35 +32,18 @@
 body.ranger-detail-page .ranger-controls,
 body.ranger-detail-page .summary-bar,
 body.ranger-detail-page #rangerPaginationBar,
-body.ranger-detail-page .ranger-list-layout {
+body.ranger-detail-page .ranger-list-layout,
+body.ranger-detail-page #rangerModal {
   display: none !important;
 }
 
-body.ranger-detail-page #rangerModal {
-  position: static;
-  inset: auto;
-  display: block;
+body.ranger-detail-page .ranger-detail-content {
   width: 100%;
-  padding: 0;
-  overflow: visible;
-  background: transparent;
+  margin-top: 0;
 }
 
-body.ranger-detail-page #rangerModal[hidden] {
-  display: none;
-}
-
-body.ranger-detail-page .ranger-modal-panel {
+body.ranger-detail-page #rangerModalContent {
   width: 100%;
-  max-width: none;
-  max-height: none;
-  overflow: visible;
-  box-sizing: border-box;
-  margin: 0;
-}
-
-body.ranger-detail-page .modal-close {
-  display: none;
 }
 
 body.ranger-detail-page.modal-open {
@@ -64,6 +52,6 @@ body.ranger-detail-page.modal-open {
 
 @media (max-width: 620px) {
   .ranger-detail-link-wrap {
-    text-align: left;
+    margin-top: 0.65rem;
   }
 }
