@@ -53,17 +53,19 @@
       const unitId = selectedId || inferUnitId();
       if (!unitId) return;
 
-      let link = modalContent.querySelector(".ranger-detail-link-wrap a");
-      if (!link) {
-        const linkWrap = document.createElement("p");
+      const summaryArea = modalContent.querySelector(".ranger-detail-head > div:not(.ranger-detail-image-wrap)");
+      let linkWrap = modalContent.querySelector(".ranger-detail-link-wrap");
+      let link = linkWrap?.querySelector("a");
+      if (!linkWrap) {
+        linkWrap = document.createElement("p");
         linkWrap.className = "ranger-detail-link-wrap";
         link = document.createElement("a");
         link.textContent = "查看詳細資料";
         linkWrap.appendChild(link);
-        modalContent.appendChild(linkWrap);
       }
+      if (summaryArea && linkWrap.parentElement !== summaryArea) summaryArea.appendChild(linkWrap);
       const href = detailUrl(unitId);
-      if (link.getAttribute("href") !== href) link.setAttribute("href", href);
+      if (link?.getAttribute("href") !== href) link?.setAttribute("href", href);
 
       if (!modalContent.querySelector("[data-ranger-summary-blocker]")) {
         const blocker = document.createElement("span");
@@ -87,7 +89,7 @@
     const title = document.querySelector(".page-title h1");
     const intro = document.querySelector(".page-title p:last-child");
     if (title) title.textContent = "角色詳細資料";
-    if (intro) intro.textContent = `角色 ID：${detailId}`;
+    if (intro) intro.textContent = "查詢每隻角色的詳細數據。";
     document.title = "角色詳細資料｜LINE Rangers Database";
 
     const main = document.querySelector("main.ranger-page");
@@ -101,7 +103,10 @@
     status.className = "ranger-detail-loading";
     status.textContent = "角色資料載入中…";
 
-    main.append(navigation, status, modal);
+    const detailContent = document.createElement("section");
+    detailContent.className = "ranger-detail-content";
+    detailContent.appendChild(modalContent);
+    main.append(navigation, status, detailContent);
 
     let phase = 0;
     let openRequested = false;
@@ -137,16 +142,15 @@
     }
 
     function revealDetail() {
-      if (modal.hidden || !modalContent.children.length) return;
+      if (!modalContent.children.length) return;
       status.hidden = true;
+      detailContent.hidden = false;
       document.body.classList.remove("modal-open");
-      modal.scrollTop = 0;
-      modal.querySelector(".modal-panel")?.scrollTo?.(0, 0);
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     new MutationObserver(processList).observe(list, { childList: true });
     new MutationObserver(revealDetail).observe(modalContent, { childList: true });
-    new MutationObserver(revealDetail).observe(modal, { attributes: true, attributeFilter: ["hidden"] });
     processList();
     revealDetail();
   }
