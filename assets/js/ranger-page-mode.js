@@ -1,0 +1,152 @@
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const detailId = (params.get("detail") || "").trim();
+  const isDetailPage = Boolean(detailId);
+  const root = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const modal = document.getElementById("rangerModal");
+  const modalContent = document.getElementById("rangerModalContent");
+  const list = document.getElementById("rangerList");
+  const search = document.getElementById("rangerSearchInput");
+
+  function inferUnitId() {
+    const src = modalContent?.querySelector(".ranger-detail-image")?.getAttribute("src") || "";
+    const match = src.match(/res(?:_from_emulator)?\/([^/]+)\//) || src.match(/\/([^/]+)\/[^/]+-thum/i);
+    return match ? decodeURIComponent(match[1]) : "";
+  }
+
+  function detailUrl(id) {
+    return `${root}ranger/ranger/${encodeURIComponent(id)}`;
+  }
+
+  if (isDetailPage) {
+    setupDetailPage();
+  } else {
+    setupSummaryModal();
+  }
+
+  function setupSummaryModal() {
+    if (!modalContent) return;
+    let selectedId = "";
+    const allowedStats = new Set(["魔法攻擊力", "物理攻擊力", "體力", "生產礦物費用", "攻擊範圍"]);
+
+    document.addEventListener("click", (event) => {
+      const card = event.target.closest?.(".ranger-card[data-ranger-id]");
+      if (card) selectedId = card.dataset.rangerId || "";
+    }, true);
+
+    function pruneModal() {
+      if (!modalContent.children.length) return;
+
+      modalContent.querySelectorAll(".ranger-stat").forEach((item) => {
+        const label = item.querySelector("span")?.textContent?.trim() || "";
+        if (!allowedStats.has(label)) item.remove();
+      });
+
+      modalContent.querySelectorAll(".ranger-skill-card .skill-meta-table-wrap").forEach((item) => item.remove());
+      modalContent.querySelectorAll(".ranger-skill-card .table-scroll").forEach((item) => {
+        if (item.querySelector(".skill-effect-table")) item.remove();
+      });
+      modalContent.querySelectorAll(".ability-effect-list").forEach((item) => item.remove());
+      modalContent.querySelectorAll(".talent-main-table-wrap, .talent-main-effect-wrap").forEach((item) => item.remove());
+      modalContent.querySelectorAll(".ranger-animation-section:not([data-ranger-summary-blocker])").forEach((item) => item.remove());
+
+      const unitId = selectedId || inferUnitId();
+      if (!unitId) return;
+
+      let linkWrap = modalContent.querySelector(".ranger-detail-link-wrap");
+      if (!linkWrap) {
+        linkWrap = document.createElement("p");
+        linkWrap.className = "ranger-detail-link-wrap";
+        modalContent.appendChild(linkWrap);
+      }
+      linkWrap.innerHTML = `<a href="${detailUrl(unitId)}">查看詳細資料</a>`;
+
+      if (!modalContent.querySelector("[data-ranger-summary-blocker]")) {
+        const blocker = document.createElement("span");
+        blocker.hidden = true;
+        blocker.className = "ranger-animation-section";
+        blocker.dataset.animationUnitId = unitId;
+        blocker.dataset.rangerSummaryBlocker = "";
+        modalContent.appendChild(blocker);
+      }
+    }
+
+    new MutationObserver(pruneModal).observe(modalContent, { childList: true });
+    pruneModal();
+  }
+
+  function setupDetailPage() {
+    document.body.classList.add("ranger-detail-page");
+    const prettyUrl = detailUrl(detailId);
+    window.history.replaceState(null, "", prettyUrl);
+
+    const title = document.querySelector(".page-title h1");
+    const intro = document.querySelector(".page-title p:last-child");
+    if (title) title.textContent = "角色詳細資料";
+    if (intro) intro.textContent = `角色 ID：${detailId}`;
+    document.title = `角色詳細資料｜LINE Rangers Database`;
+
+    const main = document.querySelector("main.ranger-page");
+    if (!main || !modal || !modalContent || !list || !search) return;
+
+    const navigation = document.createElement("div");
+    navigation.className = "ranger-detail-navigation";
+    navigation.innerHTML = `<a href="${root}ranger/ranger/">← 返回角色列表</a>`;
+
+    const status = document.createElement("div");
+    status.className = "ranger-detail-loading";
+    status.textContent = "角色資料載入中…";
+
+    main.append(navigation, status, modal);
+
+    let phase = 0;
+    let openRequested = false;
+
+    function escaped(value) {
+      return window.CSS?.escape ? window.CSS.escape(value) : value.replace(/[^a-zA-Z0-9_-]/g, "\\$&");
+    }
+
+    function processList() {
+      const failure = list.querySelector(".empty-state")?.textContent || "";
+      if (failure.includes("資料載入失敗")) {
+        status.textContent = "角色資料載入失敗，請稍後再試。";
+        return;
+      }
+
+      if (phase === 0 && list.querySelector(".ranger-card")) {
+        phase = 1;
+        search.value = detailId;
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        return;
+      }
+
+      if (phase === 1 && !openRequested) {
+        const card = list.querySelector(`.ranger-card[data-ranger-id="${escaped(detailId)}"]`);
+        if (card) {
+          openRequested = true;
+          phase = 2;
+          card.click();
+          return;
+        }
+        if (list.querySelector(".empty-state")) {
+          phase = 3;
+          status.textContent = `找不到角色 ID：${detailId}`;
+        }
+      }
+    }
+
+    function revealDetail() {
+      if (modal.hidden || !modalContent.children.length) return;
+      status.hidden = true;
+      document.body.classList.remove("modal-open");
+      modal.scrollTop = 0;
+      modal.querySelector(".modal-panel")?.scrollTo?.(0, 0);
+    }
+
+    new MutationObserver(processList).observe(list, { childList: true });
+    new MutationObserver(revealDetail).observe(modalContent, { childList: true });
+    new MutationObserver(revealDetail).observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+    processList();
+    revealDetail();
+  }
+})();
