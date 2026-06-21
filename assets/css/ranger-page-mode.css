@@ -13,21 +13,19 @@
   white-space: nowrap;
 }
 
-.ranger-detail-navigation {
-  margin: 1.2rem 0;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.ranger-detail-navigation .endless-back-link {
+.ranger-detail-back-link {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
+  flex: 0 0 auto;
   gap: 0.35rem;
+  margin-left: auto;
   padding: 0.55rem 0.85rem;
   border-radius: 999px;
   background: var(--soft);
   color: var(--primary-dark);
   font-weight: 850;
+  white-space: nowrap;
 }
 
 .ranger-detail-loading {
@@ -62,11 +60,12 @@ body.ranger-detail-page.modal-open {
 }
 
 @media (max-width: 620px) {
-  .ranger-detail-navigation {
-    justify-content: flex-start;
-  }
-
   .ranger-detail-link {
     margin-left: 0.5rem;
+  }
+
+  .ranger-detail-back-link {
+    padding: 0.48rem 0.7rem;
+    font-size: 0.86rem;
   }
 }

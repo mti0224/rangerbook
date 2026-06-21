@@ -97,9 +97,10 @@
     const main = document.querySelector("main.ranger-page");
     if (!main || !modal || !modalContent || !list || !search) return;
 
-    const navigation = document.createElement("div");
-    navigation.className = "ranger-detail-navigation";
-    navigation.innerHTML = `<a class="endless-back-link" href="${root}ranger/ranger/">返回角色列表</a>`;
+    const backLink = document.createElement("a");
+    backLink.className = "endless-back-link ranger-detail-back-link";
+    backLink.href = `${root}ranger/ranger/`;
+    backLink.textContent = "返回角色列表";
 
     const status = document.createElement("div");
     status.className = "ranger-detail-loading";
@@ -108,7 +109,7 @@
     const detailContent = document.createElement("section");
     detailContent.className = "ranger-detail-content";
     detailContent.appendChild(modalContent);
-    main.append(navigation, status, detailContent);
+    main.append(status, detailContent);
 
     function removePagination() {
       document.querySelectorAll("#rangerPaginationBar, #bottomPaginationBar").forEach((bar) => bar.remove());
@@ -152,6 +153,8 @@
 
     function revealDetail() {
       if (!modalContent.children.length) return;
+      const detailHead = modalContent.querySelector(".ranger-detail-head");
+      if (detailHead && backLink.parentElement !== detailHead) detailHead.appendChild(backLink);
       status.hidden = true;
       detailContent.hidden = false;
       document.body.classList.remove("modal-open");
