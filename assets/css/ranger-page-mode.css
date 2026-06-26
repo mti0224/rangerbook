@@ -56,6 +56,24 @@ body.ranger-detail-page #rangerModalContent {
   width: 100%;
 }
 
+body.ranger-detail-page .talent-main-table col.talent-main-prob-col,
+body.ranger-detail-page .talent-main-effect-table col.talent-main-prob-col,
+body.ranger-detail-page .talent-main-table th:first-child,
+body.ranger-detail-page .talent-main-table td:first-child,
+body.ranger-detail-page .talent-main-effect-table th:first-child,
+body.ranger-detail-page .talent-main-effect-table td:first-child {
+  width: 20% !important;
+}
+
+body.ranger-detail-page .talent-main-table col.talent-main-condition-col,
+body.ranger-detail-page .talent-main-effect-table col.talent-main-condition-col,
+body.ranger-detail-page .talent-main-table th:nth-child(2),
+body.ranger-detail-page .talent-main-table td:nth-child(2),
+body.ranger-detail-page .talent-main-effect-table th:nth-child(2),
+body.ranger-detail-page .talent-main-effect-table td:nth-child(2) {
+  width: 80% !important;
+}
+
 body.ranger-detail-page.modal-open {
   overflow: auto;
 }
