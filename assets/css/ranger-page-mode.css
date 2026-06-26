@@ -29,6 +29,7 @@
 }
 
 .ranger-detail-loading {
+  margin-top: 1.2rem;
   padding: 2rem;
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
