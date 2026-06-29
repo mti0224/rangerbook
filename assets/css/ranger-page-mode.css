@@ -38,6 +38,12 @@
   font-weight: 800;
 }
 
+html[data-theme="dark"] .ranger-detail-loading {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--line);
+}
+
 body.ranger-detail-page .ranger-controls,
 body.ranger-detail-page .summary-bar,
 body.ranger-detail-page #rangerPaginationBar,
