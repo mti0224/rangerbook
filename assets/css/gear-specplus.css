@@ -1,0 +1,117 @@
+.gear-specplus-detail {
+  display: grid;
+  gap: 1rem;
+}
+
+.gear-specplus-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--panel);
+}
+
+.gear-specplus-name span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.gear-specplus-name strong {
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.gear-specplus-block {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.gear-specplus-block h4 {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.98rem;
+}
+
+.gear-specplus-description {
+  margin: 0;
+  color: var(--muted);
+  white-space: pre-line;
+}
+
+.gear-specplus-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.55rem;
+  margin: 0;
+}
+
+.gear-specplus-meta div {
+  min-width: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--panel);
+}
+
+.gear-specplus-meta dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.gear-specplus-meta dd {
+  margin: 0.15rem 0 0;
+  color: var(--text);
+  font-weight: 700;
+  white-space: pre-line;
+}
+
+.gear-specplus-trigger-table {
+  min-width: 680px;
+}
+
+.gear-specplus-trigger-table th:nth-child(1),
+.gear-specplus-trigger-table td:nth-child(1) {
+  width: 18%;
+}
+
+.gear-specplus-trigger-table th:nth-child(2),
+.gear-specplus-trigger-table td:nth-child(2) {
+  width: 34%;
+}
+
+.gear-specplus-trigger-table th:nth-child(3),
+.gear-specplus-trigger-table td:nth-child(3),
+.gear-specplus-trigger-table th:nth-child(4),
+.gear-specplus-trigger-table td:nth-child(4) {
+  width: 24%;
+}
+
+.ranger-tags .gear-specplus-tag {
+  background: #ede9fe;
+  color: #6d28d9;
+  border-color: #c4b5fd;
+}
+
+html[data-theme="dark"] .gear-specplus-name,
+html[data-theme="dark"] .gear-specplus-meta div {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] .ranger-tags .gear-specplus-tag {
+  background: #3b2a61 !important;
+  color: #ddd6fe !important;
+  border-color: #6d4db0 !important;
+}
+
+@media (max-width: 620px) {
+  .gear-specplus-meta {
+    grid-template-columns: 1fr;
+  }
+}
