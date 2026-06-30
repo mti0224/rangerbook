@@ -21,6 +21,11 @@
     return element?.textContent?.trim() || "";
   }
 
+  function findSection(title) {
+    return [...content.querySelectorAll(".detail-section")]
+      .find((item) => textOf(item.querySelector("h3")) === title);
+  }
+
   function tableRows(table) {
     return [...(table?.querySelectorAll("tbody tr") || [])].map((row) =>
       [...row.children].map((cell) => textOf(cell))
@@ -93,12 +98,42 @@
     `;
   }
 
+  function transformAdvanced() {
+    const id = currentGearId();
+    if (!id) return;
+
+    const section = findSection("高級效果");
+    if (!section || section.dataset.advancedCardFor === id) return;
+
+    const heading = [...section.children].find((node) => node.tagName === "H3");
+    const bodyNodes = [...section.children].filter((node) => node !== heading);
+    if (!bodyNodes.length) return;
+
+    const list = document.createElement("div");
+    list.className = "ranger-talent-list gear-advanced-detail";
+    const card = document.createElement("article");
+    card.className = "ranger-talent-card gear-advanced-card";
+
+    bodyNodes.forEach((node) => {
+      card.appendChild(node);
+      if (node.classList?.contains("gear-condition")) {
+        const divider = document.createElement("div");
+        divider.className = "gear-advanced-divider";
+        divider.setAttribute("aria-hidden", "true");
+        card.appendChild(divider);
+      }
+    });
+
+    list.appendChild(card);
+    section.appendChild(list);
+    section.dataset.advancedCardFor = id;
+  }
+
   function transformSpecPlus() {
     const id = currentGearId();
     if (!id) return;
 
-    const section = [...content.querySelectorAll(".detail-section")]
-      .find((item) => textOf(item.querySelector("h3")) === "Spec+");
+    const section = findSection("Spec+");
     if (!section || section.dataset.specPlusTalentStyleFor === id) return;
 
     const detail = section.querySelector(".gear-specplus-detail");
@@ -146,6 +181,9 @@
   let timer = 0;
   new MutationObserver(() => {
     clearTimeout(timer);
-    timer = window.setTimeout(transformSpecPlus, 40);
+    timer = window.setTimeout(() => {
+      transformAdvanced();
+      transformSpecPlus();
+    }, 40);
   }).observe(content, { childList: true, subtree: true });
 })();
