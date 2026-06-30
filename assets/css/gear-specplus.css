@@ -95,13 +95,20 @@
   margin-bottom: 0.35rem;
 }
 
-.gear-specplus-card .ranger-talent-description {
-  margin-top: 0.25rem;
-}
-
 .gear-specplus-section {
   margin-top: 0.7rem;
   padding-top: 0.7rem;
+}
+
+.gear-specplus-special-description {
+  margin: 0.15rem 0 0.7rem;
+}
+
+.gear-specplus-subtitle {
+  margin: 0.75rem 0 0.4rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 850;
 }
 
 .gear-specplus-basic-name-col {
@@ -116,17 +123,25 @@
   font-weight: 800;
 }
 
-.gear-specplus-effect-name {
-  display: block;
-  margin-bottom: 0.2rem;
-  color: var(--text);
+.gear-specplus-effect-table {
+  min-width: 720px;
 }
 
-.gear-specplus-effect-meta {
-  display: block;
-  color: var(--muted);
-  font-size: 0.86rem;
-  white-space: pre-line;
+.gear-specplus-trigger-prob-col {
+  width: 18%;
+}
+
+.gear-specplus-trigger-effect-col {
+  width: 34%;
+}
+
+.gear-specplus-trigger-factor-col,
+.gear-specplus-trigger-time-col {
+  width: 24%;
+}
+
+.gear-specplus-effect-table td:first-child {
+  vertical-align: middle;
 }
 
 .ranger-tags .gear-specplus-tag {
