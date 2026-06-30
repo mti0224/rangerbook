@@ -134,9 +134,7 @@
           <div class="talent-section gear-specplus-section gear-specplus-special-section">
             <h5>特殊效果</h5>
             ${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}
-            <h6 class="gear-specplus-subtitle">觸發條件</h6>
             ${renderConditionTable(probability, conditions)}
-            <h6 class="gear-specplus-subtitle">觸發效果</h6>
             ${renderTriggerTable(triggerRows)}
           </div>
         </article>
