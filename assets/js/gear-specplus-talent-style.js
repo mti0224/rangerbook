@@ -69,16 +69,22 @@
     return `
       <div class="table-scroll talent-main-effect-wrap">
         <table class="talent-main-effect-table gear-specplus-effect-table">
-          <colgroup><col class="talent-main-prob-col"><col class="talent-main-condition-col"></colgroup>
-          <thead><tr><th>機率</th><th>觸發效果</th></tr></thead>
+          <colgroup>
+            <col class="gear-specplus-trigger-prob-col">
+            <col class="gear-specplus-trigger-effect-col">
+            <col class="gear-specplus-trigger-factor-col">
+            <col class="gear-specplus-trigger-time-col">
+          </colgroup>
+          <thead>
+            <tr><th>觸發機率</th><th>觸發效果</th><th>係數</th><th>時間</th></tr>
+          </thead>
           <tbody>
             ${rows.map(([probability = "-", effect = "-", factor = "-", time = "-"]) => `
               <tr>
                 <td class="talent-prob-cell">${escapeHtml(probability)}</td>
-                <td>
-                  <strong class="gear-specplus-effect-name">${escapeHtml(effect)}</strong>
-                  <span class="gear-specplus-effect-meta">係數：${escapeHtml(factor)}　時間：${escapeHtml(time)}</span>
-                </td>
+                <td>${escapeHtml(effect)}</td>
+                <td>${escapeHtml(factor)}</td>
+                <td>${escapeHtml(time)}</td>
               </tr>
             `).join("")}
           </tbody>
@@ -119,17 +125,18 @@
       <div class="ranger-talent-list gear-specplus-detail">
         <article class="ranger-talent-card gear-specplus-card">
           <h4 class="talent-title-with-icon"><span>${escapeHtml(name)}</span></h4>
-          ${description ? `<p class="ranger-talent-description">${escapeHtml(description)}</p>` : ""}
+
           <div class="talent-section gear-specplus-section">
             <h5>基本效果</h5>
             ${renderBasicTable(basicRows)}
           </div>
-          <div class="talent-section gear-specplus-section">
-            <h5>觸發條件</h5>
+
+          <div class="talent-section gear-specplus-section gear-specplus-special-section">
+            <h5>特殊效果</h5>
+            ${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}
+            <h6 class="gear-specplus-subtitle">觸發條件</h6>
             ${renderConditionTable(probability, conditions)}
-          </div>
-          <div class="talent-section gear-specplus-section">
-            <h5>觸發效果</h5>
+            <h6 class="gear-specplus-subtitle">觸發效果</h6>
             ${renderTriggerTable(triggerRows)}
           </div>
         </article>
