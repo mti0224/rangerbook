@@ -50,7 +50,7 @@
       <div class="table-scroll talent-main-table-wrap">
         <table class="talent-main-table gear-specplus-condition-table">
           <colgroup><col class="talent-main-prob-col"><col class="talent-main-condition-col"></colgroup>
-          <thead><tr><th>機率</th><th>條件</th></tr></thead>
+          <thead><tr><th>觸發機率</th><th>觸發條件</th></tr></thead>
           <tbody>
             ${rows.map((condition, index) => `
               <tr>
