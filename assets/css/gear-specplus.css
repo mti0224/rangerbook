@@ -91,6 +91,44 @@
   width: 24%;
 }
 
+.gear-specplus-card > .talent-title-with-icon {
+  margin-bottom: 0.35rem;
+}
+
+.gear-specplus-card .ranger-talent-description {
+  margin-top: 0.25rem;
+}
+
+.gear-specplus-section {
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+}
+
+.gear-specplus-basic-name-col {
+  width: 42%;
+}
+
+.gear-specplus-basic-value-col {
+  width: 58%;
+}
+
+.gear-specplus-basic-table td:first-child {
+  font-weight: 800;
+}
+
+.gear-specplus-effect-name {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--text);
+}
+
+.gear-specplus-effect-meta {
+  display: block;
+  color: var(--muted);
+  font-size: 0.86rem;
+  white-space: pre-line;
+}
+
 .ranger-tags .gear-specplus-tag {
   background: #ede9fe;
   color: #6d28d9;
