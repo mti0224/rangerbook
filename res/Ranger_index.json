@@ -11501,6 +11501,83 @@
         "element": "水"
     },
     {
+        "id": "u1611e-cony",
+        "name": "蜜蜂兔兔",
+        "star": "8星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1611h-cony",
+        "name": "貴族蜂兔兔",
+        "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1611u-cony",
+        "name": "公主蜂兔兔",
+        "star": "終極進化8星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1612e-cony",
+        "name": "女王蜂兔兔",
+        "star": "9星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1613e-moon",
+        "name": "螳螂饅頭人",
+        "star": "8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1613h-moon",
+        "name": "恐怖螳螂饅頭人",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1613u-moon",
+        "name": "銳利螳螂饅頭人",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1614e-moon",
+        "name": "戰慄螳螂饅頭人",
+        "star": "9星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u1615e-brown",
+        "name": "鍬形蟲熊大",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "暗"
+    },
+    {
+        "id": "u1615h-brown",
+        "name": "裝甲鍬形蟲熊大",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "暗"
+    },
+    {
+        "id": "u1616e-brown",
+        "name": "黃金鍬形蟲熊大",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "暗"
+    },
+    {
         "id": "u161e-styne",
         "name": "面具史坦",
         "star": "5星",
