@@ -170,15 +170,32 @@
 .gear-advanced-detail {
   display: grid;
   gap: 1rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .gear-advanced-card {
+  min-width: 0;
+  max-width: 100%;
   margin-bottom: 0;
 }
 
 .gear-advanced-card .gear-condition {
   margin: 0;
   white-space: pre-line;
+}
+
+.gear-advanced-card .table-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gear-advanced-card .gear-effect-table {
+  width: 100%;
+  min-width: 520px;
 }
 
 .gear-advanced-divider {
