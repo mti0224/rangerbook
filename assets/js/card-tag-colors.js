@@ -43,11 +43,16 @@
     ["暗屬性", "tag-element-dark"]
   ]);
 
+  const TAG_SELECTOR = ".ranger-card .ranger-tags span";
+
+  function colorTag(tag) {
+    const cls = classMap.get(tag.textContent.trim());
+    if (cls) tag.classList.add(cls);
+  }
+
   function applyTagColors(root = document) {
-    root.querySelectorAll?.(".ranger-card .ranger-tags span").forEach((tag) => {
-      const cls = classMap.get(tag.textContent.trim());
-      if (cls) tag.classList.add(cls);
-    });
+    if (root.matches?.(TAG_SELECTOR)) colorTag(root);
+    root.querySelectorAll?.(TAG_SELECTOR).forEach(colorTag);
   }
 
   const observer = new MutationObserver((mutations) => {
