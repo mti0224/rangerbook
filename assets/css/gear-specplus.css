@@ -1,6 +1,8 @@
 .gear-specplus-detail {
   display: grid;
   gap: 1rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .gear-specplus-name {
@@ -71,7 +73,7 @@
 }
 
 .gear-specplus-trigger-table {
-  min-width: 680px;
+  min-width: 520px;
 }
 
 .gear-specplus-trigger-table th:nth-child(1),
@@ -91,13 +93,34 @@
   width: 24%;
 }
 
+.gear-specplus-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .gear-specplus-card > .talent-title-with-icon {
   margin-bottom: 0.35rem;
 }
 
 .gear-specplus-section {
+  min-width: 0;
+  max-width: 100%;
   margin-top: 0.7rem;
   padding-top: 0.7rem;
+}
+
+.gear-specplus-section .table-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gear-specplus-section .talent-main-table,
+.gear-specplus-section .talent-main-effect-table {
+  width: 100%;
+  min-width: 520px;
 }
 
 .gear-specplus-special-description {
@@ -124,7 +147,7 @@
 }
 
 .gear-specplus-effect-table {
-  min-width: 720px;
+  min-width: 520px;
 }
 
 .gear-specplus-trigger-prob-col {
