@@ -35,7 +35,12 @@
     ["水", "tag-element-water"],
     ["木", "tag-element-wood"],
     ["光", "tag-element-light"],
-    ["暗", "tag-element-dark"]
+    ["暗", "tag-element-dark"],
+    ["火屬性", "tag-element-fire"],
+    ["水屬性", "tag-element-water"],
+    ["木屬性", "tag-element-wood"],
+    ["光屬性", "tag-element-light"],
+    ["暗屬性", "tag-element-dark"]
   ]);
 
   function applyTagColors(root = document) {
