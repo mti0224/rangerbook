@@ -1,0 +1,12 @@
+html:has(body.gear-detail-page),
+body.gear-detail-page {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  position: static !important;
+}
+
+body.gear-detail-page.modal-open {
+  overflow-y: auto !important;
+}
