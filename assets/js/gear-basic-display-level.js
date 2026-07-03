@@ -10,6 +10,8 @@
   let applying = false;
   let timer = 0;
 
+  list.classList.add("gear-list-level-pending");
+
   function text(value) {
     if (value === null || value === undefined) return "";
     return String(value).replaceAll("\\n", "\n").trim();
@@ -66,6 +68,7 @@
   async function applyLevel() {
     if (applying) return;
     applying = true;
+    list.classList.add("gear-list-level-pending");
     try {
       const gearMap = await loadGearMap();
       list.querySelectorAll(".gear-card[data-gear-id]").forEach((card) => {
@@ -81,6 +84,7 @@
       });
     } finally {
       applying = false;
+      requestAnimationFrame(() => list.classList.remove("gear-list-level-pending"));
     }
   }
 
@@ -100,8 +104,9 @@
 
   new MutationObserver(() => {
     if (applying) return;
+    list.classList.add("gear-list-level-pending");
     clearTimeout(timer);
-    timer = window.setTimeout(applyLevel, 30);
+    timer = window.setTimeout(applyLevel, 0);
   }).observe(list, { childList: true });
 
   applyLevel();
