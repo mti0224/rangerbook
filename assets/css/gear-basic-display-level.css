@@ -51,6 +51,10 @@
   outline-offset: 2px;
 }
 
+.gear-list-level-pending {
+  visibility: hidden;
+}
+
 @media (max-width: 620px) {
   .gear-basic-display-level {
     grid-template-columns: repeat(3, minmax(0, 1fr));
