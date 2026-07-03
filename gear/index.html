@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="../assets/css/gear-page-mode.css">
   <link rel="stylesheet" href="../assets/css/gear-upgrade-levels.css">
   <link rel="stylesheet" href="../assets/css/gear-detail-scroll-fix.css">
+  <link rel="stylesheet" href="../assets/css/gear-basic-display-level.css">
 </head>
 <body>
   <div id="site-header"></div>
@@ -73,10 +74,19 @@
           <div id="gearTriggerTypeFilter" class="gear-checkbox-grid gear-trigger-type-grid"></div>
         </section>
 
-        <label class="gear-max-toggle">
-          <input id="gearShowMaxToggle" type="checkbox">
-          <span>顯示滿等數值</span>
-        </label>
+        <section class="gear-filter-panel gear-basic-display-panel">
+          <div class="gear-filter-head">
+            <h2>基本數值顯示等級</h2>
+          </div>
+          <fieldset id="gearBasicDisplayLevel" class="gear-basic-display-level" aria-label="基本數值顯示等級">
+            <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="0" checked><span>+0</span></label>
+            <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="1"><span>+1</span></label>
+            <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="2"><span>+2</span></label>
+            <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="3"><span>+3</span></label>
+            <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="4"><span>+4</span></label>
+            <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="5"><span>+Max</span></label>
+          </fieldset>
+        </section>
       </div>
     </section>
 
@@ -101,6 +111,7 @@
 
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/gear.js"></script>
+  <script src="../assets/js/gear-basic-display-level.js"></script>
   <script src="../assets/js/gear-skillplus-only.js"></script>
   <script src="../assets/js/gear-trigger-tags.js"></script>
   <script src="../assets/js/card-tag-colors.js"></script>
