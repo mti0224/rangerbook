@@ -1,0 +1,149 @@
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const path = window.location.pathname;
+  const pathMatch = path.match(/^(?:\/rangerbook)?\/gear\/([^/]+)\/?$/);
+  const pathId = pathMatch && pathMatch[1] !== "index.html" ? decodeURIComponent(pathMatch[1]) : "";
+  const detailId = (params.get("detail") || pathId || "").trim();
+  const isDetailPage = Boolean(detailId);
+  const root = path.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const modal = document.getElementById("gearModal");
+  const modalContent = document.getElementById("gearModalContent");
+  const list = document.getElementById("gearList");
+  const search = document.getElementById("gearSearchInput");
+
+  function inferGearId() {
+    const src = modalContent?.querySelector(".gear-detail-image")?.getAttribute("src") || "";
+    const match = src.match(/gear_icon\/([^/]+)_icon\.png/);
+    return match ? decodeURIComponent(match[1]) : "";
+  }
+
+  function detailUrl(id) {
+    return `${root}gear/${encodeURIComponent(id)}`;
+  }
+
+  function detailEntryUrl(id) {
+    return `${root}gear/?detail=${encodeURIComponent(id)}`;
+  }
+
+  if (isDetailPage) setupDetailPage();
+  else setupSummaryModal();
+
+  function setupSummaryModal() {
+    if (!modalContent) return;
+    let selectedId = "";
+
+    document.addEventListener("click", (event) => {
+      const card = event.target.closest?.(".gear-card[data-gear-id]");
+      if (card) selectedId = card.dataset.gearId || "";
+    }, true);
+
+    function addDetailLink() {
+      if (!modalContent.children.length) return;
+      const gearId = selectedId || inferGearId();
+      if (!gearId) return;
+
+      const summaryArea = modalContent.querySelector(".gear-detail-head > div:not(.gear-detail-image-wrap)");
+      if (!summaryArea) return;
+
+      let link = summaryArea.querySelector(".gear-detail-link");
+      if (!link) {
+        link = document.createElement("a");
+        link.className = "gear-detail-link";
+        link.textContent = "查看詳細資訊";
+        summaryArea.appendChild(link);
+      }
+
+      const href = detailEntryUrl(gearId);
+      if (link.getAttribute("href") !== href) link.setAttribute("href", href);
+    }
+
+    new MutationObserver(addDetailLink).observe(modalContent, { childList: true, subtree: true });
+    addDetailLink();
+  }
+
+  function setupDetailPage() {
+    document.body.classList.add("gear-detail-page");
+    window.history.replaceState(null, "", detailUrl(detailId));
+
+    const title = document.querySelector(".page-title h1");
+    const intro = document.querySelector(".page-title p:last-child");
+    if (title) title.textContent = "裝備詳細資料";
+    if (intro) intro.textContent = "查詢裝備的完整數據。";
+    document.title = "裝備詳細資料｜LINE Rangers Database";
+
+    const main = document.querySelector("main.ranger-page");
+    if (!main || !modal || !modalContent || !list || !search) return;
+
+    const backLink = document.createElement("a");
+    backLink.className = "endless-back-link gear-detail-back-link";
+    backLink.href = `${root}gear/`;
+    backLink.textContent = "返回裝備列表";
+
+    const status = document.createElement("div");
+    status.className = "gear-detail-loading";
+    status.textContent = "裝備資料載入中…";
+
+    const detailContent = document.createElement("section");
+    detailContent.className = "gear-detail-content";
+    detailContent.hidden = true;
+    detailContent.appendChild(modalContent);
+    main.append(status, detailContent);
+
+    function removePagination() {
+      document.querySelectorAll("#gearPaginationBar, #bottomPaginationBar").forEach((bar) => bar.remove());
+    }
+
+    new MutationObserver(removePagination).observe(document.body, { childList: true, subtree: true });
+    removePagination();
+
+    let phase = 0;
+    let openRequested = false;
+
+    function processList() {
+      const failure = list.querySelector(".empty-state")?.textContent || "";
+      if (failure.includes("資料載入失敗")) {
+        status.textContent = "裝備資料載入失敗，請稍後再試。";
+        return;
+      }
+
+      if (phase === 0 && list.querySelector(".gear-card")) {
+        phase = 1;
+        search.value = detailId;
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        return;
+      }
+
+      if (phase === 1 && !openRequested) {
+        const card = [...list.querySelectorAll(".gear-card[data-gear-id]")]
+          .find((item) => item.dataset.gearId === detailId);
+        if (card) {
+          openRequested = true;
+          phase = 2;
+          card.click();
+          return;
+        }
+        if (list.querySelector(".empty-state")) {
+          phase = 3;
+          status.textContent = `找不到裝備 ID：${detailId}`;
+        }
+      }
+    }
+
+    function revealDetail() {
+      if (!modalContent.children.length) return;
+      const detailHead = modalContent.querySelector(".gear-detail-head");
+      if (detailHead && backLink.parentElement !== detailHead) detailHead.appendChild(backLink);
+      modalContent.querySelector(".gear-detail-link")?.remove();
+      status.hidden = true;
+      detailContent.hidden = false;
+      document.body.classList.remove("modal-open");
+      removePagination();
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+
+    new MutationObserver(processList).observe(list, { childList: true });
+    new MutationObserver(revealDetail).observe(modalContent, { childList: true, subtree: true });
+    processList();
+    revealDetail();
+  }
+})();
