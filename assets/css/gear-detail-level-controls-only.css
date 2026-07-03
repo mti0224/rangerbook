@@ -1,0 +1,7 @@
+body:not(.gear-detail-page) .gear-level-control {
+  display: none !important;
+}
+
+body:not(.gear-detail-page) .gear-section-heading {
+  display: block;
+}
