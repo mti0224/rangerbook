@@ -102,6 +102,15 @@
     return levels.get(levelKey(id, section)) ?? 0;
   }
 
+  function renderSignature(id) {
+    return [
+      id,
+      getLevel(id, "基本效果"),
+      getLevel(id, "高級效果"),
+      getLevel(id, "Spec+")
+    ].join(":");
+  }
+
   function levelSelect(id, section, level) {
     return `
       <label class="gear-level-control">
@@ -284,13 +293,15 @@
               </table>
             </div>
             <div class="gear-specplus-table-divider" aria-hidden="true"></div>
-            <div class="table-scroll talent-main-effect-wrap">
-              <table class="talent-main-effect-table gear-specplus-effect-table">
-                <colgroup><col class="gear-specplus-trigger-prob-col"><col class="gear-specplus-trigger-effect-col"><col class="gear-specplus-trigger-factor-col"><col class="gear-specplus-trigger-time-col"></colgroup>
-                <thead><tr><th>觸發機率</th><th>觸發效果</th><th>係數</th><th>時間</th></tr></thead>
-                <tbody>${triggers.map((row) => `<tr><td class="talent-prob-cell">${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody>
-              </table>
-            </div>
+            ${triggers.length ? `
+              <div class="table-scroll talent-main-effect-wrap">
+                <table class="talent-main-effect-table gear-specplus-effect-table">
+                  <colgroup><col class="gear-specplus-trigger-prob-col"><col class="gear-specplus-trigger-effect-col"><col class="gear-specplus-trigger-factor-col"><col class="gear-specplus-trigger-time-col"></colgroup>
+                  <thead><tr><th>觸發機率</th><th>觸發效果</th><th>係數</th><th>時間</th></tr></thead>
+                  <tbody>${triggers.map((row) => `<tr><td class="talent-prob-cell">${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody>
+                </table>
+              </div>
+            ` : `<div class="empty-state small">沒有Spec+觸發效果資料。</div>`}
           </div>
         </article>
       </div>
@@ -299,11 +310,16 @@
     section.dataset.specPlusTalentStyleFor = id;
   }
 
-  async function renderAll() {
+  async function renderAll(force = false) {
     if (rendering) return;
     const content = document.getElementById("gearModalContent");
     const id = currentGearId();
     if (!content || !id || !content.children.length) return;
+
+    const signature = renderSignature(id);
+    if (!force && content.dataset.upgradeRenderSignature === signature && content.querySelectorAll(".gear-level-select").length === 3) {
+      return;
+    }
 
     rendering = true;
     try {
@@ -313,6 +329,7 @@
       renderAdvanced(content, gear, id);
       renderSpec(content, gear, id);
       content.dataset.upgradeControlsFor = id;
+      content.dataset.upgradeRenderSignature = signature;
     } finally {
       rendering = false;
     }
@@ -324,7 +341,9 @@
     const id = select.dataset.gearId || currentGearId();
     const section = select.dataset.gearLevelSection || "";
     levels.set(levelKey(id, section), Number(select.value) || 0);
-    window.setTimeout(renderAll, 0);
+    const content = document.getElementById("gearModalContent");
+    if (content) delete content.dataset.upgradeRenderSignature;
+    window.setTimeout(() => renderAll(true), 0);
   });
 
   const content = document.getElementById("gearModalContent");
@@ -332,7 +351,7 @@
     new MutationObserver(() => {
       if (rendering) return;
       clearTimeout(renderTimer);
-      renderTimer = window.setTimeout(renderAll, 80);
+      renderTimer = window.setTimeout(() => renderAll(false), 80);
     }).observe(content, { childList: true, subtree: true });
   }
 
