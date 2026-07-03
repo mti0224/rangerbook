@@ -9,8 +9,22 @@
       var path = window.location.pathname;
       var hasRepoPrefix = path.indexOf('/rangerbook/') === 0;
       var root = hasRepoPrefix ? '/rangerbook/' : '/';
+      var isGearDetail = /^(?:\/rangerbook)?\/gear\/[^/]+\/?$/.test(path);
       var isEndlessStage = /^(?:\/rangerbook)?\/endless\/stage\/end\d+\/?$/.test(path);
       var isHsStage = /^(?:\/rangerbook)?\/hs\/stage\/hs\d{1,3}\/?$/.test(path);
+
+      if (isGearDetail) {
+        var match = path.match(/\/gear\/([^/]+)\/?$/);
+        var gearId = match ? match[1] : '';
+        try {
+          gearId = decodeURIComponent(gearId);
+        } catch (error) {
+          // Keep the original path segment if it is not valid percent encoding.
+        }
+        window.location.replace(root + 'gear/?detail=' + encodeURIComponent(gearId));
+        return;
+      }
+
       window.__rangerbookRoot = root;
       window.__rangerbookRouteKind = isHsStage ? 'hs-stage' : isEndlessStage ? 'endless-stage' : 'unknown';
       if (isHsStage) document.write('<base href="' + root + 'hs/stage/">');
