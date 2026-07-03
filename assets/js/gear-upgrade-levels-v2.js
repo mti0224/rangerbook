@@ -126,6 +126,16 @@
     section.innerHTML = `${heading(id, "基本效果", level)}${effectTable(rows)}`;
   }
 
+  function advancedDefaultRows(advanced, level) {
+    const effect = text(advanced?.["預設效果"] ?? "");
+    if (!effect) return [];
+    const switchable = isObject(advanced?.["可切換的效果"]) ? advanced["可切換的效果"] : {};
+    const matching = isObject(switchable[effect]) ? switchable[effect] : {};
+    const baseValue = advanced["預設效果係數"] ?? matching["係數"] ?? matching["數值"] ?? "-";
+    const increment = matching["每次升級增加"] ?? advanced["每次升級增加"] ?? "";
+    return [{ effect, value: transformValue(baseValue, level, "increment", increment) }];
+  }
+
   function advancedRows(advanced, level) {
     const switchable = isObject(advanced?.["可切換的效果"]) ? advanced["可切換的效果"] : {};
     return Object.entries(switchable).map(([effect, data]) => ({ effect, value: isObject(data) ? transformValue(data["係數"] ?? data["數值"] ?? "-", level, "increment", data["每次升級增加"] ?? "") : text(data) || "-" }));
@@ -137,7 +147,9 @@
     const level = getLevel(id, "高級效果");
     const advanced = isObject(gear["高級效果"]) ? gear["高級效果"] : {};
     const condition = text(advanced["觸發條件"] ?? advanced["條件"] ?? "");
-    section.innerHTML = `${heading(id, "高級效果", level)}<div class="ranger-talent-list gear-advanced-detail"><article class="ranger-talent-card gear-advanced-card">${condition ? `<p class="gear-condition">觸發條件：${escapeHtml(condition)}</p><div class="gear-advanced-divider" aria-hidden="true"></div>` : ""}${effectTable(advancedRows(advanced, level))}</article></div>`;
+    const defaultRows = advancedDefaultRows(advanced, level);
+    const switchableRows = advancedRows(advanced, level);
+    section.innerHTML = `${heading(id, "高級效果", level)}<div class="ranger-talent-list gear-advanced-detail"><article class="ranger-talent-card gear-advanced-card">${condition ? `<p class="gear-condition">觸發條件：${escapeHtml(condition)}</p><div class="gear-advanced-divider" aria-hidden="true"></div>` : ""}${defaultRows.length ? `<div class="talent-section gear-advanced-default-section"><h4>預設效果</h4>${effectTable(defaultRows)}</div><div class="gear-advanced-divider" aria-hidden="true"></div>` : ""}<div class="talent-section gear-advanced-switchable-section"><h4>可切換效果</h4>${effectTable(switchableRows)}</div></article></div>`;
   }
 
   function specBasicRows(spec, level) {
