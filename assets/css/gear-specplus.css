@@ -198,9 +198,16 @@
   min-width: 520px;
 }
 
+.gear-advanced-card .gear-advanced-default-section,
+.gear-advanced-card .gear-advanced-switchable-section {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .gear-advanced-divider {
   height: 1px;
-  margin: 0.75rem 0;
+  margin: 0.75rem 0.9rem;
   background: var(--line);
 }
 
@@ -226,5 +233,10 @@ html[data-theme="dark"] .ranger-tags .gear-specplus-tag {
 @media (max-width: 620px) {
   .gear-specplus-meta {
     grid-template-columns: 1fr;
+  }
+
+  .gear-advanced-divider {
+    margin-left: 0.8rem;
+    margin-right: 0.8rem;
   }
 }
