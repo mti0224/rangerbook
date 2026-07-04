@@ -1,0 +1,39 @@
+.ranger-category-box {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #fbfdff;
+}
+
+.ranger-category-box > .ranger-skill-card,
+.ranger-category-box > .ranger-ability-card,
+.ranger-category-box > .ranger-talent-card {
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.ranger-category-box > .ranger-skill-card + .ranger-skill-card,
+.ranger-category-box > .ranger-ability-card + .ranger-ability-card,
+.ranger-category-box > .ranger-talent-card + .ranger-talent-card {
+  border-top: 1px solid var(--line);
+}
+
+.ranger-category-box.ranger-ability-list,
+.ranger-category-box.ranger-talent-list {
+  display: block;
+}
+
+.ranger-category-box .ranger-icon-title:last-child,
+.ranger-category-box .ranger-talent-card > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 620px) {
+  .ranger-category-box > .ranger-skill-card,
+  .ranger-category-box > .ranger-ability-card,
+  .ranger-category-box > .ranger-talent-card {
+    padding: 0.8rem;
+  }
+}
