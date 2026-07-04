@@ -1,5 +1,6 @@
 (() => {
-  const DATA_URL = "../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
+  const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const DATA_URL = `${ROOT}res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json`;
   const LEVELS = [0, 1, 2, 3, 4, 5];
   const selected = new Map();
   let dataPromise;
