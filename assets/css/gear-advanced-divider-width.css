@@ -2,3 +2,35 @@
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+
+.gear-specplus-condition-table {
+  table-layout: fixed;
+}
+
+.gear-specplus-condition-table th:nth-child(1),
+.gear-specplus-condition-table td:nth-child(1) {
+  width: 20%;
+}
+
+.gear-specplus-condition-table th:nth-child(2),
+.gear-specplus-condition-table td:nth-child(2) {
+  width: 80%;
+}
+
+.gear-specplus-effect-table {
+  table-layout: fixed;
+}
+
+.gear-specplus-effect-table th:nth-child(1),
+.gear-specplus-effect-table td:nth-child(1) {
+  width: 20%;
+}
+
+.gear-specplus-effect-table th:nth-child(2),
+.gear-specplus-effect-table td:nth-child(2),
+.gear-specplus-effect-table th:nth-child(3),
+.gear-specplus-effect-table td:nth-child(3),
+.gear-specplus-effect-table th:nth-child(4),
+.gear-specplus-effect-table td:nth-child(4) {
+  width: 26.6667%;
+}
