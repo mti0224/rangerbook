@@ -39,6 +39,7 @@
   }
 
   function showEmptyState(section, title, message, className) {
+    if (section.querySelector(`:scope > .${className}`)) return;
     section.innerHTML = `<h3>${title}</h3><div class="empty-state small ${className}">${message}</div>`;
   }
 
@@ -64,11 +65,11 @@
     }
   }
 
-  new MutationObserver((mutations) => {
-    if (applying || !mutations.some((mutation) => mutation.target === root)) return;
+  new MutationObserver(() => {
+    if (applying) return;
     clearTimeout(timer);
-    timer = window.setTimeout(apply, 60);
-  }).observe(root, { childList: true });
+    timer = window.setTimeout(apply, 80);
+  }).observe(root, { childList: true, subtree: true });
 
-  [0, 80, 200, 500].forEach((delay) => window.setTimeout(apply, delay));
+  [0, 100, 250, 500, 900, 1400].forEach((delay) => window.setTimeout(apply, delay));
 })();
