@@ -60,4 +60,9 @@
     if (event.target.closest?.(".gear-card, .gear-detail-link")) schedule();
   }, true);
   schedule();
+
+  const root = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const polishScript = document.createElement("script");
+  polishScript.src = `${root}assets/js/gear-effect-label-polish.js`;
+  document.head.appendChild(polishScript);
 })();
