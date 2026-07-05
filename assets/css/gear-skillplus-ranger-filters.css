@@ -1,0 +1,40 @@
+body:not(.gear-detail-page) #gearModalContent .gear-advanced-switchable-details,
+body:not(.gear-detail-page) #gearModalContent .gear-skillplus-ranger-details {
+  display: none !important;
+}
+
+.gear-skillplus-ranger-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.gear-skillplus-ranger-filters select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.gear-skillplus-ranger-card[hidden] {
+  display: none !important;
+}
+
+.gear-skillplus-ranger-filter-empty {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 700px) {
+  .gear-skillplus-ranger-filters {
+    gap: 0.4rem;
+  }
+
+  .gear-skillplus-ranger-filters select {
+    padding: 0.5rem 0.35rem;
+    font-size: 0.82rem;
+  }
+}
