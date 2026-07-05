@@ -88,6 +88,9 @@
     const style = document.createElement("style");
     style.id = "gearSkillPlusRangerStyles";
     style.textContent = `
+      .gear-skillplus-detail{margin:0}
+      .gear-skillplus-card{width:100%}
+      .gear-skillplus-card>.gear-effect-table-wrap{margin:0}
       .gear-skillplus-ranger-details{margin-top:1rem;border-top:1px solid var(--line);padding-top:.75rem}
       .gear-skillplus-ranger-summary{cursor:pointer;font-weight:800;list-style:none;padding:.35rem 0;display:flex;align-items:center;justify-content:space-between;gap:.75rem}
       .gear-skillplus-ranger-summary::-webkit-details-marker{display:none}
@@ -103,6 +106,24 @@
     document.head.appendChild(style);
   }
 
+  function ensureSkillPlusCard(section) {
+    let list = section.querySelector(":scope > .gear-skillplus-detail");
+    let card = list?.querySelector(":scope > .gear-skillplus-card");
+    if (card) return card;
+
+    const tableWrap = section.querySelector(":scope > .gear-effect-table-wrap");
+    if (!tableWrap) return null;
+
+    list = document.createElement("div");
+    list.className = "ranger-talent-list gear-skillplus-detail";
+    card = document.createElement("article");
+    card.className = "ranger-talent-card gear-skillplus-card";
+    tableWrap.before(list);
+    list.appendChild(card);
+    card.appendChild(tableWrap);
+    return card;
+  }
+
   async function apply() {
     if (applying || !root.querySelector(".gear-detail-head")) return;
     const section = findSkillPlusSection();
@@ -111,16 +132,19 @@
 
     applying = true;
     try {
-      section.querySelector(":scope > .gear-skillplus-ranger-details")?.remove();
+      section.querySelector(".gear-skillplus-ranger-details")?.remove();
       const gear = (await loadGearMap()).get(id);
       const effects = skillPlusEffects(gear);
       if (!effects.length || !section.querySelector(".gear-skillplus-table tbody tr")) return;
 
+      const cardContainer = ensureSkillPlusCard(section);
+      if (!cardContainer) return;
+
       const rangers = (await loadRangers()).filter((ranger) => matchesAnyEffect(ranger, effects));
       const details = document.createElement("details");
       details.className = "gear-skillplus-ranger-details";
-      details.innerHTML = `<summary class="gear-skillplus-ranger-summary">具有此 Skill+ 效果的角色（${rangers.length}）</summary>${rangers.length ? `<div class="gear-skillplus-ranger-grid">${rangers.map(card).join("")}</div>` : `<div class="empty-state small gear-skillplus-ranger-empty">沒有符合的角色資料。</div>`}`;
-      section.appendChild(details);
+      details.innerHTML = `<summary class="gear-skillplus-ranger-summary">具有此技能效果的角色（${rangers.length}）</summary>${rangers.length ? `<div class="gear-skillplus-ranger-grid">${rangers.map(card).join("")}</div>` : `<div class="empty-state small gear-skillplus-ranger-empty">沒有符合的角色資料。</div>`}`;
+      cardContainer.appendChild(details);
     } finally {
       applying = false;
     }
