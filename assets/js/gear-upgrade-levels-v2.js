@@ -1,5 +1,6 @@
 (() => {
-  const DATA_URL = "../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
+  const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const DATA_URL = `${ROOT}res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json`;
   const LEVELS = [0, 1, 2, 3, 4, 5];
   const selectedLevels = new Map();
   let gearMapPromise = null;
@@ -94,7 +95,7 @@
 
   function effectTable(rows) {
     if (!rows.length) return `<div class="empty-state small">沒有資料。</div>`;
-    return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table"><thead><tr><th>效果</th><th>數值</th></tr></thead><tbody>${rows.map((row) => `<tr><th>${escapeHtml(row.effect)}</th><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div>`;
+    return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table"><thead><tr><th>效果</th><th>數值</th></tr></thead><tbody>${rows.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div>`;
   }
 
   function sectionTitle(section) {
@@ -117,13 +118,16 @@
     return section;
   }
 
+  function basicRows(gear, level) {
+    const effects = isObject(gear["基本效果"]) ? gear["基本效果"] : {};
+    return Object.entries(effects).map(([effect, value]) => ({ effect, value: transformValue(value, level, "multiply") }));
+  }
+
   function renderBasic(content, gear, id) {
     const section = findSection(content, "基本效果");
     if (!section) return;
     const level = getLevel(id, "基本效果");
-    const effects = isObject(gear["基本效果"]) ? gear["基本效果"] : {};
-    const rows = Object.entries(effects).map(([effect, value]) => ({ effect, value: transformValue(value, level, "multiply") }));
-    section.innerHTML = `${heading(id, "基本效果", level)}${effectTable(rows)}`;
+    section.innerHTML = `${heading(id, "基本效果", level)}${effectTable(basicRows(gear, level))}`;
   }
 
   function advancedDefaultRows(advanced, level) {
@@ -176,7 +180,50 @@
     const triggers = triggerRows(special, level, probability);
     const basicRows = specBasicRows(spec, level);
 
-    section.innerHTML = `${heading(id, "Spec+", level)}<div class="ranger-talent-list gear-specplus-detail"><article class="ranger-talent-card gear-specplus-card"><h4 class="talent-title-with-icon"><span>${escapeHtml(name)}</span></h4><div class="talent-section gear-specplus-section"><h5>基本效果</h5><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-basic-table"><thead><tr><th>效果</th><th>數值</th></tr></thead><tbody>${basicRows.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div></div><div class="talent-section gear-specplus-section gear-specplus-special-section"><h5>特殊效果</h5>${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table gear-specplus-condition-table"><thead><tr><th>觸發機率</th><th>觸發條件</th></tr></thead><tbody>${conditionValues.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditionValues.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}<td>${escapeHtml(condition)}</td></tr>`).join("")}</tbody></table></div><div class="gear-specplus-table-divider" aria-hidden="true"></div><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-effect-table"><thead><tr><th>觸發機率</th><th>觸發效果</th><th>係數</th><th>時間</th></tr></thead><tbody>${triggers.map((row) => `<tr><td>${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody></table></div></div></article></div>`;
+    section.innerHTML = `${heading(id, "Spec+", level)}<div class="ranger-talent-list gear-specplus-detail"><article class="ranger-talent-card gear-specplus-card"><h4 class="talent-title-with-icon"><span>${escapeHtml(name)}</span></h4><div class="talent-section gear-specplus-section"><h5>基本效果</h5><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-basic-table"><thead><tr><th>效果</th><th>數值</th></tr></thead><tbody>${basicRows.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div></div><div class="talent-section gear-specplus-section gear-specplus-special-section"><h5>特殊效果</h5>${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table gear-specplus-condition-table"><thead><tr><th>機率</th><th>條件</th></tr></thead><tbody>${conditionValues.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditionValues.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}<td>${escapeHtml(condition)}</td></tr>`).join("")}</tbody></table></div><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-effect-table"><thead><tr><th>機率</th><th>效果</th><th>係數</th><th>時間</th></tr></thead><tbody>${triggers.map((row) => `<tr><td>${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody></table></div></div></article></div>`;
+  }
+
+  function updateValueCells(section, rows) {
+    const tableRows = [...section.querySelectorAll(".gear-effect-table tbody tr")];
+    tableRows.forEach((row, index) => {
+      if (row.lastElementChild && rows[index]) row.lastElementChild.textContent = rows[index].value;
+    });
+  }
+
+  function updateBasic(content, gear, id) {
+    const section = findSection(content, "基本效果");
+    if (section) updateValueCells(section, basicRows(gear, getLevel(id, "基本效果")));
+  }
+
+  function updateAdvanced(content, gear, id) {
+    const section = findSection(content, "高級效果");
+    if (!section) return;
+    const advanced = isObject(gear["高級效果"]) ? gear["高級效果"] : {};
+    const level = getLevel(id, "高級效果");
+    updateValueCells(section, [...advancedDefaultRows(advanced, level), ...advancedRows(advanced, level)]);
+  }
+
+  function updateSpec(content, gear, id) {
+    const section = findSection(content, "Spec+");
+    if (!section) return;
+    const level = getLevel(id, "Spec+");
+    const spec = gear["Spec+"];
+    const special = isObject(spec["特殊效果"]) ? spec["特殊效果"] : {};
+    const probability = transformValue(special["觸發機率"] ?? "-", level, "increment", special["每次升級觸發機率增加"] ?? "");
+    const basic = specBasicRows(spec, level);
+    [...section.querySelectorAll(".gear-specplus-basic-table tbody tr")].forEach((row, index) => {
+      if (row.lastElementChild && basic[index]) row.lastElementChild.textContent = basic[index].value;
+    });
+    const probabilityCell = section.querySelector(".gear-specplus-condition-table tbody td:first-child");
+    if (probabilityCell) probabilityCell.textContent = probability;
+    const triggers = triggerRows(special, level, probability);
+    [...section.querySelectorAll(".gear-specplus-effect-table tbody tr")].forEach((row, index) => {
+      const data = triggers[index];
+      if (!data) return;
+      if (row.children[0]) row.children[0].textContent = data.probability;
+      if (row.children[2]) row.children[2].textContent = data.factor;
+      if (row.children[3]) row.children[3].textContent = data.time;
+    });
   }
 
   async function renderAll() {
@@ -205,9 +252,9 @@
     const content = document.getElementById("gearModalContent");
     const gear = (await loadGearMap()).get(id);
     if (!content || !gear) return;
-    if (section === "基本效果") renderBasic(content, gear, id);
-    else if (section === "高級效果") renderAdvanced(content, gear, id);
-    else if (section === "Spec+") renderSpec(content, gear, id);
+    if (section === "基本效果") updateBasic(content, gear, id);
+    else if (section === "高級效果") updateAdvanced(content, gear, id);
+    else if (section === "Spec+") updateSpec(content, gear, id);
   });
 
   const content = document.getElementById("gearModalContent");
