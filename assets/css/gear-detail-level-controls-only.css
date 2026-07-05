@@ -5,3 +5,7 @@ body:not(.gear-detail-page) .gear-level-control {
 body:not(.gear-detail-page) .gear-section-heading {
   display: block;
 }
+
+.gear-specplus-table-divider {
+  display: none !important;
+}
