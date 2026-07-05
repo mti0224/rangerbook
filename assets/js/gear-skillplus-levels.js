@@ -44,12 +44,22 @@
     if (value == null) return [];
     if (Array.isArray(value)) return value.flatMap(normalizeRows);
     if (typeof value !== "object") return [];
+
     const effect = read(value, ["技能效果", "效果", "skillEffect", "effect"]);
     const factor = read(value, ["係數", "倍率", "數值", "factor", "value"]);
     const duration = read(value, ["有效時間", "時間", "持續時間", "duration", "time"]);
-    const increment = read(value, ["每次升級", "每次升級增加", "升級增加", "increment"]);
+    const legacyIncrement = read(value, ["每次升級", "每次升級增加", "升級增加", "increment"]);
+    const factorIncrement = read(value, ["每次升級係數增加", "每次升級倍率增加", "factorIncrement"]);
+    const durationIncrement = read(value, ["每次升級時間增加", "每次升級有效時間增加", "durationIncrement"]);
+
     if (!isEmpty(effect) || !isEmpty(factor) || !isEmpty(duration)) {
-      return [{ effect: text(effect) || "-", factor: text(factor) || "-", duration: text(duration) || "-", increment: text(increment) }];
+      return [{
+        effect: text(effect) || "-",
+        factor: text(factor) || "-",
+        duration: text(duration) || "-",
+        factorIncrement: text(factorIncrement) || (!isEmpty(factor) ? text(legacyIncrement) : ""),
+        durationIncrement: text(durationIncrement) || (!isEmpty(duration) ? text(legacyIncrement) : "")
+      }];
     }
     return Object.values(value).flatMap(normalizeRows);
   }
@@ -79,15 +89,14 @@
 
   function heading(id, level) {
     const options = LEVELS.map((value) => `<option value="${value}"${value === level ? " selected" : ""}>${value === 5 ? "+Max" : `+${value}`}</option>`).join("");
-    return `<h3 class="gear-section-heading"><span>Skill+</span><label class="gear-level-control"><span class="sr-only">Skill+強化等級</span><select class="gear-level-select gear-skillplus-level-select" data-gear-id="${escapeHtml(id)}" aria-label="Skill+強化等級">${options}</select></label></h3>`;
+    return `<h3 class="gear-section-heading"><span>Skill+</span><label class="gear-level-control"><span class="sr-only">Skill+強化等級</span><select class="gear-level-select gear-skillplus-level-select" data-gear-id="${escapeHtml(id)}" data-gear-level-section="Skill+" aria-label="Skill+強化等級">${options}</select></label></h3>`;
   }
 
   function table(items, level) {
     if (!items.length) return `<div class="empty-state small">沒有Skill+資料。</div>`;
     return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table gear-skillplus-table"><thead><tr><th>技能效果</th><th>係數</th><th>有效時間</th></tr></thead><tbody>${items.map((item) => {
-      const hasFactor = !isEmpty(item.factor);
-      const factor = hasFactor ? upgrade(item.factor, item.increment, level) : "-";
-      const duration = !hasFactor && !isEmpty(item.duration) ? upgrade(item.duration, item.increment, level) : item.duration;
+      const factor = isEmpty(item.factor) ? "-" : upgrade(item.factor, item.factorIncrement, level);
+      const duration = isEmpty(item.duration) ? "-" : upgrade(item.duration, item.durationIncrement, level);
       return `<tr><td>${escapeHtml(item.effect)}</td><td>${escapeHtml(factor)}</td><td>${escapeHtml(duration)}</td></tr>`;
     }).join("")}</tbody></table></div>`;
   }
