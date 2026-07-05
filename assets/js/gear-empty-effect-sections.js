@@ -32,6 +32,10 @@
     ));
   }
 
+  function hasSkillPlusData(section) {
+    return Boolean(section?.querySelector(".gear-skillplus-table tbody tr"));
+  }
+
   function hasSpecPlusData(section) {
     return Boolean(section.querySelector(
       ".gear-specplus-basic-table tbody tr, .gear-specplus-condition-table tbody tr, .gear-specplus-effect-table tbody tr"
@@ -55,6 +59,10 @@
       }
 
       const skillPlus = findSection("Skill+");
+      if (skillPlus && !hasSkillPlusData(skillPlus)) {
+        skillPlus.querySelector(":scope > h3 .gear-level-control")?.remove();
+      }
+
       let specPlus = findSection("Spec+");
       if (!specPlus) specPlus = createSection("Spec+", skillPlus || advanced);
       if (!hasSpecPlusData(specPlus)) {
