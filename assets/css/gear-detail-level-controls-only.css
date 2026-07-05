@@ -9,3 +9,9 @@ body:not(.gear-detail-page) .gear-section-heading {
 .gear-specplus-table-divider {
   display: none !important;
 }
+
+.gear-effect-table tbody th,
+.gear-specplus-basic-table td:first-child,
+.gear-specplus-effect-table td:nth-child(2) {
+  font-weight: 400 !important;
+}
