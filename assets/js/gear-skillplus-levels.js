@@ -48,7 +48,6 @@
     const effect = read(value, ["技能效果", "效果", "skillEffect", "effect"]);
     const factor = read(value, ["係數", "倍率", "數值", "factor", "value"]);
     const duration = read(value, ["有效時間", "時間", "持續時間", "duration", "time"]);
-    const legacyIncrement = read(value, ["每次升級", "每次升級增加", "升級增加", "increment"]);
     const factorIncrement = read(value, ["每次升級係數增加", "每次升級倍率增加", "factorIncrement"]);
     const durationIncrement = read(value, ["每次升級時間增加", "每次升級有效時間增加", "durationIncrement"]);
 
@@ -57,8 +56,8 @@
         effect: text(effect) || "-",
         factor: text(factor) || "-",
         duration: text(duration) || "-",
-        factorIncrement: text(factorIncrement) || (!isEmpty(factor) ? text(legacyIncrement) : ""),
-        durationIncrement: text(durationIncrement) || (!isEmpty(duration) ? text(legacyIncrement) : "")
+        factorIncrement: text(factorIncrement),
+        durationIncrement: text(durationIncrement)
       }];
     }
     return Object.values(value).flatMap(normalizeRows);
@@ -84,7 +83,10 @@
   }
 
   function findSection(content) {
-    return [...content.querySelectorAll(":scope > .detail-section")].find((section) => section.querySelector(":scope > h3")?.textContent.trim() === "Skill+");
+    return [...content.querySelectorAll(":scope > .detail-section")].find((section) => {
+      const heading = section.querySelector(":scope > h3");
+      return heading?.querySelector(":scope > span")?.textContent.trim() === "Skill+" || heading?.childNodes?.[0]?.textContent?.trim() === "Skill+";
+    });
   }
 
   function heading(id, level) {
@@ -110,20 +112,30 @@
     try {
       const gear = (await loadData()).get(id);
       if (!gear) return;
-      const skillPlus = gear["Skill+"] ?? gear["Skill＋"] ?? gear.skillPlus;
       const level = selected.get(id) ?? 0;
-      section.innerHTML = `${heading(id, level)}${table(normalizeRows(skillPlus), level)}`;
+      section.innerHTML = `${heading(id, level)}${table(normalizeRows(gear["Skill+"]), level)}`;
     } finally {
       rendering = false;
     }
   }
 
-  document.addEventListener("change", (event) => {
+  document.addEventListener("change", async (event) => {
     const select = event.target.closest?.(".gear-skillplus-level-select");
     if (!select) return;
     const id = select.dataset.gearId || currentId();
-    selected.set(id, Number(select.value) || 0);
-    render(id);
+    const level = Number(select.value) || 0;
+    selected.set(id, level);
+    const gear = (await loadData()).get(id);
+    const content = document.getElementById("gearModalContent");
+    const section = content && findSection(content);
+    if (!gear || !section) return;
+    const items = normalizeRows(gear["Skill+"]);
+    [...section.querySelectorAll(".gear-skillplus-table tbody tr")].forEach((row, index) => {
+      const item = items[index];
+      if (!item) return;
+      if (row.children[1]) row.children[1].textContent = isEmpty(item.factor) ? "-" : upgrade(item.factor, item.factorIncrement, level);
+      if (row.children[2]) row.children[2].textContent = isEmpty(item.duration) ? "-" : upgrade(item.duration, item.durationIncrement, level);
+    });
   });
 
   const content = document.getElementById("gearModalContent");
