@@ -43,17 +43,32 @@
     table.before(title);
   }
 
-  function normalizeSummaries() {
-    const advanced = root.querySelector(".gear-advanced-switchable-summary");
-    if (advanced && advanced.textContent !== "可切換效果") {
-      advanced.textContent = "可切換效果";
-    }
+  function bindNativeSummary(details, summary, label) {
+    if (!details || !summary) return;
+    summary.textContent = label;
+    if (details.dataset.nativeMarkerBound) return;
+    details.dataset.nativeMarkerBound = "1";
+    details.addEventListener("toggle", () => {
+      summary.textContent = label;
+    });
+  }
 
-    const skillPlus = root.querySelector(".gear-skillplus-ranger-summary");
-    if (skillPlus) {
-      const count = skillPlus.textContent.match(/（(\d+)）/)?.[1] || "0";
-      const expected = `具有此技能效果的角色（${count}）`;
-      if (skillPlus.textContent !== expected) skillPlus.textContent = expected;
+  function normalizeSummaries() {
+    const advancedSummary = root.querySelector(".gear-advanced-switchable-summary");
+    bindNativeSummary(
+      advancedSummary?.closest("details"),
+      advancedSummary,
+      "可切換效果"
+    );
+
+    const skillPlusSummary = root.querySelector(".gear-skillplus-ranger-summary");
+    if (skillPlusSummary) {
+      const count = skillPlusSummary.textContent.match(/（(\d+)）/)?.[1] || "0";
+      bindNativeSummary(
+        skillPlusSummary.closest("details"),
+        skillPlusSummary,
+        `具有此技能效果的角色（${count}）`
+      );
     }
   }
 
