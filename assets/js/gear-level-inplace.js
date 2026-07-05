@@ -10,10 +10,21 @@
     const summary = document.createElement("summary");
     details.className = "gear-advanced-switchable-details";
     summary.className = "gear-advanced-switchable-summary";
-    summary.textContent = title?.textContent.trim() || "可切換效果";
+    summary.textContent = title?.textContent.trim() || "可切換效果（點擊展開）";
+    Object.assign(summary.style, {
+      cursor: "pointer",
+      fontWeight: "800",
+      padding: "0.8rem 0",
+      color: "var(--text)"
+    });
+    Object.assign(details.style, { margin: "0", border: "0" });
+    target.style.paddingTop = "0";
     title?.remove();
     target.before(details);
     details.append(summary, target);
+    details.addEventListener("toggle", () => {
+      summary.textContent = details.open ? "可切換效果（點擊收合）" : "可切換效果（點擊展開）";
+    });
   };
 
   const schedule = () => [0, 50, 150, 400].forEach((delay) => window.setTimeout(apply, delay));
