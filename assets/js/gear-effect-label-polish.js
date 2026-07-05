@@ -18,9 +18,14 @@
       font-size: 1rem;
       font-weight: 800;
     }
-    .gear-skillplus-ranger-summary {
-      justify-content: flex-start !important;
-      gap: .35rem !important;
+    .gear-skillplus-ranger-summary,
+    .gear-advanced-switchable-summary {
+      display: list-item !important;
+      list-style: revert !important;
+    }
+    .gear-skillplus-ranger-summary::-webkit-details-marker,
+    .gear-advanced-switchable-summary::-webkit-details-marker {
+      display: inline !important;
     }
     .gear-skillplus-ranger-summary::after {
       content: none !important;
@@ -38,20 +43,32 @@
     table.before(title);
   }
 
-  function normalizeSkillPlusSummary() {
-    const details = root.querySelector(".gear-skillplus-ranger-details");
-    const summary = details?.querySelector(":scope > .gear-skillplus-ranger-summary");
+  function bindNativeSummary(details, summary, label) {
     if (!details || !summary) return;
-    const countMatch = summary.textContent.match(/（(\d+)）/);
-    const count = countMatch?.[1] || "0";
-    const expected = `${details.open ? "▼" : "►"} 具有此技能效果的角色（${count}）`;
-    if (summary.textContent !== expected) summary.textContent = expected;
-    if (!details.dataset.arrowBound) {
-      details.dataset.arrowBound = "1";
-      details.addEventListener("toggle", () => {
-        const match = summary.textContent.match(/（(\d+)）/);
-        summary.textContent = `${details.open ? "▼" : "►"} 具有此技能效果的角色（${match?.[1] || "0"}）`;
-      });
+    summary.textContent = label;
+    if (details.dataset.nativeMarkerBound) return;
+    details.dataset.nativeMarkerBound = "1";
+    details.addEventListener("toggle", () => {
+      summary.textContent = label;
+    });
+  }
+
+  function normalizeSummaries() {
+    const advancedSummary = root.querySelector(".gear-advanced-switchable-summary");
+    bindNativeSummary(
+      advancedSummary?.closest("details"),
+      advancedSummary,
+      "可切換效果"
+    );
+
+    const skillPlusSummary = root.querySelector(".gear-skillplus-ranger-summary");
+    if (skillPlusSummary) {
+      const count = skillPlusSummary.textContent.match(/（(\d+)）/)?.[1] || "0";
+      bindNativeSummary(
+        skillPlusSummary.closest("details"),
+        skillPlusSummary,
+        `具有此技能效果的角色（${count}）`
+      );
     }
   }
 
@@ -60,7 +77,7 @@
     applying = true;
     try {
       addSkillPlusTitle();
-      normalizeSkillPlusSummary();
+      normalizeSummaries();
     } finally {
       applying = false;
     }
