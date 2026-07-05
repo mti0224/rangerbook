@@ -1,5 +1,7 @@
 body:not(.gear-detail-page) #gearModalContent .gear-advanced-switchable-details,
-body:not(.gear-detail-page) #gearModalContent .gear-skillplus-ranger-details {
+body:not(.gear-detail-page) #gearModalContent .gear-skillplus-ranger-details,
+body:not(.gear-detail-page) #gearModalContent .gear-popup-switchable-divider,
+body:not(.gear-detail-page) #gearModalContent .gear-advanced-divider:has(+ .gear-advanced-switchable-details) {
   display: none !important;
 }
 
