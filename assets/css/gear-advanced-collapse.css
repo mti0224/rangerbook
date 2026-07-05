@@ -1,0 +1,38 @@
+.gear-advanced-switchable-details {
+  margin: 0;
+  border: 0;
+}
+
+.gear-advanced-switchable-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0;
+  color: var(--text);
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.gear-advanced-switchable-summary::-webkit-details-marker {
+  display: none;
+}
+
+.gear-advanced-switchable-summary::after {
+  content: "展開";
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.gear-advanced-switchable-details[open] > .gear-advanced-switchable-summary::after {
+  content: "收合";
+}
+
+.gear-advanced-switchable-details > .gear-advanced-switchable-section {
+  padding-top: 0;
+}
