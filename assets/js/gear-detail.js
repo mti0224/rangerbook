@@ -402,6 +402,7 @@
 
     const skillRows = normalizeSkillRows(gear?.["Skill+"] ?? gear?.["Skill＋"] ?? gear?.skillPlus);
     const rangers = skillRows.length ? await loadRangers() : [];
+    if (context.shouldCommit && !context.shouldCommit()) return false;
     currentContext = { ...context, id, gear };
     currentRangers = rangers;
 
@@ -415,6 +416,7 @@
       renderSimilarSection(gear, id, allGear, context.isPublicGear)
     ].join("");
     root.dataset.renderedGearId = id;
+    return true;
   }
 
   function rerenderSection(sectionName) {
