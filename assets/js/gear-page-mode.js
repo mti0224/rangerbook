@@ -20,6 +20,10 @@
   function setupSummaryModal() {
     if (!modalContent) return;
 
+    function removeSimilarSection() {
+      modalContent.querySelector('[data-gear-section="相似的裝備"], .gear-similar-section')?.remove();
+    }
+
     function addDetailLink(id) {
       if (!id || !modalContent.children.length) return;
       const summaryArea = modalContent.querySelector(".gear-detail-head > div:not(.gear-detail-image-wrap)");
@@ -36,6 +40,7 @@
     }
 
     document.addEventListener("rangerbook:gear-rendered", (event) => {
+      removeSimilarSection();
       addDetailLink(event.detail?.id || "");
     });
   }
