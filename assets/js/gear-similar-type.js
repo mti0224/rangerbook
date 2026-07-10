@@ -23,6 +23,11 @@
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
+  const normalize = (value) => text(value)
+    .replace(/\s+/g, "")
+    .replace(/[()（）]/g, "")
+    .toLowerCase();
+
   function loadData() {
     if (!dataPromise) {
       dataPromise = fetch(DATA_URL)
@@ -41,18 +46,33 @@
     return text(gear?.["裝備名稱"] || gear?.name || getId(gear));
   }
 
+  function getTypeValue(gear) {
+    return gear?.["裝備種類"]
+      ?? gear?.["種類"]
+      ?? gear?.["類型"]
+      ?? gear?.type
+      ?? gear?.gearType;
+  }
+
   function getType(gear) {
-    return text(gear?.["裝備種類"] || gear?.type);
+    return normalize(getTypeValue(gear));
+  }
+
+  function getTypeLabel(gear) {
+    return text(getTypeValue(gear));
   }
 
   function getStar(gear) {
-    return text(gear?.["裝備星級"]);
+    return text(gear?.["裝備星級"] || gear?.["星數"] || gear?.star);
   }
 
   function basicKeys(gear) {
     const basic = gear?.["基本效果"];
     if (!basic || typeof basic !== "object" || Array.isArray(basic)) return [];
-    return Object.keys(basic).filter(Boolean).sort((a, b) => a.localeCompare(b, "zh-Hant", { numeric: true }));
+    return Object.getOwnPropertyNames(basic)
+      .map(normalize)
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, "zh-Hant", { numeric: true }));
   }
 
   function sameBasicEffects(a, b) {
@@ -75,7 +95,12 @@
   }
 
   function findSection(title) {
-    return [...root.querySelectorAll(":scope > .detail-section")].find((section) => sectionTitle(section) === title) || null;
+    return [...root.querySelectorAll(":scope > .detail-section")]
+      .find((section) => sectionTitle(section) === title) || null;
+  }
+
+  function findSimilarSection() {
+    return findSection("相似的裝備") || findSection("類型相似的裝備");
   }
 
   function insertAfterAnchor(section) {
@@ -97,7 +122,7 @@
   function gearCard(gear) {
     const id = getId(gear);
     const name = getName(gear);
-    const tags = [getStar(gear) ? `${getStar(gear)}星` : "", getType(gear)].filter(Boolean);
+    const tags = [getStar(gear) ? `${getStar(gear)}星` : "", getTypeLabel(gear)].filter(Boolean);
     return `<a class="gear-similar-card" href="${ROOT}gear/${encodeURIComponent(id)}" title="${escapeHtml(name)}">
       <img src="${GEAR_ICON(id)}" alt="${escapeHtml(name)}" loading="lazy">
       <span class="gear-similar-name">${escapeHtml(name)}</span>
@@ -121,9 +146,9 @@
   }
 
   function renderSection(matches) {
-    return `<h3>類型相似的裝備</h3>${matches.length
+    return `<h3>相似的裝備</h3>${matches.length
       ? `<div class="ranger-talent-list"><article class="ranger-talent-card"><div class="gear-similar-list">${matches.map(gearCard).join("")}</div></article></div>`
-      : `<div class="empty-state small">沒有類型相似的裝備。</div>`}`;
+      : `<div class="empty-state small">沒有相似的裝備。</div>`}`;
   }
 
   async function apply() {
@@ -131,7 +156,7 @@
     const id = currentGearId();
     if (!id) return;
 
-    const existing = findSection("類型相似的裝備");
+    const existing = findSimilarSection();
     if (renderedId === id && existing) return;
 
     applying = true;
@@ -139,13 +164,14 @@
       const rows = await loadData();
       const current = rows.find((gear) => getId(gear) === id);
       if (!current) return;
+
       const currentType = getType(current);
       const matches = rows
         .filter((gear) => getId(gear) && getId(gear) !== id)
-        .filter((gear) => getType(gear) === currentType && sameBasicEffects(gear, current))
+        .filter((gear) => currentType && getType(gear) === currentType && sameBasicEffects(gear, current))
         .sort(sortGear);
 
-      let section = findSection("類型相似的裝備");
+      let section = findSimilarSection();
       if (!section) {
         section = document.createElement("section");
         section.className = "detail-section gear-similar-section";
@@ -162,7 +188,7 @@
   new MutationObserver(() => {
     if (applying) return;
     const id = currentGearId();
-    if (!id || (id === renderedId && findSection("類型相似的裝備"))) return;
+    if (!id || (id === renderedId && findSimilarSection())) return;
     clearTimeout(timer);
     timer = window.setTimeout(apply, 120);
   }).observe(root, { childList: true, subtree: false });
