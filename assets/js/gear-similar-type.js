@@ -2,6 +2,7 @@
   const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const DATA_URL = `${ROOT}res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
+  const MISSING_GEAR_ICON_KEY = "rangerbook-missing-gear-icons";
 
   const root = document.getElementById("gearModalContent");
   if (!root) return;
@@ -66,6 +67,52 @@
     return text(gear?.["裝備星級"] || gear?.["星數"] || gear?.star);
   }
 
+  function getMissingIconSet() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(MISSING_GEAR_ICON_KEY) || "[]");
+      return new Set(Array.isArray(raw) ? raw.map(String) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function rememberMissingIcon(id) {
+    if (!id) return;
+    const set = getMissingIconSet();
+    if (set.has(id)) return;
+    set.add(id);
+    localStorage.setItem(MISSING_GEAR_ICON_KEY, JSON.stringify([...set]));
+  }
+
+  function hasKorean(value) {
+    return /[\u3130-\u318F\uAC00-\uD7AF]/.test(text(value));
+  }
+
+  function hasTstText(value) {
+    return text(value).toUpperCase().includes("TST");
+  }
+
+  function publicRawText(gear) {
+    return [
+      getId(gear),
+      getName(gear),
+      gear?.["裝備星級"],
+      gear?.["裝備種類"],
+      gear?.["基本效果"],
+      gear?.["高級效果"],
+      gear?.["Skill+"]
+    ].map((value) => value && typeof value === "object" ? JSON.stringify(value) : text(value)).join(" ");
+  }
+
+  function isPubliclyVisible(gear) {
+    const id = getId(gear);
+    const rawText = publicRawText(gear);
+    return Boolean(id)
+      && !hasKorean(rawText)
+      && !hasTstText(rawText)
+      && !getMissingIconSet().has(id);
+  }
+
   function basicKeys(gear) {
     const basic = gear?.["基本效果"];
     if (!basic || typeof basic !== "object" || Array.isArray(basic)) return [];
@@ -123,8 +170,8 @@
     const id = getId(gear);
     const name = getName(gear);
     const tags = [getStar(gear) ? `${getStar(gear)}星` : "", getTypeLabel(gear)].filter(Boolean);
-    return `<a class="gear-similar-card" href="${ROOT}gear/${encodeURIComponent(id)}" title="${escapeHtml(name)}">
-      <img src="${GEAR_ICON(id)}" alt="${escapeHtml(name)}" loading="lazy">
+    return `<a class="gear-similar-card" href="${ROOT}gear/${encodeURIComponent(id)}" title="${escapeHtml(name)}" data-gear-id="${escapeHtml(id)}">
+      <img src="${GEAR_ICON(id)}" alt="${escapeHtml(name)}" loading="lazy" data-gear-id="${escapeHtml(id)}">
       <span class="gear-similar-name">${escapeHtml(name)}</span>
       <span class="gear-similar-tags">${tags.map((tag) => escapeHtml(tag)).join("／")}</span>
     </a>`;
@@ -151,6 +198,20 @@
       : `<div class="empty-state small">沒有相似的裝備。</div>`}`;
   }
 
+  function bindMissingIconHandlers(section) {
+    section.querySelectorAll(".gear-similar-card img").forEach((img) => {
+      img.addEventListener("error", () => {
+        const id = img.dataset.gearId || "";
+        const card = img.closest(".gear-similar-card");
+        rememberMissingIcon(id);
+        card?.remove();
+        if (!section.querySelector(".gear-similar-card")) {
+          section.innerHTML = renderSection([]);
+        }
+      }, { once: true });
+    });
+  }
+
   async function apply() {
     if (applying || !document.body.classList.contains("gear-detail-page") || !root.querySelector(".gear-detail-head")) return;
     const id = currentGearId();
@@ -168,6 +229,7 @@
       const currentType = getType(current);
       const matches = rows
         .filter((gear) => getId(gear) && getId(gear) !== id)
+        .filter(isPubliclyVisible)
         .filter((gear) => currentType && getType(gear) === currentType && sameBasicEffects(gear, current))
         .sort(sortGear);
 
@@ -178,6 +240,7 @@
         insertAfterAnchor(section);
       }
       section.innerHTML = renderSection(matches);
+      bindMissingIconHandlers(section);
       renderedId = id;
     } finally {
       applying = false;
