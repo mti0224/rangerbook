@@ -11,37 +11,17 @@
   const list = document.getElementById("gearList");
   const search = document.getElementById("gearSearchInput");
 
-  function inferGearId() {
-    const src = modalContent?.querySelector(".gear-detail-image")?.getAttribute("src") || "";
-    const match = src.match(/gear_icon\/([^/]+)_icon\.png/);
-    return match ? decodeURIComponent(match[1]) : "";
-  }
-
-  function detailUrl(id) {
-    return `${root}gear/${encodeURIComponent(id)}`;
-  }
-
-  function detailEntryUrl(id) {
-    return `${root}gear/?detail=${encodeURIComponent(id)}`;
-  }
+  const detailUrl = (id) => `${root}gear/${encodeURIComponent(id)}`;
+  const detailEntryUrl = (id) => `${root}gear/?detail=${encodeURIComponent(id)}`;
 
   if (isDetailPage) setupDetailPage();
   else setupSummaryModal();
 
   function setupSummaryModal() {
     if (!modalContent) return;
-    let selectedId = "";
 
-    document.addEventListener("click", (event) => {
-      const card = event.target.closest?.(".gear-card[data-gear-id]");
-      if (card) selectedId = card.dataset.gearId || "";
-    }, true);
-
-    function addDetailLink() {
-      if (!modalContent.children.length) return;
-      const gearId = selectedId || inferGearId();
-      if (!gearId) return;
-
+    function addDetailLink(id) {
+      if (!id || !modalContent.children.length) return;
       const summaryArea = modalContent.querySelector(".gear-detail-head > div:not(.gear-detail-image-wrap)");
       if (!summaryArea) return;
 
@@ -52,13 +32,12 @@
         link.textContent = "查看詳細資訊";
         summaryArea.appendChild(link);
       }
-
-      const href = detailEntryUrl(gearId);
-      if (link.getAttribute("href") !== href) link.setAttribute("href", href);
+      link.href = detailEntryUrl(id);
     }
 
-    new MutationObserver(addDetailLink).observe(modalContent, { childList: true, subtree: true });
-    addDetailLink();
+    document.addEventListener("rangerbook:gear-rendered", (event) => {
+      addDetailLink(event.detail?.id || "");
+    });
   }
 
   function setupDetailPage() {
@@ -129,21 +108,25 @@
       }
     }
 
-    function revealDetail() {
-      if (!modalContent.children.length) return;
+    function revealDetail(id) {
+      if (id !== detailId || !modalContent.children.length) return;
       const detailHead = modalContent.querySelector(".gear-detail-head");
       if (detailHead && backLink.parentElement !== detailHead) detailHead.appendChild(backLink);
       modalContent.querySelector(".gear-detail-link")?.remove();
       status.hidden = true;
       detailContent.hidden = false;
+      modal.hidden = true;
       document.body.classList.remove("modal-open");
       removePagination();
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     new MutationObserver(processList).observe(list, { childList: true });
-    new MutationObserver(revealDetail).observe(modalContent, { childList: true, subtree: true });
+    document.addEventListener("rangerbook:gear-rendered", (event) => {
+      revealDetail(event.detail?.id || "");
+    });
+
     processList();
-    revealDetail();
+    if (modalContent.dataset.renderedGearId) revealDetail(modalContent.dataset.renderedGearId);
   }
 })();
