@@ -1,12 +1,23 @@
 (() => {
-  const DATA_URL = "../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
+  const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const DATA_URL = `${ROOT}res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ATTR_OPTIONS = ["火", "水", "木", "光", "暗"];
   const TYPECLASS_OPTIONS = ["智慧型", "敏捷型", "力量型"];
   const ADMIN_MODE_KEY = "rangerbook-admin-mode";
   const MISSING_GEAR_ICON_KEY = "rangerbook-missing-gear-icons";
 
-  const state = { rows: [], filtered: [], selectedId: "", page: 1, pageSize: 60, basicMode: "OR", showMax: false };
+  const state = {
+    rows: [],
+    filtered: [],
+    selectedId: "",
+    page: 1,
+    pageSize: 60,
+    basicMode: "OR",
+    basicDisplayLevel: 0,
+    openSequence: 0
+  };
+
   const $ = (id) => document.getElementById(id);
   const searchInput = $("gearSearchInput");
   const advancedToggleBtn = $("gearAdvancedToggleBtn");
@@ -18,7 +29,7 @@
   const triggerTypeFilter = $("gearTriggerTypeFilter");
   const basicModeOr = $("gearBasicModeOr");
   const basicModeAnd = $("gearBasicModeAnd");
-  const showMaxToggle = $("gearShowMaxToggle");
+  const basicDisplayLevel = $("gearBasicDisplayLevel");
   const resetBtn = $("gearResetBtn");
   const resultCount = $("gearResultCount");
   const gearList = $("gearList");
@@ -26,6 +37,8 @@
   const modalPanel = modal?.querySelector(".modal-panel");
   const modalContent = $("gearModalContent");
   const modalCloseBtn = $("gearModalCloseBtn");
+
+  let skillPlusFilter = null;
 
   function isAdminMode() {
     return localStorage.getItem(ADMIN_MODE_KEY) === "true";
@@ -41,7 +54,7 @@
   }
 
   function rememberMissingIcon(id) {
-    if (!id || isAdminMode()) return;
+    if (!id) return;
     const set = getMissingIconSet();
     if (set.has(id)) return;
     set.add(id);
@@ -50,8 +63,16 @@
 
   function text(value) {
     if (value === null || value === undefined) return "";
-    if (typeof value === "object") return JSON.stringify(value);
+    if (typeof value === "object") {
+      try { return JSON.stringify(value); } catch { return String(value); }
+    }
     return String(value).replaceAll("\\n", "\n").trim();
+  }
+
+  function scalarText(value) {
+    return value == null || typeof value === "object"
+      ? ""
+      : String(value).replaceAll("\\n", "\n").trim();
   }
 
   function escapeHtml(value) {
@@ -63,16 +84,20 @@
       .replaceAll("'", "&#039;");
   }
 
-  function isEmptyObject(value) {
-    return !value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length === 0;
+  function isObject(value) {
+    return Boolean(value) && typeof value === "object" && !Array.isArray(value);
   }
 
   function getId(gear) {
-    return text(gear.id || gear.gear_id || gear.code || "");
+    return scalarText(gear?.id || gear?.gear_id || gear?.code || "");
   }
 
   function getName(gear) {
-    return text(gear["裝備名稱"] || gear.name || getId(gear));
+    return scalarText(gear?.["裝備名稱"] || gear?.name || getId(gear));
+  }
+
+  function getType(gear) {
+    return scalarText(gear?.["裝備種類"] ?? gear?.["種類"] ?? gear?.["類型"] ?? gear?.type ?? gear?.gearType);
   }
 
   function hasKorean(value) {
@@ -87,19 +112,23 @@
     return [
       getId(gear),
       getName(gear),
-      gear["裝備星級"],
-      gear["裝備種類"],
-      gear["基本效果"],
-      gear["高級效果"],
-      gear["Skill+"]
+      gear?.["裝備星級"],
+      getType(gear),
+      gear?.["基本效果"],
+      gear?.["高級效果"],
+      gear?.["Skill+"],
+      gear?.["Spec+"]
     ].map(text).join(" ");
   }
 
-  function shouldHideGearForPublic(gear) {
-    if (isAdminMode()) return false;
+  function isPubliclyVisible(gear) {
     const id = getId(gear);
     const rawText = gearRawText(gear);
-    return !id || hasKorean(rawText) || hasTstText(rawText) || getMissingIconSet().has(id);
+    return Boolean(id) && !hasKorean(rawText) && !hasTstText(rawText) && !getMissingIconSet().has(id);
+  }
+
+  function shouldHideGearForPublic(gear) {
+    return !isAdminMode() && !isPubliclyVisible(gear);
   }
 
   function numberFrom(value) {
@@ -108,11 +137,11 @@
   }
 
   function getStarNumber(gear) {
-    return numberFrom(gear["裝備星級"]);
+    return numberFrom(gear?.["裝備星級"]);
   }
 
   function getGearNumber(gear) {
-    return numberFrom(gear["編號"] || gear.number || gear.no || getId(gear));
+    return numberFrom(gear?.["編號"] || gear?.number || gear?.no || getId(gear));
   }
 
   function sortGearRows(a, b) {
@@ -123,51 +152,85 @@
     return getId(a.gear).localeCompare(getId(b.gear), "zh-Hant", { numeric: true }) || a.index - b.index;
   }
 
-  function effectText(obj, limit = 3) {
-    if (isEmptyObject(obj)) return [];
-    return Object.entries(obj).slice(0, limit).map(([key, value]) => `${key} ${formatBasicEffectValue(value)}`);
-  }
-
   function formatSigned1(value) {
-    const n = Number(value);
-    if (!Number.isFinite(n)) return String(value);
-    const s = n.toFixed(1);
-    return n > 0 ? `+${s}` : s;
-  }
-
-  function formatNumbersWithSign1(value) {
-    if (value === null || value === undefined) return "";
-    if (typeof value === "number") return formatSigned1(value);
-    return text(value).replace(/[+\-]?\d+(?:\.\d+)?/g, (match) => {
-      const n = parseFloat(match);
-      return Number.isNaN(n) ? match : formatSigned1(n);
-    });
+    const number = Number(value);
+    if (!Number.isFinite(number)) return String(value);
+    const output = number.toFixed(1);
+    return number > 0 ? `+${output}` : output;
   }
 
   function scaleNumbersInText(value, factor) {
     if (value === null || value === undefined) return "";
     if (typeof value === "number") return formatSigned1(value * factor);
-    return text(value).replace(/[+\-]?\d+(?:\.\d+)?/g, (match) => {
-      const n = parseFloat(match);
-      return Number.isNaN(n) ? match : formatSigned1(n * factor);
+    return scalarText(value).replace(/[+\-]?\d+(?:\.\d+)?/g, (token) => {
+      const number = Number(token);
+      return Number.isFinite(number) ? formatSigned1(number * factor) : token;
     });
   }
 
   function formatBasicEffectValue(value) {
-    return state.showMax ? scaleNumbersInText(value, 6) : formatNumbersWithSign1(value);
+    return scaleNumbersInText(value, state.basicDisplayLevel + 1);
+  }
+
+  function effectText(obj, limit = 3) {
+    if (!isObject(obj)) return [];
+    return Object.entries(obj)
+      .slice(0, limit)
+      .map(([key, value]) => `${key} ${formatBasicEffectValue(value)}`);
   }
 
   function getBasicKeys(gear) {
-    const basic = gear["基本效果"];
-    return new Set(basic && typeof basic === "object" && !Array.isArray(basic) ? Object.keys(basic) : []);
+    return isObject(gear?.["基本效果"])
+      ? new Set(Object.keys(gear["基本效果"]).filter(Boolean))
+      : new Set();
+  }
+
+  function getSpecBasicKeys(gear) {
+    const basic = isObject(gear?.["Spec+"]?.["基本效果"]) ? gear["Spec+"]["基本效果"] : {};
+    return new Set(Object.keys(basic).filter((key) => key && !key.startsWith("每次升級")));
+  }
+
+  function getFilterBasicKeys(gear) {
+    return new Set([...getBasicKeys(gear), ...getSpecBasicKeys(gear)]);
+  }
+
+  function getSkillPlusKeys(gear) {
+    const source = gear?.["Skill+"] ?? gear?.["Skill＋"] ?? gear?.skillPlus;
+    const result = new Set();
+
+    const collect = (value) => {
+      if (Array.isArray(value)) {
+        value.forEach(collect);
+        return;
+      }
+      if (!isObject(value)) {
+        const item = scalarText(value);
+        if (item) result.add(item);
+        return;
+      }
+      const effect = scalarText(value["技能效果"] ?? value["效果"] ?? value.skillEffect ?? value.effect);
+      if (effect) {
+        result.add(effect);
+        return;
+      }
+      Object.values(value).forEach(collect);
+    };
+
+    collect(source);
+    return result;
+  }
+
+  function getTriggerText(gear) {
+    const advanced = gear?.["高級效果"];
+    return isObject(advanced) ? scalarText(advanced["觸發條件"] ?? advanced["條件"] ?? "") : "";
   }
 
   function pickTriggerTags(triggerText) {
     const attrs = new Set();
     const types = new Set();
-    const source = text(triggerText);
+    const source = scalarText(triggerText);
     ATTR_OPTIONS.forEach((attr) => {
-      if (source.includes(`${attr}屬性`)) attrs.add(attr);
+      if (source.includes(`${attr}屬性`) || source.includes(attr)) attrs.add(attr);
     });
     TYPECLASS_OPTIONS.forEach((type) => {
       if (source.includes(type)) types.add(type);
@@ -175,9 +238,18 @@
     return { attrs, types };
   }
 
-  function getTriggerText(gear) {
-    const advanced = gear["高級效果"];
-    return advanced && typeof advanced === "object" ? text(advanced["觸發條件"]) : "";
+  function triggerLabels(gear) {
+    const tags = pickTriggerTags(getTriggerText(gear));
+    return [...tags.attrs].map((attr) => `${attr}屬性`).concat([...tags.types]);
+  }
+
+  function searchBlob(gear) {
+    return gearRawText(gear).toLowerCase();
+  }
+
+  function uniqueSorted(values) {
+    return [...new Set(values.map(scalarText).filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b, "zh-Hant", { numeric: true }));
   }
 
   function getSelectedValues(container) {
@@ -186,17 +258,9 @@
   }
 
   function matchEffectKeys(gearKeys, selectedSet, mode) {
-    if (selectedSet.size === 0) return true;
+    if (!selectedSet.size) return true;
     const matched = [...selectedSet].filter((key) => gearKeys.has(key)).length;
     return mode === "AND" ? matched === selectedSet.size : matched > 0;
-  }
-
-  function searchBlob(gear) {
-    return gearRawText(gear).toLowerCase();
-  }
-
-  function uniqueSorted(values) {
-    return [...new Set(values.map(text).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant", { numeric: true }));
   }
 
   function renderCheckbox(container, values, formatter = (value) => value) {
@@ -207,6 +271,38 @@
         <span>${escapeHtml(formatter(value))}</span>
       </label>
     `).join("");
+  }
+
+  function ensureSkillPlusPanel() {
+    skillPlusFilter = $("gearSkillPlusFilter");
+    if (skillPlusFilter) return skillPlusFilter;
+    if (!advancedFilters) return null;
+
+    const panel = document.createElement("section");
+    panel.className = "gear-filter-panel gear-skillplus-filter-panel";
+    panel.innerHTML = `
+      <div class="gear-filter-head"><h2>Skill+</h2></div>
+      <div id="gearSkillPlusFilter" class="gear-checkbox-grid gear-skillplus-grid"></div>
+    `;
+    const triggerPanel = advancedFilters.querySelector(".gear-trigger-filter-panel");
+    if (triggerPanel) triggerPanel.before(panel);
+    else advancedFilters.appendChild(panel);
+    skillPlusFilter = panel.querySelector("#gearSkillPlusFilter");
+    skillPlusFilter.addEventListener("change", applyFilters);
+    return skillPlusFilter;
+  }
+
+  function buildFilters() {
+    const sourceRows = isAdminMode()
+      ? state.rows
+      : state.rows.filter(({ gear }) => isPubliclyVisible(gear));
+
+    renderCheckbox(starFilter, sourceRows.map(({ gear }) => gear?.["裝備星級"]), (value) => `${value}星`);
+    renderCheckbox(typeFilter, sourceRows.map(({ gear }) => getType(gear)));
+    renderCheckbox(basicEffectFilter, sourceRows.flatMap(({ gear }) => [...getFilterBasicKeys(gear)]));
+    renderCheckbox(triggerAttrFilter, ATTR_OPTIONS);
+    renderCheckbox(triggerTypeFilter, TYPECLASS_OPTIONS);
+    renderCheckbox(ensureSkillPlusPanel(), sourceRows.flatMap(({ gear }) => [...getSkillPlusKeys(gear)]));
   }
 
   function setBasicMode(mode) {
@@ -222,14 +318,6 @@
     advancedFilters.hidden = !isOpen;
     advancedToggleBtn.setAttribute("aria-expanded", String(isOpen));
     advancedToggleBtn.textContent = isOpen ? "收合進階篩選 ▲" : "進階篩選 ▼";
-  }
-
-  function buildFilters() {
-    renderCheckbox(starFilter, state.rows.map(({ gear }) => gear["裝備星級"]), (value) => `${value}星`);
-    renderCheckbox(typeFilter, state.rows.map(({ gear }) => gear["裝備種類"]));
-    renderCheckbox(basicEffectFilter, state.rows.flatMap(({ gear }) => [...getBasicKeys(gear)]));
-    renderCheckbox(triggerAttrFilter, ATTR_OPTIONS);
-    renderCheckbox(triggerTypeFilter, TYPECLASS_OPTIONS);
   }
 
   function ensurePaginationBar() {
@@ -276,7 +364,9 @@
     state.page = Math.min(Math.max(1, state.page), totalPages);
     const start = (state.page - 1) * state.pageSize;
     const end = Math.min(start + state.pageSize, total);
-    $("paginationInfo").textContent = total ? `第 ${state.page} / ${totalPages} 頁，顯示第 ${start + 1}–${end} 筆，共 ${total} 筆` : "";
+    $("paginationInfo").textContent = total
+      ? `第 ${state.page} / ${totalPages} 頁，顯示第 ${start + 1}–${end} 筆，共 ${total} 筆`
+      : "";
     $("paginationPrev").disabled = state.page <= 1;
     $("paginationNext").disabled = state.page >= totalPages;
 
@@ -285,7 +375,7 @@
       .sort((a, b) => a - b);
     let last = 0;
     $("paginationPages").innerHTML = totalPages <= 1 ? "" : pages.map((page) => {
-      const gap = page - last > 1 ? `<span class="pagination-ellipsis">…</span>` : "";
+      const gap = page - last > 1 ? '<span class="pagination-ellipsis">…</span>' : "";
       last = page;
       return `${gap}<button class="pagination-page ${page === state.page ? "active" : ""}" type="button" data-page="${page}">${page}</button>`;
     }).join("");
@@ -298,58 +388,67 @@
   }
 
   function applyFilters() {
-    const q = searchInput.value.trim().toLowerCase();
+    const query = searchInput?.value.trim().toLowerCase() || "";
     const stars = getSelectedValues(starFilter);
     const types = getSelectedValues(typeFilter);
     const basicEffects = getSelectedValues(basicEffectFilter);
+    const skillPlusEffects = getSelectedValues(skillPlusFilter);
     const triggerAttrs = getSelectedValues(triggerAttrFilter);
     const triggerTypes = getSelectedValues(triggerTypeFilter);
     const triggerSelected = new Set([...triggerAttrs, ...triggerTypes]);
 
     state.filtered = state.rows.filter((row) => {
       const gear = row.gear;
-      if (!isAdminMode() && shouldHideGearForPublic(gear)) return false;
-      if (q && !row.search.includes(q)) return false;
-      if (stars.size && !stars.has(text(gear["裝備星級"]))) return false;
-      if (types.size && !types.has(text(gear["裝備種類"]))) return false;
-      if (!matchEffectKeys(getBasicKeys(gear), basicEffects, state.basicMode)) return false;
+      if (shouldHideGearForPublic(gear)) return false;
+      if (query && !row.search.includes(query)) return false;
+      if (stars.size && !stars.has(scalarText(gear?.["裝備星級"]))) return false;
+      if (types.size && !types.has(getType(gear))) return false;
+      if (!matchEffectKeys(getFilterBasicKeys(gear), basicEffects, state.basicMode)) return false;
+      if (!matchEffectKeys(getSkillPlusKeys(gear), skillPlusEffects, "OR")) return false;
 
       const trigger = pickTriggerTags(getTriggerText(gear));
-      const gearTriggerTags = new Set([...trigger.attrs, ...trigger.types]);
-      if (!matchEffectKeys(gearTriggerTags, triggerSelected, "OR")) return false;
-
+      const triggerTags = new Set([...trigger.attrs, ...trigger.types]);
+      if (!matchEffectKeys(triggerTags, triggerSelected, "OR")) return false;
       return true;
     });
+
     state.page = 1;
     renderList();
   }
 
-  function handleGearIconError(img, id) {
-    const wrap = img.closest(".gear-thumb-wrap");
+  function handleGearIconError(image, id) {
+    const wrap = image.closest(".gear-thumb-wrap");
     wrap?.classList.add("missing-icon");
-    img.remove();
+    image.remove();
     rememberMissingIcon(id);
     if (!isAdminMode()) {
-      const card = wrap?.closest(".gear-card");
-      card?.remove();
-      window.setTimeout(applyFilters, 0);
+      wrap?.closest(".gear-card")?.remove();
+      window.setTimeout(() => {
+        buildFilters();
+        applyFilters();
+      }, 0);
     }
   }
 
   function renderList() {
     const total = state.filtered.length;
-    resultCount.textContent = total.toLocaleString("zh-Hant");
+    if (resultCount) resultCount.textContent = total.toLocaleString("zh-Hant");
     renderPagination(total);
+    if (!gearList) return;
     if (!total) {
-      gearList.innerHTML = `<div class="empty-state">找不到符合條件的裝備。</div>`;
+      gearList.innerHTML = '<div class="empty-state">找不到符合條件的裝備。</div>';
       return;
     }
 
     const rows = state.filtered.slice((state.page - 1) * state.pageSize, state.page * state.pageSize);
     gearList.innerHTML = rows.map(({ gear }) => {
       const id = getId(gear);
-      const tags = [gear["裝備星級"] ? `${gear["裝備星級"]}星` : "", gear["裝備種類"]].filter(Boolean);
-      const mini = effectText(gear["基本效果"], 3);
+      const tags = [
+        gear?.["裝備星級"] ? `${gear["裝備星級"]}星` : "",
+        getType(gear),
+        ...triggerLabels(gear)
+      ].filter(Boolean);
+      const mini = effectText(gear?.["基本效果"], 3);
       return `
         <button class="ranger-card gear-card ${state.selectedId === id ? "active" : ""}" type="button" data-gear-id="${escapeHtml(id)}">
           <div class="ranger-thumb-wrap gear-thumb-wrap">
@@ -357,116 +456,102 @@
           </div>
           <div class="ranger-card-main">
             <div class="ranger-title-row"><h2>${escapeHtml(getName(gear))}</h2></div>
-            <div class="ranger-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+            <div class="ranger-tags">${tags.map((tag, index) => `<span${index >= 2 ? ' class="gear-trigger-condition-tag"' : ""}>${escapeHtml(tag)}</span>`).join("")}</div>
             <div class="ranger-mini-stats gear-mini-stats">${mini.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
           </div>
         </button>
       `;
     }).join("");
 
-    gearList.querySelectorAll(".gear-thumb").forEach((img) => {
-      img.addEventListener("error", () => handleGearIconError(img, img.dataset.gearId || ""), { once: true });
+    gearList.querySelectorAll(".gear-thumb").forEach((image) => {
+      image.addEventListener("error", () => handleGearIconError(image, image.dataset.gearId || ""), { once: true });
     });
-
     gearList.querySelectorAll(".gear-card").forEach((card) => {
-      card.addEventListener("click", () => openGear(card.dataset.gearId));
+      card.addEventListener("click", () => openGear(card.dataset.gearId || ""));
     });
   }
 
-  function renderEffectTable(title, effects, extraHeader = "", useMaxValue = false) {
-    if (isEmptyObject(effects)) return `<div class="empty-state small">沒有${escapeHtml(title)}資料。</div>`;
-    return `
-      ${extraHeader}
-      <div class="table-scroll gear-effect-table-wrap">
-        <table class="gear-effect-table">
-          <thead><tr><th>效果</th><th>數值</th></tr></thead>
-          <tbody>
-            ${Object.entries(effects).map(([key, value]) => `
-              <tr><th>${escapeHtml(key)}</th><td>${escapeHtml(useMaxValue ? formatBasicEffectValue(value) : value)}</td></tr>
-            `).join("")}
-          </tbody>
-        </table>
-      </div>
-    `;
+  function fallbackDetail(gear, id, message = "") {
+    const tags = [gear?.["裝備星級"] ? `${gear["裝備星級"]}星` : "", getType(gear)].filter(Boolean);
+    return `<div class="ranger-detail-head gear-detail-head"><div class="ranger-detail-image-wrap gear-detail-image-wrap"><img class="ranger-detail-image gear-detail-image" src="${GEAR_ICON(id)}" alt="${escapeHtml(getName(gear))}"></div><div><h2 id="gearModalTitle">${escapeHtml(getName(gear))}</h2><div class="ranger-tags detail-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div></div></div><div class="empty-state">${escapeHtml(message || "裝備詳細資料載入失敗，請重新整理後再試。")}</div>`;
   }
 
-  function renderAdvanced(advanced) {
-    if (isEmptyObject(advanced)) return `<div class="empty-state small">沒有高級效果資料。</div>`;
-    const condition = advanced["觸發條件"];
-    const switchable = advanced["可切換的效果"];
-    const header = condition ? `<p class="gear-condition">觸發條件：${escapeHtml(condition)}</p>` : "";
-    if (switchable && typeof switchable === "object") {
-      return renderEffectTable("高級效果", switchable, header, false);
-    }
-    return renderEffectTable("高級效果", advanced, "", false);
-  }
-
-  function renderSkillPlus(skillPlus) {
-    if (isEmptyObject(skillPlus)) return `<div class="empty-state small">沒有Skill+資料。</div>`;
-    return renderEffectTable("Skill+", skillPlus, "", false);
-  }
-
-  function openGear(id) {
+  async function openGear(id) {
     state.selectedId = id;
     const row = state.rows.find(({ gear }) => getId(gear) === id);
-    if (!row) return;
+    if (!row || !modalContent || !modal) return;
+    const sequence = ++state.openSequence;
     const gear = row.gear;
     renderList();
-    modalContent.innerHTML = `
-      <div class="ranger-detail-head gear-detail-head">
-        <div class="ranger-detail-image-wrap gear-detail-image-wrap">
-          <img class="ranger-detail-image gear-detail-image" src="${GEAR_ICON(id)}" alt="" onerror="this.closest('.gear-detail-image-wrap').classList.add('missing-icon'); this.remove();">
-        </div>
-        <div>
-          <h2 id="gearModalTitle">${escapeHtml(getName(gear))}</h2>
-          <div class="ranger-tags detail-tags">
-            ${[gear["裝備星級"] ? `${gear["裝備星級"]}星` : "", gear["裝備種類"]].filter(Boolean).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
-          </div>
-        </div>
-      </div>
-      <section class="detail-section"><h3>基本效果</h3>${renderEffectTable("基本效果", gear["基本效果"], "", true)}</section>
-      <section class="detail-section"><h3>高級效果</h3>${renderAdvanced(gear["高級效果"])}</section>
-      <section class="detail-section"><h3>Skill+</h3>${renderSkillPlus(gear["Skill+"])}</section>
-    `;
+    modalContent.setAttribute("aria-busy", "true");
+
+    try {
+      const renderer = window.RangerbookGearDetail;
+      if (!renderer?.render) throw new Error("Gear detail renderer is unavailable");
+      await renderer.render({
+        root: modalContent,
+        gear,
+        id,
+        allGear: state.rows.map((item) => item.gear),
+        isPublicGear: isPubliclyVisible,
+        rememberMissingIcon
+      });
+    } catch (error) {
+      console.error(error);
+      modalContent.innerHTML = fallbackDetail(gear, id);
+    } finally {
+      modalContent.removeAttribute("aria-busy");
+    }
+
+    if (sequence !== state.openSequence || state.selectedId !== id) return;
     modal.hidden = false;
     document.body.classList.add("modal-open");
     modal.scrollTop = 0;
-    modalPanel.scrollTop = 0;
+    if (modalPanel) modalPanel.scrollTop = 0;
     modalContent.scrollTop = 0;
+    document.dispatchEvent(new CustomEvent("rangerbook:gear-rendered", {
+      detail: { id, gear, modalContent }
+    }));
   }
 
   function closeModal() {
-    modal.hidden = true;
-    modalContent.innerHTML = "";
+    state.openSequence += 1;
+    if (modal) modal.hidden = true;
+    if (modalContent) {
+      modalContent.innerHTML = "";
+      delete modalContent.dataset.renderedGearId;
+    }
     document.body.classList.remove("modal-open");
   }
 
   function clearAll() {
-    searchInput.value = "";
-    [starFilter, typeFilter, basicEffectFilter, triggerAttrFilter, triggerTypeFilter].forEach((container) => {
+    if (searchInput) searchInput.value = "";
+    [starFilter, typeFilter, basicEffectFilter, skillPlusFilter, triggerAttrFilter, triggerTypeFilter].forEach((container) => {
       container?.querySelectorAll("input[type='checkbox']").forEach((input) => { input.checked = false; });
     });
     state.basicMode = "OR";
     basicModeOr?.classList.add("active");
     basicModeAnd?.classList.remove("active");
-    state.showMax = false;
-    if (showMaxToggle) showMaxToggle.checked = false;
+    state.basicDisplayLevel = 0;
+    const zero = basicDisplayLevel?.querySelector("input[value='0']");
+    if (zero) zero.checked = true;
     applyFilters();
   }
 
   async function init() {
+    if (!gearList) return;
     try {
-      const res = await fetch(DATA_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const raw = await res.json();
+      const response = await fetch(DATA_URL);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const raw = await response.json();
       state.rows = (Array.isArray(raw) ? raw : [])
         .map((gear, index) => ({ gear, index, search: searchBlob(gear) }))
         .sort(sortGearRows);
-      state.filtered = [...state.rows];
       buildFilters();
       applyFilters();
+      window.RangerbookGearDetail?.preload?.();
     } catch (error) {
-      gearList.innerHTML = `<div class="empty-state">資料載入失敗，請確認裝備資料庫.json是否已放在 /res 資料夾。</div>`;
+      gearList.innerHTML = '<div class="empty-state">資料載入失敗，請確認裝備資料庫.json是否已放在 /res 資料夾。</div>';
       console.error(error);
     }
   }
@@ -478,15 +563,16 @@
   });
   basicModeOr?.addEventListener("click", () => setBasicMode("OR"));
   basicModeAnd?.addEventListener("click", () => setBasicMode("AND"));
-  showMaxToggle?.addEventListener("change", () => {
-    state.showMax = showMaxToggle.checked;
+  basicDisplayLevel?.addEventListener("change", (event) => {
+    const input = event.target.closest?.("input[name='gearBasicDisplayLevel']");
+    if (!input) return;
+    state.basicDisplayLevel = Number(input.value) || 0;
     renderList();
-    if (!modal.hidden && state.selectedId) openGear(state.selectedId);
   });
   resetBtn?.addEventListener("click", clearAll);
   modalCloseBtn?.addEventListener("click", closeModal);
   modal?.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !modal.hidden) closeModal(); });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && modal && !modal.hidden) closeModal(); });
 
   init();
 })();
