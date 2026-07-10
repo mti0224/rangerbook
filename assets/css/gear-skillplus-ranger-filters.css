@@ -5,6 +5,71 @@ body:not(.gear-detail-page) #gearModalContent .gear-advanced-divider:has(+ .gear
   display: none !important;
 }
 
+.gear-skillplus-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.gear-skillplus-grid .gear-checkbox {
+  min-width: 0;
+}
+
+.gear-skillplus-grid .gear-checkbox span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gear-skillplus-detail {
+  margin: 0;
+}
+
+.gear-skillplus-card {
+  width: 100%;
+}
+
+.gear-skillplus-card > .gear-effect-table-wrap {
+  margin: 0;
+}
+
+.gear-skillplus-effect-title,
+.gear-skillplus-ranger-summary,
+.gear-advanced-switchable-summary,
+.gear-condition-label {
+  color: var(--primary-dark) !important;
+}
+
+.gear-skillplus-effect-title {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.gear-skillplus-ranger-details {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.75rem;
+}
+
+.gear-skillplus-ranger-summary,
+.gear-advanced-switchable-summary {
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.35rem 0;
+  display: list-item !important;
+  list-style: revert !important;
+}
+
+.gear-skillplus-ranger-summary::-webkit-details-marker,
+.gear-advanced-switchable-summary::-webkit-details-marker {
+  display: inline !important;
+}
+
+.gear-skillplus-ranger-summary::after {
+  content: none !important;
+}
+
 .gear-skillplus-ranger-filters {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -22,15 +87,112 @@ body:not(.gear-detail-page) #gearModalContent .gear-advanced-divider:has(+ .gear
   color: var(--text);
 }
 
+.gear-skillplus-ranger-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+.gear-skillplus-ranger-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+}
+
+.gear-skillplus-ranger-card img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.gear-skillplus-ranger-card span {
+  width: 100%;
+  overflow: hidden;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .gear-skillplus-ranger-card[hidden] {
   display: none !important;
 }
 
+.gear-skillplus-ranger-empty,
 .gear-skillplus-ranger-filter-empty {
   margin-top: 0.75rem;
 }
 
+.gear-similar-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 0.75rem;
+}
+
+.gear-similar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+}
+
+.gear-similar-card img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+}
+
+.gear-similar-name,
+.gear-similar-tags {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gear-similar-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.gear-similar-tags {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 1100px) {
+  .gear-skillplus-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 700px) {
+  .gear-skillplus-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .gear-skillplus-ranger-filters {
     gap: 0.4rem;
   }
@@ -38,5 +200,31 @@ body:not(.gear-detail-page) #gearModalContent .gear-advanced-divider:has(+ .gear
   .gear-skillplus-ranger-filters select {
     padding: 0.5rem 0.35rem;
     font-size: 0.82rem;
+  }
+
+  .gear-skillplus-ranger-grid,
+  .gear-similar-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .gear-skillplus-ranger-card,
+  .gear-similar-card {
+    padding: 0.45rem;
+  }
+
+  .gear-skillplus-ranger-card img,
+  .gear-similar-card img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .gear-skillplus-ranger-card span,
+  .gear-similar-name {
+    font-size: 0.74rem;
+  }
+
+  .gear-similar-tags {
+    font-size: 0.68rem;
   }
 }
