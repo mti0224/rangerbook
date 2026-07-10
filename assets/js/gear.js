@@ -53,8 +53,8 @@
     }
   }
 
-  function rememberMissingIcon(id) {
-    if (!id) return;
+  function rememberMissingIcon(id, force = false) {
+    if (!id || (isAdminMode() && !force)) return;
     const set = getMissingIconSet();
     if (set.has(id)) return;
     set.add(id);
@@ -116,8 +116,7 @@
       getType(gear),
       gear?.["基本效果"],
       gear?.["高級效果"],
-      gear?.["Skill+"],
-      gear?.["Spec+"]
+      gear?.["Skill+"]
     ].map(text).join(" ");
   }
 
@@ -185,8 +184,18 @@
       : new Set();
   }
 
+  function hasMeaningfulValue(value, key = "") {
+    if (key.startsWith("每次升級")) return false;
+    if (Array.isArray(value)) return value.some((item) => hasMeaningfulValue(item));
+    if (isObject(value)) return Object.entries(value).some(([childKey, childValue]) => hasMeaningfulValue(childValue, childKey));
+    const valueText = scalarText(value);
+    return Boolean(valueText) && !["-", "無", "(無)", "null", "undefined"].includes(valueText);
+  }
+
   function getSpecBasicKeys(gear) {
-    const basic = isObject(gear?.["Spec+"]?.["基本效果"]) ? gear["Spec+"]["基本效果"] : {};
+    const spec = isObject(gear?.["Spec+"]) ? gear["Spec+"] : null;
+    if (!spec || !hasMeaningfulValue(spec)) return new Set();
+    const basic = isObject(spec["基本效果"]) ? spec["基本效果"] : {};
     return new Set(Object.keys(basic).filter((key) => key && !key.startsWith("每次升級")));
   }
 
@@ -423,10 +432,7 @@
     rememberMissingIcon(id);
     if (!isAdminMode()) {
       wrap?.closest(".gear-card")?.remove();
-      window.setTimeout(() => {
-        buildFilters();
-        applyFilters();
-      }, 0);
+      window.setTimeout(applyFilters, 0);
     }
   }
 
@@ -488,14 +494,16 @@
     try {
       const renderer = window.RangerbookGearDetail;
       if (!renderer?.render) throw new Error("Gear detail renderer is unavailable");
-      await renderer.render({
+      const rendered = await renderer.render({
         root: modalContent,
         gear,
         id,
         allGear: state.rows.map((item) => item.gear),
         isPublicGear: isPubliclyVisible,
-        rememberMissingIcon
+        rememberMissingIcon: (missingId) => rememberMissingIcon(missingId, true),
+        shouldCommit: () => sequence === state.openSequence && state.selectedId === id
       });
+      if (rendered === false) return;
     } catch (error) {
       console.error(error);
       modalContent.innerHTML = fallbackDetail(gear, id);
