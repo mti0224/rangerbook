@@ -9,6 +9,7 @@
   let dataPromise;
   let applying = false;
   let timer = 0;
+  let renderedId = "";
 
   const text = (value) => {
     if (value === null || value === undefined || typeof value === "object") return "";
@@ -119,14 +120,22 @@
     document.head.appendChild(style);
   }
 
+  function renderSection(matches) {
+    return `<h3>類型相似的裝備</h3>${matches.length
+      ? `<div class="ranger-talent-list"><article class="ranger-talent-card"><div class="gear-similar-list">${matches.map(gearCard).join("")}</div></article></div>`
+      : `<div class="empty-state small">沒有類型相似的裝備。</div>`}`;
+  }
+
   async function apply() {
     if (applying || !document.body.classList.contains("gear-detail-page") || !root.querySelector(".gear-detail-head")) return;
     const id = currentGearId();
     if (!id) return;
 
+    const existing = findSection("類型相似的裝備");
+    if (renderedId === id && existing) return;
+
     applying = true;
     try {
-      findSection("類型相似的裝備")?.remove();
       const rows = await loadData();
       const current = rows.find((gear) => getId(gear) === id);
       if (!current) return;
@@ -136,12 +145,14 @@
         .filter((gear) => getType(gear) === currentType && sameBasicEffects(gear, current))
         .sort(sortGear);
 
-      const section = document.createElement("section");
-      section.className = "detail-section gear-similar-section";
-      section.innerHTML = `<h3>類型相似的裝備</h3>${matches.length
-        ? `<div class="ranger-talent-list"><article class="ranger-talent-card"><div class="gear-similar-list">${matches.map(gearCard).join("")}</div></article></div>`
-        : `<div class="empty-state small">沒有類型相似的裝備。</div>`}`;
-      insertAfterAnchor(section);
+      let section = findSection("類型相似的裝備");
+      if (!section) {
+        section = document.createElement("section");
+        section.className = "detail-section gear-similar-section";
+        insertAfterAnchor(section);
+      }
+      section.innerHTML = renderSection(matches);
+      renderedId = id;
     } finally {
       applying = false;
     }
@@ -150,6 +161,8 @@
   ensureStyles();
   new MutationObserver(() => {
     if (applying) return;
+    const id = currentGearId();
+    if (!id || (id === renderedId && findSection("類型相似的裝備"))) return;
     clearTimeout(timer);
     timer = window.setTimeout(apply, 120);
   }).observe(root, { childList: true, subtree: false });
