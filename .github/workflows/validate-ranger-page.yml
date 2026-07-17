@@ -3,6 +3,12 @@ name: Validate Ranger page
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - "assets/js/ranger.js"
+      - "assets/js/ranger-animation-viewer.js"
+      - "ranger/ranger/index.html"
+      - ".github/workflows/validate-ranger-page.yml"
   workflow_dispatch:
 
 permissions:
@@ -14,4 +20,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate JavaScript
-        run: node --check assets/js/ranger-page-mode.js && node --check assets/js/card-tag-colors.js && node --check assets/js/ranger-level-slider.js
+        run: node --check assets/js/ranger.js && node --check assets/js/ranger-animation-viewer.js
+      - name: Validate Ranger script references
+        run: |
+          grep -q 'assets/js/site.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger.js' ranger/ranger/index.html
+          test "$(grep -c '<script src=' ranger/ranger/index.html)" -eq 2
+          ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
