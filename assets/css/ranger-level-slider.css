@@ -1,65 +1,113 @@
 .ranger-level-control {
+  --level-thumb-size: 1.15rem;
+  --level-track-size: 0.4rem;
+  --level-progress: 0%;
   margin: 0.75rem 0 1rem;
-  padding: 0.9rem 1rem;
+  padding: 0.8rem 1rem;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
   background: var(--soft);
 }
 
-.ranger-level-control-head,
-.ranger-level-range-ends {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.ranger-level-control-head label {
+.ranger-level-label {
+  display: block;
   font-weight: 800;
 }
 
 .ranger-level-output {
-  display: inline-block;
-  min-width: 2.5ch;
-  margin-left: 0.25rem;
   color: var(--primary-dark);
-  text-align: right;
 }
 
-.ranger-level-phase {
-  padding: 0.15rem 0.55rem;
-  border: 1px solid var(--line);
+.ranger-level-range-wrap {
+  position: relative;
+  height: var(--level-thumb-size);
+  margin-top: 0.55rem;
+}
+
+.ranger-level-range-wrap::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(var(--level-thumb-size) / 2);
+  left: calc(var(--level-thumb-size) / 2);
+  height: var(--level-track-size);
+  transform: translateY(-50%);
   border-radius: 999px;
-  background: var(--panel);
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 700;
+  background: linear-gradient(
+    to right,
+    var(--primary) 0,
+    var(--primary) var(--level-progress),
+    var(--line) var(--level-progress),
+    var(--line) 100%
+  );
+  pointer-events: none;
 }
 
 .ranger-level-range {
+  position: relative;
+  z-index: 1;
+  display: block;
   width: 100%;
-  margin: 0.65rem 0 0.15rem;
-  accent-color: var(--primary);
+  height: var(--level-thumb-size);
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.ranger-level-range-ends {
-  color: var(--muted);
-  font-size: 0.8rem;
+.ranger-level-range::-webkit-slider-runnable-track {
+  height: var(--level-track-size);
+  background: transparent;
 }
 
-.ranger-level-limit-note {
-  margin: 0.55rem 0 0;
-  color: var(--muted);
-  font-size: 0.85rem;
-  line-height: 1.5;
+.ranger-level-range::-webkit-slider-thumb {
+  width: var(--level-thumb-size);
+  height: var(--level-thumb-size);
+  margin-top: calc((var(--level-track-size) - var(--level-thumb-size)) / 2);
+  border: 2px solid var(--panel);
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary-dark), 0 2px 6px rgba(15, 23, 42, 0.18);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.ranger-level-range::-moz-range-track {
+  height: var(--level-track-size);
+  border: 0;
+  background: transparent;
+}
+
+.ranger-level-range::-moz-range-progress {
+  height: var(--level-track-size);
+  background: transparent;
+}
+
+.ranger-level-range::-moz-range-thumb {
+  width: var(--level-thumb-size);
+  height: var(--level-thumb-size);
+  border: 2px solid var(--panel);
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary-dark), 0 2px 6px rgba(15, 23, 42, 0.18);
+}
+
+.ranger-level-range:focus-visible {
+  outline: none;
+}
+
+.ranger-level-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--soft), 0 0 0 5px var(--primary);
+}
+
+.ranger-level-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--soft), 0 0 0 5px var(--primary);
 }
 
 @media (max-width: 520px) {
   .ranger-level-control {
-    padding: 0.8rem;
-  }
-
-  .ranger-level-control-head {
-    align-items: flex-start;
+    padding: 0.75rem 0.8rem;
   }
 }

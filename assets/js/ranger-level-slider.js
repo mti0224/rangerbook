@@ -103,6 +103,11 @@
       + (level - limits.regularCap) * maxGrowth;
   }
 
+  function levelProgress(level, maxLevel) {
+    if (maxLevel <= 1) return 0;
+    return ((level - 1) / (maxLevel - 1)) * 100;
+  }
+
   function loadRangerMap() {
     if (!rangerMapPromise) {
       rangerMapPromise = fetch(DATA_URL)
@@ -129,16 +134,12 @@
   }
 
   function levelControlHtml(id, limits, level) {
-    const phase = level <= limits.regularCap ? "一般成長" : "滿等後成長";
     return `
-      <div class="ranger-level-control" data-ranger-level-control data-ranger-id="${escapeHtml(id)}">
-        <div class="ranger-level-control-head">
-          <label for="rangerLevelRange">角色等級 <output class="ranger-level-output" for="rangerLevelRange">${level}</output></label>
-          <span class="ranger-level-phase">${phase}</span>
+      <div class="ranger-level-control" data-ranger-level-control data-ranger-id="${escapeHtml(id)}" style="--level-progress:${levelProgress(level, limits.maxLevel)}%">
+        <label class="ranger-level-label" for="rangerLevelRange">等級：<output class="ranger-level-output" for="rangerLevelRange">${level}/${limits.maxLevel}</output></label>
+        <div class="ranger-level-range-wrap">
+          <input id="rangerLevelRange" class="ranger-level-range" type="range" min="1" max="${limits.maxLevel}" step="1" value="${level}" aria-label="角色等級">
         </div>
-        <input id="rangerLevelRange" class="ranger-level-range" type="range" min="1" max="${limits.maxLevel}" step="1" value="${level}" aria-label="角色等級">
-        <div class="ranger-level-range-ends" aria-hidden="true"><span>1等</span><span>${limits.maxLevel}等</span></div>
-        <p class="ranger-level-limit-note">一般等級上限：${limits.regularCap}等；從${limits.regularCap}等升至${limits.regularCap + 1}等開始使用滿等後成長值。</p>
       </div>`;
   }
 
@@ -146,11 +147,10 @@
     const control = root.querySelector("[data-ranger-level-control]");
     if (!control) return;
     const output = control.querySelector(".ranger-level-output");
-    const phase = control.querySelector(".ranger-level-phase");
     const range = control.querySelector(".ranger-level-range");
-    if (output) output.textContent = String(level);
-    if (phase) phase.textContent = level <= limits.regularCap ? "一般成長" : "滿等後成長";
-    if (range) range.setAttribute("aria-valuetext", `${level}等`);
+    if (output) output.textContent = `${level}/${limits.maxLevel}`;
+    if (range) range.setAttribute("aria-valuetext", `${level}等，共${limits.maxLevel}等`);
+    control.style.setProperty("--level-progress", `${levelProgress(level, limits.maxLevel)}%`);
 
     const statElements = [...root.querySelectorAll(".ranger-stat")];
     STAT_GROWTH.forEach((stat) => {
