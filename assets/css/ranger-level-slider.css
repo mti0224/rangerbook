@@ -1,0 +1,65 @@
+.ranger-level-control {
+  margin: 0.75rem 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--soft);
+}
+
+.ranger-level-control-head,
+.ranger-level-range-ends {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ranger-level-control-head label {
+  font-weight: 800;
+}
+
+.ranger-level-output {
+  display: inline-block;
+  min-width: 2.5ch;
+  margin-left: 0.25rem;
+  color: var(--primary-dark);
+  text-align: right;
+}
+
+.ranger-level-phase {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ranger-level-range {
+  width: 100%;
+  margin: 0.65rem 0 0.15rem;
+  accent-color: var(--primary);
+}
+
+.ranger-level-range-ends {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.ranger-level-limit-note {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 520px) {
+  .ranger-level-control {
+    padding: 0.8rem;
+  }
+
+  .ranger-level-control-head {
+    align-items: flex-start;
+  }
+}
