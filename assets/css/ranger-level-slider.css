@@ -47,18 +47,24 @@
   position: relative;
   z-index: 1;
   display: block;
+  box-sizing: border-box;
   width: 100%;
   height: var(--level-thumb-size);
+  min-height: 0;
   margin: 0;
   padding: 0;
+  border: 0;
+  border-radius: 0;
   appearance: none;
   -webkit-appearance: none;
   background: transparent;
+  box-shadow: none;
   cursor: pointer;
 }
 
 .ranger-level-range::-webkit-slider-runnable-track {
   height: var(--level-track-size);
+  border: 0;
   background: transparent;
 }
 
