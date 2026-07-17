@@ -10,6 +10,12 @@
     { label: "物理防禦力", base: "物理防禦力", normal: "generalDefenceDelta", max: "generalDefenceDeltaMax" },
     { label: "魔法防禦力", base: "魔法防禦力", normal: "specialDefenceDelta", max: "specialDefenceDeltaMax" }
   ];
+  const GENERAL_RESPAWN_DECREASE_RATES = [0, 0.20, 0.30, 0.40, 0.50];
+  const EVOLVED_RESPAWN_DECREASE_RATES = [
+    0, 0.01, 0.02, 0.03, 0.05, 0.07, 0.09, 0.12, 0.15, 0.18, 0.20,
+    0.22, 0.24, 0.26, 0.28, 0.30, 0.33, 0.36, 0.40, 0.45, 0.50
+  ];
+  const RESPAWN_MIN_SECONDS = 1.3;
 
   const selectedLevels = new Map();
   let rangerMapPromise = null;
@@ -31,14 +37,23 @@
   function numericValue(value) {
     if (typeof value === "number") return Number.isFinite(value) ? value : null;
     const normalized = text(value).replaceAll(",", "");
-    if (!normalized) return null;
-    const parsed = Number(normalized);
+    const match = normalized.match(/-?\d+(?:\.\d+)?/);
+    if (!match) return null;
+    const parsed = Number(match[0]);
     return Number.isFinite(parsed) ? parsed : null;
   }
 
   function formatNumber(value) {
     if (!Number.isFinite(value)) return "-";
     return value.toLocaleString("zh-Hant", { maximumFractionDigits: 3 });
+  }
+
+  function formatRespawnTime(value) {
+    if (!Number.isFinite(value)) return "-";
+    return `${value.toLocaleString("zh-Hant", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 3
+    })}秒`;
   }
 
   function rangerId(ranger) {
@@ -103,6 +118,23 @@
       + (level - limits.regularCap) * maxGrowth;
   }
 
+  function levelExpansionCount(limits, level) {
+    if (level <= limits.regularCap) return 0;
+    const maximumCount = limits.evolved ? 20 : 4;
+    return Math.min(maximumCount, Math.ceil((level - limits.regularCap) / 5));
+  }
+
+  function respawnTimeAtLevel(ranger, limits, level) {
+    const baseSeconds = numericValue(ranger?.["Ranger再生產時間"]);
+    if (baseSeconds === null) return null;
+    const rates = limits.evolved
+      ? EVOLVED_RESPAWN_DECREASE_RATES
+      : GENERAL_RESPAWN_DECREASE_RATES;
+    const expansionCount = levelExpansionCount(limits, level);
+    const decreaseRate = rates[expansionCount] ?? rates[rates.length - 1];
+    return Math.max(RESPAWN_MIN_SECONDS, baseSeconds * (1 - decreaseRate));
+  }
+
   function levelProgress(level, maxLevel) {
     if (maxLevel <= 1) return 0;
     return ((level - 1) / (maxLevel - 1)) * 100;
@@ -143,6 +175,12 @@
       </div>`;
   }
 
+  function findStatValue(root, label) {
+    const item = [...root.querySelectorAll(".ranger-stat")]
+      .find((element) => element.querySelector("span")?.textContent.trim() === label);
+    return item?.querySelector("strong") || null;
+  }
+
   function updateStats(root, ranger, limits, level) {
     const control = root.querySelector("[data-ranger-level-control]");
     if (!control) return;
@@ -152,14 +190,18 @@
     if (range) range.setAttribute("aria-valuetext", `${level}等，共${limits.maxLevel}等`);
     control.style.setProperty("--level-progress", `${levelProgress(level, limits.maxLevel)}%`);
 
-    const statElements = [...root.querySelectorAll(".ranger-stat")];
     STAT_GROWTH.forEach((stat) => {
-      const item = statElements.find((element) => element.querySelector("span")?.textContent.trim() === stat.label);
-      const valueElement = item?.querySelector("strong");
+      const valueElement = findStatValue(root, stat.label);
       if (!valueElement) return;
       const value = statAtLevel(ranger, stat, limits, level);
       if (value !== null) valueElement.textContent = formatNumber(value);
     });
+
+    const respawnValueElement = findStatValue(root, "再生產時間");
+    const respawnSeconds = respawnTimeAtLevel(ranger, limits, level);
+    if (respawnValueElement && respawnSeconds !== null) {
+      respawnValueElement.textContent = formatRespawnTime(respawnSeconds);
+    }
   }
 
   async function mountLevelControl() {
