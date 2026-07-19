@@ -16,7 +16,7 @@
     <section class="page-title">
       <p class="eyebrow">PvP · LEGEND</p>
       <h1>角色使用率</h1>
-      <p>統計傳奇段位排行榜玩家 PvP 防守隊伍中的角色使用比例。</p>
+      <p>統計傳奇段位排行榜玩家 PvP 防守隊伍中的角色使用比例。點擊角色可查看配裝與覺醒能力使用情況。</p>
     </section>
 
     <section class="pvp-data-meta" aria-label="角色使用率資料摘要">
@@ -59,6 +59,14 @@
       </div>
     </section>
   </main>
+
+  <div id="pvpUsageModal" class="pvp-usage-modal" hidden>
+    <div class="pvp-usage-modal-backdrop" data-pvp-modal-close></div>
+    <section class="pvp-usage-modal-panel" role="dialog" aria-modal="true" aria-labelledby="pvpUsageModalTitle">
+      <button id="pvpUsageModalClose" class="pvp-usage-modal-close" type="button" aria-label="關閉">×</button>
+      <div id="pvpUsageModalContent"></div>
+    </section>
+  </div>
 
   <script src="../../assets/js/site.js"></script>
   <script src="../../assets/js/pvp-usage.js" defer></script>

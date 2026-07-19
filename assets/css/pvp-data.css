@@ -130,13 +130,41 @@
   min-width: 15rem;
 }
 
+.pvp-ranger-trigger {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pvp-ranger-trigger:hover .pvp-ranger-name,
+.pvp-ranger-trigger:focus-visible .pvp-ranger-name {
+  color: var(--primary-dark);
+}
+
+.pvp-ranger-trigger:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+  border-radius: 0.6rem;
+}
+
+.pvp-ranger-trigger > span {
+  display: block;
+}
+
 .pvp-player-name,
 .pvp-ranger-name {
+  display: block;
   font-weight: 800;
 }
 
 .pvp-player-sub,
 .pvp-ranger-sub {
+  display: block;
   color: var(--muted);
   font-size: 0.82rem;
 }
@@ -220,9 +248,276 @@
   color: var(--muted);
 }
 
+.pvp-usage-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.pvp-usage-modal[hidden] {
+  display: none;
+}
+
+.pvp-usage-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+}
+
+.pvp-usage-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(1080px, calc(100vw - 2rem));
+  max-height: min(88vh, 920px);
+  overflow-y: auto;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--panel);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+}
+
+.pvp-usage-modal-close {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  float: right;
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: -0.15rem -0.15rem 0.5rem 0.75rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pvp-modal-ranger-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.25rem 0 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.pvp-modal-ranger-image {
+  width: clamp(5rem, 10vw, 7rem);
+  height: clamp(5rem, 10vw, 7rem);
+  object-fit: contain;
+  border-radius: 1rem;
+  background: var(--soft);
+}
+
+.pvp-modal-ranger-copy h2 {
+  margin: 0.1rem 0 0.2rem;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.pvp-modal-ranger-copy > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+}
+
+.pvp-modal-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.pvp-modal-summary span {
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.pvp-modal-summary strong {
+  color: var(--text);
+}
+
+.pvp-modal-detail-link {
+  align-self: center;
+  padding: 0.65rem 0.9rem;
+  border-radius: 0.8rem;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.pvp-modal-detail-link:hover {
+  background: var(--primary-dark);
+}
+
+.pvp-modal-section {
+  padding-top: 1.35rem;
+}
+
+.pvp-modal-section + .pvp-modal-section {
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.pvp-modal-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.pvp-modal-section-heading h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.pvp-modal-section-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.pvp-equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.pvp-equipment-card {
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--bg);
+}
+
+.pvp-equipment-card h4 {
+  margin: 0 0 0.7rem;
+  font-size: 0.95rem;
+}
+
+.pvp-option-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pvp-option-row {
+  display: grid;
+  grid-template-columns: 2.65rem minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.pvp-option-icon {
+  width: 2.65rem;
+  height: 2.65rem;
+  object-fit: contain;
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
+
+.pvp-option-icon-empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+}
+
+.pvp-option-main {
+  min-width: 0;
+}
+
+.pvp-option-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 750;
+}
+
+.pvp-option-bar {
+  height: 0.35rem;
+  margin-top: 0.3rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.pvp-option-bar > span {
+  display: block;
+  width: var(--option-rate, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+}
+
+.pvp-option-stats {
+  display: grid;
+  justify-items: end;
+  min-width: 3.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pvp-option-stats strong {
+  font-size: 0.86rem;
+}
+
+.pvp-option-stats span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.pvp-modal-empty {
+  padding: 1rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.8rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .pvp-equipment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pvp-modal-ranger-header {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .pvp-modal-detail-link {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
 @media (max-width: 760px) {
   .pvp-data-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pvp-usage-modal {
+    padding: 0;
+    align-items: end;
+  }
+
+  .pvp-usage-modal-panel {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 22px 22px 0 0;
   }
 }
 
@@ -233,5 +528,23 @@
 
   .pvp-data-controls {
     display: grid;
+  }
+
+  .pvp-modal-ranger-header {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+
+  .pvp-modal-ranger-image {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+
+  .pvp-option-row {
+    grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  }
+
+  .pvp-option-icon {
+    width: 2.4rem;
+    height: 2.4rem;
   }
 }
