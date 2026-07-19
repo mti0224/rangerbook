@@ -1,0 +1,237 @@
+.pvp-data-page {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.pvp-data-meta,
+.pvp-data-panel,
+.pvp-data-controls {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.pvp-data-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  padding: 1rem;
+}
+
+.pvp-meta-item {
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: var(--soft);
+}
+
+.pvp-meta-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.pvp-meta-item strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.pvp-data-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+  padding: 1rem;
+}
+
+.pvp-data-controls label {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 10rem;
+  flex: 1 1 12rem;
+}
+
+.pvp-data-controls label span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.pvp-data-controls input,
+.pvp-data-controls select {
+  width: 100%;
+}
+
+.pvp-data-panel {
+  overflow: hidden;
+}
+
+.pvp-table-scroll {
+  overflow-x: auto;
+}
+
+.pvp-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+}
+
+.pvp-table th,
+.pvp-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.pvp-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.pvp-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.pvp-table tbody tr:hover {
+  background: var(--soft);
+}
+
+.pvp-rank-cell {
+  width: 5.5rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+}
+
+.pvp-rank-medal {
+  display: inline-grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 50%;
+  background: var(--soft);
+}
+
+.pvp-player-main,
+.pvp-ranger-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 15rem;
+}
+
+.pvp-player-name,
+.pvp-ranger-name {
+  font-weight: 800;
+}
+
+.pvp-player-sub,
+.pvp-ranger-sub {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.pvp-score {
+  font-size: 1.05rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.pvp-rank-delta {
+  display: inline-block;
+  margin-left: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pvp-rank-delta.up {
+  color: #059669;
+}
+
+.pvp-rank-delta.down {
+  color: #dc2626;
+}
+
+.pvp-ranger-thumb {
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  background: var(--soft);
+}
+
+.pvp-usage-cell {
+  min-width: 13rem;
+}
+
+.pvp-usage-number {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pvp-usage-number strong {
+  font-size: 1rem;
+}
+
+.pvp-usage-bar {
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.pvp-usage-bar > span {
+  display: block;
+  width: var(--usage-rate, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+}
+
+.pvp-status {
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.pvp-status.error {
+  color: #b91c1c;
+}
+
+.pvp-empty-row td {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .pvp-data-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .pvp-data-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pvp-data-controls {
+    display: grid;
+  }
+}
