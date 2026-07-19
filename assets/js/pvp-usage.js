@@ -3,7 +3,9 @@
   const ID_DICT_URL = "../../res/id_dict.json";
   const ABILITY_DATA_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const REFRESH_MS = 60 * 60 * 1000;
+  const OPTION_PAGE_SIZE = 5;
   const NONE_CODE = "__NONE__";
+  const UNKNOWN_CODE = "__UNKNOWN__";
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const RANGER_DETAIL = (id) => `../../ranger/ranger/${encodeURIComponent(id)}`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
@@ -22,6 +24,7 @@
     status: document.getElementById("pvpUsageStatus"),
     body: document.getElementById("pvpUsageBody"),
     search: document.getElementById("pvpUsageSearch"),
+    topN: document.getElementById("pvpUsageTopN"),
     type: document.getElementById("pvpUsageType"),
     element: document.getElementById("pvpUsageElement"),
     modal: document.getElementById("pvpUsageModal"),
@@ -29,9 +32,14 @@
     modalClose: document.getElementById("pvpUsageModalClose"),
   };
 
+  let dataSet = {};
   let rows = [];
   let gearNameByCode = {};
   let abilityMap = {};
+  const modalState = {
+    rangerId: "",
+    gearPages: { WEAPON: 0, ARMOR: 0, ACC: 0 },
+  };
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -97,7 +105,7 @@
         <tr>
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${rank}</span></td>
           <td>
-            <button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${escapeHtml(row.rangerId)}" aria-label="查看 ${escapeHtml(row.name || row.rangerId)} 的配裝與覺醒能力使用情況">
+            <button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${escapeHtml(row.rangerId)}" aria-label="查看 ${escapeHtml(row.name || row.rangerId)} 的配裝、覺醒能力與才能解放狀態">
               <img class="pvp-ranger-thumb" src="${RANGER_IMAGE(row.rangerId)}" alt="" loading="lazy" onerror="this.remove();">
               <span>
                 <span class="pvp-ranger-name">${escapeHtml(row.name || row.rangerId)}</span>
@@ -122,6 +130,49 @@
     if (elements.rankingCount) elements.rankingCount.textContent = formatNumber(metadata.rankingCount);
   }
 
+  function setStatus(message = "", error = false) {
+    if (!elements.status) return;
+    elements.status.hidden = !message;
+    elements.status.classList.toggle("error", error);
+    elements.status.textContent = message;
+  }
+
+  function applyScope() {
+    const scopeKey = elements.topN?.value || "all";
+    const baseMetadata = dataSet.metadata || {};
+
+    if (scopeKey === "all") {
+      rows = Array.isArray(dataSet.rangers) ? dataSet.rangers : [];
+      renderMetadata(baseMetadata);
+      setStatus();
+    } else {
+      const scope = dataSet.scopes?.[scopeKey];
+      if (!scope || !Array.isArray(scope.rangers)) {
+        rows = [];
+        renderMetadata({
+          ...baseMetadata,
+          rankingCount: Number(scopeKey),
+          sampleCount: 0,
+        });
+        setStatus("此前 N 名統計尚未產生，需等待下一次完整 PvP 資料更新。", true);
+      } else {
+        rows = scope.rangers;
+        renderMetadata({
+          ...baseMetadata,
+          rankingCount: scope.rankingCount,
+          sampleCount: scope.sampleCount,
+          playerDataFailureCount: scope.playerDataFailureCount,
+        });
+        setStatus();
+      }
+    }
+
+    fillSelect(elements.type, rows.map((row) => row.type), "全部類型");
+    fillSelect(elements.element, rows.map((row) => row.element), "全部屬性");
+    renderRows();
+    closeModal();
+  }
+
   function gearName(code) {
     if (code === NONE_CODE) return "未裝備";
     return gearNameByCode[code] || code;
@@ -138,6 +189,13 @@
     };
   }
 
+  function talentInfo(code) {
+    if (code === UNKNOWN_CODE) return { name: "才能解放狀態無資料", badge: "?" };
+    const grade = Number(code);
+    if (!Number.isFinite(grade) || grade <= 0) return { name: "未解放才能", badge: "0" };
+    return { name: `才能解放階段 ${grade}`, badge: String(grade) };
+  }
+
   function usageOptionList(items, kind) {
     if (!Array.isArray(items) || !items.length) {
       return `<div class="pvp-modal-empty">目前沒有可顯示的統計資料。</div>`;
@@ -149,11 +207,16 @@
       const isNone = code === NONE_CODE;
       let name;
       let icon = "";
+      let badge = "";
 
       if (kind === "ability") {
         const info = abilityInfo(code);
         name = info.name;
         if (info.icon) icon = ABILITY_ICON(info.icon);
+      } else if (kind === "talent") {
+        const info = talentInfo(code);
+        name = info.name;
+        badge = info.badge;
       } else {
         name = gearName(code);
         if (!isNone) icon = GEAR_ICON(code);
@@ -161,7 +224,7 @@
 
       const iconHtml = icon
         ? `<img class="pvp-option-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">`
-        : `<span class="pvp-option-icon pvp-option-icon-empty" aria-hidden="true">—</span>`;
+        : `<span class="pvp-option-icon pvp-option-icon-empty${kind === "talent" ? " pvp-option-icon-talent" : ""}" aria-hidden="true">${escapeHtml(badge || "—")}</span>`;
 
       return `
         <div class="pvp-option-row">
@@ -178,25 +241,50 @@
     }).join("")}</div>`;
   }
 
+  function renderEquipmentCard(row, slot, label) {
+    const items = Array.isArray(row.equipmentUsage?.[slot]) ? row.equipmentUsage[slot] : [];
+    const totalPages = Math.max(1, Math.ceil(items.length / OPTION_PAGE_SIZE));
+    const page = Math.max(0, Math.min(totalPages - 1, Number(modalState.gearPages[slot]) || 0));
+    modalState.gearPages[slot] = page;
+    const start = page * OPTION_PAGE_SIZE;
+    const visibleItems = items.slice(start, start + OPTION_PAGE_SIZE);
+    const pagination = totalPages > 1 ? `
+      <div class="pvp-option-pagination" aria-label="${escapeHtml(label)}使用率分頁">
+        <button type="button" data-gear-page-slot="${slot}" data-gear-page="${page - 1}" ${page <= 0 ? "disabled" : ""}>‹</button>
+        <span>${page + 1} / ${totalPages}</span>
+        <button type="button" data-gear-page-slot="${slot}" data-gear-page="${page + 1}" ${page >= totalPages - 1 ? "disabled" : ""}>›</button>
+      </div>` : "";
+
+    return `
+      <section class="pvp-equipment-card" data-equipment-slot="${slot}">
+        <h4>${escapeHtml(label)}</h4>
+        ${usageOptionList(visibleItems, "gear")}
+        ${pagination}
+      </section>`;
+  }
+
   function renderEquipment(row) {
     const equipment = row.equipmentUsage;
     if (!equipment || typeof equipment !== "object") {
       return `<div class="pvp-modal-empty">配裝統計尚未產生，需等待下一次完整 PvP 資料更新。</div>`;
     }
 
-    return `<div class="pvp-equipment-grid">${Object.entries(SLOT_LABELS).map(([slot, label]) => `
-      <section class="pvp-equipment-card">
-        <h4>${escapeHtml(label)}</h4>
-        ${usageOptionList(equipment[slot], "gear")}
-      </section>`).join("")}</div>`;
+    return `<div class="pvp-equipment-grid">${Object.entries(SLOT_LABELS)
+      .map(([slot, label]) => renderEquipmentCard(row, slot, label))
+      .join("")}</div>`;
   }
 
   function openModal(row) {
     if (!elements.modal || !elements.modalContent || !row) return;
+    modalState.rangerId = String(row.rangerId || "");
+    modalState.gearPages = { WEAPON: 0, ARMOR: 0, ACC: 0 };
     const meta = [row.star, row.type, row.element].filter(Boolean).join(" · ");
     const awakening = Array.isArray(row.awakeningUsage)
       ? usageOptionList(row.awakeningUsage, "ability")
       : `<div class="pvp-modal-empty">覺醒能力統計尚未產生，需等待下一次完整 PvP 資料更新。</div>`;
+    const talent = Array.isArray(row.talentUsage)
+      ? usageOptionList(row.talentUsage, "talent")
+      : `<div class="pvp-modal-empty">才能解放狀態尚未產生，需等待下一次完整 PvP 資料更新。</div>`;
 
     elements.modalContent.innerHTML = `
       <header class="pvp-modal-ranger-header">
@@ -217,17 +305,24 @@
       <section class="pvp-modal-section">
         <div class="pvp-modal-section-heading">
           <h3>配裝情況</h3>
-          <p>以此角色在兩組 PvP 防守隊伍中的總出場次數為分母。</p>
         </div>
         ${renderEquipment(row)}
       </section>
 
-      <section class="pvp-modal-section">
+      <section class="pvp-modal-section pvp-modal-section--no-divider">
         <div class="pvp-modal-section-heading">
           <h3>覺醒能力使用情況</h3>
           <p>顯示各覺醒能力在此角色出場資料中的使用比例。</p>
         </div>
         ${awakening}
+      </section>
+
+      <section class="pvp-modal-section">
+        <div class="pvp-modal-section-heading">
+          <h3>才能解放狀態</h3>
+          <p>顯示各才能解放階段在此角色出場資料中的使用比例。</p>
+        </div>
+        ${talent}
       </section>`;
 
     elements.modal.hidden = false;
@@ -239,6 +334,7 @@
     if (!elements.modal || elements.modal.hidden) return;
     elements.modal.hidden = true;
     document.body.classList.remove("modal-open");
+    modalState.rangerId = "";
   }
 
   async function optionalJson(url) {
@@ -251,11 +347,7 @@
   }
 
   async function load() {
-    if (elements.status) {
-      elements.status.hidden = false;
-      elements.status.classList.remove("error");
-      elements.status.textContent = "角色使用率資料載入中…";
-    }
+    setStatus("角色使用率資料載入中…");
     try {
       const [response, idDict, abilities] = await Promise.all([
         fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" }),
@@ -263,24 +355,15 @@
         optionalJson(ABILITY_DATA_URL),
       ]);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      rows = Array.isArray(data.rangers) ? data.rangers : [];
+      dataSet = await response.json();
       gearNameByCode = Object.fromEntries(
         Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)])
       );
       abilityMap = abilities && typeof abilities === "object" ? abilities : {};
-      renderMetadata(data.metadata || {});
-      fillSelect(elements.type, rows.map((row) => row.type), "全部類型");
-      fillSelect(elements.element, rows.map((row) => row.element), "全部屬性");
-      renderRows();
-      if (elements.status) elements.status.hidden = true;
+      applyScope();
     } catch (error) {
       console.error("PvP usage load failed", error);
-      if (elements.status) {
-        elements.status.hidden = false;
-        elements.status.classList.add("error");
-        elements.status.textContent = "角色使用率資料尚未產生或目前無法載入。";
-      }
+      setStatus("角色使用率資料尚未產生或目前無法載入。", true);
       if (elements.body) elements.body.innerHTML = "";
     }
   }
@@ -290,11 +373,26 @@
     element?.addEventListener("change", renderRows);
   });
 
+  elements.topN?.addEventListener("change", applyScope);
+
   elements.body?.addEventListener("click", (event) => {
     const trigger = event.target.closest("[data-ranger-id]");
     if (!trigger) return;
     const row = rows.find((item) => String(item.rangerId) === trigger.dataset.rangerId);
     openModal(row);
+  });
+
+  elements.modalContent?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-gear-page-slot]");
+    if (!button || button.disabled) return;
+    const slot = button.dataset.gearPageSlot;
+    const nextPage = Number(button.dataset.gearPage);
+    if (!(slot in SLOT_LABELS) || !Number.isFinite(nextPage)) return;
+    const row = rows.find((item) => String(item.rangerId) === modalState.rangerId);
+    if (!row) return;
+    modalState.gearPages[slot] = nextPage;
+    const card = elements.modalContent.querySelector(`[data-equipment-slot="${slot}"]`);
+    if (card) card.outerHTML = renderEquipmentCard(row, slot, SLOT_LABELS[slot]);
   });
 
   elements.modalClose?.addEventListener("click", closeModal);
