@@ -13,7 +13,8 @@ pvp_config.json shape:
 Modes:
   leaderboard  Fetch only LEGEND ranking and write res/pvp/leaderboard.json.
   full         Fetch ranking plus every player's PvP defense team and also write
-               res/pvp/usage.json, including gear and awakening usage details.
+               res/pvp/usage.json, including gear, awakening, talent and top-N
+               usage details.
 """
 
 from __future__ import annotations
@@ -46,7 +47,9 @@ DEFAULT_LF_AC_FILE = DEFAULT_SECRET_DIR / "latest_LF_AC.txt"
 DEFAULT_CONFIG_FILE = DEFAULT_SECRET_DIR / "pvp_config.json"
 DEFAULT_LOCK_FILE = Path("/tmp/rangerbook-pvp-update.lock")
 EQUIP_SLOTS = ("WEAPON", "ARMOR", "ACC")
+TOP_N_SCOPES = (10, 30, 50, 100)
 NONE_CODE = "__NONE__"
+UNKNOWN_CODE = "__UNKNOWN__"
 
 
 class APIError(RuntimeError):
@@ -304,21 +307,28 @@ def counter_rows(counter: Counter[str], denominator: int) -> list[dict[str, Any]
     return rows
 
 
-def build_usage_payload(
+def talent_grade_code(value: Any) -> str:
+    if value is None or value == "":
+        return UNKNOWN_CODE
+    try:
+        grade = int(value)
+    except (TypeError, ValueError):
+        return UNKNOWN_CODE
+    return str(max(0, grade))
+
+
+def build_usage_rows(
     player_unit_records: Iterable[list[Any]],
     *,
     catalog: dict[str, dict[str, str]],
-    ranking_count: int,
-    failure_count: int,
-    league: str,
-    version: str,
-) -> dict[str, Any]:
+) -> tuple[int, list[dict[str, Any]]]:
     player_counter: Counter[str] = Counter()
     appearance_counter: Counter[str] = Counter()
     equipment_counters: dict[str, dict[str, Counter[str]]] = defaultdict(
         lambda: {slot: Counter() for slot in EQUIP_SLOTS}
     )
     awakening_counters: dict[str, Counter[str]] = defaultdict(Counter)
+    talent_counters: dict[str, Counter[str]] = defaultdict(Counter)
     sample_count = 0
 
     for raw_records in player_unit_records:
@@ -344,6 +354,7 @@ def build_usage_payload(
 
             awake_code = str(record.get("awakeAbilityCode") or "").strip()
             awakening_counters[ranger_id][awake_code or NONE_CODE] += 1
+            talent_counters[ranger_id][talent_grade_code(record.get("talentGrade"))] += 1
 
     rows: list[dict[str, Any]] = []
     for ranger_id, player_count in player_counter.items():
@@ -363,12 +374,25 @@ def build_usage_payload(
                 for slot in EQUIP_SLOTS
             },
             "awakeningUsage": counter_rows(awakening_counters[ranger_id], appearances),
+            "talentUsage": counter_rows(talent_counters[ranger_id], appearances),
         })
 
     rows.sort(key=lambda item: (-item["playerCount"], -item["appearanceCount"], item["rangerId"]))
     for index, row in enumerate(rows, start=1):
         row["rank"] = index
+    return sample_count, rows
 
+
+def build_usage_payload(
+    player_unit_records: Iterable[list[Any]],
+    *,
+    catalog: dict[str, dict[str, str]],
+    ranking_count: int,
+    failure_count: int,
+    league: str,
+    version: str,
+) -> dict[str, Any]:
+    sample_count, rows = build_usage_rows(player_unit_records, catalog=catalog)
     return {
         "metadata": {
             "generatedAtUtc": now_iso(),
@@ -378,10 +402,32 @@ def build_usage_payload(
             "sampleCount": sample_count,
             "playerDataFailureCount": failure_count,
             "definition": "usageRate = players using this Ranger / players with successfully fetched PvP defense teams",
-            "detailRateDefinition": "gear/awakening rate = appearances using the option / total Ranger appearances",
+            "detailRateDefinition": "gear/awakening/talent rate = appearances using the option / total Ranger appearances",
         },
         "rangers": rows,
     }
+
+
+def build_usage_scopes(
+    ranked_samples: Iterable[tuple[int, list[Any]]],
+    *,
+    catalog: dict[str, dict[str, str]],
+    ranking_count: int,
+    failed_ranks: Iterable[int] = (),
+) -> dict[str, dict[str, Any]]:
+    samples = list(ranked_samples)
+    failed = list(failed_ranks)
+    scopes: dict[str, dict[str, Any]] = {}
+    for top_n in TOP_N_SCOPES:
+        selected = [records for rank, records in samples if rank <= top_n]
+        sample_count, rows = build_usage_rows(selected, catalog=catalog)
+        scopes[str(top_n)] = {
+            "rankingCount": min(top_n, ranking_count),
+            "sampleCount": sample_count,
+            "playerDataFailureCount": sum(1 for rank in failed if rank <= top_n),
+            "rangers": rows,
+        }
+    return scopes
 
 
 def atomic_write_json(path: Path, data: dict[str, Any]) -> None:
@@ -427,38 +473,49 @@ def run(args: argparse.Namespace) -> int:
             return 0
 
         ranking_list = get_ranking_list(leaderboard_data)
-        samples: list[list[dict[str, Any]]] = []
+        ranked_samples: list[tuple[int, list[dict[str, Any]]]] = []
+        failed_ranks: list[int] = []
         failures = 0
         for index, entry in enumerate(ranking_list, start=1):
+            rank = int(entry.get("rank") or index)
             player_uid = str(entry.get("uid") or "").strip()
             if not player_uid:
                 failures += 1
+                failed_ranks.append(rank)
                 continue
             player_url = f"{base_url}/player/units/team/equip/uid/{player_uid}"
             try:
                 player_data = request_json(player_url, uid, lf_ac, udid, args.retries)
                 unit_records = extract_pvp_unit_records(player_data)
                 if unit_records:
-                    samples.append(unit_records)
+                    ranked_samples.append((rank, unit_records))
                 else:
                     failures += 1
-                    print(f"[{index}/{len(ranking_list)}] 找不到 PvP 防守隊伍：rank={entry.get('rank')}")
+                    failed_ranks.append(rank)
+                    print(f"[{index}/{len(ranking_list)}] 找不到 PvP 防守隊伍：rank={rank}")
             except AuthExpiredError:
                 raise
             except Exception as exc:  # Keep other players usable as a valid sample.
                 failures += 1
+                failed_ranks.append(rank)
                 print(f"[{index}/{len(ranking_list)}] 玩家資料失敗：{exc}", file=sys.stderr)
             if args.delay > 0 and index < len(ranking_list):
                 time.sleep(args.delay)
 
         catalog = load_ranger_catalog(repo_root / "res" / "Rangers_data.json")
         usage = build_usage_payload(
-            samples,
+            [records for _, records in ranked_samples],
             catalog=catalog,
             ranking_count=len(ranking_list),
             failure_count=failures,
             league=league,
             version=version,
+        )
+        usage["scopes"] = build_usage_scopes(
+            ranked_samples,
+            catalog=catalog,
+            ranking_count=len(ranking_list),
+            failed_ranks=failed_ranks,
         )
         atomic_write_json(output_dir / "usage.json", usage)
         print(
