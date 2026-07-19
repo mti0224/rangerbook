@@ -57,6 +57,50 @@ class PvPCollectorTests(unittest.TestCase):
         self.assertEqual(by_id["u002"]["playerCount"], 1)
         self.assertEqual(by_id["u002"]["usageRate"], 50.0)
 
+    def test_usage_aggregates_gear_and_awakening(self):
+        catalog = {
+            "u001": {"name": "角色A", "star": "9星", "type": "力量型", "element": "火"},
+        }
+        result = module.build_usage_payload(
+            [[
+                {
+                    "unitCode": "u001",
+                    "equipMap": {
+                        "WEAPON": {"equipItemCode": "eq_wpn_a"},
+                        "ARMOR": {"equipItemCode": "eq_amr_a"},
+                        "ACC": {"equipItemCode": "eq_acc_a"},
+                    },
+                    "awakeAbilityCode": "aab001",
+                },
+                {
+                    "unitCode": "u001",
+                    "equipMap": {
+                        "WEAPON": {"equipItemCode": "eq_wpn_a"},
+                        "ARMOR": {"equipItemCode": "eq_amr_b"},
+                    },
+                },
+            ]],
+            catalog=catalog,
+            ranking_count=1,
+            failure_count=0,
+            league="LEGEND",
+            version="12.2",
+        )
+        row = result["rangers"][0]
+        weapon = {item["code"]: item for item in row["equipmentUsage"]["WEAPON"]}
+        armor = {item["code"]: item for item in row["equipmentUsage"]["ARMOR"]}
+        acc = {item["code"]: item for item in row["equipmentUsage"]["ACC"]}
+        awake = {item["code"]: item for item in row["awakeningUsage"]}
+
+        self.assertEqual(weapon["eq_wpn_a"]["count"], 2)
+        self.assertEqual(weapon["eq_wpn_a"]["rate"], 100.0)
+        self.assertEqual(armor["eq_amr_a"]["rate"], 50.0)
+        self.assertEqual(armor["eq_amr_b"]["rate"], 50.0)
+        self.assertEqual(acc["eq_acc_a"]["rate"], 50.0)
+        self.assertEqual(acc[module.NONE_CODE]["rate"], 50.0)
+        self.assertEqual(awake["aab001"]["rate"], 50.0)
+        self.assertEqual(awake[module.NONE_CODE]["rate"], 50.0)
+
     def test_leaderboard_level_display(self):
         payload = {
             "result": {
