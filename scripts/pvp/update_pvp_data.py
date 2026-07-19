@@ -13,7 +13,7 @@ pvp_config.json shape:
 Modes:
   leaderboard  Fetch only LEGEND ranking and write res/pvp/leaderboard.json.
   full         Fetch ranking plus every player's PvP defense team and also write
-               res/pvp/usage.json.
+               res/pvp/usage.json, including gear and awakening usage details.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ import os
 import re
 import sys
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -45,6 +45,8 @@ DEFAULT_SECRET_DIR = Path("/home/ubuntu/rangerbook-secrets")
 DEFAULT_LF_AC_FILE = DEFAULT_SECRET_DIR / "latest_LF_AC.txt"
 DEFAULT_CONFIG_FILE = DEFAULT_SECRET_DIR / "pvp_config.json"
 DEFAULT_LOCK_FILE = Path("/tmp/rangerbook-pvp-update.lock")
+EQUIP_SLOTS = ("WEAPON", "ARMOR", "ACC")
+NONE_CODE = "__NONE__"
 
 
 class APIError(RuntimeError):
@@ -229,8 +231,8 @@ def get_ranking_list(data: dict[str, Any]) -> list[dict[str, Any]]:
     return [entry for entry in ranking if isinstance(entry, dict)]
 
 
-def extract_pvp_units(player_data: dict[str, Any]) -> list[str]:
-    """Return all unitCode values in the PvP defense team, supporting both shapes."""
+def extract_pvp_unit_records(player_data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return full PvP defense-team unit records, supporting nested and flat layouts."""
     root = player_data.get("result", player_data)
     if not isinstance(root, dict):
         return []
@@ -249,7 +251,12 @@ def extract_pvp_units(player_data: dict[str, Any]) -> list[str]:
             elif isinstance(value, dict):
                 units.append(value)
 
-    return [str(unit["unitCode"]).strip() for unit in units if str(unit.get("unitCode") or "").strip()]
+    return [unit for unit in units if str(unit.get("unitCode") or "").strip()]
+
+
+def extract_pvp_units(player_data: dict[str, Any]) -> list[str]:
+    """Backward-compatible helper returning only unitCode values."""
+    return [str(unit["unitCode"]).strip() for unit in extract_pvp_unit_records(player_data)]
 
 
 def load_ranger_catalog(path: Path) -> dict[str, dict[str, str]]:
@@ -272,8 +279,33 @@ def load_ranger_catalog(path: Path) -> dict[str, dict[str, str]]:
     return catalog
 
 
+def normalize_unit_record(value: Any) -> dict[str, Any] | None:
+    if isinstance(value, str):
+        code = value.strip()
+        return {"unitCode": code, "equipMap": {}} if code else None
+    if not isinstance(value, dict):
+        return None
+    code = str(value.get("unitCode") or "").strip()
+    if not code:
+        return None
+    return value
+
+
+def counter_rows(counter: Counter[str], denominator: int) -> list[dict[str, Any]]:
+    rows = [
+        {
+            "code": code,
+            "count": count,
+            "rate": round((count / denominator * 100) if denominator else 0, 2),
+        }
+        for code, count in counter.items()
+    ]
+    rows.sort(key=lambda item: (-item["count"], item["code"]))
+    return rows
+
+
 def build_usage_payload(
-    player_unit_codes: Iterable[list[str]],
+    player_unit_records: Iterable[list[Any]],
     *,
     catalog: dict[str, dict[str, str]],
     ranking_count: int,
@@ -283,17 +315,40 @@ def build_usage_payload(
 ) -> dict[str, Any]:
     player_counter: Counter[str] = Counter()
     appearance_counter: Counter[str] = Counter()
+    equipment_counters: dict[str, dict[str, Counter[str]]] = defaultdict(
+        lambda: {slot: Counter() for slot in EQUIP_SLOTS}
+    )
+    awakening_counters: dict[str, Counter[str]] = defaultdict(Counter)
     sample_count = 0
 
-    for unit_codes in player_unit_codes:
+    for raw_records in player_unit_records:
+        records = [record for value in raw_records if (record := normalize_unit_record(value))]
+        if not records:
+            continue
         sample_count += 1
-        clean_codes = [code for code in unit_codes if code]
-        appearance_counter.update(clean_codes)
-        player_counter.update(set(clean_codes))
+        player_counter.update({str(record["unitCode"]).strip() for record in records})
+
+        for record in records:
+            ranger_id = str(record["unitCode"]).strip()
+            appearance_counter[ranger_id] += 1
+
+            equip_map = record.get("equipMap")
+            if not isinstance(equip_map, dict):
+                equip_map = {}
+            for slot in EQUIP_SLOTS:
+                equip = equip_map.get(slot)
+                equip_code = ""
+                if isinstance(equip, dict):
+                    equip_code = str(equip.get("equipItemCode") or "").strip()
+                equipment_counters[ranger_id][slot][equip_code or NONE_CODE] += 1
+
+            awake_code = str(record.get("awakeAbilityCode") or "").strip()
+            awakening_counters[ranger_id][awake_code or NONE_CODE] += 1
 
     rows: list[dict[str, Any]] = []
     for ranger_id, player_count in player_counter.items():
         info = catalog.get(ranger_id, {})
+        appearances = appearance_counter[ranger_id]
         rows.append({
             "rangerId": ranger_id,
             "name": info.get("name", ranger_id),
@@ -301,8 +356,13 @@ def build_usage_payload(
             "type": info.get("type", ""),
             "element": info.get("element", ""),
             "playerCount": player_count,
-            "appearanceCount": appearance_counter[ranger_id],
+            "appearanceCount": appearances,
             "usageRate": round((player_count / sample_count * 100) if sample_count else 0, 2),
+            "equipmentUsage": {
+                slot: counter_rows(equipment_counters[ranger_id][slot], appearances)
+                for slot in EQUIP_SLOTS
+            },
+            "awakeningUsage": counter_rows(awakening_counters[ranger_id], appearances),
         })
 
     rows.sort(key=lambda item: (-item["playerCount"], -item["appearanceCount"], item["rangerId"]))
@@ -318,6 +378,7 @@ def build_usage_payload(
             "sampleCount": sample_count,
             "playerDataFailureCount": failure_count,
             "definition": "usageRate = players using this Ranger / players with successfully fetched PvP defense teams",
+            "detailRateDefinition": "gear/awakening rate = appearances using the option / total Ranger appearances",
         },
         "rangers": rows,
     }
@@ -366,7 +427,7 @@ def run(args: argparse.Namespace) -> int:
             return 0
 
         ranking_list = get_ranking_list(leaderboard_data)
-        samples: list[list[str]] = []
+        samples: list[list[dict[str, Any]]] = []
         failures = 0
         for index, entry in enumerate(ranking_list, start=1):
             player_uid = str(entry.get("uid") or "").strip()
@@ -376,9 +437,9 @@ def run(args: argparse.Namespace) -> int:
             player_url = f"{base_url}/player/units/team/equip/uid/{player_uid}"
             try:
                 player_data = request_json(player_url, uid, lf_ac, udid, args.retries)
-                unit_codes = extract_pvp_units(player_data)
-                if unit_codes:
-                    samples.append(unit_codes)
+                unit_records = extract_pvp_unit_records(player_data)
+                if unit_records:
+                    samples.append(unit_records)
                 else:
                     failures += 1
                     print(f"[{index}/{len(ranking_list)}] 找不到 PvP 防守隊伍：rank={entry.get('rank')}")
