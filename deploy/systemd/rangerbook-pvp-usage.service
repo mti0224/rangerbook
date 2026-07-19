@@ -1,0 +1,11 @@
+[Unit]
+Description=Update LINE Rangers PvP LEGEND Ranger usage
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/rangerbook
+ExecStart=/usr/bin/python3 /home/ubuntu/rangerbook/scripts/pvp/update_pvp_data.py --mode full
