@@ -370,6 +370,10 @@
   border-top: 1px solid var(--line);
 }
 
+.pvp-modal-section + .pvp-modal-section.pvp-modal-section--no-divider {
+  border-top: 0;
+}
+
 .pvp-modal-section-heading {
   display: flex;
   flex-wrap: wrap;
@@ -437,6 +441,12 @@
   color: var(--muted);
 }
 
+.pvp-option-icon-talent {
+  border-style: solid;
+  color: var(--text);
+  font-weight: 850;
+}
+
 .pvp-option-main {
   min-width: 0;
 }
@@ -479,6 +489,47 @@
 .pvp-option-stats span {
   color: var(--muted);
   font-size: 0.72rem;
+}
+
+.pvp-option-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.pvp-option-pagination button {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pvp-option-pagination button:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+.pvp-option-pagination button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pvp-option-pagination span {
+  min-width: 3.3rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 
 .pvp-modal-empty {
