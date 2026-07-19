@@ -1,0 +1,8 @@
+# Local/private LINE Rangers authentication files
+latest_LF_AC.txt
+pvp_config.json
+*_session.log
+
+# Python caches
+__pycache__/
+*.pyc

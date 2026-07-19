@@ -1,0 +1,11 @@
+[Unit]
+Description=Run LINE Rangers PvP Ranger usage update hourly
+
+[Timer]
+OnCalendar=*-*-* *:02:00
+Persistent=true
+AccuracySec=30s
+Unit=rangerbook-pvp-usage.service
+
+[Install]
+WantedBy=timers.target
