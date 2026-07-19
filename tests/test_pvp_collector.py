@@ -57,7 +57,7 @@ class PvPCollectorTests(unittest.TestCase):
         self.assertEqual(by_id["u002"]["playerCount"], 1)
         self.assertEqual(by_id["u002"]["usageRate"], 50.0)
 
-    def test_usage_aggregates_gear_and_awakening(self):
+    def test_usage_aggregates_gear_awakening_and_talent(self):
         catalog = {
             "u001": {"name": "角色A", "star": "9星", "type": "力量型", "element": "火"},
         }
@@ -71,6 +71,7 @@ class PvPCollectorTests(unittest.TestCase):
                         "ACC": {"equipItemCode": "eq_acc_a"},
                     },
                     "awakeAbilityCode": "aab001",
+                    "talentGrade": 4,
                 },
                 {
                     "unitCode": "u001",
@@ -78,6 +79,7 @@ class PvPCollectorTests(unittest.TestCase):
                         "WEAPON": {"equipItemCode": "eq_wpn_a"},
                         "ARMOR": {"equipItemCode": "eq_amr_b"},
                     },
+                    "talentGrade": 0,
                 },
             ]],
             catalog=catalog,
@@ -91,6 +93,7 @@ class PvPCollectorTests(unittest.TestCase):
         armor = {item["code"]: item for item in row["equipmentUsage"]["ARMOR"]}
         acc = {item["code"]: item for item in row["equipmentUsage"]["ACC"]}
         awake = {item["code"]: item for item in row["awakeningUsage"]}
+        talent = {item["code"]: item for item in row["talentUsage"]}
 
         self.assertEqual(weapon["eq_wpn_a"]["count"], 2)
         self.assertEqual(weapon["eq_wpn_a"]["rate"], 100.0)
@@ -100,6 +103,34 @@ class PvPCollectorTests(unittest.TestCase):
         self.assertEqual(acc[module.NONE_CODE]["rate"], 50.0)
         self.assertEqual(awake["aab001"]["rate"], 50.0)
         self.assertEqual(awake[module.NONE_CODE]["rate"], 50.0)
+        self.assertEqual(talent["4"]["rate"], 50.0)
+        self.assertEqual(talent["0"]["rate"], 50.0)
+
+    def test_usage_scopes_follow_leaderboard_rank(self):
+        catalog = {
+            "u_top": {"name": "前十角色", "star": "9星", "type": "力量型", "element": "火"},
+            "u_30": {"name": "前三十角色", "star": "9星", "type": "敏捷型", "element": "水"},
+            "u_100": {"name": "前百角色", "star": "9星", "type": "智慧型", "element": "木"},
+        }
+        scopes = module.build_usage_scopes(
+            [
+                (1, [{"unitCode": "u_top", "talentGrade": 4}]),
+                (25, [{"unitCode": "u_30", "talentGrade": 3}]),
+                (80, [{"unitCode": "u_100", "talentGrade": 2}]),
+            ],
+            catalog=catalog,
+            ranking_count=199,
+            failed_ranks=[8, 70],
+        )
+
+        self.assertEqual(scopes["10"]["sampleCount"], 1)
+        self.assertEqual(scopes["10"]["playerDataFailureCount"], 1)
+        self.assertEqual([row["rangerId"] for row in scopes["10"]["rangers"]], ["u_top"])
+        self.assertEqual(scopes["30"]["sampleCount"], 2)
+        self.assertEqual({row["rangerId"] for row in scopes["30"]["rangers"]}, {"u_top", "u_30"})
+        self.assertEqual(scopes["100"]["sampleCount"], 3)
+        self.assertEqual(scopes["100"]["playerDataFailureCount"], 2)
+        self.assertEqual(scopes["100"]["rankingCount"], 100)
 
     def test_leaderboard_level_display(self):
         payload = {
