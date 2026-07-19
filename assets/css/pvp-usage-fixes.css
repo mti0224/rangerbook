@@ -1,0 +1,19 @@
+.pvp-ranger-trigger,
+.pvp-ranger-trigger:hover,
+.pvp-ranger-trigger:active,
+.pvp-ranger-trigger:focus {
+  background: transparent !important;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none;
+}
+
+.pvp-table tbody tr:has(.pvp-ranger-trigger:active),
+.pvp-table tbody tr:has(.pvp-ranger-trigger:focus) {
+  background: transparent;
+}
+
+@media (hover: none) {
+  .pvp-table tbody tr:hover {
+    background: transparent;
+  }
+}
