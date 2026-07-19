@@ -10,6 +10,7 @@
   const RANGER_DETAIL = (id) => `../../ranger/ranger/${encodeURIComponent(id)}`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
+  const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
   const SLOT_LABELS = {
     WEAPON: "武器",
     ARMOR: "防具",
@@ -190,10 +191,16 @@
   }
 
   function talentInfo(code) {
-    if (code === UNKNOWN_CODE) return { name: "才能解放狀態無資料", badge: "?" };
+    if (code === UNKNOWN_CODE) return { name: "才能解放狀態無資料", icon: "", badge: "?" };
     const grade = Number(code);
-    if (!Number.isFinite(grade) || grade <= 0) return { name: "未解放才能", badge: "0" };
-    return { name: `才能解放階段 ${grade}`, badge: String(grade) };
+    if (!Number.isInteger(grade) || grade < 0 || grade > 4) {
+      return { name: `才能解放階段 ${code}`, icon: "", badge: String(code) };
+    }
+    return {
+      name: grade === 0 ? "未解放才能" : `才能解放階段 ${grade}`,
+      icon: TALENT_ICON(grade),
+      badge: String(grade),
+    };
   }
 
   function usageOptionList(items, kind) {
@@ -216,6 +223,7 @@
       } else if (kind === "talent") {
         const info = talentInfo(code);
         name = info.name;
+        icon = info.icon;
         badge = info.badge;
       } else {
         name = gearName(code);
