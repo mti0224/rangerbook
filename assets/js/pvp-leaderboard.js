@@ -1,5 +1,5 @@
 (() => {
-  const DATA_URL = "../../res/pvp/leaderboard.json";
+  const DATA_URL = "https://pvp-data.warmycat.com/leaderboard.json";
   const REFRESH_MS = 5 * 60 * 1000;
 
   const elements = {

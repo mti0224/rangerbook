@@ -1,5 +1,5 @@
 (() => {
-  const DATA_URL = "../../res/pvp/usage.json";
+  const DATA_URL = "https://pvp-data.warmycat.com/usage.json";
   const REFRESH_MS = 60 * 60 * 1000;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const RANGER_DETAIL = (id) => `../../ranger/ranger/${encodeURIComponent(id)}`;

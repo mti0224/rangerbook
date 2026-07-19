@@ -7,5 +7,5 @@ Wants=network-online.target
 Type=oneshot
 User=ubuntu
 Group=ubuntu
-WorkingDirectory=/home/ubuntu/rangerbook
-ExecStart=/usr/bin/python3 /home/ubuntu/rangerbook/scripts/pvp/update_pvp_data.py --mode leaderboard
+WorkingDirectory=/home/ubuntu/rangerbook-pvp
+ExecStart=/usr/bin/python3 /home/ubuntu/rangerbook-pvp/scripts/pvp/update_pvp_data.py --mode leaderboard
