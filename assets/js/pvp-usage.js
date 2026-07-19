@@ -49,9 +49,11 @@
 
   function fillSelect(select, values, firstLabel) {
     if (!select) return;
+    const previous = select.value;
     const unique = [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
     select.innerHTML = `<option value="">${escapeHtml(firstLabel)}</option>`
       + unique.map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
+    if (unique.includes(previous)) select.value = previous;
   }
 
   function renderRows() {
@@ -73,9 +75,9 @@
       return;
     }
 
-    elements.body.innerHTML = filtered.map((row, index) => {
+    elements.body.innerHTML = filtered.map((row) => {
       const usageRate = Math.max(0, Math.min(100, Number(row.usageRate) || 0));
-      const rank = index + 1;
+      const rank = Number(row.rank) || "-";
       return `
         <tr>
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${rank}</span></td>
