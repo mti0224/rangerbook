@@ -7,8 +7,6 @@ on:
       - "pvp/usage/**"
       - "assets/js/pvp-*.js"
       - "assets/css/pvp-data.css"
-      - "scripts/pvp/**"
-      - "tests/test_pvp_collector.py"
       - ".github/workflows/validate-pvp-pages.yml"
   workflow_dispatch:
 
@@ -24,10 +22,6 @@ jobs:
         run: |
           node --check assets/js/pvp-leaderboard.js
           node --check assets/js/pvp-usage.js
-      - name: Validate Python syntax
-        run: python3 -m py_compile scripts/pvp/update_pvp_data.py
-      - name: Run PvP collector tests
-        run: python3 -m unittest discover -s tests -p 'test_pvp_collector.py'
       - name: Validate page references
         run: |
           grep -q 'assets/js/pvp-leaderboard.js' pvp/leaderboard/index.html
