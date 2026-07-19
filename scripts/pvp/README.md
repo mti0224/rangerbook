@@ -5,7 +5,31 @@
 - `res/pvp/leaderboard.json`：LEGEND 玩家排名與分數
 - `res/pvp/usage.json`：LEGEND PvP 防守隊伍角色使用率
 
+正式環境由 AWS EC2 執行 Collector，並透過 Nginx / HTTPS 公開：
+
+```text
+https://pvp-data.warmycat.com/leaderboard.json
+https://pvp-data.warmycat.com/usage.json
+```
+
 認證資料不會寫入上述 JSON。
+
+## EC2 目錄
+
+Collector：
+
+```text
+/home/ubuntu/rangerbook-pvp
+```
+
+公開 JSON：
+
+```text
+/var/www/rangerbook-pvp/leaderboard.json
+/var/www/rangerbook-pvp/usage.json
+```
+
+`/home/ubuntu/rangerbook-pvp/res/pvp` 可連結至 `/var/www/rangerbook-pvp`，讓 Collector 直接更新 Nginx 公開資料。
 
 ## 私密檔案位置
 
@@ -44,14 +68,14 @@ chmod 600 /home/ubuntu/rangerbook-secrets/pvp_config.json
 只更新玩家排行榜：
 
 ```bash
-cd /home/ubuntu/rangerbook
+cd /home/ubuntu/rangerbook-pvp
 python3 scripts/pvp/update_pvp_data.py --mode leaderboard
 ```
 
 更新排行榜並重新統計角色使用率：
 
 ```bash
-cd /home/ubuntu/rangerbook
+cd /home/ubuntu/rangerbook-pvp
 python3 scripts/pvp/update_pvp_data.py --mode full
 ```
 
@@ -96,7 +120,7 @@ deploy/systemd/rangerbook-pvp-usage.service
 deploy/systemd/rangerbook-pvp-usage.timer
 ```
 
-安裝：
+將檔案複製到 EC2 後安裝：
 
 ```bash
 sudo cp deploy/systemd/rangerbook-pvp-* /etc/systemd/system/
