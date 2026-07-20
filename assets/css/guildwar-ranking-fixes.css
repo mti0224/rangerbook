@@ -1,0 +1,45 @@
+.guildwar-ranking-table {
+  table-layout: fixed;
+}
+
+.guildwar-ranking-table th:nth-child(1),
+.guildwar-ranking-table td:nth-child(1) {
+  width: 10%;
+}
+
+.guildwar-ranking-table th:nth-child(2),
+.guildwar-ranking-table td:nth-child(2) {
+  width: 38%;
+}
+
+.guildwar-ranking-table th:nth-child(3),
+.guildwar-ranking-table td:nth-child(3) {
+  width: 18%;
+}
+
+.guildwar-ranking-table th:nth-child(4),
+.guildwar-ranking-table td:nth-child(4) {
+  width: 18%;
+}
+
+.guildwar-ranking-table th:nth-child(5),
+.guildwar-ranking-table td:nth-child(5) {
+  width: 16%;
+}
+
+.guildwar-ranking-table td:nth-child(2) strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guildwar-ranking-table td:nth-child(3),
+.guildwar-ranking-table td:nth-child(4),
+.guildwar-ranking-table td:nth-child(5) {
+  white-space: nowrap;
+}
+
+.guildwar-ranking-scroll {
+  contain: layout paint;
+}
