@@ -52,6 +52,28 @@
     return `<span class="pvp-rank-delta down">▼ ${Math.abs(delta)}</span>`;
   }
 
+  function levelBadgeFile(level) {
+    const value = Number(level);
+    if (!Number.isFinite(value)) return "";
+    if (value >= 100 && value <= 198) return "level_badge_master.png";
+    if (value >= 199 && value <= 297) return "level_badge_super.png";
+    if (value >= 298 && value <= 396) return "level_badge_ultra.png";
+    if (value >= 397 && value <= 495) return "level_badge_legend.png";
+    if (value >= 496 && value <= 594) return "level_badge_superlegend.png";
+    return "";
+  }
+
+  function levelHtml(level, nationalFlag) {
+    const levelText = level ? `Lv. ${level}` : "Lv. -";
+    const flagText = nationalFlag ? ` · ${nationalFlag}` : "";
+    const badgeFile = levelBadgeFile(level);
+    const badge = badgeFile
+      ? `<img class="pvp-level-badge" src="../../assets/level_icon/${badgeFile}" alt="" aria-hidden="true">`
+      : "";
+
+    return `<span class="pvp-player-level-line">${badge}<span>${escapeHtml(levelText + flagText)}</span></span>`;
+  }
+
   function renderRows() {
     if (!elements.body) return;
     const query = elements.search?.value.trim().toLowerCase() || "";
@@ -68,8 +90,6 @@
 
     elements.body.innerHTML = filtered.map((player) => {
       const name = player.availableName && player.displayName ? player.displayName : "未公開名稱";
-      const levelText = player.displayLevel ? `Lv. ${player.displayLevel}` : "Lv. -";
-      const flagText = player.nationalFlag ? ` · ${player.nationalFlag}` : "";
       return `
         <tr>
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${escapeHtml(player.rank)}</span>${rankDelta(player)}</td>
@@ -77,7 +97,7 @@
             <div class="pvp-player-main">
               <div>
                 <div class="pvp-player-name">${escapeHtml(name)}</div>
-                <div class="pvp-player-sub">${escapeHtml(levelText + flagText)}</div>
+                <div class="pvp-player-sub">${levelHtml(player.displayLevel, player.nationalFlag)}</div>
               </div>
             </div>
           </td>
