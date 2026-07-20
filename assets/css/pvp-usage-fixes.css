@@ -12,6 +12,20 @@
   background: transparent;
 }
 
+/* Keep loading/error status visually below the table column headers. */
+.pvp-data-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.pvp-data-panel > .pvp-table-scroll {
+  order: 1;
+}
+
+.pvp-data-panel > .pvp-status {
+  order: 2;
+}
+
 .pvp-modal-ranger-copy .eyebrow {
   display: none;
 }
