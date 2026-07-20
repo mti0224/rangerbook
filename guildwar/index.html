@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../assets/css/home.css">
   <link rel="stylesheet" href="../assets/css/ranger-compare.css">
   <link rel="stylesheet" href="../assets/css/hub-entry.css">
+  <style>.admin-only-entry[hidden]{display:none!important}</style>
 </head>
 <body>
   <div id="site-header"></div>
@@ -20,9 +21,18 @@
     </section>
     <section class="ranger-hub-grid" aria-label="公會功能入口">
       <a class="ranger-hub-card" href="./ranking/"><div><h2>公會排名</h2><p>查看目前公會戰排行榜前 50 名公會。</p></div></a>
-      <a class="ranger-hub-card" href="./usage/"><div><h2>角色使用率</h2><p>查看前 20／50 名公會成員保存的 Guild War 編成角色使用率。</p></div></a>
+      <a id="guildwarUsageEntry" class="ranger-hub-card admin-only-entry" href="./usage/" hidden><div><h2>角色使用率</h2><p>查看前 20／50 名公會成員保存的 Guild War 編成角色使用率。</p></div></a>
     </section>
   </main>
   <script src="../assets/js/site.js"></script>
+  <script>
+    (() => {
+      const ADMIN_MODE_KEY = "rangerbook-admin-mode";
+      const usageEntry = document.getElementById("guildwarUsageEntry");
+      if (usageEntry && localStorage.getItem(ADMIN_MODE_KEY) === "true") {
+        usageEntry.hidden = false;
+      }
+    })();
+  </script>
 </body>
 </html>
