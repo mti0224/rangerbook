@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LINE Rangers 資料站｜LINE Rangers Database</title>
-  <meta name="description" content="LINE Rangers 資料站提供角色、裝備、能力、關卡敵人、PvP 等資料查詢，方便玩家快速查看各項詳細數據。">
+  <meta name="description" content="LINE Rangers 資料站提供角色、裝備、能力、關卡敵人、PvP、公會戰等資料查詢，方便玩家快速查看各項詳細數據。">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="LINE Rangers 資料站">
   <meta property="og:title" content="LINE Rangers 資料站">
-  <meta property="og:description" content="查詢 LINE Rangers 的角色、裝備、能力、關卡敵人與 PvP 資料。">
+  <meta property="og:description" content="查詢 LINE Rangers 的角色、裝備、能力、關卡敵人、PvP 與公會戰資料。">
   <meta property="og:url" content="https://rangerbook.warmycat.com/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="LINE Rangers 資料站">
-  <meta name="twitter:description" content="查詢 LINE Rangers 的角色、裝備、能力、關卡敵人與 PvP 資料。">
+  <meta name="twitter:description" content="查詢 LINE Rangers 的角色、裝備、能力、關卡敵人、PvP 與公會戰資料。">
   <link rel="icon" type="image/png" href="./assets/main_icon/icon.png">
   <link rel="stylesheet" href="./assets/css/style.css">
   <link rel="stylesheet" href="./assets/css/home.css">
@@ -24,111 +24,29 @@
     <section class="hero">
       <p class="eyebrow">LINE Rangers Database</p>
       <h1>LINE Rangers 資料站</h1>
-      <p class="hero-text">
-        提供 LINE Rangers 的角色、裝備、能力、困難關卡、無限之塔、活動關卡、降臨關卡與迷宮資料查詢，方便快速查看各項詳細數據。
-      </p>
+      <p class="hero-text">提供 LINE Rangers 的角色、裝備、能力、困難關卡、無限之塔、活動關卡、降臨關卡、迷宮、PvP 與公會戰資料查詢，方便快速查看各項詳細數據。</p>
     </section>
 
     <section class="home-update-card" aria-labelledby="homeUpdateTitle">
-      <div class="home-update-heading">
-        <h2 id="homeUpdateTitle">更新日誌</h2>
-      </div>
-      <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite">
-        <p class="home-update-loading">更新日誌載入中...</p>
-      </div>
+      <div class="home-update-heading"><h2 id="homeUpdateTitle">更新日誌</h2></div>
+      <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite"><p class="home-update-loading">更新日誌載入中...</p></div>
       <a class="home-update-more" href="./update/">查看更多...</a>
     </section>
 
     <section class="home-tool-grid" aria-label="資料查詢入口">
-      <a class="home-tool-card" href="./ranger/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/rangerIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>Rangers角色</h2>
-          <p>查詢每隻角色的詳細數據</p>
-        </div>
-      </a>
+      <a class="home-tool-card" href="./ranger/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/rangerIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>Rangers角色</h2><p>查詢每隻角色的詳細數據</p></div></a>
 
-      <a class="home-tool-card" href="./pvp/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/pvpicon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>PvP</h2>
-          <p>查看 PvP 排行榜與角色使用率</p>
-        </div>
-      </a>
+      <a class="home-tool-card" href="./pvp/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/pvpicon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>PvP</h2><p>查看 PvP 排行榜與角色使用率</p></div></a>
 
-      <a class="home-tool-card" href="./gear/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/gearIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>裝備</h2>
-          <p>查詢裝備的詳細數據</p>
-        </div>
-      </a>
+      <a class="home-tool-card" href="./guildwar/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/icon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>公會</h2><p>查看公會戰排名與角色使用率</p></div></a>
 
-      <a class="home-tool-card" href="./ability/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/abilityIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>能力</h2>
-          <p>查詢能力的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./hs/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/hsIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>困難關卡</h2>
-          <p>查詢困難關卡敵人與關卡資訊</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./endless/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/infIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>無限之塔</h2>
-          <p>查詢無限之塔敵人與關卡資訊</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./eventStageEnemy/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/eventStageIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>活動關卡</h2>
-          <p>查詢活動關卡中敵人的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./adventEnemy/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/adventIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>降臨關卡</h2>
-          <p>查詢降臨關卡中敵人的詳細數據</p>
-        </div>
-      </a>
-
-      <a class="home-tool-card" href="./labyrinth/">
-        <div class="home-tool-image-wrap">
-          <img class="home-tool-image" src="./assets/main_icon/labyrinthIcon.png" alt="" loading="lazy">
-        </div>
-        <div class="home-tool-content">
-          <h2>迷宮</h2>
-          <p>查詢迷宮敵人、關卡與遺物資訊</p>
-        </div>
-      </a>
+      <a class="home-tool-card" href="./gear/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/gearIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>裝備</h2><p>查詢裝備的詳細數據</p></div></a>
+      <a class="home-tool-card" href="./ability/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/abilityIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>能力</h2><p>查詢能力的詳細數據</p></div></a>
+      <a class="home-tool-card" href="./hs/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/hsIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>困難關卡</h2><p>查詢困難關卡敵人與關卡資訊</p></div></a>
+      <a class="home-tool-card" href="./endless/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/infIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>無限之塔</h2><p>查詢無限之塔敵人與關卡資訊</p></div></a>
+      <a class="home-tool-card" href="./eventStageEnemy/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/eventStageIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>活動關卡</h2><p>查詢活動關卡中敵人的詳細數據</p></div></a>
+      <a class="home-tool-card" href="./adventEnemy/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/adventIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>降臨關卡</h2><p>查詢降臨關卡中敵人的詳細數據</p></div></a>
+      <a class="home-tool-card" href="./labyrinth/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/labyrinthIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>迷宮</h2><p>查詢迷宮敵人、關卡與遺物資訊</p></div></a>
     </section>
   </main>
 
