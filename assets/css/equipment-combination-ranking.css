@@ -1,0 +1,119 @@
+.pvp-equipment-combination-section {
+  margin-top: 1.35rem;
+}
+
+.pvp-combo-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.pvp-combo-row {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--bg);
+}
+
+.pvp-combo-rank {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--soft);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.pvp-combo-gears {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.pvp-combo-gear {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.pvp-combo-gear-icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  object-fit: contain;
+  border-radius: 0.6rem;
+  background: var(--panel);
+}
+
+.pvp-combo-gear-empty {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  color: var(--muted);
+}
+
+.pvp-combo-gear div {
+  min-width: 0;
+}
+
+.pvp-combo-gear span {
+  display: block;
+  margin-bottom: 0.1rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.pvp-combo-gear strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+}
+
+.pvp-combo-stats {
+  display: grid;
+  justify-items: end;
+  gap: 0.15rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.pvp-combo-stats strong {
+  font-size: 1rem;
+}
+
+.pvp-combo-stats span {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.pvp-combo-pagination {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 760px) {
+  .pvp-combo-row {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .pvp-combo-gears {
+    grid-template-columns: 1fr;
+  }
+
+  .pvp-combo-stats {
+    grid-column: 2;
+    justify-items: start;
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 0.5rem;
+  }
+}
