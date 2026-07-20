@@ -33,6 +33,19 @@
   color: var(--primary-dark);
 }
 
+.pvp-modal-section--no-divider,
+.pvp-modal-section--no-divider + .pvp-modal-section {
+  margin-top: 1rem !important;
+  padding: 1rem;
+  border: 1px solid var(--line) !important;
+  border-radius: 1rem;
+  background: var(--bg);
+}
+
+.pvp-modal-section--no-divider + .pvp-modal-section {
+  border-top: 1px solid var(--line) !important;
+}
+
 @media (hover: none) {
   .pvp-table tbody tr:hover {
     background: transparent;
