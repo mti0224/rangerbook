@@ -52,8 +52,8 @@
     return `<span class="pvp-rank-delta down">▼ ${Math.abs(delta)}</span>`;
   }
 
-  function levelBadgeFile(level) {
-    const value = Number(level);
+  function levelBadgeFile(rawLevel) {
+    const value = Number(rawLevel);
     if (!Number.isFinite(value)) return "";
     if (value >= 100 && value <= 198) return "level_badge_master.png";
     if (value >= 199 && value <= 297) return "level_badge_super.png";
@@ -63,10 +63,10 @@
     return "";
   }
 
-  function levelHtml(level, nationalFlag) {
-    const levelText = level ? `Lv. ${level}` : "Lv. -";
+  function levelHtml(rawLevel, displayLevel, nationalFlag) {
+    const levelText = displayLevel ? `Lv. ${displayLevel}` : "Lv. -";
     const flagText = nationalFlag ? ` · ${nationalFlag}` : "";
-    const badgeFile = levelBadgeFile(level);
+    const badgeFile = levelBadgeFile(rawLevel);
     const badge = badgeFile
       ? `<img class="pvp-level-badge" src="../../assets/level_icon/${badgeFile}" alt="" aria-hidden="true">`
       : "";
@@ -97,7 +97,7 @@
             <div class="pvp-player-main">
               <div>
                 <div class="pvp-player-name">${escapeHtml(name)}</div>
-                <div class="pvp-player-sub">${levelHtml(player.displayLevel, player.nationalFlag)}</div>
+                <div class="pvp-player-sub">${levelHtml(player.level, player.displayLevel, player.nationalFlag)}</div>
               </div>
             </div>
           </td>
