@@ -1,5 +1,5 @@
 (() => {
-  const DATA_URL = "https://pvp-data.warmycat.com/guildwar_usage.json";
+  const DATA_URL = "https://pvp-data.warmycat.com/guildwar_ranking.json";
   const els = {
     updated: document.getElementById("guildRankingUpdated"),
     count: document.getElementById("guildRankingCount"),
@@ -21,9 +21,9 @@
       <tr>
         <td class="pvp-rank-cell"><span class="pvp-rank-medal">${esc(g.rank)}</span></td>
         <td><strong>${esc(g.guildName || "-")}</strong></td>
-        <td>${esc(num(g.memberCount))}</td>
-        <td>${esc(num(g.playerDataSuccessCount))}</td>
-        <td><strong>${esc(num(g.guildwarPlayerCount))}</strong> 人 <span class="pvp-rank-delta">${esc(num(g.guildwarRate))}%</span></td>
+        <td>${esc(num(g.score))}</td>
+        <td>${esc(num(g.curMemberCount))} / ${esc(num(g.maxMemberCount))}</td>
+        <td>${esc(g.nationalFlag || "-")}</td>
       </tr>`).join("") : `<tr class="pvp-empty-row"><td colspan="5">找不到符合條件的公會。</td></tr>`;
   }
   async function load() {
@@ -32,7 +32,7 @@
       const res = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      guilds = data.extraAnalysis?.guilds || data.scopes?.["50"]?.extraAnalysis?.guilds || [];
+      guilds = Array.isArray(data.guilds) ? data.guilds : [];
       els.updated.textContent = date(data.metadata?.generatedAtUtc);
       els.count.textContent = num(guilds.length || data.metadata?.rankingCount);
       els.version.textContent = data.metadata?.apiVersion || "-";
