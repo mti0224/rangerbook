@@ -14,24 +14,19 @@
   const num = (v) => Number.isFinite(Number(v)) ? Number(v).toLocaleString("zh-Hant", { maximumFractionDigits: 2 }) : "-";
   const date = (v) => { const d = new Date(v); return Number.isNaN(d.getTime()) ? "-" : new Intl.DateTimeFormat("zh-Hant", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false }).format(d); };
   function status(text = "", error = false) { els.status.hidden = !text; els.status.textContent = text; els.status.classList.toggle("error", error); }
-  function setHeaders() {
-    const row = els.body?.closest("table")?.querySelector("thead tr");
-    if (row) row.innerHTML = "<th>排名</th><th>公會</th><th>分數</th><th>成員數</th><th>國家／地區</th>";
-  }
   function render() {
     const q = (els.search.value || "").trim().toLowerCase();
     const rows = guilds.filter(g => !q || String(g.guildName || "").toLowerCase().includes(q));
     els.body.innerHTML = rows.length ? rows.map(g => `
       <tr>
         <td class="pvp-rank-cell"><span class="pvp-rank-medal">${esc(g.rank)}</span></td>
-        <td><strong>${esc(g.guildName || "-")}</strong></td>
+        <td><strong title="${esc(g.guildName || "-")}">${esc(g.guildName || "-")}</strong></td>
         <td>${esc(num(g.score))}</td>
         <td>${esc(num(g.curMemberCount))} / ${esc(num(g.maxMemberCount))}</td>
         <td>${esc(g.nationalFlag || "-")}</td>
       </tr>`).join("") : `<tr class="pvp-empty-row"><td colspan="5">找不到符合條件的公會。</td></tr>`;
   }
   async function load() {
-    setHeaders();
     status("公會排名資料載入中…");
     try {
       const res = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
