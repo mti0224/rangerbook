@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>公會戰角色使用率｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/home.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-data.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-usage-fixes.css?v=20260720-4">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="page pvp-data-page">
+    <section class="page-title">
+      <p class="eyebrow">Guild War</p>
+      <h1>角色使用率</h1>
+      <p>統計公會戰排行榜高排名公會成員，在玩家資料中保存的 Guild War 編成。使用率以成功取得且 Guild War 編成非空的玩家為樣本；此資料不等同於實際要塞防守隊伍。</p>
+    </section>
+    <section class="pvp-data-meta" aria-label="公會戰角色使用率摘要">
+      <div class="pvp-meta-item"><span>資料更新時間</span><strong id="guildUsageUpdated">-</strong></div>
+      <div class="pvp-meta-item"><span>公會範圍</span><strong id="guildUsageScopeLabel">前 50 名公會</strong></div>
+      <div class="pvp-meta-item"><span>有效玩家樣本</span><strong><span id="guildUsageSampleCount">-</span> 人</strong></div>
+      <div class="pvp-meta-item"><span>實際公會數</span><strong><span id="guildUsageGuildCount">-</span> 個</strong></div>
+    </section>
+    <section class="pvp-data-controls" aria-label="角色使用率篩選">
+      <label><span>搜尋角色</span><input id="guildUsageSearch" type="search" placeholder="角色名稱或 ID"></label>
+      <label><span>公會範圍</span><select id="guildUsageScope"><option value="20">前 20 名公會</option><option value="50" selected>前 50 名公會</option></select></label>
+      <label><span>類型</span><select id="guildUsageType"><option value="">全部類型</option></select></label>
+      <label><span>屬性</span><select id="guildUsageElement"><option value="">全部屬性</option></select></label>
+    </section>
+    <section class="pvp-data-panel">
+      <div id="guildUsageStatus" class="pvp-status">公會戰角色使用率資料載入中…</div>
+      <div class="pvp-table-scroll"><table class="pvp-table"><thead><tr><th>排名</th><th>角色</th><th>使用玩家數</th><th>使用率</th><th>公會普及率</th></tr></thead><tbody id="guildUsageBody"></tbody></table></div>
+    </section>
+  </main>
+  <div id="guildUsageModal" class="pvp-usage-modal" hidden>
+    <div class="pvp-usage-modal-backdrop" data-guild-modal-close></div>
+    <section class="pvp-usage-modal-panel" role="dialog" aria-modal="true" aria-labelledby="guildUsageModalTitle">
+      <button id="guildUsageModalClose" class="pvp-usage-modal-close" type="button" aria-label="關閉">×</button>
+      <div id="guildUsageModalContent"></div>
+    </section>
+  </div>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/guildwar-usage.js?v=20260720-1" defer></script>
+</body>
+</html>
