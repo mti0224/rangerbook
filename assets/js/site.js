@@ -215,6 +215,7 @@
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${rootPrefix}ranger/">Rangers</a>
           <a href="${rootPrefix}pvp/">PvP</a>
+          <a href="${rootPrefix}guildwar/">公會</a>
           <a href="${rootPrefix}gear/">裝備</a>
           <a href="${rootPrefix}hs/">困難關卡</a>
           <a href="${rootPrefix}endless/">無限之塔</a>
