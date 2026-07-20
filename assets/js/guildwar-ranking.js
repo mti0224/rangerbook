@@ -1,0 +1,47 @@
+(() => {
+  const DATA_URL = "https://pvp-data.warmycat.com/guildwar_usage.json";
+  const els = {
+    updated: document.getElementById("guildRankingUpdated"),
+    count: document.getElementById("guildRankingCount"),
+    version: document.getElementById("guildRankingVersion"),
+    search: document.getElementById("guildRankingSearch"),
+    status: document.getElementById("guildRankingStatus"),
+    body: document.getElementById("guildRankingBody"),
+  };
+  let guilds = [];
+
+  const esc = (v) => String(v ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  const num = (v) => Number.isFinite(Number(v)) ? Number(v).toLocaleString("zh-Hant", { maximumFractionDigits: 2 }) : "-";
+  const date = (v) => { const d = new Date(v); return Number.isNaN(d.getTime()) ? "-" : new Intl.DateTimeFormat("zh-Hant", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false }).format(d); };
+  function status(text = "", error = false) { els.status.hidden = !text; els.status.textContent = text; els.status.classList.toggle("error", error); }
+  function render() {
+    const q = (els.search.value || "").trim().toLowerCase();
+    const rows = guilds.filter(g => !q || String(g.guildName || "").toLowerCase().includes(q));
+    els.body.innerHTML = rows.length ? rows.map(g => `
+      <tr>
+        <td class="pvp-rank-cell"><span class="pvp-rank-medal">${esc(g.rank)}</span></td>
+        <td><strong>${esc(g.guildName || "-")}</strong></td>
+        <td>${esc(num(g.memberCount))}</td>
+        <td>${esc(num(g.playerDataSuccessCount))}</td>
+        <td><strong>${esc(num(g.guildwarPlayerCount))}</strong> 人 <span class="pvp-rank-delta">${esc(num(g.guildwarRate))}%</span></td>
+      </tr>`).join("") : `<tr class="pvp-empty-row"><td colspan="5">找不到符合條件的公會。</td></tr>`;
+  }
+  async function load() {
+    status("公會排名資料載入中…");
+    try {
+      const res = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      guilds = data.extraAnalysis?.guilds || data.scopes?.["50"]?.extraAnalysis?.guilds || [];
+      els.updated.textContent = date(data.metadata?.generatedAtUtc);
+      els.count.textContent = num(guilds.length || data.metadata?.rankingCount);
+      els.version.textContent = data.metadata?.apiVersion || "-";
+      status();
+      render();
+    } catch (e) {
+      console.error(e); status("公會排名資料尚未產生或目前無法載入。", true); els.body.innerHTML = "";
+    }
+  }
+  els.search?.addEventListener("input", render);
+  load();
+})();
