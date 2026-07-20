@@ -12,6 +12,27 @@
   background: transparent;
 }
 
+.pvp-modal-ranger-copy .eyebrow {
+  display: none;
+}
+
+.pvp-modal-detail-link,
+.pvp-modal-detail-link:hover {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.pvp-modal-detail-link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.pvp-modal-detail-link:hover {
+  color: var(--primary-dark);
+}
+
 @media (hover: none) {
   .pvp-table tbody tr:hover {
     background: transparent;
