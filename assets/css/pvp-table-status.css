@@ -1,0 +1,15 @@
+/* Shared loading/error placement for all PvP and Guild War data tables. */
+.pvp-data-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.pvp-data-panel > .pvp-table-scroll {
+  order: 1;
+}
+
+.pvp-data-panel > .pvp-status {
+  order: 2;
+  width: 100%;
+  box-sizing: border-box;
+}
