@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>公會排名｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/home.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-data.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="page pvp-data-page">
+    <section class="page-title"><p class="eyebrow">Guild War</p><h1>公會排名</h1><p>目前公會戰排行榜前 50 名公會。公會成員的 Guild War 編成保存比例僅代表此 API 中是否有保存編成，不等同於參戰率。</p></section>
+    <section class="pvp-data-meta" aria-label="公會排名資料摘要">
+      <div class="pvp-meta-item"><span>資料更新時間</span><strong id="guildRankingUpdated">-</strong></div>
+      <div class="pvp-meta-item"><span>資料範圍</span><strong>前 50 名公會</strong></div>
+      <div class="pvp-meta-item"><span>公會數</span><strong><span id="guildRankingCount">-</span> 個</strong></div>
+      <div class="pvp-meta-item"><span>API 版本</span><strong id="guildRankingVersion">-</strong></div>
+    </section>
+    <section class="pvp-data-controls"><label><span>搜尋公會</span><input id="guildRankingSearch" type="search" placeholder="公會名稱"></label></section>
+    <section class="pvp-data-panel">
+      <div id="guildRankingStatus" class="pvp-status">公會排名資料載入中…</div>
+      <div class="pvp-table-scroll"><table class="pvp-table"><thead><tr><th>排名</th><th>公會</th><th>成員數</th><th>成功取得玩家資料</th><th>保存 Guild War 編成</th></tr></thead><tbody id="guildRankingBody"></tbody></table></div>
+    </section>
+  </main>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/guildwar-ranking.js?v=20260720-1" defer></script>
+</body>
+</html>
