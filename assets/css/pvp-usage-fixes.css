@@ -36,14 +36,23 @@
 .pvp-modal-section--no-divider,
 .pvp-modal-section--no-divider + .pvp-modal-section {
   margin-top: 1rem !important;
-  padding: 1rem;
-  border: 1px solid var(--line) !important;
-  border-radius: 1rem;
-  background: var(--bg);
+  padding: 0;
+  border: 0 !important;
+  background: transparent;
 }
 
 .pvp-modal-section--no-divider + .pvp-modal-section {
-  border-top: 1px solid var(--line) !important;
+  border-top: 0 !important;
+}
+
+.pvp-modal-section--no-divider > .pvp-option-list,
+.pvp-modal-section--no-divider + .pvp-modal-section > .pvp-option-list,
+.pvp-modal-section--no-divider > .pvp-modal-empty,
+.pvp-modal-section--no-divider + .pvp-modal-section > .pvp-modal-empty {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--bg);
 }
 
 @media (hover: none) {
