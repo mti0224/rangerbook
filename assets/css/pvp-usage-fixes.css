@@ -4,7 +4,31 @@
 .pvp-ranger-trigger:focus {
   background: transparent !important;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: none;
+  box-shadow: none !important;
+}
+
+/* The clickable ranger button should never look like a separate pill/button. */
+.pvp-usage-stable-table .pvp-ranger-trigger,
+.pvp-usage-stable-table .pvp-ranger-trigger:hover,
+.pvp-usage-stable-table .pvp-ranger-trigger:active,
+.pvp-usage-stable-table .pvp-ranger-trigger:focus {
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.pvp-usage-stable-table .pvp-ranger-trigger:hover .pvp-ranger-name,
+.pvp-usage-stable-table .pvp-ranger-trigger:focus-visible .pvp-ranger-name {
+  color: inherit !important;
+}
+
+/* Hover the whole row instead of only the ranger-name control. */
+.pvp-usage-stable-table tbody tr:hover > td {
+  background: var(--soft);
+}
+
+html[data-theme="dark"] .pvp-usage-stable-table tbody tr:hover > td {
+  background: rgba(255, 255, 255, 0.035) !important;
 }
 
 .pvp-table tbody tr:has(.pvp-ranger-trigger:active),
@@ -104,7 +128,8 @@
 }
 
 @media (hover: none) {
-  .pvp-table tbody tr:hover {
-    background: transparent;
+  .pvp-table tbody tr:hover,
+  .pvp-usage-stable-table tbody tr:hover > td {
+    background: transparent !important;
   }
 }
