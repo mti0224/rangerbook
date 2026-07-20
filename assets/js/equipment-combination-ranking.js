@@ -134,8 +134,10 @@
     return parts.length ? decodeURIComponent(parts[parts.length - 1]) : "";
   }
 
-  function injectOrRefresh() {
+  function injectSection() {
     renderQueued = false;
+    if (modalContent.querySelector("[data-equipment-combination-ranking]")) return;
+
     const rangerId = rangerIdFromModal();
     if (!rangerId) return;
     if (currentRangerId !== rangerId) {
@@ -145,22 +147,23 @@
     const row = findCurrentRow(rangerId);
     if (!row) return;
 
-    const html = renderSection(row);
-    const existing = modalContent.querySelector("[data-equipment-combination-ranking]");
-    if (existing) {
-      existing.outerHTML = html;
-      return;
-    }
-
     const equipmentSection = [...modalContent.querySelectorAll(".pvp-modal-section")]
       .find((section) => section.querySelector("h3")?.textContent?.trim() === "配裝情況");
-    if (equipmentSection) equipmentSection.insertAdjacentHTML("afterend", html);
+    if (equipmentSection) equipmentSection.insertAdjacentHTML("afterend", renderSection(row));
+  }
+
+  function refreshSection() {
+    const rangerId = rangerIdFromModal();
+    const row = findCurrentRow(rangerId);
+    const existing = modalContent.querySelector("[data-equipment-combination-ranking]");
+    if (!row || !existing) return;
+    existing.outerHTML = renderSection(row);
   }
 
   function queueRender() {
     if (renderQueued) return;
     renderQueued = true;
-    queueMicrotask(injectOrRefresh);
+    queueMicrotask(injectSection);
   }
 
   modalContent.addEventListener("click", (event) => {
@@ -169,7 +172,7 @@
     const next = Number(button.dataset.comboPage);
     if (!Number.isFinite(next)) return;
     currentPage = next;
-    injectOrRefresh();
+    refreshSection();
   });
 
   new MutationObserver(queueRender).observe(modalContent, { childList: true, subtree: true });
