@@ -1,4 +1,4 @@
-/* Shared loading/error placement for all PvP and Guild War data tables. */
+/* Shared table/status/meta fixes for all PvP and Guild War data pages. */
 .pvp-data-panel {
   display: flex;
   flex-direction: column;
@@ -12,4 +12,31 @@
   order: 2;
   width: 100%;
   box-sizing: border-box;
+}
+
+/* Numbers wrapped in <strong><span>...</span></strong> must inherit the main value style,
+   not the small muted label style from .pvp-meta-item span. */
+.pvp-meta-item strong > span {
+  display: inline;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* Three-card summary rows, such as Guild War ranking after API version was removed. */
+.pvp-data-meta.pvp-data-meta--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  .pvp-data-meta.pvp-data-meta--three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .pvp-data-meta.pvp-data-meta--three {
+    grid-template-columns: 1fr;
+  }
 }
