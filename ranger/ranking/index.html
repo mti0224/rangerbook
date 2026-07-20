@@ -16,7 +16,9 @@
   <link rel="stylesheet" href="../../assets/css/ranger-pagination.css">
   <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
   <link rel="stylesheet" href="../../assets/css/ranger-animation-viewer.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-data.css">
   <link rel="stylesheet" href="../../assets/css/ranger-ranking.css">
+  <link rel="stylesheet" href="../../assets/css/ranger-ranking-table.css?v=20260720-1">
 </head>
 <body>
   <div id="site-header"></div>
@@ -86,7 +88,19 @@
           <button id="paginationNext" type="button">下一頁</button>
         </div>
       </section>
-      <div id="rankingList" class="ranking-list ability-list"></div>
+
+      <section class="pvp-data-panel ranger-ranking-table-panel" aria-label="Rangers 數據排行榜">
+        <div class="ranger-ranking-table-scroll">
+          <div class="ranger-ranking-table-inner">
+            <div class="ranger-ranking-table-head" aria-hidden="true">
+              <span>排名</span>
+              <span>角色</span>
+              <span>數值</span>
+            </div>
+            <div id="rankingList" class="ranking-list ability-list"></div>
+          </div>
+        </div>
+      </section>
     </section>
   </main>
 
