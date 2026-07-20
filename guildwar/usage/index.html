@@ -4,6 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>公會戰角色使用率｜LINE Rangers Database</title>
+  <script>
+    (() => {
+      const ADMIN_MODE_KEY = "rangerbook-admin-mode";
+      if (localStorage.getItem(ADMIN_MODE_KEY) !== "true") {
+        const root = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+        window.location.replace(`${root}404.html`);
+      }
+    })();
+  </script>
   <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="../../assets/css/home.css">
