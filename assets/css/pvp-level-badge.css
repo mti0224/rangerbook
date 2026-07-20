@@ -1,0 +1,15 @@
+.pvp-player-level-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.pvp-level-badge {
+  display: inline-block;
+  width: auto;
+  height: 1.15em;
+  flex: 0 0 auto;
+  object-fit: contain;
+  vertical-align: -0.16em;
+}
