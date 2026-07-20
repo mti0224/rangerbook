@@ -1,12 +1,15 @@
-name: Validate PvP pages
+name: Validate PvP and Guild War pages
 
 on:
   pull_request:
     paths:
       - "pvp/leaderboard/**"
       - "pvp/usage/**"
+      - "guildwar/**"
       - "assets/js/pvp-*.js"
+      - "assets/js/guildwar-*.js"
       - "assets/css/pvp-data.css"
+      - "assets/css/pvp-usage-fixes.css"
       - ".github/workflows/validate-pvp-pages.yml"
   workflow_dispatch:
 
@@ -22,9 +25,15 @@ jobs:
         run: |
           node --check assets/js/pvp-leaderboard.js
           node --check assets/js/pvp-usage.js
+          node --check assets/js/guildwar-ranking.js
+          node --check assets/js/guildwar-usage.js
       - name: Validate page references
         run: |
           grep -q 'assets/js/pvp-leaderboard.js' pvp/leaderboard/index.html
           grep -q 'assets/js/pvp-usage.js' pvp/usage/index.html
+          grep -q 'assets/js/guildwar-ranking.js' guildwar/ranking/index.html
+          grep -q 'assets/js/guildwar-usage.js' guildwar/usage/index.html
           grep -q 'assets/css/pvp-data.css' pvp/leaderboard/index.html
           grep -q 'assets/css/pvp-data.css' pvp/usage/index.html
+          grep -q 'assets/css/pvp-data.css' guildwar/ranking/index.html
+          grep -q 'assets/css/pvp-data.css' guildwar/usage/index.html
