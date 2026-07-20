@@ -26,6 +26,40 @@
   order: 2;
 }
 
+/* Keep usage table columns stable before and after async rows are rendered. */
+.pvp-usage-stable-table {
+  table-layout: fixed;
+}
+
+.pvp-usage-stable-table th:nth-child(1),
+.pvp-usage-stable-table td:nth-child(1) {
+  width: 11%;
+}
+
+.pvp-usage-stable-table th:nth-child(2),
+.pvp-usage-stable-table td:nth-child(2) {
+  width: 34%;
+}
+
+.pvp-usage-stable-table th:nth-child(3),
+.pvp-usage-stable-table td:nth-child(3) {
+  width: 17%;
+}
+
+.pvp-usage-stable-table th:nth-child(4),
+.pvp-usage-stable-table td:nth-child(4) {
+  width: 22%;
+}
+
+.pvp-usage-stable-table th:nth-child(5),
+.pvp-usage-stable-table td:nth-child(5) {
+  width: 16%;
+}
+
+.pvp-usage-stable-table .pvp-rank-cell {
+  width: auto;
+}
+
 .pvp-modal-ranger-copy .eyebrow {
   display: none;
 }
