@@ -51,33 +51,16 @@
     ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
   }
 
-  function setFittedText(ctx, text, maxWidth, startSize, minSize = 20) {
-    let size = startSize;
-    while (size > minSize) {
-      ctx.font = `800 ${size}px ${FONT_FAMILY}`;
-      if (ctx.measureText(text).width <= maxWidth) return text;
-      size -= 1;
-    }
-
-    ctx.font = `800 ${minSize}px ${FONT_FAMILY}`;
-    if (ctx.measureText(text).width <= maxWidth) return text;
-
-    let output = text;
-    while (output.length > 1 && ctx.measureText(`${output}…`).width > maxWidth) {
-      output = output.slice(0, -1);
-    }
-    return `${output}…`;
-  }
-
   async function buildCanvas(rangers) {
-    const width = 1600;
-    const height = 1100;
-    const outer = 54;
-    const gapX = 24;
-    const gapY = 18;
-    const cellWidth = (width - outer * 2 - gapX * (COLUMNS - 1)) / COLUMNS;
-    const cellHeight = (height - outer * 2 - gapY * (ROWS_PER_COLUMN - 1)) / ROWS_PER_COLUMN;
-    const imageBoxSize = 126;
+    // Height : width = 11 : 28 exactly.
+    const width = 1960;
+    const height = 770;
+    const outerX = 22;
+    const outerY = 18;
+    const gapX = 12;
+    const gapY = 10;
+    const cellWidth = (width - outerX * 2 - gapX * (COLUMNS - 1)) / COLUMNS;
+    const cellHeight = (height - outerY * 2 - gapY * (ROWS_PER_COLUMN - 1)) / ROWS_PER_COLUMN;
 
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -98,61 +81,48 @@
     rangers.forEach((row, index) => {
       const column = Math.floor(index / ROWS_PER_COLUMN);
       const rowIndex = index % ROWS_PER_COLUMN;
-      const x = outer + column * (cellWidth + gapX);
-      const y = outer + rowIndex * (cellHeight + gapY);
+      const x = outerX + column * (cellWidth + gapX);
+      const y = outerY + rowIndex * (cellHeight + gapY);
 
-      roundRectPath(ctx, x, y, cellWidth, cellHeight, 24);
+      roundRectPath(ctx, x, y, cellWidth, cellHeight, 18);
       ctx.fillStyle = "#172033";
       ctx.fill();
       ctx.strokeStyle = "#334155";
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      const rankWidth = 58;
-      const rankHeight = 32;
-      const rankX = x + 16;
-      const rankY = y + 14;
-      roundRectPath(ctx, rankX, rankY, rankWidth, rankHeight, 16);
+      const rankWidth = 54;
+      const rankHeight = 30;
+      const rankX = x + 12;
+      const rankY = y + 10;
+      roundRectPath(ctx, rankX, rankY, rankWidth, rankHeight, 15);
       ctx.fillStyle = "#294a78";
       ctx.fill();
       ctx.fillStyle = "#ffffff";
-      ctx.font = `800 18px ${FONT_FAMILY}`;
+      ctx.font = `800 17px ${FONT_FAMILY}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(`#${index + 1}`, rankX + rankWidth / 2, rankY + rankHeight / 2);
-      ctx.textAlign = "left";
 
       const id = String(row.rangerId || row.unitCode || "");
       const image = images.get(id);
-      const imageX = x + 22;
-      const imageY = y + 54;
-      const imageHeight = cellHeight - 70;
-
-      roundRectPath(ctx, imageX, imageY, imageBoxSize, imageHeight, 20);
-      ctx.fillStyle = "#111827";
-      ctx.fill();
+      const imageSize = Math.min(104, cellHeight - 20);
+      const imageX = x + 76;
+      const imageY = y + (cellHeight - imageSize) / 2;
 
       if (image) {
-        ctx.save();
-        roundRectPath(ctx, imageX, imageY, imageBoxSize, imageHeight, 20);
-        ctx.clip();
-        drawImageContain(ctx, image, imageX + 6, imageY + 6, imageBoxSize - 12, imageHeight - 12);
-        ctx.restore();
+        drawImageContain(ctx, image, imageX, imageY, imageSize, imageSize);
       }
 
-      const copyX = imageX + imageBoxSize + 20;
-      const copyWidth = cellWidth - (copyX - x) - 20;
-      const name = String(row.name || id || "-");
-      const count = Number(row.playerCount) || 0;
-
-      ctx.fillStyle = "#f8fafc";
-      const displayName = setFittedText(ctx, name, copyWidth, 28, 20);
-      ctx.textBaseline = "middle";
-      ctx.fillText(displayName, copyX, y + cellHeight * 0.45);
+      const count = Number(row.appearanceCount) || 0;
+      const countX = x + cellWidth - 22;
+      const countY = y + cellHeight / 2;
 
       ctx.fillStyle = "#93c5fd";
-      ctx.font = `800 28px ${FONT_FAMILY}`;
-      ctx.fillText(`${numberFormat.format(count)} 人`, copyX, y + cellHeight * 0.69);
+      ctx.font = `800 31px ${FONT_FAMILY}`;
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`${numberFormat.format(count)} 次`, countX, countY);
     });
 
     return canvas;
