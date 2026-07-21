@@ -127,6 +127,37 @@ html[data-theme="dark"] .pvp-usage-stable-table tbody tr:hover > td {
   background: var(--bg);
 }
 
+.pvp-admin-export-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.2rem 0 1rem;
+}
+
+.pvp-admin-export-actions[hidden] {
+  display: none !important;
+}
+
+.pvp-admin-export-button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.72rem 1rem;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pvp-admin-export-button:hover:not(:disabled) {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+
+.pvp-admin-export-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 @media (hover: none) {
   .pvp-table tbody tr:hover,
   .pvp-usage-stable-table tbody tr:hover > td {
