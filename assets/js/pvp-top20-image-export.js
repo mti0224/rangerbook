@@ -5,6 +5,7 @@
   const COLUMNS = 4;
   const ROWS_PER_COLUMN = 5;
   const TOP_COUNT = COLUMNS * ROWS_PER_COLUMN;
+  const FONT_FAMILY = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
 
   const actions = document.getElementById("pvpAdminExportActions");
   const button = document.getElementById("downloadPvpTop20ImageBtn");
@@ -40,15 +41,32 @@
     ctx.closePath();
   }
 
-  function fitText(ctx, text, maxWidth, startSize, minSize = 22) {
-    const family = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
+  function drawImageContain(ctx, image, x, y, width, height) {
+    if (!image || !image.naturalWidth || !image.naturalHeight) return;
+    const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+    const drawWidth = image.naturalWidth * scale;
+    const drawHeight = image.naturalHeight * scale;
+    const drawX = x + (width - drawWidth) / 2;
+    const drawY = y + (height - drawHeight) / 2;
+    ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+  }
+
+  function setFittedText(ctx, text, maxWidth, startSize, minSize = 20) {
     let size = startSize;
     while (size > minSize) {
-      ctx.font = `800 ${size}px ${family}`;
-      if (ctx.measureText(text).width <= maxWidth) return;
+      ctx.font = `800 ${size}px ${FONT_FAMILY}`;
+      if (ctx.measureText(text).width <= maxWidth) return text;
       size -= 1;
     }
-    ctx.font = `800 ${minSize}px ${family}`;
+
+    ctx.font = `800 ${minSize}px ${FONT_FAMILY}`;
+    if (ctx.measureText(text).width <= maxWidth) return text;
+
+    let output = text;
+    while (output.length > 1 && ctx.measureText(`${output}…`).width > maxWidth) {
+      output = output.slice(0, -1);
+    }
+    return `${output}…`;
   }
 
   async function buildCanvas(rangers) {
@@ -59,7 +77,7 @@
     const gapY = 18;
     const cellWidth = (width - outer * 2 - gapX * (COLUMNS - 1)) / COLUMNS;
     const cellHeight = (height - outer * 2 - gapY * (ROWS_PER_COLUMN - 1)) / ROWS_PER_COLUMN;
-    const imageSize = 126;
+    const imageBoxSize = 126;
 
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -90,36 +108,51 @@
       ctx.lineWidth = 2;
       ctx.stroke();
 
+      const rankWidth = 58;
+      const rankHeight = 32;
+      const rankX = x + 16;
+      const rankY = y + 14;
+      roundRectPath(ctx, rankX, rankY, rankWidth, rankHeight, 16);
+      ctx.fillStyle = "#294a78";
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = `800 18px ${FONT_FAMILY}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`#${index + 1}`, rankX + rankWidth / 2, rankY + rankHeight / 2);
+      ctx.textAlign = "left";
+
       const id = String(row.rangerId || row.unitCode || "");
       const image = images.get(id);
       const imageX = x + 22;
-      const imageY = y + (cellHeight - imageSize) / 2;
+      const imageY = y + 54;
+      const imageHeight = cellHeight - 70;
 
-      roundRectPath(ctx, imageX, imageY, imageSize, imageSize, 20);
+      roundRectPath(ctx, imageX, imageY, imageBoxSize, imageHeight, 20);
       ctx.fillStyle = "#111827";
       ctx.fill();
 
       if (image) {
         ctx.save();
-        roundRectPath(ctx, imageX, imageY, imageSize, imageSize, 20);
+        roundRectPath(ctx, imageX, imageY, imageBoxSize, imageHeight, 20);
         ctx.clip();
-        ctx.drawImage(image, imageX, imageY, imageSize, imageSize);
+        drawImageContain(ctx, image, imageX + 6, imageY + 6, imageBoxSize - 12, imageHeight - 12);
         ctx.restore();
       }
 
-      const copyX = imageX + imageSize + 20;
+      const copyX = imageX + imageBoxSize + 20;
       const copyWidth = cellWidth - (copyX - x) - 20;
       const name = String(row.name || id || "-");
       const count = Number(row.playerCount) || 0;
 
       ctx.fillStyle = "#f8fafc";
-      fitText(ctx, name, copyWidth, 29, 21);
+      const displayName = setFittedText(ctx, name, copyWidth, 28, 20);
       ctx.textBaseline = "middle";
-      ctx.fillText(name, copyX, y + cellHeight * 0.43, copyWidth);
+      ctx.fillText(displayName, copyX, y + cellHeight * 0.45);
 
       ctx.fillStyle = "#93c5fd";
-      ctx.font = '800 28px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", sans-serif';
-      ctx.fillText(`${numberFormat.format(count)} 人`, copyX, y + cellHeight * 0.68, copyWidth);
+      ctx.font = `800 28px ${FONT_FAMILY}`;
+      ctx.fillText(`${numberFormat.format(count)} 人`, copyX, y + cellHeight * 0.69);
     });
 
     return canvas;
