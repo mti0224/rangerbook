@@ -3,7 +3,7 @@
   if (!modalContent) return;
 
   function itemLabel(item) {
-    return item?.querySelector("div > span")?.textContent?.trim() || "";
+    return item?.querySelector(":scope > div > span")?.textContent?.trim() || "";
   }
 
   function enhanceDetailCard(card) {
@@ -19,7 +19,7 @@
     const talentItem = items.find((item) => itemLabel(item) === "解放才能");
 
     if (leonardItem) {
-      const value = leonardItem.querySelector("strong")?.textContent?.trim() || "-";
+      const value = leonardItem.querySelector(":scope > div > strong")?.textContent?.trim() || "-";
       const line = document.createElement("span");
       line.className = "pvp-player-leonard-line";
       line.textContent = `雷納德點數：${value === "-" ? "-" : `${value}點`}`;
@@ -28,13 +28,13 @@
     }
 
     if (talentItem) {
-      const talentText = talentItem.querySelector("strong")?.textContent?.trim() || "";
+      const talentText = talentItem.querySelector(":scope > div > strong")?.textContent?.trim() || "";
       const hasTalent = talentText
         && talentText !== "未解放才能"
         && talentText !== "才能解放狀態無資料";
 
       if (hasTalent) {
-        const talentIcon = talentItem.querySelector("img");
+        const talentIcon = talentItem.querySelector(":scope > img");
         const name = headCopy.querySelector(":scope > strong");
         if (name && talentIcon) {
           const nameLine = document.createElement("div");
