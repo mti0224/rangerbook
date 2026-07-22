@@ -111,6 +111,12 @@
   background: var(--soft);
 }
 
+html[data-theme="dark"] .pvp-player-unit-button:hover,
+html[data-theme="dark"] .pvp-player-unit-button.is-selected {
+  border-color: #5f7fa5;
+  background: #253a55;
+}
+
 .pvp-player-unit-button:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
