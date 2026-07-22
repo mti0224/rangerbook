@@ -176,11 +176,13 @@
   font-size: 0.86rem;
 }
 
+.pvp-player-extra-list,
 .pvp-player-equipment-list {
   display: grid;
   gap: 0.55rem;
 }
 
+.pvp-player-extra-item,
 .pvp-player-equipment-item {
   display: grid;
   grid-template-columns: 2.8rem minmax(0, 1fr);
@@ -193,6 +195,7 @@
   background: var(--panel);
 }
 
+.pvp-player-extra-icon,
 .pvp-player-equipment-item img,
 .pvp-player-equipment-empty-icon {
   width: 2.8rem;
@@ -202,12 +205,16 @@
   background: var(--soft);
 }
 
+.pvp-player-extra-icon-empty,
 .pvp-player-equipment-empty-icon {
   display: grid;
   place-items: center;
   color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 850;
 }
 
+.pvp-player-extra-item span,
 .pvp-player-equipment-item span {
   display: block;
   color: var(--muted);
@@ -215,6 +222,7 @@
   font-weight: 750;
 }
 
+.pvp-player-extra-item strong,
 .pvp-player-equipment-item strong {
   display: block;
   overflow: hidden;
