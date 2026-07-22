@@ -3,9 +3,12 @@
   const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const RANGER_DATA_URL = "../../res/Rangers_data.json";
+  const ABILITY_DATA_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const REFRESH_MS = 5 * 60 * 1000;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
+  const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
+  const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
   const NONE_CODE = "__NONE__";
   const TEAM_OPTIONS = [
     ["pvpteam", "PvP 防守隊伍"],
@@ -35,6 +38,8 @@
   let supportDataPromise = null;
   let gearNameByCode = {};
   let rangerNameByCode = {};
+  let abilityMap = {};
+
   const modalState = {
     player: null,
     detail: null,
@@ -98,8 +103,11 @@
     const badge = badgeFile
       ? `<img class="pvp-level-badge" src="../../assets/level_icon/${badgeFile}" alt="" aria-hidden="true">`
       : "";
-
     return `<span class="pvp-player-level-line">${badge}<span>${escapeHtml(levelText + flagText)}</span></span>`;
+  }
+
+  function playerName(player) {
+    return player?.availableName && player?.displayName ? player.displayName : "未公開名稱";
   }
 
   function renderRows() {
@@ -117,7 +125,7 @@
     }
 
     elements.body.innerHTML = filtered.map((player) => {
-      const name = player.availableName && player.displayName ? player.displayName : "未公開名稱";
+      const name = playerName(player);
       return `
         <tr class="pvp-player-row" data-player-rank="${escapeHtml(player.rank)}" data-player-key="${escapeHtml(player.detailKey || "")}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(name)} 的隊伍">
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${escapeHtml(player.rank)}</span>${rankDelta(player)}</td>
@@ -147,10 +155,6 @@
     elements.status.hidden = !message;
     elements.status.classList.toggle("error", error);
     elements.status.textContent = message;
-  }
-
-  function playerName(player) {
-    return player?.availableName && player?.displayName ? player.displayName : "未公開名稱";
   }
 
   function normalizeUnits(value) {
@@ -197,15 +201,55 @@
     return `<div class="pvp-player-equipment-item">${icon}<div><span>${escapeHtml(SLOT_LABELS[slot])}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
   }
 
+  function abilityInfo(unit) {
+    const code = String(unit?.awakeAbilityCode || "").trim();
+    if (!code) return { name: "未設定覺醒能力", icon: "" };
+    const info = abilityMap[code] || {};
+    return {
+      name: info["名稱"] || code,
+      icon: info.icon || String(unit?.awakeAbilityIcon || "").trim(),
+    };
+  }
+
+  function talentInfo(unit) {
+    const raw = unit?.talentGrade;
+    if (raw === undefined || raw === null || raw === "") {
+      return { name: "才能解放狀態無資料", icon: "", badge: "?" };
+    }
+    const grade = Number(raw);
+    if (!Number.isInteger(grade) || grade < 0 || grade > 4) {
+      return { name: `才能解放階段 ${raw}`, icon: "", badge: String(raw) };
+    }
+    return {
+      name: grade === 0 ? "未解放才能" : `才能解放階段 ${grade}`,
+      icon: TALENT_ICON(grade),
+      badge: String(grade),
+    };
+  }
+
+  function extraDetailItem(label, value, icon = "", badge = "") {
+    const iconHtml = icon
+      ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">`
+      : `<span class="pvp-player-extra-icon pvp-player-extra-icon-empty" aria-hidden="true">${escapeHtml(badge || "—")}</span>`;
+    return `<div class="pvp-player-extra-item">${iconHtml}<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div></div>`;
+  }
+
   function renderUnitDetail(unit) {
     const target = document.getElementById("pvpPlayerUnitDetail");
     if (!target) return;
     if (!unit) {
-      target.innerHTML = `<div class="pvp-player-unit-detail-empty">點擊左側角色查看等級與裝備。</div>`;
+      target.innerHTML = `<div class="pvp-player-unit-detail-empty">點擊左側角色查看等級、Leonard 點數、覺醒能力、解放才能與裝備。</div>`;
       return;
     }
 
     const unitCode = String(unit.unitCode || "");
+    const leonardPoint = unit.leonardPoint === undefined || unit.leonardPoint === null || unit.leonardPoint === ""
+      ? "-"
+      : formatNumber(unit.leonardPoint);
+    const ability = abilityInfo(unit);
+    const talent = talentInfo(unit);
+    const abilityIcon = ability.icon ? ABILITY_ICON(ability.icon) : "";
+
     target.innerHTML = `
       <div class="pvp-player-unit-detail-card">
         <div class="pvp-player-unit-detail-head">
@@ -214,6 +258,11 @@
             <strong>${escapeHtml(rangerName(unitCode))}</strong>
             <span>等級：Lv. ${escapeHtml(unitLevel(unit))}</span>
           </div>
+        </div>
+        <div class="pvp-player-extra-list">
+          ${extraDetailItem("Leonard 點數", leonardPoint, "", "L")}
+          ${extraDetailItem("覺醒能力", ability.name, abilityIcon)}
+          ${extraDetailItem("解放才能", talent.name, talent.icon, talent.badge)}
         </div>
         <div class="pvp-player-equipment-list">
           ${equipmentItem(unit, "WEAPON")}
@@ -304,7 +353,8 @@
       }),
       fetch(ID_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
       fetch(RANGER_DATA_URL).then((res) => res.ok ? res.json() : []).catch(() => ([])),
-    ]).then(([teamPayload, idDict, rangerRows]) => {
+      fetch(ABILITY_DATA_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
+    ]).then(([teamPayload, idDict, rangerRows, abilityRows]) => {
       playerTeamPayload = teamPayload && typeof teamPayload === "object" ? teamPayload : {};
       gearNameByCode = Object.fromEntries(
         Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)])
@@ -314,6 +364,7 @@
           .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
           .filter(([code]) => code)
       );
+      abilityMap = abilityRows && typeof abilityRows === "object" ? abilityRows : {};
       return playerTeamPayload;
     }).catch((error) => {
       supportDataPromise = null;
