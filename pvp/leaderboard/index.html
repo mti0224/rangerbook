@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../../assets/css/pvp-data.css">
   <link rel="stylesheet" href="../../assets/css/pvp-table-status.css?v=20260720-2">
   <link rel="stylesheet" href="../../assets/css/pvp-level-badge.css?v=20260720-1">
+  <link rel="stylesheet" href="../../assets/css/pvp-player-teams.css?v=20260722-1">
 </head>
 <body>
   <div id="site-header"></div>
@@ -18,7 +19,7 @@
     <section class="page-title">
       <p class="eyebrow">PvP · LEGEND</p>
       <h1>傳奇段位排行榜</h1>
-      <p>顯示目前傳奇段位玩家的排名與 PvP 分數。</p>
+      <p>顯示目前傳奇段位玩家的排名與 PvP 分數。點擊玩家可查看隊伍 1～5 與 PvP 防守隊伍。</p>
     </section>
 
     <section class="pvp-data-meta" aria-label="排行榜資料摘要">
@@ -53,7 +54,15 @@
     </section>
   </main>
 
+  <div id="pvpPlayerTeamModal" class="pvp-usage-modal" hidden>
+    <div class="pvp-usage-modal-backdrop" data-pvp-player-modal-close></div>
+    <section class="pvp-usage-modal-panel pvp-player-team-modal-panel" role="dialog" aria-modal="true" aria-labelledby="pvpPlayerTeamModalTitle">
+      <button id="pvpPlayerTeamModalClose" class="pvp-usage-modal-close" type="button" aria-label="關閉">×</button>
+      <div id="pvpPlayerTeamModalContent"></div>
+    </section>
+  </div>
+
   <script src="../../assets/js/site.js"></script>
-  <script src="../../assets/js/pvp-leaderboard.js?v=20260720-3" defer></script>
+  <script src="../../assets/js/pvp-leaderboard.js?v=20260722-1" defer></script>
 </body>
 </html>
