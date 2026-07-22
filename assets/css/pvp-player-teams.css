@@ -1,0 +1,245 @@
+.pvp-player-row[data-player-rank] {
+  cursor: pointer;
+}
+
+.pvp-player-row[data-player-rank]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.pvp-player-row .pvp-player-name::after {
+  content: "  查看隊伍";
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 750;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.pvp-player-row:hover .pvp-player-name::after,
+.pvp-player-row:focus-visible .pvp-player-name::after {
+  opacity: 1;
+}
+
+.pvp-player-team-modal-panel {
+  width: min(1180px, calc(100vw - 2rem));
+}
+
+.pvp-player-team-header {
+  padding: 0.2rem 0 1.15rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.pvp-player-team-header h2 {
+  margin: 0;
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.pvp-player-team-header p {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.pvp-player-team-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.pvp-player-team-toolbar label {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 13rem;
+}
+
+.pvp-player-team-toolbar label span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.pvp-player-team-toolbar select {
+  width: 100%;
+}
+
+.pvp-player-team-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(290px, 0.75fr);
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.pvp-player-team-pane,
+.pvp-player-unit-detail {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--bg);
+}
+
+.pvp-player-team-pane h3,
+.pvp-player-unit-detail h3 {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+}
+
+.pvp-player-team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.pvp-player-unit-button {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: center;
+  min-width: 0;
+  padding: 0.7rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pvp-player-unit-button:hover,
+.pvp-player-unit-button.is-selected {
+  border-color: var(--primary);
+  background: var(--soft);
+}
+
+.pvp-player-unit-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.pvp-player-unit-image {
+  width: min(100%, 6rem);
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 0.8rem;
+  background: var(--soft);
+}
+
+.pvp-player-unit-name {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.pvp-player-unit-detail-empty,
+.pvp-player-team-empty {
+  display: grid;
+  place-items: center;
+  min-height: 10rem;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.pvp-player-unit-detail-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.pvp-player-unit-detail-head {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.pvp-player-unit-detail-head img {
+  width: 5.5rem;
+  height: 5.5rem;
+  object-fit: contain;
+  border-radius: 0.9rem;
+  background: var(--panel);
+}
+
+.pvp-player-unit-detail-head strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.pvp-player-unit-detail-head span {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.pvp-player-equipment-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pvp-player-equipment-item {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: var(--panel);
+}
+
+.pvp-player-equipment-item img,
+.pvp-player-equipment-empty-icon {
+  width: 2.8rem;
+  height: 2.8rem;
+  object-fit: contain;
+  border-radius: 0.65rem;
+  background: var(--soft);
+}
+
+.pvp-player-equipment-empty-icon {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.pvp-player-equipment-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.pvp-player-equipment-item strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 900px) {
+  .pvp-player-team-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pvp-player-team-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .pvp-player-team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pvp-player-team-toolbar,
+  .pvp-player-team-toolbar label {
+    width: 100%;
+  }
+}
