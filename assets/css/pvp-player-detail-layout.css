@@ -1,0 +1,25 @@
+.pvp-player-name-with-talent {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.pvp-player-name-with-talent > strong {
+  min-width: 0;
+}
+
+.pvp-player-talent-badge {
+  width: 1.65rem !important;
+  height: 1.65rem !important;
+  flex: 0 0 1.65rem;
+  object-fit: contain;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.pvp-player-leonard-line {
+  margin-top: 0.18rem !important;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
