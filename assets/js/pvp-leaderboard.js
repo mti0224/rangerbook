@@ -1,6 +1,21 @@
 (() => {
   const DATA_URL = "https://pvp-data.warmycat.com/leaderboard.json";
+  const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
+  const ID_DICT_URL = "../../res/id_dict.json";
+  const RANGER_DATA_URL = "../../res/Rangers_data.json";
   const REFRESH_MS = 5 * 60 * 1000;
+  const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
+  const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
+  const NONE_CODE = "__NONE__";
+  const TEAM_OPTIONS = [
+    ["pvpteam", "PvP 防守隊伍"],
+    ["team1", "隊伍 1"],
+    ["team2", "隊伍 2"],
+    ["team3", "隊伍 3"],
+    ["team4", "隊伍 4"],
+    ["team5", "隊伍 5"],
+  ];
+  const SLOT_LABELS = { WEAPON: "武器", ARMOR: "防具", ACC: "飾品" };
 
   const elements = {
     updated: document.getElementById("pvpLeaderboardUpdated"),
@@ -10,9 +25,22 @@
     status: document.getElementById("pvpLeaderboardStatus"),
     body: document.getElementById("pvpLeaderboardBody"),
     search: document.getElementById("pvpLeaderboardSearch"),
+    modal: document.getElementById("pvpPlayerTeamModal"),
+    modalContent: document.getElementById("pvpPlayerTeamModalContent"),
+    modalClose: document.getElementById("pvpPlayerTeamModalClose"),
   };
 
   let players = [];
+  let playerTeamPayload = null;
+  let supportDataPromise = null;
+  let gearNameByCode = {};
+  let rangerNameByCode = {};
+  const modalState = {
+    player: null,
+    detail: null,
+    teamKey: "pvpteam",
+    selectedUnitIndex: -1,
+  };
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -91,7 +119,7 @@
     elements.body.innerHTML = filtered.map((player) => {
       const name = player.availableName && player.displayName ? player.displayName : "未公開名稱";
       return `
-        <tr>
+        <tr class="pvp-player-row" data-player-rank="${escapeHtml(player.rank)}" data-player-key="${escapeHtml(player.detailKey || "")}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(name)} 的隊伍">
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${escapeHtml(player.rank)}</span>${rankDelta(player)}</td>
           <td>
             <div class="pvp-player-main">
@@ -114,12 +142,227 @@
     if (elements.totalCount) elements.totalCount.textContent = metadata.totalCount ? formatNumber(metadata.totalCount) : "-";
   }
 
-  async function load() {
-    if (elements.status) {
-      elements.status.hidden = false;
-      elements.status.classList.remove("error");
-      elements.status.textContent = "排行榜資料載入中…";
+  function setStatus(message = "", error = false) {
+    if (!elements.status) return;
+    elements.status.hidden = !message;
+    elements.status.classList.toggle("error", error);
+    elements.status.textContent = message;
+  }
+
+  function playerName(player) {
+    return player?.availableName && player?.displayName ? player.displayName : "未公開名稱";
+  }
+
+  function normalizeUnits(value) {
+    if (Array.isArray(value)) return value.filter((item) => item && typeof item === "object");
+    if (!value || typeof value !== "object") return [];
+    if (value.unitCode) return [value];
+    return Object.keys(value)
+      .sort((a, b) => Number(a) - Number(b) || String(a).localeCompare(String(b)))
+      .flatMap((key) => normalizeUnits(value[key]));
+  }
+
+  function teamUnits(detail, teamKey) {
+    return normalizeUnits(detail?.teams?.[teamKey] ?? detail?.[teamKey]);
+  }
+
+  function rangerName(unitCode) {
+    return rangerNameByCode[unitCode] || unitCode || "未知角色";
+  }
+
+  function unitLevel(unit) {
+    const candidates = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel];
+    const value = candidates.find((item) => item !== undefined && item !== null && item !== "");
+    return value === undefined ? "-" : formatNumber(value);
+  }
+
+  function equipmentCode(unit, slot) {
+    const equipMap = unit?.equipMap && typeof unit.equipMap === "object" ? unit.equipMap : (unit?.equipment || {});
+    const value = equipMap?.[slot];
+    if (!value) return NONE_CODE;
+    if (typeof value === "string") return value || NONE_CODE;
+    if (typeof value === "object") {
+      return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
     }
+    return NONE_CODE;
+  }
+
+  function equipmentItem(unit, slot) {
+    const code = equipmentCode(unit, slot);
+    const isNone = !code || code === NONE_CODE;
+    const name = isNone ? "未裝備" : (gearNameByCode[code] || code);
+    const icon = isNone
+      ? `<span class="pvp-player-equipment-empty-icon" aria-hidden="true">—</span>`
+      : `<img src="${GEAR_ICON(code)}" alt="" loading="lazy" onerror="this.remove();">`;
+    return `<div class="pvp-player-equipment-item">${icon}<div><span>${escapeHtml(SLOT_LABELS[slot])}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
+  }
+
+  function renderUnitDetail(unit) {
+    const target = document.getElementById("pvpPlayerUnitDetail");
+    if (!target) return;
+    if (!unit) {
+      target.innerHTML = `<div class="pvp-player-unit-detail-empty">點擊左側角色查看等級與裝備。</div>`;
+      return;
+    }
+
+    const unitCode = String(unit.unitCode || "");
+    target.innerHTML = `
+      <div class="pvp-player-unit-detail-card">
+        <div class="pvp-player-unit-detail-head">
+          <img src="${RANGER_IMAGE(unitCode)}" alt="" loading="lazy" onerror="this.remove();">
+          <div>
+            <strong>${escapeHtml(rangerName(unitCode))}</strong>
+            <span>等級：Lv. ${escapeHtml(unitLevel(unit))}</span>
+          </div>
+        </div>
+        <div class="pvp-player-equipment-list">
+          ${equipmentItem(unit, "WEAPON")}
+          ${equipmentItem(unit, "ARMOR")}
+          ${equipmentItem(unit, "ACC")}
+        </div>
+      </div>`;
+  }
+
+  function renderTeamGrid() {
+    const target = document.getElementById("pvpPlayerTeamGrid");
+    if (!target) return;
+    const units = teamUnits(modalState.detail, modalState.teamKey);
+    modalState.selectedUnitIndex = -1;
+
+    if (!units.length) {
+      target.innerHTML = `<div class="pvp-player-team-empty">這個隊伍目前沒有可顯示的角色資料。</div>`;
+      renderUnitDetail(null);
+      return;
+    }
+
+    target.innerHTML = units.map((unit, index) => {
+      const unitCode = String(unit.unitCode || "");
+      return `
+        <button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(unitCode))}">
+          <img class="pvp-player-unit-image" src="${RANGER_IMAGE(unitCode)}" alt="" loading="lazy" onerror="this.remove();">
+          <span class="pvp-player-unit-name">${escapeHtml(rangerName(unitCode))}</span>
+        </button>`;
+    }).join("");
+    renderUnitDetail(null);
+  }
+
+  function renderModal() {
+    if (!elements.modalContent || !modalState.player || !modalState.detail) return;
+    const player = modalState.player;
+    const optionHtml = TEAM_OPTIONS.map(([value, label]) =>
+      `<option value="${value}" ${value === modalState.teamKey ? "selected" : ""}>${escapeHtml(label)}</option>`
+    ).join("");
+
+    elements.modalContent.innerHTML = `
+      <header class="pvp-player-team-header">
+        <h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2>
+        <p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p>
+        <div class="pvp-player-team-toolbar">
+          <label><span>顯示隊伍</span><select id="pvpPlayerTeamSelect">${optionHtml}</select></label>
+        </div>
+      </header>
+      <div class="pvp-player-team-layout">
+        <section class="pvp-player-team-pane">
+          <h3>隊伍角色</h3>
+          <div id="pvpPlayerTeamGrid" class="pvp-player-team-grid"></div>
+        </section>
+        <aside class="pvp-player-unit-detail">
+          <h3>角色詳細資料</h3>
+          <div id="pvpPlayerUnitDetail"></div>
+        </aside>
+      </div>`;
+    renderTeamGrid();
+  }
+
+  function findPlayerDetail(player) {
+    const source = playerTeamPayload?.players;
+    if (!source) return null;
+
+    if (!Array.isArray(source) && typeof source === "object") {
+      if (player.detailKey && source[player.detailKey]) return source[player.detailKey];
+      const values = Object.values(source).filter((item) => item && typeof item === "object");
+      return values.find((item) => Number(item.rank) === Number(player.rank)) || null;
+    }
+
+    if (Array.isArray(source)) {
+      if (player.detailKey) {
+        const byKey = source.find((item) => String(item?.detailKey || "") === String(player.detailKey));
+        if (byKey) return byKey;
+      }
+      return source.find((item) => Number(item?.rank) === Number(player.rank)) || null;
+    }
+
+    return null;
+  }
+
+  function loadSupportData() {
+    if (supportDataPromise) return supportDataPromise;
+    supportDataPromise = Promise.all([
+      fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" }).then((res) => {
+        if (!res.ok) throw new Error(`player_teams HTTP ${res.status}`);
+        return res.json();
+      }),
+      fetch(ID_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
+      fetch(RANGER_DATA_URL).then((res) => res.ok ? res.json() : []).catch(() => ([])),
+    ]).then(([teamPayload, idDict, rangerRows]) => {
+      playerTeamPayload = teamPayload && typeof teamPayload === "object" ? teamPayload : {};
+      gearNameByCode = Object.fromEntries(
+        Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)])
+      );
+      rangerNameByCode = Object.fromEntries(
+        (Array.isArray(rangerRows) ? rangerRows : [])
+          .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
+          .filter(([code]) => code)
+      );
+      return playerTeamPayload;
+    }).catch((error) => {
+      supportDataPromise = null;
+      throw error;
+    });
+    return supportDataPromise;
+  }
+
+  async function openPlayerModal(player) {
+    if (!elements.modal || !elements.modalContent) return;
+    modalState.player = player;
+    modalState.detail = null;
+    modalState.teamKey = "pvpteam";
+    modalState.selectedUnitIndex = -1;
+    elements.modal.hidden = false;
+    document.body.classList.add("modal-open");
+    elements.modalContent.innerHTML = `<div class="pvp-status">玩家隊伍資料載入中…</div>`;
+
+    try {
+      await loadSupportData();
+      const detail = findPlayerDetail(player);
+      if (!detail) {
+        elements.modalContent.innerHTML = `
+          <header class="pvp-player-team-header">
+            <h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2>
+            <p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p>
+          </header>
+          <div class="pvp-player-unit-detail-empty">這名玩家的隊伍詳細資料尚未產生，請等待下一次完整 PvP 資料更新。</div>`;
+        return;
+      }
+      modalState.detail = detail;
+      renderModal();
+    } catch (error) {
+      console.error("PvP player team detail load failed", error);
+      elements.modalContent.innerHTML = `<div class="pvp-status error">玩家隊伍詳細資料目前無法載入。</div>`;
+    }
+  }
+
+  function closePlayerModal() {
+    if (!elements.modal) return;
+    elements.modal.hidden = true;
+    document.body.classList.remove("modal-open");
+    modalState.player = null;
+    modalState.detail = null;
+    modalState.selectedUnitIndex = -1;
+  }
+
+  async function load() {
+    setStatus("排行榜資料載入中…");
     try {
       const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -127,19 +370,58 @@
       players = Array.isArray(data.players) ? data.players : [];
       renderMetadata(data.metadata || {});
       renderRows();
-      if (elements.status) elements.status.hidden = true;
+      setStatus();
     } catch (error) {
       console.error("PvP leaderboard load failed", error);
-      if (elements.status) {
-        elements.status.hidden = false;
-        elements.status.classList.add("error");
-        elements.status.textContent = "排行榜資料尚未產生或目前無法載入。";
-      }
+      setStatus("排行榜資料尚未產生或目前無法載入。", true);
       if (elements.body) elements.body.innerHTML = "";
     }
   }
 
   elements.search?.addEventListener("input", renderRows);
+
+  elements.body?.addEventListener("click", (event) => {
+    const row = event.target.closest(".pvp-player-row[data-player-rank]");
+    if (!row) return;
+    const player = players.find((item) => Number(item.rank) === Number(row.dataset.playerRank));
+    if (player) openPlayerModal(player);
+  });
+
+  elements.body?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const row = event.target.closest(".pvp-player-row[data-player-rank]");
+    if (!row) return;
+    event.preventDefault();
+    const player = players.find((item) => Number(item.rank) === Number(row.dataset.playerRank));
+    if (player) openPlayerModal(player);
+  });
+
+  elements.modalContent?.addEventListener("change", (event) => {
+    if (event.target.id !== "pvpPlayerTeamSelect") return;
+    modalState.teamKey = event.target.value || "pvpteam";
+    renderTeamGrid();
+  });
+
+  elements.modalContent?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-unit-index]");
+    if (!button || !modalState.detail) return;
+    const index = Number(button.dataset.unitIndex);
+    const units = teamUnits(modalState.detail, modalState.teamKey);
+    const unit = units[index];
+    if (!unit) return;
+    modalState.selectedUnitIndex = index;
+    elements.modalContent.querySelectorAll(".pvp-player-unit-button").forEach((item) => {
+      item.classList.toggle("is-selected", item === button);
+    });
+    renderUnitDetail(unit);
+  });
+
+  elements.modalClose?.addEventListener("click", closePlayerModal);
+  elements.modal?.querySelector("[data-pvp-player-modal-close]")?.addEventListener("click", closePlayerModal);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && elements.modal && !elements.modal.hidden) closePlayerModal();
+  });
+
   load();
   window.setInterval(load, REFRESH_MS);
 })();
