@@ -1,6 +1,6 @@
 .guildwar-rank-row { cursor: pointer; }
 .guildwar-rank-row:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
-.guildwar-member-modal-panel { width: min(820px, calc(100vw - 2rem)); }
+.guildwar-member-modal-panel { width: min(980px, calc(100vw - 2rem)); }
 .guildwar-member-header { margin-bottom: 1rem; }
 .guildwar-member-header h2 { margin: 0; }
 .guildwar-member-header p { margin: .3rem 0 0; color: var(--muted); }
@@ -9,4 +9,16 @@
 .guildwar-member-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
 .guildwar-member-level { color: var(--muted); font-weight: 750; white-space: nowrap; }
 .guildwar-member-empty { padding: 1.25rem; color: var(--muted); text-align: center; }
-@media (max-width: 560px) { .guildwar-member-row { grid-template-columns: 1fr; gap: .2rem; } }
+.guildwar-member-team-button,
+.guildwar-team-back { min-height: 2.35rem; padding: .5rem .8rem; border: 1px solid var(--line); border-radius: .7rem; background: var(--soft); color: var(--text); font: inherit; font-weight: 800; cursor: pointer; }
+.guildwar-member-team-button:hover,
+.guildwar-team-back:hover { border-color: var(--primary); }
+.guildwar-team-back { margin-bottom: 1rem; }
+.guildwar-team-section + .guildwar-team-section { margin-top: 1.1rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.guildwar-team-section h3 { margin: 0 0 .7rem; font-size: .95rem; }
+.guildwar-team-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: .7rem; }
+.guildwar-team-unit { min-width: 0; display: grid; gap: .4rem; justify-items: center; padding: .65rem .45rem; border: 1px solid var(--line); border-radius: .85rem; background: var(--panel); }
+.guildwar-team-unit img { width: min(100%, 5.5rem); aspect-ratio: 1; object-fit: contain; border-radius: .7rem; background: var(--soft); }
+.guildwar-team-unit strong { width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; font-size: .76rem; }
+@media (max-width: 760px) { .guildwar-team-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media (max-width: 560px) { .guildwar-member-row { grid-template-columns: 1fr; gap: .45rem; } .guildwar-member-team-button { width: 100%; } .guildwar-team-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
