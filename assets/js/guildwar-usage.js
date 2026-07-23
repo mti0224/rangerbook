@@ -1,10 +1,11 @@
 (() => {
   const DATA_URLS = {
     LEGEND: "https://pvp-data.warmycat.com/guildwar_usage.json",
+    LEGEND_20: "https://pvp-data.warmycat.com/guildwar_usage.json",
     MASTER: "https://pvp-data.warmycat.com/guildwar_usage_MASTER.json",
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_usage_DIAMOND.json",
   };
-  const TIER_LABELS = { LEGEND: "傳奇", MASTER: "大師", DIAMOND: "鑽石" };
+  const TIER_LABELS = { LEGEND: "傳奇", LEGEND_20: "傳奇（1～20名）", MASTER: "大師", DIAMOND: "鑽石" };
   const RANGERS_URL = "../../res/Rangers_data.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const ABILITY_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
@@ -31,15 +32,22 @@
   function hydrate(raw) { return raw.map(row => { const i = infoFor(row.unitCode || row.rangerId); return { ...row, rangerId: row.unitCode || row.rangerId, name: i.name, star: i.star, type: i.type, element: i.element }; }); }
   function currentTier() { return els.tier?.value || "LEGEND"; }
   function activeRows() {
-    if (currentTier() === "LEGEND") return dataSet.scopes?.["50"]?.rangers || dataSet.rangers || [];
+    const tier = currentTier();
+    if (tier === "LEGEND_20") return dataSet.scopes?.["20"]?.rangers || [];
+    if (tier === "LEGEND") return dataSet.scopes?.["50"]?.rangers || dataSet.rangers || [];
     return dataSet.rangers || [];
   }
+  function activeMeta() {
+    const tier = currentTier();
+    if (tier === "LEGEND_20") return dataSet.scopes?.["20"]?.metadata || {};
+    if (tier === "LEGEND") return dataSet.scopes?.["50"]?.metadata || dataSet.metadata || {};
+    return dataSet.metadata || {};
+  }
   function applyData() {
-    const tier = currentTier(), label = TIER_LABELS[tier] || tier, rawRows = activeRows();
+    const tier = currentTier(), label = TIER_LABELS[tier] || tier, rawRows = activeRows(), meta = activeMeta();
     rows = hydrate(rawRows);
-    const meta = tier === "LEGEND" ? (dataSet.scopes?.["50"]?.metadata || dataSet.metadata || {}) : (dataSet.metadata || {});
-    els.updated.textContent = fmtDate(dataSet.metadata?.generatedAtUtc); els.scopeLabel.textContent = label; els.sample.textContent = num(meta.sampleCount ?? dataSet.metadata?.sampleCount); els.guildCount.textContent = num(meta.actualGuildCount ?? dataSet.metadata?.actualGuildCount);
-    if (els.description) els.description.textContent = `${label}段位公會戰的進攻隊伍角色使用率`;
+    els.updated.textContent = fmtDate(dataSet.metadata?.generatedAtUtc); els.scopeLabel.textContent = label; els.sample.textContent = num(meta.sampleCount ?? dataSet.metadata?.sampleCount); els.guildCount.textContent = num(meta.actualGuildCount ?? (tier === "LEGEND_20" ? 20 : dataSet.metadata?.actualGuildCount));
+    if (els.description) els.description.textContent = tier === "LEGEND_20" ? "傳奇段位前 20 名公會的公會戰進攻隊伍角色使用率" : `${label}段位公會戰的進攻隊伍角色使用率`;
     fill(els.type, rows.map(r=>r.type), "全部類型"); fill(els.element, rows.map(r=>r.element), "全部屬性"); render(); closeModal(); status();
   }
   function render() {
@@ -56,6 +64,6 @@
   function closeModal(){ if(!els.modal||els.modal.hidden)return; els.modal.hidden=true;document.body.classList.remove("modal-open"); }
   async function optional(url){try{const r=await fetch(url);return r.ok?await r.json():{};}catch{return {};}}
   async function loadSupport(){ if(supportLoaded)return; const [rangers,ids,abilities]=await Promise.all([optional(RANGERS_URL),optional(ID_DICT_URL),optional(ABILITY_URL)]); rangerMap={};(Array.isArray(rangers)?rangers:[]).forEach(r=>{const id=String(r.ranger_id||"");if(id)rangerMap[id]={name:String(r["Ranger名稱"]||id),star:String(r["Ranger星數"]||""),type:String(r["類型"]||""),element:String(r["屬性"]||"")};});gearNames=Object.fromEntries(Object.entries(ids||{}).map(([name,code])=>[String(code),String(name)]));abilityMap=abilities||{};supportLoaded=true; }
-  async function load(){ const tier=currentTier(), url=DATA_URLS[tier]; window.RANGERBOOK_GUILDWAR_USAGE_URL=url; status("公會戰角色使用率資料載入中…");try{const [res]=await Promise.all([fetch(`${url}?t=${Date.now()}`,{cache:"no-store"}),loadSupport()]);if(!res.ok)throw new Error(`HTTP ${res.status}`);dataSet=await res.json();applyData();}catch(e){console.error(e);rows=[];render();status(`${TIER_LABELS[tier]||tier}段位公會戰角色使用率資料尚未產生或目前無法載入。`,true);}}
+  async function load(){ const tier=currentTier(), url=DATA_URLS[tier] || DATA_URLS.LEGEND; window.RANGERBOOK_GUILDWAR_USAGE_URL=url; status("公會戰角色使用率資料載入中…");try{const [res]=await Promise.all([fetch(`${url}?t=${Date.now()}`,{cache:"no-store"}),loadSupport()]);if(!res.ok)throw new Error(`HTTP ${res.status}`);dataSet=await res.json();applyData();}catch(e){console.error(e);rows=[];render();status(`${TIER_LABELS[tier]||tier}公會戰角色使用率資料尚未產生或目前無法載入。`,true);}}
   [els.search,els.type,els.element].forEach(e=>{e?.addEventListener("input",render);e?.addEventListener("change",render);}); els.tier?.addEventListener("change",load); els.body?.addEventListener("click",e=>{const b=e.target.closest("[data-ranger-id]");if(b)openModal(rows.find(r=>r.rangerId===b.dataset.rangerId));}); els.modalContent?.addEventListener("click",e=>{const b=e.target.closest("[data-page-slot]");if(!b||b.disabled)return;const row=rows.find(r=>r.rangerId===modalState.id),slot=b.dataset.pageSlot;if(!row||!SLOT_LABELS[slot])return;modalState.pages[slot]=Number(b.dataset.page)||0;const card=els.modalContent.querySelector(`[data-slot="${slot}"]`);if(card)card.outerHTML=gearCard(row,slot);}); els.modalClose?.addEventListener("click",closeModal); els.modal?.addEventListener("click",e=>{if(e.target.closest("[data-guild-modal-close]"))closeModal();}); document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();}); load();
 })();
