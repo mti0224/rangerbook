@@ -1,7 +1,8 @@
 (() => {
-  const modal = document.getElementById("pvpPlayerTeamModal");
-  const modalContent = document.getElementById("pvpPlayerTeamModalContent");
-  if (!modal || !modalContent) return;
+  const pvpModal = document.getElementById("pvpPlayerTeamModal");
+  const pvpContent = document.getElementById("pvpPlayerTeamModalContent");
+  const guildContent = document.getElementById("guildMemberModalContent");
+  if (!pvpContent && !guildContent) return;
 
   const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
   const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
@@ -12,7 +13,35 @@
     return item?.querySelector(":scope > div > span")?.textContent?.trim() || "";
   }
 
-  function enhanceDetailCard(card) {
+  function addTalentToName(headCopy, talentItem, removeTalentItem = false) {
+    if (!headCopy || !talentItem || headCopy.querySelector(":scope > .pvp-player-name-with-talent")) return;
+
+    const talentText = talentItem.querySelector(":scope > div > strong")?.textContent?.trim() || "";
+    const hasTalent = talentText
+      && talentText !== "未解放才能"
+      && talentText !== "才能解放狀態無資料";
+
+    if (hasTalent) {
+      const talentIcon = talentItem.querySelector(":scope > img");
+      const name = headCopy.querySelector(":scope > strong");
+      if (name && talentIcon) {
+        const nameLine = document.createElement("div");
+        nameLine.className = "pvp-player-name-with-talent";
+
+        const icon = talentIcon.cloneNode(true);
+        icon.className = "pvp-player-talent-badge";
+        icon.alt = "";
+        icon.title = talentText;
+
+        headCopy.insertBefore(nameLine, name);
+        nameLine.append(icon, name);
+      }
+    }
+
+    if (removeTalentItem) talentItem.remove();
+  }
+
+  function enhancePvpDetailCard(card) {
     if (!card || card.dataset.compactDetailLayout === "1") return;
     card.dataset.compactDetailLayout = "1";
 
@@ -33,33 +62,21 @@
       leonardItem.remove();
     }
 
-    if (talentItem) {
-      const talentText = talentItem.querySelector(":scope > div > strong")?.textContent?.trim() || "";
-      const hasTalent = talentText
-        && talentText !== "未解放才能"
-        && talentText !== "才能解放狀態無資料";
-
-      if (hasTalent) {
-        const talentIcon = talentItem.querySelector(":scope > img");
-        const name = headCopy.querySelector(":scope > strong");
-        if (name && talentIcon) {
-          const nameLine = document.createElement("div");
-          nameLine.className = "pvp-player-name-with-talent";
-
-          const icon = talentIcon.cloneNode(true);
-          icon.className = "pvp-player-talent-badge";
-          icon.alt = "";
-          icon.title = talentText;
-
-          headCopy.insertBefore(nameLine, name);
-          nameLine.append(icon, name);
-        }
-      }
-
-      talentItem.remove();
-    }
-
+    addTalentToName(headCopy, talentItem, true);
     if (!extraList.children.length) extraList.remove();
+  }
+
+  function enhanceGuildDetailCard(card) {
+    if (!card || card.dataset.guildTalentNameReady === "1") return;
+    card.dataset.guildTalentNameReady = "1";
+
+    const headCopy = card.querySelector(".pvp-player-unit-detail-head > div");
+    const extraList = card.querySelector(".pvp-player-extra-list");
+    if (!headCopy || !extraList) return;
+
+    const talentItem = [...extraList.querySelectorAll(".pvp-player-extra-item")]
+      .find((item) => itemLabel(item) === "解放才能");
+    addTalentToName(headCopy, talentItem, false);
   }
 
   function loadPayload() {
@@ -79,7 +96,7 @@
   }
 
   function currentRank() {
-    const text = modalContent.querySelector(".pvp-player-team-header > p")?.textContent || "";
+    const text = pvpContent?.querySelector(".pvp-player-team-header > p")?.textContent || "";
     const match = text.match(/排名\s*#\s*(\d+)/);
     return match ? Number(match[1]) : 0;
   }
@@ -110,9 +127,9 @@
 
   async function decorateTeamTalentIcons() {
     decorateQueued = false;
-    if (modal.hidden) return;
+    if (!pvpModal || !pvpContent || pvpModal.hidden) return;
 
-    const buttons = [...modalContent.querySelectorAll(".pvp-player-unit-button[data-unit-index]")];
+    const buttons = [...pvpContent.querySelectorAll(".pvp-player-unit-button[data-unit-index]")];
     if (!buttons.length) return;
 
     const pending = buttons.filter((button) => button.dataset.talentIconReady !== "1");
@@ -150,24 +167,44 @@
     queueMicrotask(decorateTeamTalentIcons);
   }
 
-  function enhanceAll() {
-    modalContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceDetailCard);
+  function enhancePvpAll() {
+    if (!pvpContent) return;
+    pvpContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhancePvpDetailCard);
     queueDecorateTeamTalentIcons();
   }
 
-  modalContent.addEventListener("change", (event) => {
+  function enhanceGuildAll() {
+    if (!guildContent) return;
+    guildContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceGuildDetailCard);
+  }
+
+  pvpContent?.addEventListener("change", (event) => {
     if (event.target.id === "pvpPlayerTeamSelect") queueDecorateTeamTalentIcons();
   });
 
-  const observer = new MutationObserver((records) => {
-    const hasRelevantAddition = records.some((record) => [...record.addedNodes].some((node) => {
-      if (!(node instanceof Element)) return false;
-      return node.matches?.(".pvp-player-unit-button, .pvp-player-unit-detail-card")
-        || node.querySelector?.(".pvp-player-unit-button, .pvp-player-unit-detail-card");
-    }));
-    if (hasRelevantAddition) enhanceAll();
-  });
+  if (pvpContent) {
+    const pvpObserver = new MutationObserver((records) => {
+      const relevant = records.some((record) => [...record.addedNodes].some((node) => {
+        if (!(node instanceof Element)) return false;
+        return node.matches?.(".pvp-player-unit-button, .pvp-player-unit-detail-card")
+          || node.querySelector?.(".pvp-player-unit-button, .pvp-player-unit-detail-card");
+      }));
+      if (relevant) enhancePvpAll();
+    });
+    pvpObserver.observe(pvpContent, { childList: true, subtree: true });
+    enhancePvpAll();
+  }
 
-  observer.observe(modalContent, { childList: true, subtree: true });
-  enhanceAll();
+  if (guildContent) {
+    const guildObserver = new MutationObserver((records) => {
+      const relevant = records.some((record) => [...record.addedNodes].some((node) => {
+        if (!(node instanceof Element)) return false;
+        return node.matches?.(".pvp-player-unit-detail-card")
+          || node.querySelector?.(".pvp-player-unit-detail-card");
+      }));
+      if (relevant) enhanceGuildAll();
+    });
+    guildObserver.observe(guildContent, { childList: true, subtree: true });
+    enhanceGuildAll();
+  }
 })();
