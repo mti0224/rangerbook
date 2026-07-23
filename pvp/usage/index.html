@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../../assets/css/pvp-usage-fixes.css?v=20260721-1">
   <link rel="stylesheet" href="../../assets/css/equipment-combination-ranking.css?v=20260720-2">
 </head>
-<body>
+<body data-pvp-page="usage">
   <div id="site-header"></div>
 
   <main class="page pvp-data-page">
@@ -30,6 +30,7 @@
     </section>
 
     <section class="pvp-data-controls" aria-label="角色使用率篩選">
+      <label><span>段位</span><select id="pvpLeagueSelect"><option value="LEGEND">傳奇</option></select></label>
       <label><span>搜尋角色</span><input id="pvpUsageSearch" type="search" placeholder="角色名稱或 ID"></label>
       <label><span>排行榜範圍</span><select id="pvpUsageTopN"><option value="10">前 10 名</option><option value="30">前 30 名</option><option value="50">前 50 名</option><option value="100">前 100 名</option><option value="all" selected>全部</option></select></label>
       <label><span>類型</span><select id="pvpUsageType"><option value="">全部類型</option></select></label>
@@ -55,6 +56,7 @@
   </div>
 
   <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/pvp-league-switcher.js?v=20260723-1" defer></script>
   <script src="../../assets/js/pvp-usage.js?v=20260720-1" defer></script>
   <script src="../../assets/js/usage-modal-cleanup.js?v=20260720-1" defer></script>
   <script src="../../assets/js/equipment-combination-ranking.js?v=20260720-2" defer></script>
