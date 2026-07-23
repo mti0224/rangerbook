@@ -22,7 +22,7 @@
 }
 
 .pvp-player-team-modal-panel {
-  width: min(1180px, calc(100vw - 2rem));
+  width: min(980px, calc(100vw - 2rem));
 }
 
 .pvp-player-team-header {
