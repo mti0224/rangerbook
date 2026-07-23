@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="../../assets/css/pvp-player-teams.css?v=20260722-2">
   <link rel="stylesheet" href="../../assets/css/pvp-player-detail-layout.css?v=20260722-1">
 </head>
-<body>
+<body data-pvp-page="leaderboard">
   <div id="site-header"></div>
 
   <main class="page pvp-data-page">
@@ -27,10 +27,14 @@
       <div class="pvp-meta-item"><span>資料更新時間</span><strong id="pvpLeaderboardUpdated">-</strong></div>
       <div class="pvp-meta-item"><span>段位</span><strong id="pvpLeaderboardLeague">LEGEND</strong></div>
       <div class="pvp-meta-item"><span>排行榜收錄總人數</span><strong><span id="pvpLeaderboardCount">-</span></strong></div>
-      <div class="pvp-meta-item"><span>傳奇段位總人數</span><strong><span id="pvpLeaderboardTotal">-</span></strong></div>
+      <div class="pvp-meta-item"><span>段位總人數</span><strong><span id="pvpLeaderboardTotal">-</span></strong></div>
     </section>
 
     <section class="pvp-data-controls" aria-label="排行榜篩選">
+      <label>
+        <span>段位</span>
+        <select id="pvpLeagueSelect"><option value="LEGEND">傳奇</option></select>
+      </label>
       <label>
         <span>搜尋玩家</span>
         <input id="pvpLeaderboardSearch" type="search" placeholder="玩家名稱、排名、分數或國家代碼">
@@ -64,6 +68,7 @@
   </div>
 
   <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/pvp-league-switcher.js?v=20260723-1" defer></script>
   <script src="../../assets/js/pvp-leaderboard.js?v=20260722-2" defer></script>
   <script src="../../assets/js/pvp-player-detail-layout.js?v=20260722-2" defer></script>
 </body>
