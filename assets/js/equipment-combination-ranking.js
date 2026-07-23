@@ -8,6 +8,7 @@
     : "https://pvp-data.warmycat.com/usage.json";
   const GUILD_DATA_URLS = {
     LEGEND: "https://pvp-data.warmycat.com/guildwar_usage.json",
+    LEGEND_20: "https://pvp-data.warmycat.com/guildwar_usage.json",
     MASTER: "https://pvp-data.warmycat.com/guildwar_usage_MASTER.json",
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_usage_DIAMOND.json",
   };
@@ -33,7 +34,9 @@
     let rows = [];
     if (isGuildWar) {
       const tier = document.getElementById("guildUsageTier")?.value || "LEGEND";
-      rows = tier === "LEGEND" ? (dataSet.scopes?.["50"]?.rangers || dataSet.rangers || []) : (dataSet.rangers || []);
+      if (tier === "LEGEND_20") rows = dataSet.scopes?.["20"]?.rangers || [];
+      else if (tier === "LEGEND") rows = dataSet.scopes?.["50"]?.rangers || dataSet.rangers || [];
+      else rows = dataSet.rangers || [];
     } else {
       const scopeKey = document.getElementById("pvpUsageTopN")?.value || "all";
       rows = scopeKey === "all" ? (dataSet.rangers || []) : (dataSet.scopes?.[scopeKey]?.rangers || []);
