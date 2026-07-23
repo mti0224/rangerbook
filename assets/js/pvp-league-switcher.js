@@ -18,6 +18,11 @@
   const league = allowed.has(requested) ? requested : "LEGEND";
   const label = LABELS[league] || league;
 
+  window.RANGERBOOK_PVP_LEAGUE = league;
+  window.RANGERBOOK_PVP_LEAGUE_LABELS = LABELS;
+  window.RANGERBOOK_PVP_LEAGUE_LABEL = label;
+  window.RANGERBOOK_PVP_LEAGUE_NAME = (code) => LABELS[String(code || "").toUpperCase()] || String(code || "");
+
   // Existing PvP scripts keep their stable LEGEND URLs. Rewrite only those
   // public JSON requests for the selected non-LEGEND league so the rest of
   // the ranking/usage/modal logic can stay shared.
@@ -87,6 +92,4 @@
   fillLeagueSelect(document.getElementById("pvpLeagueSelect"));
   updateUsageScope();
   updateLabels();
-
-  window.RANGERBOOK_PVP_LEAGUE = league;
 })();
