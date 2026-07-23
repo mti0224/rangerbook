@@ -1,6 +1,12 @@
 (() => {
+  const modal = document.getElementById("pvpPlayerTeamModal");
   const modalContent = document.getElementById("pvpPlayerTeamModalContent");
-  if (!modalContent) return;
+  if (!modal || !modalContent) return;
+
+  const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
+  const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
+  let payloadPromise = null;
+  let decorateQueued = false;
 
   function itemLabel(item) {
     return item?.querySelector(":scope > div > span")?.textContent?.trim() || "";
@@ -56,11 +62,112 @@
     if (!extraList.children.length) extraList.remove();
   }
 
-  function enhanceAll() {
-    modalContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceDetailCard);
+  function loadPayload() {
+    if (!payloadPromise) {
+      payloadPromise = fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) throw new Error(`player_teams HTTP ${response.status}`);
+          return response.json();
+        })
+        .catch((error) => {
+          payloadPromise = null;
+          console.warn("PvP team talent icon data unavailable", error);
+          return null;
+        });
+    }
+    return payloadPromise;
   }
 
-  const observer = new MutationObserver(enhanceAll);
+  function currentRank() {
+    const text = modalContent.querySelector(".pvp-player-team-header > p")?.textContent || "";
+    const match = text.match(/排名\s*#\s*(\d+)/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  function currentTeamKey() {
+    return document.getElementById("pvpPlayerTeamSelect")?.value || "pvpteam";
+  }
+
+  function normalizeUnits(value) {
+    if (Array.isArray(value)) return value.filter((item) => item && typeof item === "object");
+    if (!value || typeof value !== "object") return [];
+    if (value.unitCode) return [value];
+    return Object.keys(value)
+      .sort((a, b) => Number(a) - Number(b) || String(a).localeCompare(String(b)))
+      .flatMap((key) => normalizeUnits(value[key]));
+  }
+
+  function findDetail(payload, rank) {
+    const players = payload?.players;
+    if (Array.isArray(players)) {
+      return players.find((item) => Number(item?.rank) === Number(rank)) || null;
+    }
+    if (players && typeof players === "object") {
+      return Object.values(players).find((item) => Number(item?.rank) === Number(rank)) || null;
+    }
+    return null;
+  }
+
+  async function decorateTeamTalentIcons() {
+    decorateQueued = false;
+    if (modal.hidden) return;
+
+    const buttons = [...modalContent.querySelectorAll(".pvp-player-unit-button[data-unit-index]")];
+    if (!buttons.length) return;
+
+    const pending = buttons.filter((button) => button.dataset.talentIconReady !== "1");
+    if (!pending.length) return;
+
+    const payload = await loadPayload();
+    const detail = findDetail(payload, currentRank());
+    if (!detail) return;
+
+    const units = normalizeUnits(detail?.teams?.[currentTeamKey()] ?? detail?.[currentTeamKey()]);
+    pending.forEach((button) => {
+      button.dataset.talentIconReady = "1";
+      const index = Number(button.dataset.unitIndex);
+      const unit = units[index];
+      const name = button.querySelector(".pvp-player-unit-name");
+      if (!name || !unit) return;
+
+      const grade = Number(unit.talentGrade);
+      if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return;
+
+      const icon = document.createElement("img");
+      icon.className = "pvp-player-unit-talent-icon";
+      icon.src = TALENT_ICON(grade);
+      icon.alt = "";
+      icon.setAttribute("aria-hidden", "true");
+      icon.loading = "lazy";
+      icon.addEventListener("error", () => icon.remove(), { once: true });
+      name.prepend(icon);
+    });
+  }
+
+  function queueDecorateTeamTalentIcons() {
+    if (decorateQueued) return;
+    decorateQueued = true;
+    queueMicrotask(decorateTeamTalentIcons);
+  }
+
+  function enhanceAll() {
+    modalContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceDetailCard);
+    queueDecorateTeamTalentIcons();
+  }
+
+  modalContent.addEventListener("change", (event) => {
+    if (event.target.id === "pvpPlayerTeamSelect") queueDecorateTeamTalentIcons();
+  });
+
+  const observer = new MutationObserver((records) => {
+    const hasRelevantAddition = records.some((record) => [...record.addedNodes].some((node) => {
+      if (!(node instanceof Element)) return false;
+      return node.matches?.(".pvp-player-unit-button, .pvp-player-unit-detail-card")
+        || node.querySelector?.(".pvp-player-unit-button, .pvp-player-unit-detail-card");
+    }));
+    if (hasRelevantAddition) enhanceAll();
+  });
+
   observer.observe(modalContent, { childList: true, subtree: true });
   enhanceAll();
 })();
