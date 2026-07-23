@@ -23,9 +23,6 @@
   window.RANGERBOOK_PVP_LEAGUE_LABEL = label;
   window.RANGERBOOK_PVP_LEAGUE_NAME = (code) => LABELS[String(code || "").toUpperCase()] || String(code || "");
 
-  // Existing PvP scripts keep their stable LEGEND URLs. Rewrite only those
-  // public JSON requests for the selected non-LEGEND league so the rest of
-  // the ranking/usage/modal logic can stay shared.
   if (league !== "LEGEND") {
     const suffix = `_${league}`;
     const originalFetch = window.fetch.bind(window);
@@ -71,10 +68,15 @@
 
   function updateLabels() {
     document.querySelectorAll("[data-pvp-league-label]").forEach((node) => {
-      node.textContent = label;
+      if (node.textContent !== label) node.textContent = label;
     });
-    const metaLeague = document.getElementById("pvpLeaderboardLeague") || document.getElementById("pvpUsageLeague");
-    if (metaLeague) metaLeague.textContent = label;
+    const metaNodes = [
+      document.getElementById("pvpLeaderboardLeague"),
+      document.getElementById("pvpUsageLeague"),
+    ].filter(Boolean);
+    metaNodes.forEach((node) => {
+      if (node.textContent !== label) node.textContent = label;
+    });
 
     const usageEyebrow = document.querySelector("body[data-pvp-page='usage'] .page-title .eyebrow");
     if (usageEyebrow) usageEyebrow.textContent = `PvP · ${label}`;
@@ -92,4 +94,18 @@
   fillLeagueSelect(document.getElementById("pvpLeagueSelect"));
   updateUsageScope();
   updateLabels();
+
+  // leaderboard/usage scripts render metadata asynchronously and write the raw
+  // API league code back into these fields. Keep presentation labels localized.
+  const observer = new MutationObserver(() => {
+    const nodes = [
+      document.getElementById("pvpLeaderboardLeague"),
+      document.getElementById("pvpUsageLeague"),
+    ].filter(Boolean);
+    nodes.forEach((node) => {
+      if (node.textContent !== label) node.textContent = label;
+    });
+  });
+  const metadataRoot = document.querySelector("main") || document.body;
+  observer.observe(metadataRoot, { subtree: true, childList: true, characterData: true });
 })();
