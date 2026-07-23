@@ -27,17 +27,17 @@
     <section class="page-title">
       <p class="eyebrow">Guild War</p>
       <h1>角色使用率</h1>
-      <p>傳奇公會戰的進攻隊伍角色使用率</p>
+      <p id="guildUsageDescription">傳奇段位公會戰的進攻隊伍角色使用率</p>
     </section>
     <section class="pvp-data-meta" aria-label="公會戰角色使用率摘要">
       <div class="pvp-meta-item"><span>資料更新時間</span><strong id="guildUsageUpdated">-</strong></div>
-      <div class="pvp-meta-item"><span>公會範圍</span><strong id="guildUsageScopeLabel">前 50 名公會</strong></div>
+      <div class="pvp-meta-item"><span>段位</span><strong id="guildUsageScopeLabel">傳奇</strong></div>
       <div class="pvp-meta-item"><span>有效玩家人數</span><strong><span id="guildUsageSampleCount">-</span></strong></div>
       <div class="pvp-meta-item"><span>實際公會數</span><strong><span id="guildUsageGuildCount">-</span></strong></div>
     </section>
     <section class="pvp-data-controls" aria-label="角色使用率篩選">
       <label><span>搜尋角色</span><input id="guildUsageSearch" type="search" placeholder="角色名稱或 ID"></label>
-      <label><span>公會範圍</span><select id="guildUsageScope"><option value="20">前 20 名公會</option><option value="50" selected>前 50 名公會</option></select></label>
+      <label><span>段位</span><select id="guildUsageTier"><option value="LEGEND" selected>傳奇</option><option value="MASTER">大師</option><option value="DIAMOND">鑽石</option></select></label>
       <label><span>類型</span><select id="guildUsageType"><option value="">全部類型</option></select></label>
       <label><span>屬性</span><select id="guildUsageElement"><option value="">全部屬性</option></select></label>
     </section>
@@ -54,8 +54,8 @@
     </section>
   </div>
   <script src="../../assets/js/site.js"></script>
-  <script src="../../assets/js/guildwar-usage.js?v=20260720-1" defer></script>
+  <script src="../../assets/js/guildwar-usage.js?v=20260723-1" defer></script>
   <script src="../../assets/js/usage-modal-cleanup.js?v=20260720-1" defer></script>
-  <script src="../../assets/js/equipment-combination-ranking.js?v=20260720-2" defer></script>
+  <script src="../../assets/js/equipment-combination-ranking.js?v=20260723-1" defer></script>
 </body>
 </html>
