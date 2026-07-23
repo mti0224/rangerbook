@@ -70,8 +70,6 @@
   const memberName = (m) => m?.displayName || m?.name || m?.playerName || "未公開名稱";
   const memberRawLevel = (m) => Number(m?.level ?? m?.playerLevel ?? 0) || 0;
 
-  // Same level presentation rule as the PvP leaderboard:
-  // cumulative level determines the badge, visible level is always 1-99.
   function displayLevel(rawLevel) {
     const value = Number(rawLevel);
     if (!Number.isFinite(value) || value <= 0) return "-";
@@ -146,6 +144,12 @@
     const value = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel]
       .find((v) => v !== undefined && v !== null && v !== "");
     return value === undefined ? "-" : num(value);
+  }
+
+  function unitTalentIcon(unit) {
+    const grade = Number(unit?.talentGrade);
+    if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return "";
+    return `<img class="guildwar-unit-talent-icon" src="${TALENT_ICON(grade)}" alt="" aria-hidden="true" loading="lazy" onerror="this.remove();">`;
   }
 
   function equipmentCode(unit, slot) {
@@ -249,7 +253,7 @@
           <h3>隊伍角色</h3>
           <div id="guildwarPlayerTeamGrid" class="pvp-player-team-grid">${currentUnits.map((unit, unitIndex) => {
             const code = String(unit.unitCode || "");
-            return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" loading="lazy" onerror="this.remove();"><span class="pvp-player-unit-name">${esc(rangerName(code))}</span></button>`;
+            return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" loading="lazy" onerror="this.remove();"><span class="guildwar-unit-name-line">${unitTalentIcon(unit)}<span class="pvp-player-unit-name">${esc(rangerName(code))}</span></span></button>`;
           }).join("")}</div>
         </section>
         <aside class="pvp-player-unit-detail"><h3>角色詳細資料</h3><div id="guildwarPlayerUnitDetail"></div></aside>
