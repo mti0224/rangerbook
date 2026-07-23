@@ -18,6 +18,15 @@
   background: transparent !important;
 }
 
+/* Keep talent markers beside unit names identical in PvP and Guild War. */
+.pvp-player-unit-talent-icon,
+.guildwar-unit-talent-icon {
+  width: 1.05em !important;
+  height: 1.05em !important;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .pvp-player-leonard-line {
   margin-top: 0.18rem !important;
   color: var(--muted);
