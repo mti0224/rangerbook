@@ -55,10 +55,22 @@
   function injectSection() { renderQueued = false; if (modalContent.querySelector("[data-equipment-combination-ranking]")) return; const rangerId = rangerIdFromModal(); if (!rangerId) return; if (currentRangerId !== rangerId) { currentRangerId = rangerId; currentPage = 0; } const row = findCurrentRow(rangerId); if (!row) return; const equipmentSection = [...modalContent.querySelectorAll(".pvp-modal-section")].find((section) => section.querySelector("h3")?.textContent?.trim() === "配裝情況"); if (equipmentSection) equipmentSection.insertAdjacentHTML("afterend", renderSection(row)); }
   function refreshSection() { const rangerId = rangerIdFromModal(), row = findCurrentRow(rangerId), existing = modalContent.querySelector("[data-equipment-combination-ranking]"); if (!row || !existing) return; existing.outerHTML = renderSection(row); }
   function queueRender() { if (renderQueued) return; renderQueued = true; queueMicrotask(injectSection); }
-  async function loadData() { try { const res = await fetch(`${currentDataUrl()}?t=${Date.now()}`, { cache: "no-store" }); dataSet = res.ok ? await res.json() : {}; currentRangerId = ""; currentPage = 0; modalContent.querySelector("[data-equipment-combination-ranking]")?.remove(); queueRender(); } catch { dataSet = {}; } }
+  function acceptData(data) { dataSet = data && typeof data === "object" ? data : {}; currentRangerId = ""; currentPage = 0; modalContent.querySelector("[data-equipment-combination-ranking]")?.remove(); queueRender(); }
+  async function loadData() {
+    if (!isGuildWar) {
+      if (window.RANGERBOOK_PVP_USAGE_DATA) return acceptData(window.RANGERBOOK_PVP_USAGE_DATA);
+      if (window.RANGERBOOK_PVP_USAGE_DATA_PROMISE) {
+        const shared = await window.RANGERBOOK_PVP_USAGE_DATA_PROMISE;
+        return acceptData(shared || {});
+      }
+      return;
+    }
+    try { const res = await fetch(`${currentDataUrl()}?t=${Date.now()}`, { cache: "no-store" }); acceptData(res.ok ? await res.json() : {}); } catch { acceptData({}); }
+  }
 
   modalContent.addEventListener("click", (event) => { const button = event.target.closest("[data-combo-page]"); if (!button || button.disabled) return; const next = Number(button.dataset.comboPage); if (!Number.isFinite(next)) return; currentPage = next; refreshSection(); });
   new MutationObserver(queueRender).observe(modalContent, { childList: true, subtree: true });
-  document.getElementById("guildUsageTier")?.addEventListener("change", loadData);
+  if (isGuildWar) document.getElementById("guildUsageTier")?.addEventListener("change", loadData);
+  else window.addEventListener("rangerbook:pvp-usage-data-ready", (event) => acceptData(event.detail || {}));
   Promise.all([fetch(ID_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})), loadData()]).then(([idDict]) => { gearNames = Object.fromEntries(Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)])); queueRender(); }).catch(() => {});
 })();
