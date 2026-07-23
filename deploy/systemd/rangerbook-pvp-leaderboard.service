@@ -1,5 +1,5 @@
 [Unit]
-Description=Update LINE Rangers PvP LEGEND leaderboard
+Description=Update LINE Rangers PvP leaderboards for all supported leagues
 After=network-online.target
 Wants=network-online.target
 
@@ -8,4 +8,4 @@ Type=oneshot
 User=ubuntu
 Group=ubuntu
 WorkingDirectory=/home/ubuntu/rangerbook-pvp
-ExecStart=/usr/bin/python3 /home/ubuntu/rangerbook-pvp/scripts/pvp/update_pvp_data.py --mode leaderboard
+ExecStart=/usr/bin/python3 /home/ubuntu/rangerbook-pvp/scripts/pvp/update_pvp_all_leagues.py --mode leaderboard
