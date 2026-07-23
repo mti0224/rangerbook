@@ -17,29 +17,62 @@
   const requested = String(params.get("league") || "LEGEND").toUpperCase();
   const league = allowed.has(requested) ? requested : "LEGEND";
   const label = LABELS[league] || league;
+  const suffix = league === "LEGEND" ? "" : `_${league}`;
+  const originalFetch = window.fetch.bind(window);
 
   window.RANGERBOOK_PVP_LEAGUE = league;
   window.RANGERBOOK_PVP_LEAGUE_LABELS = LABELS;
   window.RANGERBOOK_PVP_LEAGUE_LABEL = label;
   window.RANGERBOOK_PVP_LEAGUE_NAME = (code) => LABELS[String(code || "").toUpperCase()] || String(code || "");
+  window.RANGERBOOK_PVP_USAGE_DATA = null;
+  window.RANGERBOOK_PVP_USAGE_DATA_PROMISE = null;
 
-  if (league !== "LEGEND") {
-    const suffix = `_${league}`;
-    const originalFetch = window.fetch.bind(window);
-    window.fetch = (input, init) => {
-      let raw = typeof input === "string" ? input : input?.url;
-      if (raw) {
-        const replacements = ["leaderboard", "usage", "player_teams"];
-        for (const base of replacements) {
-          const marker = `/${base}.json`;
-          if (raw.includes(marker)) raw = raw.replace(marker, `/${base}${suffix}.json`);
-        }
-        if (typeof input === "string") return originalFetch(raw, init);
-        input = new Request(raw, input);
-      }
-      return originalFetch(input, init);
-    };
+  function rewritePvpUrl(raw) {
+    if (!raw || !suffix) return raw;
+    let rewritten = raw;
+    for (const base of ["leaderboard", "usage", "player_teams"]) {
+      const marker = `/${base}.json`;
+      if (rewritten.includes(marker)) rewritten = rewritten.replace(marker, `/${base}${suffix}.json`);
+    }
+    return rewritten;
   }
+
+  function isUsageUrl(raw) {
+    if (!raw) return false;
+    try {
+      const url = new URL(raw, location.href);
+      return /\/usage(?:_[A-Z0-9_]+)?\.json$/i.test(url.pathname);
+    } catch {
+      return false;
+    }
+  }
+
+  window.fetch = (input, init) => {
+    const originalRaw = typeof input === "string" ? input : input?.url;
+    const raw = rewritePvpUrl(originalRaw);
+    const request = typeof input === "string" ? raw : new Request(raw, input);
+    const responsePromise = originalFetch(request, init);
+
+    if (isUsageUrl(raw)) {
+      const sharedPromise = responsePromise
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.clone().json();
+        })
+        .then((data) => {
+          window.RANGERBOOK_PVP_USAGE_DATA = data;
+          window.dispatchEvent(new CustomEvent("rangerbook:pvp-usage-data-ready", { detail: data }));
+          return data;
+        })
+        .catch((error) => {
+          console.warn("Shared PvP usage data unavailable", error);
+          return null;
+        });
+      window.RANGERBOOK_PVP_USAGE_DATA_PROMISE = sharedPromise;
+    }
+
+    return responsePromise;
+  };
 
   function fillLeagueSelect(select) {
     if (!select) return;
@@ -95,8 +128,6 @@
   updateUsageScope();
   updateLabels();
 
-  // leaderboard/usage scripts render metadata asynchronously and write the raw
-  // API league code back into these fields. Keep presentation labels localized.
   const observer = new MutationObserver(() => {
     const nodes = [
       document.getElementById("pvpLeaderboardLeague"),
