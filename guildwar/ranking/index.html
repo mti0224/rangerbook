@@ -10,23 +10,34 @@
   <link rel="stylesheet" href="../../assets/css/pvp-data.css">
   <link rel="stylesheet" href="../../assets/css/pvp-table-status.css?v=20260720-2">
   <link rel="stylesheet" href="../../assets/css/guildwar-ranking-fixes.css?v=20260720-1">
+  <link rel="stylesheet" href="../../assets/css/guildwar-members.css?v=20260723-1">
 </head>
 <body>
   <div id="site-header"></div>
   <main class="page pvp-data-page">
-    <section class="page-title"><p class="eyebrow">Guild War</p><h1>公會排名</h1><p>目前公會戰排行榜前 50 名公會。</p></section>
+    <section class="page-title"><p class="eyebrow">Guild War</p><h1>公會排名</h1><p>查看傳奇、大師與鑽石段位的公會戰排名。點擊公會可查看成員名稱與等級。</p></section>
     <section class="pvp-data-meta pvp-data-meta--three" aria-label="公會排名資料摘要">
       <div class="pvp-meta-item"><span>資料更新時間</span><strong id="guildRankingUpdated">-</strong></div>
-      <div class="pvp-meta-item"><span>資料範圍</span><strong>前 50 名公會</strong></div>
+      <div class="pvp-meta-item"><span>段位</span><strong id="guildRankingTierLabel">傳奇</strong></div>
       <div class="pvp-meta-item"><span>公會數</span><strong><span id="guildRankingCount">-</span></strong></div>
     </section>
-    <section class="pvp-data-controls"><label><span>搜尋公會</span><input id="guildRankingSearch" type="search" placeholder="公會名稱"></label></section>
+    <section class="pvp-data-controls">
+      <label><span>搜尋公會</span><input id="guildRankingSearch" type="search" placeholder="公會名稱"></label>
+      <label><span>段位</span><select id="guildRankingTier"><option value="LEGEND" selected>傳奇</option><option value="MASTER">大師</option><option value="DIAMOND">鑽石</option></select></label>
+    </section>
     <section class="pvp-data-panel">
       <div id="guildRankingStatus" class="pvp-status">公會排名資料載入中…</div>
       <div class="pvp-table-scroll guildwar-ranking-scroll"><table class="pvp-table guildwar-ranking-table"><thead><tr><th>排名</th><th>公會</th><th>分數</th><th>成員數</th><th>國家／地區</th></tr></thead><tbody id="guildRankingBody"></tbody></table></div>
     </section>
   </main>
+  <div id="guildMemberModal" class="pvp-usage-modal" hidden>
+    <div class="pvp-usage-modal-backdrop" data-guild-member-modal-close></div>
+    <section class="pvp-usage-modal-panel guildwar-member-modal-panel" role="dialog" aria-modal="true" aria-labelledby="guildMemberModalTitle">
+      <button id="guildMemberModalClose" class="pvp-usage-modal-close" type="button" aria-label="關閉">×</button>
+      <div id="guildMemberModalContent"></div>
+    </section>
+  </div>
   <script src="../../assets/js/site.js"></script>
-  <script src="../../assets/js/guildwar-ranking.js?v=20260720-4" defer></script>
+  <script src="../../assets/js/guildwar-ranking.js?v=20260723-1" defer></script>
 </body>
 </html>
