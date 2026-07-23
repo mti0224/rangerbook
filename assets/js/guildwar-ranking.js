@@ -1,5 +1,6 @@
 (() => {
   const DATA_URL = "https://pvp-data.warmycat.com/guildwar_ranking.json";
+  const MEMBERS_URL = "https://pvp-data.warmycat.com/guildwar_members.json";
   const TIERS = {
     LEGEND: { label: "傳奇", min: 1, max: 50 },
     MASTER: { label: "大師", min: 51, max: 200 },
@@ -18,6 +19,7 @@
     modalClose: document.getElementById("guildMemberModalClose"),
   };
   let guilds = [];
+  let membersByRank = new Map();
 
   const esc = (v) => String(v ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   const num = (v) => Number.isFinite(Number(v)) ? Number(v).toLocaleString("zh-Hant", { maximumFractionDigits: 2 }) : "-";
@@ -48,10 +50,11 @@
 
   function openGuild(guild) {
     if (!guild || !els.modal || !els.modalContent) return;
-    const members = Array.isArray(guild.members) ? guild.members : [];
+    const detail = membersByRank.get(Number(guild.rank));
+    const members = Array.isArray(detail?.members) ? detail.members : [];
     const list = members.length
       ? `<div class="guildwar-member-list">${members.map(member => `<div class="guildwar-member-row"><div class="guildwar-member-name">${esc(memberName(member))}</div><div class="guildwar-member-level">Lv. ${esc(memberLevel(member))}</div></div>`).join("")}</div>`
-      : `<div class="guildwar-member-empty">此公會的成員資料尚未產生。</div>`;
+      : `<div class="guildwar-member-empty">此公會的成員資料尚未產生；完整成員資料每小時更新一次。</div>`;
     els.modalContent.innerHTML = `<header class="guildwar-member-header"><h2 id="guildMemberModalTitle">${esc(guild.guildName || "-")}</h2><p>排名第 ${esc(num(guild.rank))} 名 · ${esc(num(guild.curMemberCount))} / ${esc(num(guild.maxMemberCount))} 名成員</p></header>${list}`;
     els.modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -59,13 +62,26 @@
   function closeModal() { if (!els.modal || els.modal.hidden) return; els.modal.hidden = true; document.body.classList.remove("modal-open"); }
   function guildFromRow(row) { const rank = Number(row?.dataset?.guildRank); return guilds.find(g => Number(g.rank) === rank); }
 
+  async function optionalJson(url) {
+    try {
+      const res = await fetch(`${url}?t=${Date.now()}`, { cache: "no-store" });
+      return res.ok ? await res.json() : {};
+    } catch {
+      return {};
+    }
+  }
+
   async function load() {
     status("公會排名資料載入中…");
     try {
-      const res = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const [rankingRes, memberData] = await Promise.all([
+        fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" }),
+        optionalJson(MEMBERS_URL),
+      ]);
+      if (!rankingRes.ok) throw new Error(`HTTP ${rankingRes.status}`);
+      const data = await rankingRes.json();
       guilds = Array.isArray(data.guilds) ? data.guilds : [];
+      membersByRank = new Map((Array.isArray(memberData.guilds) ? memberData.guilds : []).map(guild => [Number(guild.rank), guild]));
       if (els.updated) els.updated.textContent = date(data.metadata?.generatedAtUtc);
       status();
       render();
