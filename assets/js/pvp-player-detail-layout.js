@@ -79,6 +79,33 @@
     addTalentToName(headCopy, talentItem, false);
   }
 
+  function ensureImageWrap(button) {
+    let wrap = button.querySelector(":scope > .pvp-player-unit-image-wrap");
+    if (wrap) return wrap;
+    const image = button.querySelector(":scope > .pvp-player-unit-image");
+    if (!image) return null;
+    wrap = document.createElement("span");
+    wrap.className = "pvp-player-unit-image-wrap";
+    button.insertBefore(wrap, image);
+    wrap.appendChild(image);
+    return wrap;
+  }
+
+  function addCornerTalentIcon(button, src, title = "") {
+    if (!button || !src) return;
+    const wrap = ensureImageWrap(button);
+    if (!wrap || wrap.querySelector(":scope > .pvp-player-unit-talent-corner")) return;
+    const icon = document.createElement("img");
+    icon.className = "pvp-player-unit-talent-corner";
+    icon.src = src;
+    icon.alt = "";
+    icon.title = title;
+    icon.setAttribute("aria-hidden", "true");
+    icon.loading = "lazy";
+    icon.addEventListener("error", () => icon.remove(), { once: true });
+    wrap.appendChild(icon);
+  }
+
   function loadPayload() {
     if (!payloadPromise) {
       payloadPromise = fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" })
@@ -125,7 +152,7 @@
     return null;
   }
 
-  async function decorateTeamTalentIcons() {
+  async function decoratePvpTeamTalentIcons() {
     decorateQueued = false;
     if (!pvpModal || !pvpContent || pvpModal.hidden) return;
 
@@ -144,42 +171,47 @@
       button.dataset.talentIconReady = "1";
       const index = Number(button.dataset.unitIndex);
       const unit = units[index];
-      const name = button.querySelector(".pvp-player-unit-name");
-      if (!name || !unit) return;
+      if (!unit) return;
 
       const grade = Number(unit.talentGrade);
       if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return;
-
-      const icon = document.createElement("img");
-      icon.className = "pvp-player-unit-talent-icon";
-      icon.src = TALENT_ICON(grade);
-      icon.alt = "";
-      icon.setAttribute("aria-hidden", "true");
-      icon.loading = "lazy";
-      icon.addEventListener("error", () => icon.remove(), { once: true });
-      name.prepend(icon);
+      addCornerTalentIcon(button, TALENT_ICON(grade), `才能解放階段 ${grade}`);
     });
   }
 
-  function queueDecorateTeamTalentIcons() {
+  function decorateGuildTeamTalentIcons() {
+    if (!guildContent) return;
+    guildContent.querySelectorAll(".pvp-player-unit-button[data-guildwar-unit-index]").forEach((button) => {
+      if (button.dataset.talentIconReady === "1") return;
+      button.dataset.talentIconReady = "1";
+      const oldIcon = button.querySelector(".guildwar-unit-talent-icon");
+      if (!oldIcon) return;
+      const src = oldIcon.getAttribute("src");
+      oldIcon.remove();
+      addCornerTalentIcon(button, src, "解放才能");
+    });
+  }
+
+  function queueDecoratePvpTeamTalentIcons() {
     if (decorateQueued) return;
     decorateQueued = true;
-    queueMicrotask(decorateTeamTalentIcons);
+    queueMicrotask(decoratePvpTeamTalentIcons);
   }
 
   function enhancePvpAll() {
     if (!pvpContent) return;
     pvpContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhancePvpDetailCard);
-    queueDecorateTeamTalentIcons();
+    queueDecoratePvpTeamTalentIcons();
   }
 
   function enhanceGuildAll() {
     if (!guildContent) return;
     guildContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceGuildDetailCard);
+    decorateGuildTeamTalentIcons();
   }
 
   pvpContent?.addEventListener("change", (event) => {
-    if (event.target.id === "pvpPlayerTeamSelect") queueDecorateTeamTalentIcons();
+    if (event.target.id === "pvpPlayerTeamSelect") queueDecoratePvpTeamTalentIcons();
   });
 
   if (pvpContent) {
@@ -199,8 +231,8 @@
     const guildObserver = new MutationObserver((records) => {
       const relevant = records.some((record) => [...record.addedNodes].some((node) => {
         if (!(node instanceof Element)) return false;
-        return node.matches?.(".pvp-player-unit-detail-card")
-          || node.querySelector?.(".pvp-player-unit-detail-card");
+        return node.matches?.(".pvp-player-unit-button, .pvp-player-unit-detail-card")
+          || node.querySelector?.(".pvp-player-unit-button, .pvp-player-unit-detail-card");
       }));
       if (relevant) enhanceGuildAll();
     });
