@@ -140,6 +140,14 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   font-weight: 800;
 }
 
+.pvp-player-unit-talent-icon {
+  width: 1em;
+  height: 1em;
+  margin-right: 0.22em;
+  object-fit: contain;
+  vertical-align: -0.12em;
+}
+
 .pvp-player-unit-detail-empty,
 .pvp-player-team-empty {
   display: grid;
