@@ -1,15 +1,15 @@
 (() => {
   const LEAGUES = [
     ["LEGEND", "傳奇"],
-    ["MASTER_1", "大師一"],
-    ["MASTER_2", "大師二"],
-    ["MASTER_3", "大師三"],
-    ["DIAMOND_1", "鑽石一"],
-    ["DIAMOND_2", "鑽石二"],
-    ["DIAMOND_3", "鑽石三"],
-    ["GOLD_1", "黃金一"],
-    ["GOLD_2", "黃金二"],
-    ["GOLD_3", "黃金三"],
+    ["MASTER_1", "大師 I"],
+    ["MASTER_2", "大師 II"],
+    ["MASTER_3", "大師 III"],
+    ["DIAMOND_1", "鑽石 I"],
+    ["DIAMOND_2", "鑽石 II"],
+    ["DIAMOND_3", "鑽石 III"],
+    ["GOLD_1", "黃金 I"],
+    ["GOLD_2", "黃金 II"],
+    ["GOLD_3", "黃金 III"],
   ];
   const LABELS = Object.fromEntries(LEAGUES);
   const allowed = new Set(LEAGUES.map(([code]) => code));
@@ -69,12 +69,12 @@
       node.textContent = label;
     });
     const metaLeague = document.getElementById("pvpLeaderboardLeague") || document.getElementById("pvpUsageLeague");
-    if (metaLeague) metaLeague.textContent = league;
+    if (metaLeague) metaLeague.textContent = label;
 
     const usageEyebrow = document.querySelector("body[data-pvp-page='usage'] .page-title .eyebrow");
-    if (usageEyebrow) usageEyebrow.textContent = `PvP · ${league}`;
+    if (usageEyebrow) usageEyebrow.textContent = `PvP · ${label}`;
     const rankingEyebrow = document.querySelector("body[data-pvp-page='leaderboard'] .page-title .eyebrow");
-    if (rankingEyebrow) rankingEyebrow.textContent = `PvP · ${league}`;
+    if (rankingEyebrow) rankingEyebrow.textContent = `PvP · ${label}`;
 
     const rankingTitle = document.querySelector("body[data-pvp-page='leaderboard'] .page-title h1");
     if (rankingTitle) rankingTitle.textContent = `${label}段位排行榜`;
