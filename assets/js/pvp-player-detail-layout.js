@@ -76,7 +76,8 @@
 
     const talentItem = [...extraList.querySelectorAll(".pvp-player-extra-item")]
       .find((item) => itemLabel(item) === "解放才能");
-    addTalentToName(headCopy, talentItem, false);
+    addTalentToName(headCopy, talentItem, true);
+    if (!extraList.children.length) extraList.remove();
   }
 
   function ensureImageWrap(button) {
