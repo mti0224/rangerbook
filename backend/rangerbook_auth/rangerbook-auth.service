@@ -1,0 +1,19 @@
+[Unit]
+Description=Rangerbook Auth API
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/rangerbook-auth
+EnvironmentFile=/home/ubuntu/rangerbook-auth/.env
+ExecStart=/home/ubuntu/rangerbook-auth/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8765 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+RestartSec=3
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ReadWritePaths=/home/ubuntu/rangerbook-auth
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+.env
+venv/
+__pycache__/
+*.pyc
+rangerbook_auth.db
+rangerbook_auth.db-shm
+rangerbook_auth.db-wal
