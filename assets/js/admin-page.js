@@ -113,7 +113,7 @@
     }
 
     applicationsList.innerHTML = items.map((item) => `
-      <article class="admin-user-row" data-user-id="${escapeHtml(item.id)}">
+      <article class="admin-user-row" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}">
         <div class="admin-user-meta">
           <strong>${escapeHtml(item.account)}</strong>
           <small>申請時間：${escapeHtml(formatDate(item.created_at))}</small>
@@ -133,9 +133,25 @@
     }
 
     usersList.innerHTML = items.map((item) => {
-      const canRevoke = item.role === "admin";
+      const isSuperAdmin = item.role === "super_admin";
+      const controls = isSuperAdmin ? '<div class="admin-locked-note">此帳號只能由伺服器端管理</div>' : `
+        <div class="admin-user-controls">
+          <label class="admin-role-control">
+            <span>帳號權限</span>
+            <select data-role-select>
+              <option value="user" ${item.role === "user" ? "selected" : ""}>非管理員</option>
+              <option value="admin" ${item.role === "admin" ? "selected" : ""}>管理員</option>
+            </select>
+          </label>
+          <div class="admin-user-actions">
+            <button class="approve" type="button" data-action="change-role">套用權限</button>
+            <button class="warning" type="button" data-action="reset-password">重置密碼</button>
+            <button class="danger" type="button" data-action="delete-user">刪除帳號</button>
+          </div>
+        </div>`;
+
       return `
-        <article class="admin-user-row" data-user-id="${escapeHtml(item.id)}">
+        <article class="admin-user-row admin-user-row--management" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}">
           <div class="admin-user-meta">
             <strong>${escapeHtml(item.account)}</strong>
             <small>
@@ -143,31 +159,57 @@
               ${escapeHtml(STATUS_LABELS[item.admin_application_status] || item.admin_application_status || "-")}
             </small>
           </div>
-          ${canRevoke ? '<div class="admin-user-actions"><button class="danger" type="button" data-action="revoke">撤銷管理員</button></div>' : ""}
+          ${controls}
         </article>
       `;
     }).join("");
   }
 
+  function setRowDisabled(row, disabled) {
+    row.querySelectorAll("button, select").forEach((element) => { element.disabled = disabled; });
+  }
+
   async function runUserAction(row, action) {
     const userId = row?.dataset.userId;
+    const account = row?.dataset.userAccount || "此帳號";
     if (!userId) return;
 
-    const endpoints = {
-      approve: `/admin/applications/${encodeURIComponent(userId)}/approve`,
-      reject: `/admin/applications/${encodeURIComponent(userId)}/reject`,
-      revoke: `/admin/users/${encodeURIComponent(userId)}/revoke`
-    };
-    const endpoint = endpoints[action];
-    if (!endpoint) return;
+    let endpoint = "";
+    let options = { method: "POST" };
+    let successMessage = "";
 
-    row.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+    if (action === "approve") {
+      endpoint = `/admin/applications/${encodeURIComponent(userId)}/approve`;
+    } else if (action === "reject") {
+      endpoint = `/admin/applications/${encodeURIComponent(userId)}/reject`;
+    } else if (action === "change-role") {
+      const role = row.querySelector("[data-role-select]")?.value;
+      if (!role) return;
+      const roleLabel = ROLE_LABELS[role] || role;
+      if (!window.confirm(`確定要將「${account}」的權限更改為「${roleLabel}」？\n變更後該帳號目前所有登入狀態會立即失效。`)) return;
+      endpoint = `/admin/users/${encodeURIComponent(userId)}/role`;
+      options.body = JSON.stringify({ role });
+      successMessage = `已將「${account}」權限更改為「${roleLabel}」。`;
+    } else if (action === "reset-password") {
+      if (!window.confirm(`確定要將「${account}」的密碼重置為 qwer1234？\n重置後該帳號目前所有登入狀態會立即失效。`)) return;
+      endpoint = `/admin/users/${encodeURIComponent(userId)}/reset-password`;
+      successMessage = `已將「${account}」的密碼重置為 qwer1234。`;
+    } else if (action === "delete-user") {
+      if (!window.confirm(`確定要永久刪除帳號「${account}」？\n此操作無法復原，該帳號所有登入狀態也會立即失效。`)) return;
+      endpoint = `/admin/users/${encodeURIComponent(userId)}/delete`;
+      successMessage = `已刪除帳號「${account}」。`;
+    } else {
+      return;
+    }
+
+    setRowDisabled(row, true);
     try {
-      await auth.api(endpoint, { method: "POST" });
+      await auth.api(endpoint, options);
+      if (successMessage) window.alert(successMessage);
       await loadSuperAdminData();
     } catch (error) {
       window.alert(error.message);
-      row.querySelectorAll("button").forEach((button) => { button.disabled = false; });
+      setRowDisabled(row, false);
     }
   }
 
