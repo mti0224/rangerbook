@@ -88,7 +88,7 @@
 .pvp-player-team-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
+  grid-auto-rows: 9.1rem;
   align-items: stretch;
   align-content: start;
   gap: 0.7rem;
@@ -97,12 +97,12 @@
 .pvp-player-unit-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto 1.1rem;
+  grid-template-rows: 6rem 1.1rem;
   align-content: start;
   gap: 0.45rem;
   justify-items: center;
   width: 100%;
-  height: 100%;
+  height: 9.1rem;
   min-width: 0;
   box-sizing: border-box;
   padding: 0.7rem 0.45rem;
@@ -131,14 +131,15 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   outline-offset: 2px;
 }
 
-/* Keep the talent badge anchored to the ranger image while every card keeps
-   the same dimensions across desktop, tablet and mobile grid rows. */
+/* Every ranger uses the exact same fixed image box, regardless of whether a
+   talent badge exists. This keeps PvP and Guild War cards identical in size. */
 .pvp-player-unit-image-wrap {
   position: relative;
   grid-column: 1;
   grid-row: 1;
   display: block;
   width: min(100%, 6rem);
+  height: min(100%, 6rem);
   aspect-ratio: 1;
   justify-self: center;
 }
@@ -149,6 +150,17 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   object-fit: contain;
   border-radius: 0.8rem;
   background: var(--soft);
+}
+
+/* Fallback before the JS normalizes the DOM: a bare image must still use the
+   same 6rem square as wrapped images, so non-talent rangers never appear larger. */
+.pvp-player-unit-button > .pvp-player-unit-image {
+  grid-column: 1;
+  grid-row: 1;
+  width: min(100%, 6rem);
+  height: min(100%, 6rem);
+  aspect-ratio: 1;
+  justify-self: center;
 }
 
 .pvp-player-unit-talent-corner {
