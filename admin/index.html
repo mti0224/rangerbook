@@ -81,6 +81,29 @@
         <div id="adminSessionMessage" class="admin-message" role="status" aria-live="polite"></div>
       </section>
 
+      <section id="adminPasswordCard" class="admin-card" hidden>
+        <h2>變更自己的密碼</h2>
+        <p class="admin-muted">所有管理員階級都可以隨時變更自己的登入密碼。更新成功後，其他裝置上的登入狀態會立即失效。</p>
+        <form id="adminPasswordForm" class="admin-form" autocomplete="on">
+          <label>
+            <span>目前密碼</span>
+            <input id="adminCurrentPassword" type="password" autocomplete="current-password" maxlength="128" required>
+          </label>
+          <label>
+            <span>新密碼</span>
+            <input id="adminNewPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
+          </label>
+          <label>
+            <span>確認新密碼</span>
+            <input id="adminNewPasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
+          </label>
+          <div class="admin-actions">
+            <button id="adminPasswordSubmit" class="primary" type="submit">更新密碼</button>
+          </div>
+        </form>
+        <div id="adminPasswordMessage" class="admin-message" role="status" aria-live="polite"></div>
+      </section>
+
       <section id="superAdminPanel" class="admin-card" hidden>
         <div class="admin-session-head">
           <div>
@@ -110,5 +133,6 @@
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-page.js"></script>
+  <script src="../assets/js/admin-password.js?v=20260724-1"></script>
 </body>
 </html>
