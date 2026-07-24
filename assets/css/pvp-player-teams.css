@@ -124,30 +124,33 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   outline-offset: 2px;
 }
 
-/* Keep the original two-row card layout. The JS wrapper is transparent to Grid,
-   so adding a talent icon never creates an extra row or changes card sizing. */
+/* Anchor the talent badge to the ranger image itself. On narrow/mobile layouts
+   the card can be much wider than the 6rem image, so positioning against the
+   whole card makes the badge look like it belongs to the neighbouring ranger. */
 .pvp-player-unit-image-wrap {
-  display: contents;
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  display: block;
+  width: min(100%, 6rem);
+  aspect-ratio: 1;
+  justify-self: center;
 }
 
 .pvp-player-unit-image {
-  grid-column: 1;
-  grid-row: 1;
-  width: min(100%, 6rem);
-  aspect-ratio: 1;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   border-radius: 0.8rem;
   background: var(--soft);
 }
 
 .pvp-player-unit-talent-corner {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: end;
-  justify-self: end;
+  position: absolute;
+  right: 0.18rem;
+  bottom: 0.18rem;
   width: 1.55rem;
   height: 1.55rem;
-  margin: 0.18rem;
   object-fit: contain;
   z-index: 1;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
