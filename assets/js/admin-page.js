@@ -143,10 +143,15 @@
               <option value="admin" ${item.role === "admin" ? "selected" : ""}>管理員</option>
             </select>
           </label>
-          <div class="admin-user-actions">
+          <div class="admin-user-actions admin-user-actions--management">
             <button class="approve" type="button" data-action="change-role">套用權限</button>
-            <button class="warning" type="button" data-action="reset-password">重置密碼</button>
-            <button class="danger" type="button" data-action="delete-user">刪除帳號</button>
+            <details class="admin-overflow">
+              <summary class="admin-overflow-trigger" aria-label="更多帳號操作" title="更多帳號操作">⋯</summary>
+              <div class="admin-overflow-menu" role="menu">
+                <button class="warning" type="button" role="menuitem" data-action="reset-password">重置密碼</button>
+                <button class="danger" type="button" role="menuitem" data-action="delete-user">刪除帳號</button>
+              </div>
+            </details>
           </div>
         </div>`;
 
@@ -167,12 +172,18 @@
 
   function setRowDisabled(row, disabled) {
     row.querySelectorAll("button, select").forEach((element) => { element.disabled = disabled; });
+    row.querySelectorAll(".admin-overflow-trigger").forEach((element) => {
+      element.setAttribute("aria-disabled", disabled ? "true" : "false");
+      element.tabIndex = disabled ? -1 : 0;
+    });
   }
 
   async function runUserAction(row, action) {
     const userId = row?.dataset.userId;
     const account = row?.dataset.userAccount || "此帳號";
     if (!userId) return;
+
+    row.querySelectorAll("details[open]").forEach((details) => details.removeAttribute("open"));
 
     let endpoint = "";
     let options = { method: "POST" };
@@ -191,11 +202,13 @@
       options.body = JSON.stringify({ role });
       successMessage = `已將「${account}」權限更改為「${roleLabel}」。`;
     } else if (action === "reset-password") {
-      if (!window.confirm(`確定要將「${account}」的密碼重置為 qwer1234？\n重置後該帳號目前所有登入狀態會立即失效。`)) return;
+      if (!window.confirm(`確定要重置「${account}」的密碼？`)) return;
+      if (!window.confirm(`再次確認：將「${account}」的密碼重置為 qwer1234？\n重置後該帳號目前所有登入狀態會立即失效。`)) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/reset-password`;
       successMessage = `已將「${account}」的密碼重置為 qwer1234。`;
     } else if (action === "delete-user") {
-      if (!window.confirm(`確定要永久刪除帳號「${account}」？\n此操作無法復原，該帳號所有登入狀態也會立即失效。`)) return;
+      if (!window.confirm(`確定要刪除帳號「${account}」？`)) return;
+      if (!window.confirm(`再次確認：永久刪除帳號「${account}」？\n此操作無法復原，該帳號所有登入狀態也會立即失效。`)) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/delete`;
       successMessage = `已刪除帳號「${account}」。`;
     } else {
@@ -271,6 +284,12 @@
   usersList?.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
     if (button) runUserAction(button.closest(".admin-user-row"), button.dataset.action);
+  });
+
+  document.addEventListener("click", (event) => {
+    document.querySelectorAll(".admin-overflow[open]").forEach((details) => {
+      if (!details.contains(event.target)) details.removeAttribute("open");
+    });
   });
 
   auth.ready().then(async (user) => {
