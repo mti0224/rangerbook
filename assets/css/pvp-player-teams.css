@@ -88,16 +88,23 @@
 .pvp-player-team-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  align-content: start;
   gap: 0.7rem;
 }
 
 .pvp-player-unit-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto;
+  grid-template-rows: auto 1.1rem;
+  align-content: start;
   gap: 0.45rem;
   justify-items: center;
+  width: 100%;
+  height: 100%;
   min-width: 0;
+  box-sizing: border-box;
   padding: 0.7rem 0.45rem;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
@@ -124,9 +131,8 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   outline-offset: 2px;
 }
 
-/* Anchor the talent badge to the ranger image itself. On narrow/mobile layouts
-   the card can be much wider than the 6rem image, so positioning against the
-   whole card makes the badge look like it belongs to the neighbouring ranger. */
+/* Keep the talent badge anchored to the ranger image while every card keeps
+   the same dimensions across desktop, tablet and mobile grid rows. */
 .pvp-player-unit-image-wrap {
   position: relative;
   grid-column: 1;
@@ -163,12 +169,24 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   grid-row: 2;
 }
 
+.guildwar-unit-name-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  height: 1.1rem;
+  overflow: hidden;
+}
+
 .pvp-player-unit-name {
+  display: block;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: center;
+  line-height: 1.1rem;
   font-size: 0.78rem;
   font-weight: 800;
 }
