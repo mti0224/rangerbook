@@ -7,7 +7,7 @@ Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/rangerbook-auth
 EnvironmentFile=/home/ubuntu/rangerbook-auth/.env
-ExecStart=/home/ubuntu/rangerbook-auth/venv/bin/uvicorn app:app --host 127.0.0.1 --port 8765 --proxy-headers --forwarded-allow-ips=127.0.0.1
+ExecStart=/home/ubuntu/rangerbook-auth/venv/bin/uvicorn asgi:app --host 127.0.0.1 --port 8765 --proxy-headers --forwarded-allow-ips=127.0.0.1
 Restart=on-failure
 RestartSec=3
 PrivateTmp=true
