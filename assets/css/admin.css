@@ -67,10 +67,23 @@
   color: #fff;
 }
 
+.admin-user-actions .warning {
+  background: #b58105;
+  color: #fff;
+}
+
 .admin-user-actions .reject,
 .admin-user-actions .danger {
   background: #cf222e;
   color: #fff;
+}
+
+.admin-tabs button:disabled,
+.admin-actions button:disabled,
+.admin-user-actions button:disabled,
+.admin-role-control select:disabled {
+  cursor: not-allowed;
+  opacity: .6;
 }
 
 .admin-form {
@@ -176,9 +189,14 @@
   background: var(--bg);
 }
 
+.admin-user-row--management {
+  align-items: flex-start;
+}
+
 .admin-user-meta {
   display: grid;
   gap: 6px;
+  min-width: 160px;
 }
 
 .admin-user-meta strong {
@@ -187,6 +205,36 @@
 
 .admin-user-meta small {
   color: var(--muted);
+}
+
+.admin-user-controls {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  flex: 1 1 340px;
+}
+
+.admin-role-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.admin-role-control select {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font: inherit;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.admin-locked-note {
+  color: var(--muted);
+  font-size: .9rem;
+  font-weight: 700;
 }
 
 .admin-empty {
@@ -231,4 +279,18 @@ html[data-theme="dark"] .admin-status-badge.approved {
 
 html[data-theme="dark"] .admin-status-badge.rejected {
   color: #fca5a5;
+}
+
+@media (max-width: 640px) {
+  .admin-user-controls {
+    justify-items: stretch;
+  }
+
+  .admin-role-control {
+    justify-content: space-between;
+  }
+
+  .admin-role-control select {
+    min-width: 130px;
+  }
 }
