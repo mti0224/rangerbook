@@ -3,207 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>管理員登入｜LINE Rangers Database</title>
+  <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <style>
-    .admin-login-page {
-      min-height: calc(100vh - 120px);
-      display: grid;
-      place-items: center;
-      padding: 32px 16px;
-    }
-
-    .admin-login-card {
-      width: min(440px, 100%);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 28px;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .admin-login-card h1 {
-      margin: 0 0 8px;
-      font-size: 1.7rem;
-    }
-
-    .admin-login-card p {
-      margin: 0 0 20px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .admin-login-form {
-      display: grid;
-      gap: 16px;
-    }
-
-    .admin-login-form label {
-      display: grid;
-      gap: 8px;
-      font-weight: 700;
-    }
-
-    .admin-login-form input {
-      width: 100%;
-      box-sizing: border-box;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 14px;
-      font: inherit;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .admin-login-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 4px;
-    }
-
-    .admin-login-actions button,
-    .admin-login-actions a {
-      border: 0;
-      border-radius: 999px;
-      padding: 10px 16px;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .admin-login-actions button {
-      background: #1f6feb;
-      color: #fff;
-    }
-
-    .admin-login-actions a {
-      background: var(--soft);
-      color: var(--text);
-    }
-
-    .admin-login-message {
-      min-height: 1.5em;
-      margin-top: 14px;
-      font-weight: 700;
-    }
-
-    .admin-login-message.error {
-      color: #d1242f;
-    }
-
-    .admin-login-message.success {
-      color: #1a7f37;
-    }
-
-    .admin-mode-status {
-      display: none;
-      margin-bottom: 16px;
-      padding: 12px 14px;
-      border: 1px solid rgba(34, 197, 94, 0.24);
-      border-radius: 14px;
-      background: rgba(34, 197, 94, 0.12);
-      color: #1a7f37;
-      font-weight: 800;
-    }
-
-    .admin-mode-status.active {
-      display: block;
-    }
-
-    html[data-theme="dark"] .admin-mode-status,
-    html[data-theme="dark"] .admin-login-message.success {
-      color: #86efac;
-    }
-  </style>
+  <link rel="stylesheet" href="../assets/css/admin.css">
 </head>
 <body>
   <div id="site-header"></div>
 
-  <main class="admin-login-page">
-    <section class="admin-login-card" aria-labelledby="adminLoginTitle">
-      <div id="adminModeStatus" class="admin-mode-status">目前已啟用管理員檢視模式。</div>
-      <h1 id="adminLoginTitle">管理員登入</h1>
-      <p>登入後會在同一台瀏覽器啟用管理員檢視模式，可看到前端原本隱藏的資料。</p>
+  <main class="admin-page">
+    <div class="admin-shell">
+      <section id="adminAuthCard" class="admin-card">
+        <h1>管理員登入</h1>
+        <p class="admin-muted">此頁面不會出現在公開導覽列。帳號驗證與權限判定由 Rangerbook AWS 後端處理。</p>
 
-      <form id="adminLoginForm" class="admin-login-form" autocomplete="off">
-        <label>
-          <span>帳號</span>
-          <input id="adminUsername" type="text" inputmode="text" autocomplete="username" required>
-        </label>
-
-        <label>
-          <span>密碼</span>
-          <input id="adminPassword" type="password" autocomplete="current-password" required>
-        </label>
-
-        <div class="admin-login-actions">
-          <button type="submit">登入</button>
-          <button id="adminLogoutBtn" type="button">登出管理員模式</button>
-          <a href="../">回首頁</a>
+        <div class="admin-tabs" role="tablist" aria-label="管理員帳號操作">
+          <button id="adminLoginTab" class="active" type="button">登入</button>
+          <button id="adminRegisterTab" type="button">註冊帳號</button>
         </div>
-      </form>
 
-      <div id="adminLoginMessage" class="admin-login-message" role="status" aria-live="polite"></div>
-    </section>
+        <div id="adminLoginPanel">
+          <form id="adminLoginForm" class="admin-form" autocomplete="on">
+            <label>
+              <span>帳號</span>
+              <input id="adminLoginAccount" type="text" autocomplete="username" minlength="3" maxlength="32" required>
+            </label>
+            <label>
+              <span>密碼</span>
+              <input id="adminLoginPassword" type="password" autocomplete="current-password" minlength="10" maxlength="128" required>
+            </label>
+            <div class="admin-actions">
+              <button class="primary" type="submit">登入</button>
+              <a href="../">回首頁</a>
+            </div>
+          </form>
+        </div>
+
+        <div id="adminRegisterPanel" hidden>
+          <form id="adminRegisterForm" class="admin-form" autocomplete="on">
+            <label>
+              <span>帳號</span>
+              <input id="adminRegisterAccount" type="text" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.-]+" required>
+            </label>
+            <label>
+              <span>密碼</span>
+              <input id="adminRegisterPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
+            </label>
+            <label>
+              <span>確認密碼</span>
+              <input id="adminRegisterPasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
+            </label>
+            <div class="admin-warning">註冊完成後會建立非管理員帳號並送出管理員申請。只有最大管理者核准後，才會取得目前的 admin 隱藏資料檢視權限。</div>
+            <div class="admin-actions">
+              <button class="primary" type="submit">註冊並送出申請</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="adminAuthMessage" class="admin-message" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="adminSessionCard" class="admin-card" hidden>
+        <div class="admin-session-head">
+          <div>
+            <p class="eyebrow">目前登入</p>
+            <h1 id="adminCurrentAccount">-</h1>
+            <div class="admin-actions">
+              <span id="adminCurrentRole" class="admin-role-badge">-</span>
+              <span id="adminCurrentStatus" class="admin-status-badge">-</span>
+            </div>
+          </div>
+          <div class="admin-actions">
+            <a href="../">回首頁</a>
+            <button id="adminLogoutBtn" class="secondary" type="button">登出</button>
+          </div>
+        </div>
+        <div id="adminSessionMessage" class="admin-message" role="status" aria-live="polite"></div>
+      </section>
+
+      <section id="superAdminPanel" class="admin-card" hidden>
+        <div class="admin-session-head">
+          <div>
+            <p class="eyebrow">Super Admin</p>
+            <h2>最大管理者面板</h2>
+            <p class="admin-muted">核准或拒絕管理員申請，並可撤銷既有管理員權限。</p>
+          </div>
+          <div class="admin-actions">
+            <button id="adminRefreshBtn" class="secondary" type="button">重新整理</button>
+          </div>
+        </div>
+
+        <div class="admin-grid">
+          <section>
+            <h3>待審核申請</h3>
+            <div id="adminApplicationsList" class="admin-user-list"></div>
+          </section>
+          <section>
+            <h3>使用者與權限</h3>
+            <div id="adminUsersList" class="admin-user-list"></div>
+          </section>
+        </div>
+      </section>
+    </div>
   </main>
 
   <script src="../assets/js/site.js"></script>
-  <script>
-    (() => {
-      const ADMIN_MODE_KEY = "rangerbook-admin-mode";
-      const ADMIN_USERNAME = "admin1234";
-      const ADMIN_PASSWORD = "@dmin!1234";
-
-      const form = document.getElementById("adminLoginForm");
-      const usernameInput = document.getElementById("adminUsername");
-      const passwordInput = document.getElementById("adminPassword");
-      const logoutBtn = document.getElementById("adminLogoutBtn");
-      const message = document.getElementById("adminLoginMessage");
-      const status = document.getElementById("adminModeStatus");
-
-      function isAdminMode() {
-        return localStorage.getItem(ADMIN_MODE_KEY) === "true";
-      }
-
-      function updateStatus() {
-        status.classList.toggle("active", isAdminMode());
-      }
-
-      function setMessage(text, type) {
-        message.textContent = text;
-        message.className = `admin-login-message ${type || ""}`.trim();
-      }
-
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value;
-
-        if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-          localStorage.setItem(ADMIN_MODE_KEY, "true");
-          passwordInput.value = "";
-          setMessage("登入成功，已啟用管理員檢視模式。", "success");
-          updateStatus();
-          return;
-        }
-
-        localStorage.removeItem(ADMIN_MODE_KEY);
-        setMessage("帳號或密碼錯誤。", "error");
-        updateStatus();
-      });
-
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem(ADMIN_MODE_KEY);
-        setMessage("已登出管理員檢視模式。", "success");
-        updateStatus();
-      });
-
-      updateStatus();
-    })();
-  </script>
+  <script src="../assets/js/admin-auth.js"></script>
+  <script src="../assets/js/admin-page.js"></script>
 </body>
 </html>
