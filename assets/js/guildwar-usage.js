@@ -5,6 +5,11 @@
     MASTER: "https://pvp-data.warmycat.com/guildwar_data_MASTER.json",
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_data_DIAMOND.json",
   };
+  const INDEX_URLS = {
+    LEGEND: "https://pvp-data.warmycat.com/guildwar_usage_index_LEGEND.json",
+    MASTER: "https://pvp-data.warmycat.com/guildwar_usage_index_MASTER.json",
+    DIAMOND: "https://pvp-data.warmycat.com/guildwar_usage_index_DIAMOND.json",
+  };
   const TIER_LABELS = { LEGEND: "傳奇", LEGEND_20: "傳奇（1～20名）", MASTER: "大師", DIAMOND: "鑽石" };
   const RANGERS_URL = "../../res/Rangers_data.json";
   const ID_DICT_URL = "../../res/id_dict.json";
@@ -29,6 +34,7 @@
   };
 
   let dataSet = {}, activeGuilds = [], rows = [], rangerMap = {}, gearNames = {}, abilityMap = {}, supportLoaded = false;
+  const compactCache = new Map();
   const detailCache = new Map();
   const modalState = { id: "", gearPages: { WEAPON: 0, ARMOR: 0, ACC: 0 }, comboPage: 0 };
 
@@ -37,6 +43,7 @@
   const pct = (a, b) => b > 0 ? Math.round(a * 10000 / b) / 100 : 0;
   const fmtDate = v => { const d = new Date(v); return Number.isNaN(d.getTime()) ? "-" : new Intl.DateTimeFormat("zh-Hant", { year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false }).format(d); };
   const currentTier = () => els.tier?.value || "LEGEND";
+  const baseTier = tier => tier === "LEGEND_20" ? "LEGEND" : tier;
   const infoFor = id => rangerMap[id] || { name: id, star: "", type: "", element: "" };
   const status = (text = "", error = false) => { if (!els.status) return; els.status.hidden = !text; els.status.textContent = text; els.status.classList.toggle("error", error); };
 
@@ -55,8 +62,8 @@
     return out;
   }
 
-  function selectGuilds() {
-    const guilds = Array.isArray(dataSet.guilds) ? dataSet.guilds : [];
+  function selectGuilds(source = dataSet) {
+    const guilds = Array.isArray(source?.guilds) ? source.guilds : [];
     return currentTier() === "LEGEND_20" ? guilds.filter(g => Number(g.rank) <= 20) : guilds;
   }
 
@@ -91,12 +98,46 @@
     return { rows:result, sampleCount };
   }
 
-  function applyData() {
-    activeGuilds = selectGuilds(); detailCache.clear();
+  function rowsFromIndex(index) {
+    const guildCount = Number(index?.metadata?.guildCount) || 0;
+    return (Array.isArray(index?.rangers) ? index.rangers : []).map((raw, i) => {
+      const id = String(raw.unitCode || raw.rangerId || "");
+      const info = infoFor(id);
+      const guildUsageCount = Number(raw.guildCount ?? raw.guildUsageCount) || 0;
+      return {
+        rangerId: id, unitCode: id, name: info.name, star: info.star, type: info.type, element: info.element,
+        playerCount: Number(raw.playerCount) || 0, appearanceCount: Number(raw.appearanceCount) || 0,
+        usageRate: Number(raw.usageRate) || 0, rank: Number(raw.rank) || i + 1,
+        guildUsageCount, guildUsageRate: Number(raw.guildUsageRate) || pct(guildUsageCount, guildCount),
+      };
+    });
+  }
+
+  function applyIndex(index) {
+    dataSet = index || {};
+    activeGuilds = [];
+    detailCache.clear();
+    rows = rowsFromIndex(index);
+    const tier = currentTier(), label = TIER_LABELS[tier] || tier;
+    if (els.updated) els.updated.textContent = fmtDate(index?.metadata?.generatedAtUtc);
+    if (els.scopeLabel) els.scopeLabel.textContent = label;
+    if (els.sample) els.sample.textContent = num(index?.metadata?.sampleCount);
+    if (els.guildCount) els.guildCount.textContent = num(index?.metadata?.guildCount);
+    if (els.description) els.description.textContent = `${label}段位公會戰的進攻隊伍角色使用率`;
+    fill(els.type, rows.map(r=>r.type), "全部類型"); fill(els.element, rows.map(r=>r.element), "全部屬性");
+    render(); closeModal(); status();
+  }
+
+  function applyCompact(compact) {
+    dataSet = compact || {};
+    activeGuilds = selectGuilds(compact);
+    detailCache.clear();
     const summary = buildSummary(activeGuilds); rows = summary.rows;
     const tier=currentTier(), label=TIER_LABELS[tier]||tier;
-    els.updated.textContent=fmtDate(dataSet.metadata?.generatedAtUtc); els.scopeLabel.textContent=label;
-    els.sample.textContent=num(summary.sampleCount); els.guildCount.textContent=num(activeGuilds.length);
+    if (els.updated) els.updated.textContent=fmtDate(compact?.metadata?.generatedAtUtc);
+    if (els.scopeLabel) els.scopeLabel.textContent=label;
+    if (els.sample) els.sample.textContent=num(summary.sampleCount);
+    if (els.guildCount) els.guildCount.textContent=num(activeGuilds.length);
     if(els.description) els.description.textContent=tier==="LEGEND_20"?"傳奇段位前 20 名公會的公會戰進攻隊伍角色使用率":`${label}段位公會戰的進攻隊伍角色使用率`;
     fill(els.type,rows.map(r=>r.type),"全部類型"); fill(els.element,rows.map(r=>r.element),"全部屬性");
     render(); closeModal(); status();
@@ -129,11 +170,68 @@
   function comboChip(code,label){const name=code==="__NONE__"?"未裝備":gearNames[code]||code,icon=code&&code!=="__NONE__"?`<img class="pvp-combo-gear-icon" src="${GEAR_ICON(code)}" alt="" loading="lazy" onerror="this.remove();">`:`<span class="pvp-combo-gear-icon pvp-combo-gear-empty">—</span>`;return `<div class="pvp-combo-gear">${icon}<div><span>${label}</span><strong title="${esc(name)}">${esc(name)}</strong></div></div>`;}
   function comboSection(detail){const all=detail.equipmentCombinationUsage||[],pages=Math.max(1,Math.ceil(all.length/PAGE_SIZE)),page=Math.max(0,Math.min(pages-1,modalState.comboPage||0));modalState.comboPage=page;const visible=all.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE),body=visible.length?`<div class="pvp-combo-list">${visible.map((c,i)=>`<div class="pvp-combo-row"><span class="pvp-combo-rank">${page*PAGE_SIZE+i+1}</span><div class="pvp-combo-gears">${comboChip(c.WEAPON,"武器")}${comboChip(c.ARMOR,"防具")}${comboChip(c.ACC,"飾品")}</div><div class="pvp-combo-stats"><strong>${num(c.rate)}%</strong><span>${num(c.count)} 次</span></div></div>`).join("")}</div>`:`<div class="pvp-modal-empty">目前沒有可顯示的裝備組合資料。</div>`;return `<section class="pvp-modal-section pvp-equipment-combination-section" data-combo-section><div class="pvp-modal-section-heading"><h3>裝備組合排名</h3></div>${body}${pages>1?`<div class="pvp-option-pagination pvp-combo-pagination"><button data-combo-page="${page-1}" ${page===0?"disabled":""}>‹</button><span>${page+1} / ${pages}</span><button data-combo-page="${page+1}" ${page===pages-1?"disabled":""}>›</button></div>`:""}</section>`;}
 
-  function openModal(row){if(!row)return;modalState.id=row.rangerId;modalState.gearPages={WEAPON:0,ARMOR:0,ACC:0};modalState.comboPage=0;const d=buildDetail(row.rangerId),common=(d.coOccurrence||[]).slice(0,5).map(x=>`<span>${esc(infoFor(x.unitCode).name)} ${num(x.rate)}%</span>`).join("");els.modalContent.innerHTML=`<header class="pvp-modal-ranger-header"><img class="pvp-modal-ranger-image" src="${RANGER_IMAGE(row.rangerId)}" alt=""><div class="pvp-modal-ranger-copy"><h2 id="guildUsageModalTitle">${esc(row.name)}</h2><p>${esc([row.star,row.type,row.element].filter(Boolean).join(" · "))}</p><div class="pvp-modal-summary"><span><strong>${num(row.usageRate)}%</strong> 使用率</span><span><strong>${num(row.playerCount)}</strong> 名玩家</span><span><strong>${num(row.guildUsageRate)}%</strong> 公會普及率</span></div></div><a class="pvp-modal-detail-link" href="${RANGER_DETAIL(row.rangerId)}">查看角色詳細資料</a></header><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>配裝情況</h3></div><div class="pvp-equipment-grid">${SLOTS.map(s=>gearCard(d,s)).join("")}</div></section>${comboSection(d)}<section class="pvp-modal-section pvp-modal-section--no-divider"><div class="pvp-modal-section-heading"><h3>覺醒能力使用情況</h3></div>${optionList(d.awakeningUsage,"ability")}</section><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>才能解放狀態</h3></div>${optionList(d.talentUsage,"talent")}</section>${common?`<section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>常見搭配角色</h3></div><div class="pvp-modal-summary">${common}</div></section>`:""}`;els.modal.hidden=false;document.body.classList.add("modal-open");}
+  async function loadCompact(tier = currentTier()) {
+    const code = baseTier(tier);
+    if (compactCache.has(code)) return compactCache.get(code);
+    const url = DATA_URLS[code] || DATA_URLS.LEGEND;
+    const promise = fetch(url).then(r => { if (!r.ok) throw new Error(`compact HTTP ${r.status}`); return r.json(); });
+    compactCache.set(code, promise);
+    try { return await promise; } catch (error) { compactCache.delete(code); throw error; }
+  }
+
+  async function ensureDetailData() {
+    const compact = await loadCompact();
+    activeGuilds = selectGuilds(compact);
+    return compact;
+  }
+
+  async function openModal(row){
+    if(!row)return;
+    modalState.id=row.rangerId;modalState.gearPages={WEAPON:0,ARMOR:0,ACC:0};modalState.comboPage=0;
+    els.modalContent.innerHTML=`<div class="pvp-modal-empty">角色詳細統計載入中…</div>`;
+    els.modal.hidden=false;document.body.classList.add("modal-open");
+    try {
+      await ensureDetailData();
+      const d=buildDetail(row.rangerId),common=(d.coOccurrence||[]).slice(0,5).map(x=>`<span>${esc(infoFor(x.unitCode).name)} ${num(x.rate)}%</span>`).join("");
+      els.modalContent.innerHTML=`<header class="pvp-modal-ranger-header"><img class="pvp-modal-ranger-image" src="${RANGER_IMAGE(row.rangerId)}" alt=""><div class="pvp-modal-ranger-copy"><h2 id="guildUsageModalTitle">${esc(row.name)}</h2><p>${esc([row.star,row.type,row.element].filter(Boolean).join(" · "))}</p><div class="pvp-modal-summary"><span><strong>${num(row.usageRate)}%</strong> 使用率</span><span><strong>${num(row.playerCount)}</strong> 名玩家</span><span><strong>${num(row.guildUsageRate)}%</strong> 公會普及率</span></div></div><a class="pvp-modal-detail-link" href="${RANGER_DETAIL(row.rangerId)}">查看角色詳細資料</a></header><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>配裝情況</h3></div><div class="pvp-equipment-grid">${SLOTS.map(s=>gearCard(d,s)).join("")}</div></section>${comboSection(d)}<section class="pvp-modal-section pvp-modal-section--no-divider"><div class="pvp-modal-section-heading"><h3>覺醒能力使用情況</h3></div>${optionList(d.awakeningUsage,"ability")}</section><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>才能解放狀態</h3></div>${optionList(d.talentUsage,"talent")}</section>${common?`<section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>常見搭配角色</h3></div><div class="pvp-modal-summary">${common}</div></section>`:""}`;
+    } catch (error) {
+      console.error(error);
+      els.modalContent.innerHTML=`<div class="pvp-modal-empty">角色詳細統計目前無法載入。</div>`;
+    }
+  }
+
   function closeModal(){if(!els.modal||els.modal.hidden)return;els.modal.hidden=true;document.body.classList.remove("modal-open");}
   async function optional(url){try{const r=await fetch(url);return r.ok?await r.json():{};}catch{return {};}}
   async function loadSupport(){if(supportLoaded)return;const [rangers,ids,abilities]=await Promise.all([optional(RANGERS_URL),optional(ID_DICT_URL),optional(ABILITY_URL)]);rangerMap={};(Array.isArray(rangers)?rangers:[]).forEach(r=>{const id=String(r.ranger_id||"");if(id)rangerMap[id]={name:String(r["Ranger名稱"]||id),star:String(r["Ranger星數"]||""),type:String(r["類型"]||""),element:String(r["屬性"]||"")}});gearNames=Object.fromEntries(Object.entries(ids||{}).map(([name,code])=>[String(code),String(name)]));abilityMap=abilities||{};supportLoaded=true;}
-  async function load(){const tier=currentTier(),url=DATA_URLS[tier]||DATA_URLS.LEGEND;status("公會戰角色使用率資料載入中…");try{const [res]=await Promise.all([fetch(`${url}?t=${Date.now()}`,{cache:"no-store"}),loadSupport()]);if(!res.ok)throw new Error(`HTTP ${res.status}`);dataSet=await res.json();applyData()}catch(e){console.error(e);rows=[];render();status(`${TIER_LABELS[tier]||tier}公會戰角色使用率資料尚未產生或目前無法載入。`,true)}}
 
-  [els.search,els.type,els.element].forEach(e=>{e?.addEventListener("input",render);e?.addEventListener("change",render)});els.tier?.addEventListener("change",load);els.body?.addEventListener("click",e=>{const b=e.target.closest("[data-ranger-id]");if(b)openModal(rows.find(r=>r.rangerId===b.dataset.rangerId))});els.modalContent?.addEventListener("click",e=>{const p=e.target.closest("[data-page-slot]");if(p&&!p.disabled){const row=rows.find(r=>r.rangerId===modalState.id),d=row?buildDetail(row.rangerId):null,slot=p.dataset.pageSlot;if(d&&SLOT_LABELS[slot]){modalState.gearPages[slot]=Number(p.dataset.page)||0;const card=els.modalContent.querySelector(`[data-slot="${slot}"]`);if(card)card.outerHTML=gearCard(d,slot)}return}const c=e.target.closest("[data-combo-page]");if(c&&!c.disabled){const row=rows.find(r=>r.rangerId===modalState.id),d=row?buildDetail(row.rangerId):null;if(d){modalState.comboPage=Number(c.dataset.comboPage)||0;const section=els.modalContent.querySelector("[data-combo-section]");if(section)section.outerHTML=comboSection(d)}}});els.modalClose?.addEventListener("click",closeModal);els.modal?.addEventListener("click",e=>{if(e.target.closest("[data-guild-modal-close]"))closeModal()});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});load();
+  async function load(){
+    const tier=currentTier(), label=TIER_LABELS[tier]||tier;
+    status("公會戰角色使用率資料載入中…");
+    try {
+      await loadSupport();
+      if (tier !== "LEGEND_20" && INDEX_URLS[tier]) {
+        try {
+          const res = await fetch(INDEX_URLS[tier]);
+          if (!res.ok) throw new Error(`index HTTP ${res.status}`);
+          applyIndex(await res.json());
+          return;
+        } catch (indexError) {
+          console.warn(`${tier} Guild War usage index unavailable; falling back to compact data`, indexError);
+        }
+      }
+      const compact = await loadCompact(tier);
+      applyCompact(compact);
+    } catch(e) {
+      console.error(e);rows=[];render();status(`${label}公會戰角色使用率資料尚未產生或目前無法載入。`,true);
+    }
+  }
+
+  [els.search,els.type,els.element].forEach(e=>{e?.addEventListener("input",render);e?.addEventListener("change",render)});
+  els.tier?.addEventListener("change",load);
+  els.body?.addEventListener("click",e=>{const b=e.target.closest("[data-ranger-id]");if(b)openModal(rows.find(r=>r.rangerId===b.dataset.rangerId))});
+  els.modalContent?.addEventListener("click",e=>{const p=e.target.closest("[data-page-slot]");if(p&&!p.disabled){const row=rows.find(r=>r.rangerId===modalState.id),d=row?buildDetail(row.rangerId):null,slot=p.dataset.pageSlot;if(d&&SLOT_LABELS[slot]){modalState.gearPages[slot]=Number(p.dataset.page)||0;const card=els.modalContent.querySelector(`[data-slot="${slot}"]`);if(card)card.outerHTML=gearCard(d,slot)}return}const c=e.target.closest("[data-combo-page]");if(c&&!c.disabled){const row=rows.find(r=>r.rangerId===modalState.id),d=row?buildDetail(row.rangerId):null;if(d){modalState.comboPage=Number(c.dataset.comboPage)||0;const section=els.modalContent.querySelector("[data-combo-section]");if(section)section.outerHTML=comboSection(d)}}});
+  els.modalClose?.addEventListener("click",closeModal);
+  els.modal?.addEventListener("click",e=>{if(e.target.closest("[data-guild-modal-close]"))closeModal()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+  load();
 })();
