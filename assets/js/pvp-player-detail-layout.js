@@ -92,6 +92,11 @@
     return wrap;
   }
 
+  function ensureTeamImageWraps(root, selector) {
+    if (!root) return;
+    root.querySelectorAll(selector).forEach((button) => ensureImageWrap(button));
+  }
+
   function addCornerTalentIcon(button, src, title = "") {
     if (!button || !src) return;
     const wrap = ensureImageWrap(button);
@@ -160,6 +165,11 @@
     const buttons = [...pvpContent.querySelectorAll(".pvp-player-unit-button[data-unit-index]")];
     if (!buttons.length) return;
 
+    // Every card must use the same image wrapper, even when the ranger has no talent.
+    // Otherwise talent cards use a fixed 6rem image box while non-talent cards keep a
+    // bare image that stretches to the full grid cell.
+    buttons.forEach((button) => ensureImageWrap(button));
+
     const pending = buttons.filter((button) => button.dataset.talentIconReady !== "1");
     if (!pending.length) return;
 
@@ -183,6 +193,8 @@
   function decorateGuildTeamTalentIcons() {
     if (!guildContent) return;
     guildContent.querySelectorAll(".pvp-player-unit-button[data-guildwar-unit-index]").forEach((button) => {
+      // Normalize every Guild War card before checking whether a talent icon exists.
+      ensureImageWrap(button);
       if (button.dataset.talentIconReady === "1") return;
       button.dataset.talentIconReady = "1";
       const oldIcon = button.querySelector(".guildwar-unit-talent-icon");
@@ -201,12 +213,14 @@
 
   function enhancePvpAll() {
     if (!pvpContent) return;
+    ensureTeamImageWraps(pvpContent, ".pvp-player-unit-button[data-unit-index]");
     pvpContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhancePvpDetailCard);
     queueDecoratePvpTeamTalentIcons();
   }
 
   function enhanceGuildAll() {
     if (!guildContent) return;
+    ensureTeamImageWraps(guildContent, ".pvp-player-unit-button[data-guildwar-unit-index]");
     guildContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceGuildDetailCard);
     decorateGuildTeamTalentIcons();
   }
