@@ -8,7 +8,7 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Iterator, Literal
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -21,6 +21,7 @@ APP_ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("RANGERBOOK_AUTH_DB", APP_ROOT / "rangerbook_auth.db")).resolve()
 SESSION_COOKIE = os.getenv("RANGERBOOK_SESSION_COOKIE", "__Host-rangerbook_session")
 SESSION_DAYS = int(os.getenv("RANGERBOOK_SESSION_DAYS", "7"))
+RESET_PASSWORD = "qwer1234"
 ALLOWED_ORIGINS = {
     origin.strip().rstrip("/")
     for origin in os.getenv(
@@ -39,7 +40,7 @@ PASSWORD_HASHER = PasswordHasher(
     salt_len=16,
 )
 
-app = FastAPI(title="Rangerbook Auth API", version="1.0.0")
+app = FastAPI(title="Rangerbook Auth API", version="1.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=sorted(ALLOWED_ORIGINS),
@@ -51,7 +52,11 @@ app.add_middleware(
 
 class Credentials(BaseModel):
     account: str = Field(min_length=3, max_length=32)
-    password: str = Field(min_length=10, max_length=128)
+    password: str = Field(min_length=1, max_length=128)
+
+
+class RoleUpdate(BaseModel):
+    role: Literal["user", "admin"]
 
 
 class UserRecord(dict):
@@ -251,6 +256,44 @@ def require_super_admin(user: sqlite3.Row = Depends(require_user)) -> sqlite3.Ro
     return user
 
 
+def find_mutable_user(user_id: str) -> sqlite3.Row:
+    with db() as connection:
+        target = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    if not target:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="找不到使用者。")
+    if target["role"] == "super_admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="不能透過此 API 修改最大管理者。")
+    return target
+
+
+def set_user_role(user_id: str, role: Literal["user", "admin"], actor_account: str) -> sqlite3.Row:
+    now = isoformat()
+    with db() as connection:
+        if role == "admin":
+            connection.execute(
+                """
+                UPDATE users
+                SET role = 'admin', admin_application_status = 'approved',
+                    approved_at = ?, approved_by = ?
+                WHERE id = ?
+                """,
+                (now, actor_account, user_id),
+            )
+        else:
+            connection.execute(
+                """
+                UPDATE users
+                SET role = 'user', admin_application_status = 'rejected',
+                    approved_at = NULL, approved_by = NULL
+                WHERE id = ?
+                """,
+                (user_id,),
+            )
+        connection.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+        updated = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    return updated
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -360,16 +403,6 @@ def list_applications(_: sqlite3.Row = Depends(require_super_admin)) -> dict[str
     return {"items": [public_user(row) for row in rows]}
 
 
-def find_mutable_user(user_id: str) -> sqlite3.Row:
-    with db() as connection:
-        target = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-    if not target:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="找不到使用者。")
-    if target["role"] == "super_admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="不能透過此 API 修改最大管理者。")
-    return target
-
-
 @app.post("/admin/applications/{user_id}/approve")
 def approve_application(
     user_id: str,
@@ -378,18 +411,8 @@ def approve_application(
 ) -> dict[str, Any]:
     require_trusted_origin(request)
     find_mutable_user(user_id)
-    with db() as connection:
-        connection.execute(
-            """
-            UPDATE users
-            SET role = 'admin', admin_application_status = 'approved',
-                approved_at = ?, approved_by = ?
-            WHERE id = ?
-            """,
-            (isoformat(), actor["account"], user_id),
-        )
-        target = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-    return {"ok": True, "user": public_user(target)}
+    updated = set_user_role(user_id, "admin", actor["account"])
+    return {"ok": True, "user": public_user(updated)}
 
 
 @app.post("/admin/applications/{user_id}/reject")
@@ -400,19 +423,8 @@ def reject_application(
 ) -> dict[str, Any]:
     require_trusted_origin(request)
     find_mutable_user(user_id)
-    with db() as connection:
-        connection.execute(
-            """
-            UPDATE users
-            SET role = 'user', admin_application_status = 'rejected',
-                approved_at = ?, approved_by = ?
-            WHERE id = ?
-            """,
-            (isoformat(), actor["account"], user_id),
-        )
-        connection.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
-        target = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
-    return {"ok": True, "user": public_user(target)}
+    updated = set_user_role(user_id, "user", actor["account"])
+    return {"ok": True, "user": public_user(updated)}
 
 
 @app.get("/admin/users")
@@ -433,26 +445,62 @@ def list_users(_: sqlite3.Row = Depends(require_super_admin)) -> dict[str, Any]:
 def revoke_admin(
     user_id: str,
     request: Request,
-    _: sqlite3.Row = Depends(require_super_admin),
+    actor: sqlite3.Row = Depends(require_super_admin),
 ) -> dict[str, Any]:
     require_trusted_origin(request)
     target = find_mutable_user(user_id)
     if target["role"] != "admin":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="此帳號目前不是管理員。")
-
-    with db() as connection:
-        connection.execute(
-            """
-            UPDATE users
-            SET role = 'user', admin_application_status = 'rejected',
-                approved_at = NULL, approved_by = NULL
-            WHERE id = ?
-            """,
-            (user_id,),
-        )
-        connection.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
-        updated = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    updated = set_user_role(user_id, "user", actor["account"])
     return {"ok": True, "user": public_user(updated)}
+
+
+@app.post("/admin/users/{user_id}/role")
+def change_user_role(
+    user_id: str,
+    payload: RoleUpdate,
+    request: Request,
+    actor: sqlite3.Row = Depends(require_super_admin),
+) -> dict[str, Any]:
+    require_trusted_origin(request)
+    find_mutable_user(user_id)
+    updated = set_user_role(user_id, payload.role, actor["account"])
+    return {"ok": True, "user": public_user(updated)}
+
+
+@app.post("/admin/users/{user_id}/reset-password")
+def reset_user_password(
+    user_id: str,
+    request: Request,
+    _: sqlite3.Row = Depends(require_super_admin),
+) -> dict[str, Any]:
+    require_trusted_origin(request)
+    target = find_mutable_user(user_id)
+    password_hash = PASSWORD_HASHER.hash(RESET_PASSWORD)
+    with db() as connection:
+        connection.execute("UPDATE users SET password_hash = ? WHERE id = ?", (password_hash, user_id))
+        connection.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
+    return {
+        "ok": True,
+        "account": target["account"],
+        "reset_password": RESET_PASSWORD,
+    }
+
+
+@app.post("/admin/users/{user_id}/delete")
+def delete_user(
+    user_id: str,
+    request: Request,
+    _: sqlite3.Row = Depends(require_super_admin),
+) -> dict[str, Any]:
+    require_trusted_origin(request)
+    target = find_mutable_user(user_id)
+    with db() as connection:
+        connection.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    return {
+        "ok": True,
+        "deleted": {"id": target["id"], "account": target["account"]},
+    }
 
 
 @app.get("/admin/access-check")
