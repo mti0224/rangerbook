@@ -82,6 +82,8 @@ curl http://127.0.0.1:8765/health
 3. 先確認 HTTP 反向代理正常，再用現有的 HTTPS/Certbot 流程替此子網域簽 TLS 憑證。
 4. HTTPS 完成前，`Secure` session cookie 不會在正式瀏覽器流程正常工作，因此不要以純 HTTP 上線登入系統。
 
+目前正式 EC2 部署已驗證：systemd 常駐、`/health`、HTTPS、Let's Encrypt 續期模擬、註冊、登入、`super_admin` 核准、`admin` 權限檢查、撤銷後既有 session 立即失效皆正常。
+
 ## API
 
 公開：
@@ -110,15 +112,8 @@ POST /admin/users/{user_id}/revoke
 GET /admin/access-check
 ```
 
-## 重要：隱藏資料仍需第二階段搬移
+## 公開資料與 Admin 顯示
 
-這次 Auth API 會先把「誰是 admin」改成真正由後端決定，但目前 Rangerbook 某些完整資料仍存在公開的 `res/*.json`，例如裝備與能力資料。只要完整原始 JSON 還能被公開網址下載，就不能把其中的未公開內容視為真正保密。
+Rangerbook 的 `ability`、`gear` 等完整資料可繼續存在公開的 `res/*.json`。目前 admin 權限的目的，是控制網站介面是否顯示特定隱藏、測試或未公開項目，而不是把這些 JSON 當成真正的秘密資料。
 
-下一階段應把資料拆成：
-
-```text
-公開 JSON：任何人可取得，只包含公開資料
-私有資料：放在 AWS，不進 GitHub Pages，由 require_admin 保護的 API 回傳
-```
-
-在完成資料拆分前，本次更新能解決 `localStorage` 偽造 admin 身分，但不能讓已存在公開 JSON 內的原始內容變成秘密資料。
+真正需要保護且只存在後端的內容包含：帳號、密碼雜湊、session、角色權限、管理員申請與審核操作。未來若新增修改資料、刪除資料、上傳檔案或其他管理寫入功能，相關 API 必須繼續由後端 `admin` / `super_admin` 權限保護。
