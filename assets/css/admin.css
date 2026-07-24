@@ -372,6 +372,31 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
   color: #fca5a5;
 }
 
+@media (min-width: 641px) {
+  .admin-user-row--management {
+    flex-wrap: nowrap;
+    padding: 14px 16px;
+  }
+
+  .admin-user-row--management .admin-user-meta {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .admin-user-controls {
+    flex: 0 0 220px;
+    min-width: 0;
+    margin-left: auto;
+    align-content: start;
+    gap: 8px;
+  }
+
+  .admin-role-control,
+  .admin-user-actions--management {
+    justify-content: flex-end;
+  }
+}
+
 @media (max-width: 640px) {
   .admin-user-controls {
     justify-items: stretch;
