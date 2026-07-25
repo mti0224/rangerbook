@@ -25,13 +25,19 @@
     </section>
   </main>
   <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/admin-auth.js"></script>
   <script>
     (() => {
-      const ADMIN_MODE_KEY = "rangerbook-admin-mode";
+      const auth = window.RangerbookAuth;
       const usageEntry = document.getElementById("guildwarUsageEntry");
-      if (usageEntry && localStorage.getItem(ADMIN_MODE_KEY) === "true") {
-        usageEntry.hidden = false;
+      if (!auth || !usageEntry) return;
+
+      function updateUsageEntryVisibility() {
+        usageEntry.hidden = !auth.isAdmin();
       }
+
+      window.addEventListener("rangerbook:auth-changed", updateUsageEntryVisibility);
+      auth.ready().then(updateUsageEntryVisibility);
     })();
   </script>
 </body>
