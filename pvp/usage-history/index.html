@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PvP 角色使用率變化｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-usage-history.css">
+</head>
+<body>
+  <div id="site-header"></div>
+  <main class="page pvp-history-page">
+    <section class="page-title">
+      <p class="eyebrow">PvP · LEGEND</p>
+      <h1>角色使用率變化</h1>
+      <p>比較傳奇段位 PvP 防守隊伍角色每日「使用次數」的變化。</p>
+    </section>
+
+    <section class="pvp-history-controls" aria-label="圖表設定">
+      <label>統計範圍
+        <select id="pvpHistoryScope">
+          <option value="all">全部傳奇玩家</option>
+          <option value="10">前 10 名</option>
+          <option value="30">前 30 名</option>
+          <option value="50">前 50 名</option>
+          <option value="100">前 100 名</option>
+        </select>
+      </label>
+      <label>時間範圍
+        <select id="pvpHistoryRange">
+          <option value="7">近 7 天</option>
+          <option value="30" selected>近 30 天</option>
+          <option value="90">近 90 天</option>
+          <option value="all">全部</option>
+        </select>
+      </label>
+      <label class="pvp-history-search">新增角色
+        <input id="pvpHistorySearch" type="search" placeholder="輸入角色名稱或 ID" autocomplete="off">
+        <select id="pvpHistoryRanger" aria-label="選擇角色"></select>
+      </label>
+      <button id="pvpHistoryAdd" type="button">加入比較</button>
+    </section>
+
+    <div id="pvpHistorySelected" class="pvp-history-selected" aria-live="polite"></div>
+    <p id="pvpHistoryStatus" class="pvp-history-status">正在載入每日歷史資料……</p>
+
+    <section class="pvp-history-chart-panel">
+      <div class="pvp-history-chart-head">
+        <div>
+          <h2>每日使用次數</h2>
+          <p>未出現在當日資料中的角色會以斷線表示，不自動視為 0。</p>
+        </div>
+        <span id="pvpHistoryUpdated">-</span>
+      </div>
+      <div class="pvp-history-canvas-wrap">
+        <canvas id="pvpHistoryChart" role="img" aria-label="PvP 角色每日使用次數折線圖"></canvas>
+        <div id="pvpHistoryTooltip" class="pvp-history-tooltip" hidden></div>
+      </div>
+    </section>
+  </main>
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/pvp-usage-history.js"></script>
+</body>
+</html>
