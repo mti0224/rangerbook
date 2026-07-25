@@ -59,6 +59,55 @@
     </section>
   </main>
   <script src="../../assets/js/site.js"></script>
+  <script>
+    (() => {
+      const nativeFetch = window.fetch.bind(window);
+      window.fetch = async (input, init) => {
+        const url = typeof input === "string" ? input : input?.url || "";
+        if (!url.includes("/res/id_dict.json")) return nativeFetch(input, init);
+
+        try {
+          const response = await nativeFetch("../../res/Rangers_data.json", { cache: "no-store" });
+          if (!response.ok) return nativeFetch(input, init);
+          const rows = await response.json();
+          const dictionary = Object.fromEntries(
+            (Array.isArray(rows) ? rows : [])
+              .map((row) => [
+                String(row?.["Ranger名稱"] || row?.ranger_id || ""),
+                String(row?.ranger_id || ""),
+              ])
+              .filter(([name, id]) => name && id)
+          );
+          return new Response(JSON.stringify(dictionary), {
+            status: 200,
+            headers: { "Content-Type": "application/json; charset=utf-8" },
+          });
+        } catch (error) {
+          console.warn("角色名稱資料載入失敗，改用原始字典。", error);
+          return nativeFetch(input, init);
+        }
+      };
+    })();
+  </script>
   <script src="../../assets/js/pvp-usage-history.js"></script>
+  <script>
+    (() => {
+      const select = document.getElementById("pvpHistoryRanger");
+      if (!select) return;
+
+      const hideIds = () => {
+        for (const option of select.options) {
+          if (!option.value) continue;
+          const suffix = ` (${option.value})`;
+          if (option.textContent.endsWith(suffix)) {
+            option.textContent = option.textContent.slice(0, -suffix.length);
+          }
+        }
+      };
+
+      new MutationObserver(hideIds).observe(select, { childList: true });
+      hideIds();
+    })();
+  </script>
 </body>
 </html>
