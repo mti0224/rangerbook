@@ -58,7 +58,9 @@
       fetchJson(INDEX_URL),
       fetchJson(ID_DICT_URL).catch(() => ({})),
     ]);
-    rangerNames = dict || {};
+    rangerNames = Object.fromEntries(
+      Object.entries(dict || {}).map(([name, id]) => [String(id), String(name)])
+    );
     const files = Array.isArray(index.files) ? index.files : [];
     if (!files.length) {
       snapshots = [];
@@ -87,7 +89,7 @@
     el.updated.textContent = latest ? `最新快照：${latest.date}` : "-";
 
     if (!selectedIds.length) {
-      const scope = latest?.scopes?.all;
+      const scope = latest?.scopes?.["100"] || Object.values(latest?.scopes || {}).at(-1);
       selectedIds = Object.entries(scope?.rangers || {})
         .sort((a, b) => Number(b[1]?.appearanceCount || 0) - Number(a[1]?.appearanceCount || 0))
         .slice(0, 3)
@@ -138,7 +140,13 @@
     ctx.clearRect(0, 0, width, height);
 
     const data = visibleSnapshots();
-    const scopeKey = el.scope.value;
+    const requestedScope = el.scope.value;
+    const availableScopes = Object.keys(data.at(-1)?.scopes || {});
+    const scopeKey = availableScopes.includes(requestedScope)
+      ? requestedScope
+      : availableScopes.includes("100")
+        ? "100"
+        : availableScopes.at(-1);
     const margins = { left: 58, right: 20, top: 24, bottom: 54 };
     const plotWidth = width - margins.left - margins.right;
     const plotHeight = height - margins.top - margins.bottom;
