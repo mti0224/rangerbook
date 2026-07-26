@@ -6,6 +6,7 @@
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_data_DIAMOND.json",
   };
   const EFFECT_DICT_URL = "../../res/effect_dict.json";
+  const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
   const EQUIP_SLOTS = ["WEAPON", "ARMOR", "ACC"];
   const EFFECT_VISIBLE_MS = 5000;
 
@@ -19,29 +20,69 @@
   const effectTimers = new WeakMap();
 
   function loadData() {
+    if (window.__RANGERBOOK_PVP_TEAM_PAYLOAD__) {
+      return Promise.resolve(window.__RANGERBOOK_PVP_TEAM_PAYLOAD__);
+    }
     if (dataPromise) return dataPromise;
     dataPromise = fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error(`player_teams HTTP ${res.status}`);
         return res.json();
+      })
+      .then((data) => {
+        window.__RANGERBOOK_PVP_TEAM_PAYLOAD__ = data && typeof data === "object" ? data : {};
+        return window.__RANGERBOOK_PVP_TEAM_PAYLOAD__;
+      })
+      .catch((error) => {
+        dataPromise = null;
+        throw error;
       });
     return dataPromise;
   }
 
   function loadEffectDict() {
+    if (window.__RANGERBOOK_EFFECT_DICT__) {
+      return Promise.resolve(window.__RANGERBOOK_EFFECT_DICT__);
+    }
     if (effectPromise) return effectPromise;
     effectPromise = fetch(EFFECT_DICT_URL)
       .then((res) => res.ok ? res.json() : [])
       .then((data) => {
-        if (Array.isArray(data)) {
-          return Object.fromEntries(data
+        const dict = Array.isArray(data)
+          ? Object.fromEntries(data
             .filter((row) => row && row.attrNo !== undefined)
-            .map((row) => [String(row.attrNo), String(row["效果名稱"] || row.name || row.label || row.attrNo)]));
-        }
-        return data && typeof data === "object" ? data : {};
+            .map((row) => [String(row.attrNo), String(row["效果名稱"] || row.name || row.label || row.attrNo)]))
+          : (data && typeof data === "object" ? data : {});
+        window.__RANGERBOOK_EFFECT_DICT__ = dict;
+        return dict;
       })
-      .catch(() => ({}));
+      .catch(() => {
+        effectPromise = null;
+        return {};
+      });
     return effectPromise;
+  }
+
+  function preloadTalentIcons() {
+    return Promise.allSettled(Array.from({ length: 5 }, (_, grade) => new Promise((resolve) => {
+      const image = new Image();
+      image.onload = resolve;
+      image.onerror = resolve;
+      image.src = TALENT_ICON(grade);
+    })));
+  }
+
+  function preloadPvpData() {
+    if (!modalContent) return Promise.resolve();
+    if (window.__RANGERBOOK_PVP_PRELOAD_PROMISE__) {
+      return window.__RANGERBOOK_PVP_PRELOAD_PROMISE__;
+    }
+    window.__RANGERBOOK_PVP_PRELOAD_PROMISE__ = Promise.allSettled([
+      loadData(),
+      loadEffectDict(),
+      preloadTalentIcons(),
+    ]);
+    return window.__RANGERBOOK_PVP_PRELOAD_PROMISE__;
   }
 
   function loadGuildData(tier) {
@@ -187,4 +228,6 @@
     handleEquipmentClick(event, guildContent, currentGuildUnit)
       .catch((error) => console.error("Guild War advanced gear effect load failed", error));
   });
+
+  preloadPvpData();
 })();
