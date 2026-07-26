@@ -83,7 +83,7 @@
   }
 
   function advancedEffectCode(unit, slot) {
-    const value = equipmentObject(unit, slot)?.goodGearAttr;
+    const value = equipmentObject(unit, slot)?.attr4No;
     return value === undefined || value === null || value === "" ? "" : String(value);
   }
 
