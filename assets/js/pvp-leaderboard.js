@@ -4,7 +4,9 @@
   const ID_DICT_URL = "../../res/id_dict.json";
   const RANGER_DATA_URL = "../../res/Rangers_data.json";
   const ABILITY_DATA_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
+  const EFFECT_DICT_URL = "../../res/effect_dict.json";
   const REFRESH_MS = 5 * 60 * 1000;
+  const EFFECT_VISIBLE_MS = 5000;
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
@@ -34,11 +36,13 @@
   };
 
   let players = [];
-  let playerTeamPayload = null;
+  let playerTeamPayload = {};
   let supportDataPromise = null;
   let gearNameByCode = {};
   let rangerNameByCode = {};
   let abilityMap = {};
+  let effectMap = {};
+  const effectTimers = new WeakMap();
 
   const modalState = {
     player: null,
@@ -47,42 +51,44 @@
     selectedUnitIndex: -1,
   };
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
+  const escapeHtml = (value) => String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
   function formatNumber(value) {
     const number = Number(value);
-    if (!Number.isFinite(number)) return "-";
-    return number.toLocaleString("zh-Hant", { maximumFractionDigits: 2 });
+    return Number.isFinite(number)
+      ? number.toLocaleString("zh-Hant", { maximumFractionDigits: 2 })
+      : "-";
   }
 
   function formatDate(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "-";
     return new Intl.DateTimeFormat("zh-Hant", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
     }).format(date);
+  }
+
+  function setStatus(message = "", error = false) {
+    if (!elements.status) return;
+    elements.status.hidden = !message;
+    elements.status.classList.toggle("error", error);
+    elements.status.textContent = message;
   }
 
   function rankDelta(player) {
     const rank = Number(player.rank) || 0;
     const lastRank = Number(player.lastRank) || 0;
-    if (!lastRank || !rank || lastRank === rank) return "";
+    if (!rank || !lastRank || rank === lastRank) return "";
     const delta = lastRank - rank;
-    if (delta > 0) return `<span class="pvp-rank-delta up">▲ ${delta}</span>`;
-    return `<span class="pvp-rank-delta down">▼ ${Math.abs(delta)}</span>`;
+    return delta > 0
+      ? `<span class="pvp-rank-delta up">▲ ${delta}</span>`
+      : `<span class="pvp-rank-delta down">▼ ${Math.abs(delta)}</span>`;
   }
 
   function levelBadgeFile(rawLevel) {
@@ -97,27 +103,31 @@
   }
 
   function levelHtml(rawLevel, displayLevel, nationalFlag) {
-    const levelText = displayLevel ? `Lv. ${displayLevel}` : "Lv. -";
-    const flagText = nationalFlag ? ` · ${nationalFlag}` : "";
     const badgeFile = levelBadgeFile(rawLevel);
     const badge = badgeFile
       ? `<img class="pvp-level-badge" src="../../assets/level_icon/${badgeFile}" alt="" aria-hidden="true">`
       : "";
-    return `<span class="pvp-player-level-line">${badge}<span>${escapeHtml(levelText + flagText)}</span></span>`;
+    const text = `${displayLevel ? `Lv. ${displayLevel}` : "Lv. -"}${nationalFlag ? ` · ${nationalFlag}` : ""}`;
+    return `<span class="pvp-player-level-line">${badge}<span>${escapeHtml(text)}</span></span>`;
   }
 
   function playerName(player) {
     return player?.availableName && player?.displayName ? player.displayName : "未公開名稱";
   }
 
+  function renderMetadata(metadata) {
+    if (elements.updated) elements.updated.textContent = formatDate(metadata.generatedAtUtc);
+    if (elements.league) elements.league.textContent = metadata.league || "LEGEND";
+    if (elements.rankingCount) elements.rankingCount.textContent = formatNumber(metadata.rankingCount);
+    if (elements.totalCount) elements.totalCount.textContent = metadata.totalCount ? formatNumber(metadata.totalCount) : "-";
+  }
+
   function renderRows() {
     if (!elements.body) return;
     const query = elements.search?.value.trim().toLowerCase() || "";
-    const filtered = players.filter((player) => {
-      if (!query) return true;
-      return [player.displayName, player.nationalFlag, player.rank, player.score]
-        .some((value) => String(value ?? "").toLowerCase().includes(query));
-    });
+    const filtered = players.filter((player) => !query || [
+      player.displayName, player.nationalFlag, player.rank, player.score,
+    ].some((value) => String(value ?? "").toLowerCase().includes(query)));
 
     if (!filtered.length) {
       elements.body.innerHTML = `<tr class="pvp-empty-row"><td colspan="4">找不到符合條件的玩家。</td></tr>`;
@@ -129,32 +139,11 @@
       return `
         <tr class="pvp-player-row" data-player-rank="${escapeHtml(player.rank)}" data-player-key="${escapeHtml(player.detailKey || "")}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(name)} 的隊伍">
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${escapeHtml(player.rank)}</span>${rankDelta(player)}</td>
-          <td>
-            <div class="pvp-player-main">
-              <div>
-                <div class="pvp-player-name">${escapeHtml(name)}</div>
-                <div class="pvp-player-sub">${levelHtml(player.level, player.displayLevel, player.nationalFlag)}</div>
-              </div>
-            </div>
-          </td>
+          <td><div class="pvp-player-main"><div><div class="pvp-player-name">${escapeHtml(name)}</div><div class="pvp-player-sub">${levelHtml(player.level, player.displayLevel, player.nationalFlag)}</div></div></div></td>
           <td class="pvp-score">${escapeHtml(formatNumber(player.score))}</td>
           <td>${escapeHtml(player.nationalFlag || "-")}</td>
         </tr>`;
     }).join("");
-  }
-
-  function renderMetadata(metadata) {
-    if (elements.updated) elements.updated.textContent = formatDate(metadata.generatedAtUtc);
-    if (elements.league) elements.league.textContent = metadata.league || "LEGEND";
-    if (elements.rankingCount) elements.rankingCount.textContent = formatNumber(metadata.rankingCount);
-    if (elements.totalCount) elements.totalCount.textContent = metadata.totalCount ? formatNumber(metadata.totalCount) : "-";
-  }
-
-  function setStatus(message = "", error = false) {
-    if (!elements.status) return;
-    elements.status.hidden = !message;
-    elements.status.classList.toggle("error", error);
-    elements.status.textContent = message;
   }
 
   function normalizeUnits(value) {
@@ -170,68 +159,99 @@
     return normalizeUnits(detail?.teams?.[teamKey] ?? detail?.[teamKey]);
   }
 
-  function rangerName(unitCode) {
-    return rangerNameByCode[unitCode] || unitCode || "未知角色";
+  function rangerName(code) {
+    return rangerNameByCode[code] || code || "未知角色";
   }
 
   function unitLevel(unit) {
-    const candidates = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel];
-    const value = candidates.find((item) => item !== undefined && item !== null && item !== "");
+    const value = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel]
+      .find((item) => item !== undefined && item !== null && item !== "");
     return value === undefined ? "-" : formatNumber(value);
   }
 
+  function equipmentObject(unit, slot) {
+    const map = unit?.equipMap && typeof unit.equipMap === "object"
+      ? unit.equipMap
+      : (unit?.equipment && typeof unit.equipment === "object" ? unit.equipment : {});
+    const value = map?.[slot];
+    return value && typeof value === "object" ? value : null;
+  }
+
   function equipmentCode(unit, slot) {
-    const equipMap = unit?.equipMap && typeof unit.equipMap === "object" ? unit.equipMap : (unit?.equipment || {});
-    const value = equipMap?.[slot];
+    const value = equipmentObject(unit, slot) ?? unit?.equipMap?.[slot] ?? unit?.equipment?.[slot];
     if (!value) return NONE_CODE;
     if (typeof value === "string") return value || NONE_CODE;
-    if (typeof value === "object") {
-      return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
+    return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
+  }
+
+  function advancedEffectName(unit, slot) {
+    const attr4No = equipmentObject(unit, slot)?.attr4No;
+    if (attr4No === undefined || attr4No === null || attr4No === "") return "";
+    const value = effectMap[String(attr4No)];
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object") {
+      return String(value["效果名稱"] || value["名稱"] || value.name || value.label || "");
     }
-    return NONE_CODE;
+    return "";
   }
 
   function equipmentItem(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
     const name = isNone ? "未裝備" : (gearNameByCode[code] || code);
+    const effect = isNone ? "" : advancedEffectName(unit, slot);
     const icon = isNone
       ? `<span class="pvp-player-equipment-empty-icon" aria-hidden="true">—</span>`
-      : `<img src="${GEAR_ICON(code)}" alt="" loading="lazy" onerror="this.remove();">`;
-    return `<div class="pvp-player-equipment-item">${icon}<div><span>${escapeHtml(SLOT_LABELS[slot])}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
+      : `<img src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
+    return `<div class="pvp-player-equipment-item" data-slot="${slot}" data-effect="${escapeHtml(effect)}">${icon}<div><span>${escapeHtml(SLOT_LABELS[slot])}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
   }
 
   function abilityInfo(unit) {
     const code = String(unit?.awakeAbilityCode || "").trim();
     if (!code) return { name: "未設定覺醒能力", icon: "" };
     const info = abilityMap[code] || {};
-    return {
-      name: info["名稱"] || code,
-      icon: info.icon || String(unit?.awakeAbilityIcon || "").trim(),
-    };
+    return { name: info["名稱"] || code, icon: info.icon || String(unit?.awakeAbilityIcon || "").trim() };
   }
 
   function talentInfo(unit) {
     const raw = unit?.talentGrade;
-    if (raw === undefined || raw === null || raw === "") {
-      return { name: "才能解放狀態無資料", icon: "", badge: "?" };
-    }
+    if (raw === undefined || raw === null || raw === "") return { name: "才能解放狀態無資料", icon: "", badge: "?" };
     const grade = Number(raw);
-    if (!Number.isInteger(grade) || grade < 0 || grade > 4) {
-      return { name: `才能解放階段 ${raw}`, icon: "", badge: String(raw) };
-    }
-    return {
-      name: grade === 0 ? "未解放才能" : `才能解放階段 ${grade}`,
-      icon: TALENT_ICON(grade),
-      badge: String(grade),
-    };
+    if (!Number.isInteger(grade) || grade < 0 || grade > 4) return { name: `才能解放階段 ${raw}`, icon: "", badge: String(raw) };
+    return { name: grade === 0 ? "未解放才能" : `才能解放階段 ${grade}`, icon: TALENT_ICON(grade), badge: String(grade) };
   }
 
   function extraDetailItem(label, value, icon = "", badge = "") {
     const iconHtml = icon
-      ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">`
+      ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" decoding="async" onerror="this.remove();">`
       : `<span class="pvp-player-extra-icon pvp-player-extra-icon-empty" aria-hidden="true">${escapeHtml(badge || "—")}</span>`;
     return `<div class="pvp-player-extra-item">${iconHtml}<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div></div>`;
+  }
+
+  function hideEffect(item) {
+    const timer = effectTimers.get(item);
+    if (timer) window.clearTimeout(timer);
+    effectTimers.delete(item);
+    item.querySelector(".pvp-player-equipment-effect")?.remove();
+  }
+
+  function showEffect(item) {
+    const text = item.dataset.effect || "";
+    hideEffect(item);
+    if (!text) return;
+    const body = item.querySelector(":scope > div");
+    if (!body) return;
+    const effect = document.createElement("span");
+    effect.className = "pvp-player-equipment-effect";
+    effect.textContent = `高級效果：${text}`;
+    effect.style.display = "block";
+    effect.style.marginTop = "0.2rem";
+    effect.style.fontSize = "0.78rem";
+    effect.style.fontWeight = "700";
+    effect.style.lineHeight = "1.35";
+    effect.style.whiteSpace = "normal";
+    body.appendChild(effect);
+    effectTimers.set(item, window.setTimeout(() => hideEffect(item), EFFECT_VISIBLE_MS));
   }
 
   function renderUnitDetail(unit) {
@@ -241,23 +261,17 @@
       target.innerHTML = `<div class="pvp-player-unit-detail-empty">點擊左側角色查看等級、Leonard 點數、覺醒能力、解放才能與裝備。</div>`;
       return;
     }
-
-    const unitCode = String(unit.unitCode || "");
+    const code = String(unit.unitCode || "");
     const leonardPoint = unit.leonardPoint === undefined || unit.leonardPoint === null || unit.leonardPoint === ""
-      ? "-"
-      : formatNumber(unit.leonardPoint);
+      ? "-" : formatNumber(unit.leonardPoint);
     const ability = abilityInfo(unit);
     const talent = talentInfo(unit);
     const abilityIcon = ability.icon ? ABILITY_ICON(ability.icon) : "";
-
     target.innerHTML = `
       <div class="pvp-player-unit-detail-card">
         <div class="pvp-player-unit-detail-head">
-          <img src="${RANGER_IMAGE(unitCode)}" alt="" loading="lazy" onerror="this.remove();">
-          <div>
-            <strong>${escapeHtml(rangerName(unitCode))}</strong>
-            <span>等級：Lv. ${escapeHtml(unitLevel(unit))}</span>
-          </div>
+          <img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
+          <div><strong>${escapeHtml(rangerName(code))}</strong><span>等級：Lv. ${escapeHtml(unitLevel(unit))}</span></div>
         </div>
         <div class="pvp-player-extra-list">
           ${extraDetailItem("Leonard 點數", leonardPoint, "", "L")}
@@ -265,9 +279,7 @@
           ${extraDetailItem("解放才能", talent.name, talent.icon, talent.badge)}
         </div>
         <div class="pvp-player-equipment-list">
-          ${equipmentItem(unit, "WEAPON")}
-          ${equipmentItem(unit, "ARMOR")}
-          ${equipmentItem(unit, "ACC")}
+          ${equipmentItem(unit, "WEAPON")}${equipmentItem(unit, "ARMOR")}${equipmentItem(unit, "ACC")}
         </div>
       </div>`;
   }
@@ -277,20 +289,14 @@
     if (!target) return;
     const units = teamUnits(modalState.detail, modalState.teamKey);
     modalState.selectedUnitIndex = -1;
-
     if (!units.length) {
       target.innerHTML = `<div class="pvp-player-team-empty">這個隊伍目前沒有可顯示的角色資料。</div>`;
       renderUnitDetail(null);
       return;
     }
-
     target.innerHTML = units.map((unit, index) => {
-      const unitCode = String(unit.unitCode || "");
-      return `
-        <button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(unitCode))}">
-          <img class="pvp-player-unit-image" src="${RANGER_IMAGE(unitCode)}" alt="" loading="lazy" onerror="this.remove();">
-          <span class="pvp-player-unit-name">${escapeHtml(rangerName(unitCode))}</span>
-        </button>`;
+      const code = String(unit.unitCode || "");
+      return `<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();"><span class="pvp-player-unit-name">${escapeHtml(rangerName(code))}</span></button>`;
     }).join("");
     renderUnitDetail(null);
   }
@@ -298,27 +304,16 @@
   function renderModal() {
     if (!elements.modalContent || !modalState.player || !modalState.detail) return;
     const player = modalState.player;
-    const optionHtml = TEAM_OPTIONS.map(([value, label]) =>
-      `<option value="${value}" ${value === modalState.teamKey ? "selected" : ""}>${escapeHtml(label)}</option>`
-    ).join("");
-
+    const options = TEAM_OPTIONS.map(([value, label]) => `<option value="${value}" ${value === modalState.teamKey ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
     elements.modalContent.innerHTML = `
       <header class="pvp-player-team-header">
         <h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2>
         <p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p>
-        <div class="pvp-player-team-toolbar">
-          <label><span>顯示隊伍</span><select id="pvpPlayerTeamSelect">${optionHtml}</select></label>
-        </div>
+        <div class="pvp-player-team-toolbar"><label><span>顯示隊伍</span><select id="pvpPlayerTeamSelect">${options}</select></label></div>
       </header>
       <div class="pvp-player-team-layout">
-        <section class="pvp-player-team-pane">
-          <h3>隊伍角色</h3>
-          <div id="pvpPlayerTeamGrid" class="pvp-player-team-grid"></div>
-        </section>
-        <aside class="pvp-player-unit-detail">
-          <h3>角色詳細資料</h3>
-          <div id="pvpPlayerUnitDetail"></div>
-        </aside>
+        <section class="pvp-player-team-pane"><h3>隊伍角色</h3><div id="pvpPlayerTeamGrid" class="pvp-player-team-grid"></div></section>
+        <aside class="pvp-player-unit-detail"><h3>角色詳細資料</h3><div id="pvpPlayerUnitDetail"></div></aside>
       </div>`;
     renderTeamGrid();
   }
@@ -326,13 +321,6 @@
   function findPlayerDetail(player) {
     const source = playerTeamPayload?.players;
     if (!source) return null;
-
-    if (!Array.isArray(source) && typeof source === "object") {
-      if (player.detailKey && source[player.detailKey]) return source[player.detailKey];
-      const values = Object.values(source).filter((item) => item && typeof item === "object");
-      return values.find((item) => Number(item.rank) === Number(player.rank)) || null;
-    }
-
     if (Array.isArray(source)) {
       if (player.detailKey) {
         const byKey = source.find((item) => String(item?.detailKey || "") === String(player.detailKey));
@@ -340,8 +328,27 @@
       }
       return source.find((item) => Number(item?.rank) === Number(player.rank)) || null;
     }
-
+    if (typeof source === "object") {
+      if (player.detailKey && source[player.detailKey]) return source[player.detailKey];
+      return Object.values(source).find((item) => Number(item?.rank) === Number(player.rank)) || null;
+    }
     return null;
+  }
+
+  function parseEffectMap(data) {
+    if (Array.isArray(data)) {
+      return Object.fromEntries(data
+        .filter((row) => row && row.attrNo !== undefined)
+        .map((row) => [String(row.attrNo), String(row["效果名稱"] || row.name || row.label || row.attrNo)]));
+    }
+    return data && typeof data === "object" ? data : {};
+  }
+
+  function preloadTalentIcons() {
+    for (let grade = 0; grade <= 4; grade += 1) {
+      const image = new Image();
+      image.src = TALENT_ICON(grade);
+    }
   }
 
   function loadSupportData() {
@@ -354,17 +361,15 @@
       fetch(ID_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
       fetch(RANGER_DATA_URL).then((res) => res.ok ? res.json() : []).catch(() => ([])),
       fetch(ABILITY_DATA_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
-    ]).then(([teamPayload, idDict, rangerRows, abilityRows]) => {
+      fetch(EFFECT_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
+    ]).then(([teamPayload, idDict, rangerRows, abilityRows, effectRows]) => {
       playerTeamPayload = teamPayload && typeof teamPayload === "object" ? teamPayload : {};
-      gearNameByCode = Object.fromEntries(
-        Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)])
-      );
-      rangerNameByCode = Object.fromEntries(
-        (Array.isArray(rangerRows) ? rangerRows : [])
-          .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
-          .filter(([code]) => code)
-      );
+      gearNameByCode = Object.fromEntries(Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)]));
+      rangerNameByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
+        .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
+        .filter(([code]) => code));
       abilityMap = abilityRows && typeof abilityRows === "object" ? abilityRows : {};
+      effectMap = parseEffectMap(effectRows);
       return playerTeamPayload;
     }).catch((error) => {
       supportDataPromise = null;
@@ -382,17 +387,11 @@
     elements.modal.hidden = false;
     document.body.classList.add("modal-open");
     elements.modalContent.innerHTML = `<div class="pvp-status">玩家隊伍資料載入中…</div>`;
-
     try {
       await loadSupportData();
       const detail = findPlayerDetail(player);
       if (!detail) {
-        elements.modalContent.innerHTML = `
-          <header class="pvp-player-team-header">
-            <h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2>
-            <p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p>
-          </header>
-          <div class="pvp-player-unit-detail-empty">這名玩家的隊伍詳細資料尚未產生，請等待下一次完整 PvP 資料更新。</div>`;
+        elements.modalContent.innerHTML = `<header class="pvp-player-team-header"><h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2><p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p></header><div class="pvp-player-unit-detail-empty">這名玩家的隊伍詳細資料尚未產生，請等待下一次完整 PvP 資料更新。</div>`;
         return;
       }
       modalState.detail = detail;
@@ -413,9 +412,12 @@
   }
 
   async function load() {
-    setStatus("排行榜資料載入中…");
+    setStatus("排行榜與隊伍資料載入中…");
     try {
-      const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
+      const [response] = await Promise.all([
+        fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" }),
+        loadSupportData(),
+      ]);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       players = Array.isArray(data.players) ? data.players : [];
@@ -424,20 +426,18 @@
       setStatus();
     } catch (error) {
       console.error("PvP leaderboard load failed", error);
-      setStatus("排行榜資料尚未產生或目前無法載入。", true);
+      setStatus("排行榜或隊伍資料尚未產生，或目前無法載入。", true);
       if (elements.body) elements.body.innerHTML = "";
     }
   }
 
   elements.search?.addEventListener("input", renderRows);
-
   elements.body?.addEventListener("click", (event) => {
     const row = event.target.closest(".pvp-player-row[data-player-rank]");
     if (!row) return;
     const player = players.find((item) => Number(item.rank) === Number(row.dataset.playerRank));
     if (player) openPlayerModal(player);
   });
-
   elements.body?.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
     const row = event.target.closest(".pvp-player-row[data-player-rank]");
@@ -446,19 +446,21 @@
     const player = players.find((item) => Number(item.rank) === Number(row.dataset.playerRank));
     if (player) openPlayerModal(player);
   });
-
   elements.modalContent?.addEventListener("change", (event) => {
     if (event.target.id !== "pvpPlayerTeamSelect") return;
     modalState.teamKey = event.target.value || "pvpteam";
     renderTeamGrid();
   });
-
   elements.modalContent?.addEventListener("click", (event) => {
+    const equipment = event.target.closest(".pvp-player-equipment-item");
+    if (equipment) {
+      showEffect(equipment);
+      return;
+    }
     const button = event.target.closest("[data-unit-index]");
     if (!button || !modalState.detail) return;
     const index = Number(button.dataset.unitIndex);
-    const units = teamUnits(modalState.detail, modalState.teamKey);
-    const unit = units[index];
+    const unit = teamUnits(modalState.detail, modalState.teamKey)[index];
     if (!unit) return;
     modalState.selectedUnitIndex = index;
     elements.modalContent.querySelectorAll(".pvp-player-unit-button").forEach((item) => {
@@ -466,13 +468,13 @@
     });
     renderUnitDetail(unit);
   });
-
   elements.modalClose?.addEventListener("click", closePlayerModal);
   elements.modal?.querySelector("[data-pvp-player-modal-close]")?.addEventListener("click", closePlayerModal);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && elements.modal && !elements.modal.hidden) closePlayerModal();
   });
 
+  preloadTalentIcons();
   load();
   window.setInterval(load, REFRESH_MS);
 })();
