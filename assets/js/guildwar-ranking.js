@@ -8,17 +8,19 @@
   const RANGERS_URL = "../../res/Rangers_data.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const ABILITY_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
+  const EFFECT_DICT_URL = "../../res/effect_dict.json";
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
   const NONE_CODE = "__NONE__";
+  const EFFECT_VISIBLE_MS = 5000;
   const SLOT_LABELS = { WEAPON: "武器", ARMOR: "防具", ACC: "飾品" };
   const ADMIN_MODE = localStorage.getItem("rangerbook-admin-mode") === "true";
   const TIERS = {
-    LEGEND: { label: "傳奇", min: 1, max: 50 },
-    MASTER: { label: "大師", min: 51, max: 200 },
-    DIAMOND: { label: "鑽石", min: 201, max: 400 },
+    LEGEND: { label: "傳奇", min: 1, max: 50, teamData: true },
+    MASTER: { label: "大師", min: 51, max: 200, teamData: true },
+    DIAMOND: { label: "鑽石", min: 201, max: 400, teamData: false },
   };
 
   const els = {
@@ -38,9 +40,11 @@
   let rangerNames = {};
   let gearNames = {};
   let abilityMap = {};
+  let effectMap = {};
   let openGuildRank = 0;
   let currentUnits = [];
   const tierDataCache = new Map();
+  const effectTimers = new WeakMap();
 
   const esc = (value) => String(value ?? "")
     .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
@@ -65,10 +69,10 @@
   const currentTier = () => TIERS[currentTierCode()] || TIERS.LEGEND;
   const tierGuilds = () => {
     const tier = currentTier();
-    return guilds.filter((g) => Number(g.rank) >= tier.min && Number(g.rank) <= tier.max);
+    return guilds.filter((guild) => Number(guild.rank) >= tier.min && Number(guild.rank) <= tier.max);
   };
-  const memberName = (m) => m?.displayName || m?.name || m?.playerName || "未公開名稱";
-  const memberRawLevel = (m) => Number(m?.level ?? m?.playerLevel ?? 0) || 0;
+  const memberName = (member) => member?.displayName || member?.name || member?.playerName || "未公開名稱";
+  const memberRawLevel = (member) => Number(member?.level ?? member?.playerLevel ?? 0) || 0;
 
   function displayLevel(rawLevel) {
     const value = Number(rawLevel);
@@ -100,17 +104,17 @@
     const query = (els.search?.value || "").trim().toLowerCase();
     const tier = currentTier();
     const scoped = tierGuilds();
-    const rows = scoped.filter((g) => !query || String(g.guildName || "").toLowerCase().includes(query));
+    const rows = scoped.filter((guild) => !query || String(guild.guildName || "").toLowerCase().includes(query));
     if (els.tierLabel) els.tierLabel.textContent = tier.label;
     if (els.count) els.count.textContent = num(scoped.length);
     if (!els.body) return;
-    els.body.innerHTML = rows.length ? rows.map((g) => `
-      <tr class="guildwar-rank-row" data-guild-rank="${esc(g.rank)}" tabindex="0" role="button">
-        <td class="pvp-rank-cell"><span class="pvp-rank-medal">${esc(g.rank)}</span></td>
-        <td><strong title="${esc(g.guildName || "-")}">${esc(g.guildName || "-")}</strong></td>
-        <td>${num(g.score)}</td>
-        <td>${num(g.curMemberCount)} / ${num(g.maxMemberCount)}</td>
-        <td>${esc(g.nationalFlag || "-")}</td>
+    els.body.innerHTML = rows.length ? rows.map((guild) => `
+      <tr class="guildwar-rank-row" data-guild-rank="${esc(guild.rank)}" tabindex="0" role="button">
+        <td class="pvp-rank-cell"><span class="pvp-rank-medal">${esc(guild.rank)}</span></td>
+        <td><strong title="${esc(guild.guildName || "-")}">${esc(guild.guildName || "-")}</strong></td>
+        <td>${num(guild.score)}</td>
+        <td>${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)}</td>
+        <td>${esc(guild.nationalFlag || "-")}</td>
       </tr>`).join("") : `<tr class="pvp-empty-row"><td colspan="5">目前沒有${esc(tier.label)}段位的公會資料。</td></tr>`;
   }
 
@@ -119,7 +123,7 @@
     const url = COMPACT_URLS[code];
     if (!url) return {};
     const promise = fetch(`${url}?t=${Date.now()}`, { cache: "no-store" })
-      .then((r) => r.ok ? r.json() : {})
+      .then((response) => response.ok ? response.json() : {})
       .catch(() => ({}));
     tierDataCache.set(code, promise);
     return promise;
@@ -127,11 +131,11 @@
 
   function compactGuild(data, rank) {
     return (Array.isArray(data?.guilds) ? data.guilds : [])
-      .find((g) => Number(g.rank) === Number(rank)) || null;
+      .find((guild) => Number(guild.rank) === Number(rank)) || null;
   }
 
   function normalizeUnits(value) {
-    if (Array.isArray(value)) return value.filter((x) => x && typeof x === "object" && x.unitCode);
+    if (Array.isArray(value)) return value.filter((item) => item && typeof item === "object" && item.unitCode);
     if (!value || typeof value !== "object") return [];
     if (value.unitCode) return [value];
     return Object.keys(value)
@@ -139,36 +143,84 @@
       .flatMap((key) => normalizeUnits(value[key]));
   }
 
-  function rangerName(code) { return rangerNames[code] || code || "未知角色"; }
+  function rangerName(code) {
+    return rangerNames[code] || code || "未知角色";
+  }
+
   function unitLevel(unit) {
     const value = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel]
-      .find((v) => v !== undefined && v !== null && v !== "");
+      .find((item) => item !== undefined && item !== null && item !== "");
     return value === undefined ? "-" : num(value);
   }
 
   function unitTalentIcon(unit) {
     const grade = Number(unit?.talentGrade);
     if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return "";
-    return `<img class="guildwar-unit-talent-icon" src="${TALENT_ICON(grade)}" alt="" aria-hidden="true" loading="lazy" onerror="this.remove();">`;
+    return `<img class="guildwar-unit-talent-icon" src="${TALENT_ICON(grade)}" alt="" aria-hidden="true" decoding="async" onerror="this.remove();">`;
+  }
+
+  function equipmentObject(unit, slot) {
+    const map = unit?.equipMap && typeof unit.equipMap === "object"
+      ? unit.equipMap
+      : (unit?.equipment && typeof unit.equipment === "object" ? unit.equipment : {});
+    const value = map?.[slot];
+    return value && typeof value === "object" ? value : null;
   }
 
   function equipmentCode(unit, slot) {
-    const map = unit?.equipMap && typeof unit.equipMap === "object" ? unit.equipMap : (unit?.equipment || {});
-    const value = map?.[slot];
+    const value = equipmentObject(unit, slot) ?? unit?.equipMap?.[slot] ?? unit?.equipment?.[slot];
     if (!value) return NONE_CODE;
     if (typeof value === "string") return value || NONE_CODE;
-    if (typeof value === "object") return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
-    return NONE_CODE;
+    return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
+  }
+
+  function effectName(code) {
+    if (code === undefined || code === null || code === "") return "";
+    const value = effectMap[String(code)];
+    if (typeof value === "string") return value;
+    if (value && typeof value === "object") {
+      return String(value["效果名稱"] || value["名稱"] || value.name || value.label || "");
+    }
+    return "";
   }
 
   function equipmentItem(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
     const name = isNone ? "未裝備" : (gearNames[code] || code);
+    const effect = isNone ? "" : effectName(equipmentObject(unit, slot)?.attr4No);
     const icon = isNone
       ? `<span class="pvp-player-equipment-empty-icon" aria-hidden="true">—</span>`
-      : `<img src="${GEAR_ICON(code)}" alt="" loading="lazy" onerror="this.remove();">`;
-    return `<div class="pvp-player-equipment-item">${icon}<div><span>${SLOT_LABELS[slot]}</span><strong title="${esc(name)}">${esc(name)}</strong></div></div>`;
+      : `<img src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
+    return `<div class="pvp-player-equipment-item" data-slot="${slot}" data-effect="${esc(effect)}">${icon}<div><span>${SLOT_LABELS[slot]}</span><strong title="${esc(name)}">${esc(name)}</strong></div></div>`;
+  }
+
+  function hideEffect(item) {
+    const timer = effectTimers.get(item);
+    if (timer) window.clearTimeout(timer);
+    effectTimers.delete(item);
+    item.querySelector(".pvp-player-equipment-effect")?.remove();
+  }
+
+  function showEffect(item) {
+    const text = item?.dataset?.effect || "";
+    hideEffect(item);
+    if (!text) return;
+    const body = item.querySelector(":scope > div");
+    if (!body) return;
+    const effect = document.createElement("span");
+    effect.className = "pvp-player-equipment-effect";
+    effect.textContent = `高級效果：${text}`;
+    effect.style.display = "block";
+    effect.style.marginTop = "0.2rem";
+    effect.style.fontSize = "0.78rem";
+    effect.style.fontWeight = "700";
+    effect.style.lineHeight = "1.35";
+    effect.style.whiteSpace = "normal";
+    effect.style.overflow = "visible";
+    effect.style.textOverflow = "clip";
+    body.appendChild(effect);
+    effectTimers.set(item, window.setTimeout(() => hideEffect(item), EFFECT_VISIBLE_MS));
   }
 
   function abilityInfo(unit) {
@@ -188,7 +240,7 @@
 
   function extraDetailItem(label, value, icon = "", badge = "") {
     const iconHtml = icon
-      ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">`
+      ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" decoding="async" onerror="this.remove();">`
       : `<span class="pvp-player-extra-icon pvp-player-extra-icon-empty" aria-hidden="true">${esc(badge || "—")}</span>`;
     return `<div class="pvp-player-extra-item">${iconHtml}<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div></div>`;
   }
@@ -207,7 +259,7 @@
     target.innerHTML = `
       <div class="pvp-player-unit-detail-card">
         <div class="pvp-player-unit-detail-head">
-          <img src="${RANGER_IMAGE(code)}" alt="" loading="lazy" onerror="this.remove();">
+          <img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
           <div><strong>${esc(rangerName(code))}</strong><span>等級：Lv. ${esc(unitLevel(unit))}</span></div>
         </div>
         <div class="pvp-player-extra-list">
@@ -228,19 +280,21 @@
     const members = source.map((member, index) => ({ member, index }))
       .sort((a, b) => memberRawLevel(b.member) - memberRawLevel(a.member)
         || memberName(a.member).localeCompare(memberName(b.member), "zh-Hant"));
+    const canViewTeams = ADMIN_MODE && currentTier().teamData;
     const list = members.length ? `<div class="guildwar-member-list">${members.map(({ member, index }) => `
       <div class="guildwar-member-row">
         <div>
           <div class="guildwar-member-name">${esc(memberName(member))}</div>
           <div class="guildwar-member-level">${memberLevelHtml(member)}</div>
         </div>
-        ${ADMIN_MODE ? `<button class="guildwar-member-team-button" type="button" data-member-team-index="${index}">查看進攻隊伍</button>` : ""}
+        ${canViewTeams ? `<button class="guildwar-member-team-button" type="button" data-member-team-index="${index}">查看進攻隊伍</button>` : ""}
       </div>`).join("")}</div>` : `<div class="guildwar-member-empty">此公會的成員資料尚未產生。</div>`;
     els.modalContent.innerHTML = `<header class="guildwar-member-header"><h2 id="guildMemberModalTitle">${esc(guild.guildName || "-")}</h2><p>排名第 ${num(guild.rank)} 名 · ${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)} 名成員</p></header>${list}`;
   }
 
   async function renderMemberTeam(index) {
-    const guild = guilds.find((g) => Number(g.rank) === openGuildRank);
+    if (!currentTier().teamData) return;
+    const guild = guilds.find((item) => Number(item.rank) === openGuildRank);
     if (!guild) return;
     const data = await loadTierData(currentTierCode());
     const detail = compactGuild(data, openGuildRank);
@@ -253,7 +307,7 @@
           <h3>隊伍角色</h3>
           <div id="guildwarPlayerTeamGrid" class="pvp-player-team-grid">${currentUnits.map((unit, unitIndex) => {
             const code = String(unit.unitCode || "");
-            return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" loading="lazy" onerror="this.remove();"><span class="guildwar-unit-name-line">${unitTalentIcon(unit)}<span class="pvp-player-unit-name">${esc(rangerName(code))}</span></span></button>`;
+            return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();"><span class="guildwar-unit-name-line">${unitTalentIcon(unit)}<span class="pvp-player-unit-name">${esc(rangerName(code))}</span></span></button>`;
           }).join("")}</div>
         </section>
         <aside class="pvp-player-unit-detail"><h3>角色詳細資料</h3><div id="guildwarPlayerUnitDetail"></div></aside>
@@ -272,25 +326,56 @@
     document.body.classList.add("modal-open");
     renderGuildMembers(guild);
   }
+
   function closeModal() {
     if (!els.modal || els.modal.hidden) return;
     els.modal.hidden = true;
     document.body.classList.remove("modal-open");
     currentUnits = [];
   }
+
   function guildFromRow(row) {
     const rank = Number(row?.dataset?.guildRank);
-    return guilds.find((g) => Number(g.rank) === rank);
+    return guilds.find((guild) => Number(guild.rank) === rank);
   }
+
   async function optional(url, fallback) {
-    try { const r = await fetch(url); return r.ok ? r.json() : fallback; } catch { return fallback; }
+    try {
+      const response = await fetch(url);
+      return response.ok ? response.json() : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function parseEffectMap(data) {
+    if (Array.isArray(data)) {
+      return Object.fromEntries(data
+        .filter((row) => row && row.attrNo !== undefined)
+        .map((row) => [String(row.attrNo), String(row["效果名稱"] || row.name || row.label || row.attrNo)]));
+    }
+    return data && typeof data === "object" ? data : {};
+  }
+
+  function preloadTalentIcons() {
+    for (let grade = 0; grade <= 4; grade += 1) {
+      const image = new Image();
+      image.src = TALENT_ICON(grade);
+    }
   }
 
   async function load() {
     status("公會排名資料載入中…");
     try {
       const requests = [fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" })];
-      if (ADMIN_MODE) requests.push(optional(RANGERS_URL, []), optional(ID_DICT_URL, {}), optional(ABILITY_URL, {}));
+      if (ADMIN_MODE) {
+        requests.push(
+          optional(RANGERS_URL, []),
+          optional(ID_DICT_URL, {}),
+          optional(ABILITY_URL, {}),
+          optional(EFFECT_DICT_URL, {}),
+        );
+      }
       const results = await Promise.all(requests);
       const rankingRes = results[0];
       if (!rankingRes.ok) throw new Error(`HTTP ${rankingRes.status}`);
@@ -304,6 +389,7 @@
         });
         gearNames = Object.fromEntries(Object.entries(results[2] || {}).map(([name, code]) => [String(code), String(name)]));
         abilityMap = results[3] && typeof results[3] === "object" ? results[3] : {};
+        effectMap = parseEffectMap(results[4]);
       }
       if (els.updated) els.updated.textContent = date(data.metadata?.generatedAtUtc);
       status();
@@ -316,7 +402,10 @@
   }
 
   els.search?.addEventListener("input", render);
-  els.tier?.addEventListener("change", render);
+  els.tier?.addEventListener("change", () => {
+    closeModal();
+    render();
+  });
   els.body?.addEventListener("click", (event) => {
     const row = event.target.closest("[data-guild-rank]");
     if (row) openGuild(guildFromRow(row));
@@ -324,11 +413,19 @@
   els.body?.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
     const row = event.target.closest("[data-guild-rank]");
-    if (row) { event.preventDefault(); openGuild(guildFromRow(row)); }
+    if (row) {
+      event.preventDefault();
+      openGuild(guildFromRow(row));
+    }
   });
   els.modalContent?.addEventListener("click", (event) => {
+    const equipment = event.target.closest(".pvp-player-equipment-item");
+    if (equipment) {
+      showEffect(equipment);
+      return;
+    }
     const memberButton = event.target.closest("[data-member-team-index]");
-    if (memberButton && ADMIN_MODE) {
+    if (memberButton && ADMIN_MODE && currentTier().teamData) {
       renderMemberTeam(Number(memberButton.dataset.memberTeamIndex));
       return;
     }
@@ -341,7 +438,8 @@
       return;
     }
     if (event.target.closest("[data-team-back]")) {
-      const guild = guilds.find((g) => Number(g.rank) === openGuildRank);
+      currentUnits = [];
+      const guild = guilds.find((item) => Number(item.rank) === openGuildRank);
       if (guild) renderGuildMembers(guild);
     }
   });
@@ -349,6 +447,10 @@
   els.modal?.addEventListener("click", (event) => {
     if (event.target.closest("[data-guild-member-modal-close]")) closeModal();
   });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeModal(); });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeModal();
+  });
+
+  preloadTalentIcons();
   load();
 })();
