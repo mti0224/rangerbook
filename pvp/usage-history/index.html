@@ -6,7 +6,7 @@
   <title>PvP 角色使用率變化｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../../assets/css/style.css">
-  <link rel="stylesheet" href="../../assets/css/pvp-usage-history.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-usage-history.css?v=20260727-1">
 </head>
 <body>
   <div id="site-header"></div>
@@ -90,24 +90,31 @@
       };
     })();
   </script>
-  <script src="../../assets/js/pvp-usage-history.js"></script>
+  <script src="../../assets/js/pvp-usage-history.js?v=20260727-1"></script>
   <script>
     (() => {
       const select = document.getElementById("pvpHistoryRanger");
-      if (!select) return;
-
-      const hideIds = () => {
-        for (const option of select.options) {
-          if (!option.value) continue;
-          const suffix = ` (${option.value})`;
-          if (option.textContent.endsWith(suffix)) {
-            option.textContent = option.textContent.slice(0, -suffix.length);
+      if (select) {
+        const hideIds = () => {
+          for (const option of select.options) {
+            if (!option.value) continue;
+            const suffix = ` (${option.value})`;
+            if (option.textContent.endsWith(suffix)) {
+              option.textContent = option.textContent.slice(0, -suffix.length);
+            }
           }
-        }
-      };
+        };
+        new MutationObserver(hideIds).observe(select, { childList: true });
+        hideIds();
+      }
 
-      new MutationObserver(hideIds).observe(select, { childList: true });
-      hideIds();
+      let previousTheme = document.documentElement.dataset.theme || "light";
+      new MutationObserver(() => {
+        const currentTheme = document.documentElement.dataset.theme || "light";
+        if (currentTheme === previousTheme) return;
+        previousTheme = currentTheme;
+        window.dispatchEvent(new Event("resize"));
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     })();
   </script>
 </body>
