@@ -1,8 +1,7 @@
 (() => {
   const USAGE_URL_FRAGMENT = "pvp-data.warmycat.com/usage.json";
   const RANGER_CATALOG_URLS = [
-    "../../res/rangers_index.json",
-    "../../res/Rangers_index.json",
+    "../../res/Ranger_index.json",
     "../../res/Rangers_data.json",
   ];
   const CATALOG_REFRESH_MS = 60 * 60 * 1000;
