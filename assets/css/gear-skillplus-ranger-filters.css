@@ -22,28 +22,26 @@ body:not(.gear-detail-page) #gearModalContent .gear-advanced-divider:has(+ .gear
 }
 
 .gear-skillplus-detail {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
 }
 
 .gear-skillplus-card {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .gear-skillplus-card > .gear-effect-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
-}
-
-/* Keep the Skill+ effect column aligned with the two-column effect tables. */
-#gearModalContent .gear-skillplus-table th:first-child,
-#gearModalContent .gear-skillplus-table td:first-child {
-  width: 50%;
-}
-
-#gearModalContent .gear-skillplus-table th:nth-child(2),
-#gearModalContent .gear-skillplus-table td:nth-child(2),
-#gearModalContent .gear-skillplus-table th:nth-child(3),
-#gearModalContent .gear-skillplus-table td:nth-child(3) {
-  width: 25%;
+  overflow-x: auto;
 }
 
 .gear-skillplus-effect-title,
