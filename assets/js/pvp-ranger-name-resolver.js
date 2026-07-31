@@ -23,7 +23,7 @@
   }
 
   function rangerId(row, fallback = "") {
-    return valueFrom(row, ["ranger_id", "rangerId", "unitCode", "id", "code"]) || text(fallback);
+    return valueFrom(row, ["ranger_id", "rangerId", "RangerID", "unitCode", "id", "code"]) || text(fallback);
   }
 
   function rangerInfo(row, fallbackId = "") {
@@ -37,8 +37,8 @@
 
     return {
       id,
-      name: valueFrom(row, ["Ranger名稱", "name", "displayName", "rangerName", "title"]),
-      star: valueFrom(row, ["Ranger星數", "星數", "star"]),
+      name: valueFrom(row, ["Ranger名稱", "角色名稱", "名稱", "name", "displayName", "rangerName", "title"]),
+      star: valueFrom(row, ["Ranger星數", "星數", "星級", "star"]),
       type: valueFrom(row, ["類型", "type"]),
       element: valueFrom(row, ["屬性", "element", "attribute"]),
     };
@@ -65,14 +65,15 @@
       if (!value || typeof value !== "object") return;
 
       const nested = [value.rangers, value.items, value.data, value.index]
-        .filter((item) => Array.isArray(item));
+        .filter((item) => Array.isArray(item) || (item && typeof item === "object"));
       if (nested.length) {
         nested.forEach(visit);
         return;
       }
 
       for (const [key, item] of Object.entries(value)) {
-        if (item && typeof item === "object" && !Array.isArray(item)) add(item, key);
+        if (Array.isArray(item)) item.forEach((entry) => add(entry));
+        else if (item && typeof item === "object") add(item, key);
         else if (typeof item === "string") add(item, key);
       }
     };
