@@ -33,6 +33,19 @@ body:not(.gear-detail-page) #gearModalContent .gear-advanced-divider:has(+ .gear
   margin: 0;
 }
 
+/* Keep the Skill+ effect column aligned with the two-column effect tables. */
+#gearModalContent .gear-skillplus-table th:first-child,
+#gearModalContent .gear-skillplus-table td:first-child {
+  width: 50%;
+}
+
+#gearModalContent .gear-skillplus-table th:nth-child(2),
+#gearModalContent .gear-skillplus-table td:nth-child(2),
+#gearModalContent .gear-skillplus-table th:nth-child(3),
+#gearModalContent .gear-skillplus-table td:nth-child(3) {
+  width: 25%;
+}
+
 .gear-skillplus-effect-title,
 .gear-skillplus-ranger-summary,
 .gear-advanced-switchable-summary,
