@@ -4,12 +4,16 @@
   const projectileDataUrl = `${siteRoot}res/projectile_data.json`;
   const animationMetaPattern = /\/animation_meta\/([^/?#]+)\.json(?:[?#]|$)/i;
   let projectileDataPromise = null;
+  const animationOriginOverrides = new Set([
+    "u1550e-moon:normal",
+  ]);
 
   const clipDefinitions = [
     {
       dataKey: "normal",
       ready: ["attack_ready"],
       trigger: ["attack"],
+      validateStart: true,
     },
     {
       dataKey: "skill1",
@@ -50,6 +54,91 @@
     return null;
   }
 
+  function worldPosition(part, item) {
+    const [, resourceNumber, objectMatrix] = item || [];
+    const image = part?.images?.[resourceNumber];
+    const sprite = part?.sprites?.[image?.name];
+    const rect = sprite?.rect;
+    if (!Array.isArray(objectMatrix) || !Array.isArray(image?.m) || !Array.isArray(rect) || !rect[2] || !rect[3]) {
+      return null;
+    }
+
+    const [m00, m01, m10, m11, m02, m12] = objectMatrix;
+    const [i00, i01, i10, i11, i02, i12] = image.m;
+    const centerX = Number(rect[2]) * 0.5;
+    const centerY = Number(rect[3]) * 0.5;
+    const transformedCenterX = i00 * centerX + i01 * centerY + i02;
+    const transformedCenterY = i10 * centerX + i11 * centerY + i12;
+    return {
+      x: m00 * transformedCenterX + m01 * transformedCenterY + m02,
+      y: m10 * transformedCenterX + m11 * transformedCenterY + m12,
+    };
+  }
+
+  function frameMetrics(part, frame) {
+    const points = [];
+    for (const item of frame || []) {
+      const color = item?.[3];
+      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
+      if (alpha === 0) continue;
+      const point = worldPosition(part, item);
+      if (point) points.push(point);
+    }
+    if (!points.length) return null;
+    const xs = points.map((point) => point.x);
+    const ys = points.map((point) => point.y);
+    return {
+      width: Math.max(...xs) - Math.min(...xs),
+      height: Math.max(...ys) - Math.min(...ys),
+    };
+  }
+
+  function findAnimationStart(part, ready, trigger) {
+    const readyFrame = ready?.frames?.[ready.frames.length - 1];
+    const triggerFrame = trigger?.frames?.[0];
+    if (!Array.isArray(readyFrame) || !Array.isArray(triggerFrame)) return null;
+
+    const hidden = readyFrame.filter((item) => {
+      const color = item?.[3];
+      return Array.isArray(color) && Number(color[3] ?? 255) === 0;
+    });
+    const exact = hidden.find((candidate) => triggerFrame.some(
+      (item) => item?.[0] === candidate?.[0] && item?.[1] === candidate?.[1]
+    ));
+    const sameResource = hidden.find((candidate) => triggerFrame.some(
+      (item) => item?.[1] === candidate?.[1]
+    ));
+    const matched = exact || sameResource;
+    const matchedPoint = matched ? worldPosition(part, matched) : null;
+    if (matchedPoint) return matchedPoint;
+
+    let frontMost = null;
+    for (const item of readyFrame) {
+      const color = item?.[3];
+      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
+      if (alpha === 0) continue;
+      const point = worldPosition(part, item);
+      if (point && (!frontMost || point.x > frontMost.x)) frontMost = point;
+    }
+    return frontMost;
+  }
+
+  function isPlausibleBasicAttackStart(bodyPart, ready, trigger, x, y) {
+    const reference = findAnimationStart(bodyPart, ready, trigger);
+    if (!reference) return true;
+
+    const readyFrame = ready.frames[ready.frames.length - 1];
+    const metrics = frameMetrics(bodyPart, readyFrame);
+    const width = Math.max(1, metrics?.width || 0);
+    const height = Math.max(1, metrics?.height || 0);
+    const dx = Math.abs(x - reference.x);
+    const dy = Math.abs(y - reference.y);
+    const distance = Math.hypot(dx, dy);
+    const maxDistance = Math.max(80, Math.min(180, Math.hypot(width, height) * 0.30));
+    const maxVerticalDistance = Math.max(50, Math.min(110, height * 0.30));
+    return distance <= maxDistance && dy <= maxVerticalDistance;
+  }
+
   function createMarker(part, x, y, markerId) {
     const reference = findReferenceImage(part);
     if (!reference) return null;
@@ -71,7 +160,7 @@
     ];
   }
 
-  function injectMarker(bodyPart, definition, attack, markerId) {
+  function injectMarker(bodyPart, definition, attack, markerId, unitId) {
     if (!attack || String(attack.attackType || "").toUpperCase() === "NONE") return;
     const x = Number(attack.start?.x);
     const y = Number(attack.start?.y);
@@ -84,6 +173,21 @@
     const readyFrame = ready.frames[ready.frames.length - 1];
     const triggerFrame = trigger.frames[0];
     if (!Array.isArray(readyFrame) || !Array.isArray(triggerFrame)) return;
+
+    const originKey = `${unitId}:${definition.dataKey}`;
+    if (animationOriginOverrides.has(originKey)) {
+      console.info("Projectile data origin bypassed; using animation-derived origin", { unitId, clip: definition.dataKey });
+      return;
+    }
+
+    if (definition.validateStart && !isPlausibleBasicAttackStart(bodyPart, ready, trigger, x, y)) {
+      console.info("Projectile start rejected; using animation-derived origin", {
+        unitId,
+        clip: definition.dataKey,
+        start: { x, y },
+      });
+      return;
+    }
 
     const marker = createMarker(bodyPart, x, y, markerId);
     if (!marker) return;
@@ -122,7 +226,7 @@
       if (!unitData || !bodyPart) return response;
 
       clipDefinitions.forEach((definition, index) => {
-        injectMarker(bodyPart, definition, unitData[definition.dataKey], 2147483000 + index);
+        injectMarker(bodyPart, definition, unitData[definition.dataKey], 2147483000 + index, unitId);
       });
 
       const headers = new Headers(response.headers);
