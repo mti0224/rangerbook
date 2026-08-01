@@ -4,9 +4,6 @@
   const projectileDataUrl = `${siteRoot}res/projectile_data.json`;
   const animationMetaPattern = /\/animation_meta\/([^/?#]+)\.json(?:[?#]|$)/i;
   let projectileDataPromise = null;
-  const animationOriginOverrides = new Set([
-    "u1550e-moon:normal",
-  ]);
 
   const clipDefinitions = [
     {
@@ -173,12 +170,6 @@
     const readyFrame = ready.frames[ready.frames.length - 1];
     const triggerFrame = trigger.frames[0];
     if (!Array.isArray(readyFrame) || !Array.isArray(triggerFrame)) return;
-
-    const originKey = `${unitId}:${definition.dataKey}`;
-    if (animationOriginOverrides.has(originKey)) {
-      console.info("Projectile data origin bypassed; using animation-derived origin", { unitId, clip: definition.dataKey });
-      return;
-    }
 
     if (definition.validateStart && !isPlausibleBasicAttackStart(bodyPart, ready, trigger, x, y)) {
       console.info("Projectile start rejected; using animation-derived origin", {
