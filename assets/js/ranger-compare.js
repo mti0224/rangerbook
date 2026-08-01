@@ -273,7 +273,8 @@
   const row = (label, left, right) => `<tr><th>${label}</th><td>${left}</td><td>${right}</td></tr>`;
 
   function section(title, rows, extraClass = "") {
-    return `<section class="compare-section ${extraClass}"><h3>${title}</h3><div class="compare-table-wrap"><table class="compare-table"><tbody>${rows.join("")}</tbody></table></div></section>`;
+    const columns = `<colgroup><col class="compare-label-column"><col class="compare-value-column"><col class="compare-value-column"></colgroup>`;
+    return `<section class="compare-section ${extraClass}"><h3>${title}</h3><div class="compare-table-wrap"><table class="compare-table">${columns}<tbody>${rows.join("")}</tbody></table></div></section>`;
   }
 
   function betterSide(key, leftValue, rightValue) {
@@ -486,27 +487,21 @@
 
   async function renderSuggestions(side) {
     const input = side === "left" ? els.leftInput : els.rightInput;
-    const target = side === "left" ? els.leftSuggestions : els.rightSuggestions;
-    const query = input.value.trim();
-    if (!query) {
-      target.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
+    const container = side === "left" ? els.leftSuggestions : els.rightSuggestions;
+    if (!input || !container) return;
+    const loaded = await loadIndex();
+    if (!loaded) {
+      container.innerHTML = `<div class="compare-empty">角色索引載入失敗。</div>`;
       return;
     }
-    if (!state.indexLoaded) {
-      target.innerHTML = `<div class="empty-state small">搜尋索引載入中...</div>`;
-      if (!await loadIndex()) {
-        target.innerHTML = `<div class="empty-state small">搜尋索引載入失敗。</div>`;
-        return;
-      }
-    }
-    const rows = filterRows(query);
-    target.innerHTML = rows.length ? rows.map((item) => suggestionItem(item, side)).join("") : `<div class="empty-state small">找不到角色。</div>`;
+    const rows = filterRows(input.value);
+    container.innerHTML = rows.length ? rows.map((item) => suggestionItem(item, side)).join("") : "";
   }
 
-  async function selectRanger(side, id) {
-    renderResult("完整角色資料載入中...");
-    if (!await loadFullData()) {
-      renderResult("完整 Rangers 資料載入失敗，無法比對。");
+  async function chooseRanger(side, id) {
+    const loaded = await loadFullData();
+    if (!loaded) {
+      renderResult("角色完整資料載入失敗。");
       return;
     }
     const ranger = state.fullMap.get(id);
@@ -514,42 +509,30 @@
       renderResult(`找不到角色資料：${id}`);
       return;
     }
-    if (side === "left") {
-      state.left = ranger;
-      els.leftInput.value = getName(ranger);
-    } else {
-      state.right = ranger;
-      els.rightInput.value = getName(ranger);
-    }
-    renderSuggestions(side);
+    state[side] = ranger;
+    const input = side === "left" ? els.leftInput : els.rightInput;
+    const suggestions = side === "left" ? els.leftSuggestions : els.rightSuggestions;
+    input.value = getName(ranger);
+    suggestions.innerHTML = "";
     renderResult();
     await ensureCompareAnimationMeta();
     renderResult();
   }
 
-  function debounce(fn, delay = 80) {
-    let timer = 0;
-    return (...args) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
-    };
+  function bindInput(input, side) {
+    if (!input) return;
+    input.addEventListener("input", () => renderSuggestions(side));
+    input.addEventListener("focus", () => renderSuggestions(side));
   }
 
-  els.leftInput.addEventListener("focus", () => renderSuggestions("left"));
-  els.rightInput.addEventListener("focus", () => renderSuggestions("right"));
-  els.leftInput.addEventListener("input", debounce(() => renderSuggestions("left")));
-  els.rightInput.addEventListener("input", debounce(() => renderSuggestions("right")));
-  els.leftSuggestions.addEventListener("click", (event) => {
-    const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
-    if (button) selectRanger(button.dataset.side, button.dataset.id);
-  });
-  els.rightSuggestions.addEventListener("click", (event) => {
-    const button = event.target instanceof Element ? event.target.closest(".compare-suggestion") : null;
-    if (button) selectRanger(button.dataset.side, button.dataset.id);
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest(".compare-suggestion");
+    if (!button) return;
+    chooseRanger(button.dataset.side, button.dataset.id);
   });
 
-  els.leftSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
-  els.rightSuggestions.innerHTML = `<div class="empty-state small">輸入關鍵字後顯示候選角色。</div>`;
+  bindInput(els.leftInput, "left");
+  bindInput(els.rightInput, "right");
   renderResult();
-  window.setTimeout(() => { loadIndex(); }, 50);
+  loadIndex();
 })();
