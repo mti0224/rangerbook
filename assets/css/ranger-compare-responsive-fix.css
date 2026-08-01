@@ -19,48 +19,59 @@
   cursor: pointer;
 }
 
-/* Desktop/tablet: keep the original roomy layout. */
-#compareResult .compare-section:nth-of-type(1) .compare-table,
-#compareResult .compare-basic-stat-section .compare-table,
-#compareResult .compare-section:nth-of-type(6) .compare-table,
-#compareResult .compare-section:nth-of-type(7) .compare-table {
+/*
+ * Every non-skill comparison table has exactly three columns.
+ * Declare them explicitly so tablet browsers do not redistribute widths from
+ * long content and make rows appear offset. Skill tables keep their own
+ * seven-column layout.
+ */
+#compareResult .compare-section:not(.compare-skill-section) .compare-table {
   min-width: 620px;
 }
 
-#compareResult .compare-section:nth-of-type(1) .compare-table th,
-#compareResult .compare-basic-stat-section .compare-table th,
-#compareResult .compare-section:nth-of-type(6) .compare-table th,
-#compareResult .compare-section:nth-of-type(7) .compare-table th {
+#compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-label-column,
+#compareResult .compare-section:not(.compare-skill-section) .compare-table th {
   width: 9rem;
 }
 
-#compareResult .compare-section:nth-of-type(1) .compare-table td,
-#compareResult .compare-basic-stat-section .compare-table td,
-#compareResult .compare-section:nth-of-type(6) .compare-table td,
-#compareResult .compare-section:nth-of-type(7) .compare-table td {
+#compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-value-column,
+#compareResult .compare-section:not(.compare-skill-section) .compare-table td {
   width: calc((100% - 9rem) / 2);
+}
+
+/* Tablet: retain one stable three-column grid and scroll only when required. */
+@media (min-width: 721px) and (max-width: 1100px) {
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table {
+    min-width: 600px;
+  }
+
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-label-column,
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table th {
+    width: 8rem;
+  }
+
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-value-column,
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table td {
+    width: calc((100% - 8rem) / 2);
+  }
 }
 
 /* Only compress when the viewport is narrow. */
 @media (max-width: 720px) {
-  #compareResult .compare-section:nth-of-type(1) .compare-table,
-  #compareResult .compare-basic-stat-section .compare-table,
-  #compareResult .compare-section:nth-of-type(6) .compare-table {
+  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table {
     min-width: 480px;
   }
 
-  #compareResult .compare-section:nth-of-type(1) .compare-table th,
-  #compareResult .compare-basic-stat-section .compare-table th,
-  #compareResult .compare-section:nth-of-type(6) .compare-table th {
+  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table col.compare-label-column,
+  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table th {
     width: 7.4rem;
     white-space: nowrap;
     word-break: keep-all;
     overflow-wrap: normal;
   }
 
-  #compareResult .compare-section:nth-of-type(1) .compare-table td,
-  #compareResult .compare-basic-stat-section .compare-table td,
-  #compareResult .compare-section:nth-of-type(6) .compare-table td {
+  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table col.compare-value-column,
+  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table td {
     width: calc((100% - 7.4rem) / 2);
     white-space: normal;
     word-break: break-word;
@@ -68,25 +79,27 @@
   }
 
   /* 強化才能：左欄只有圖示，壓得更窄，文字欄用換行解決。 */
-  #compareResult .compare-section:nth-of-type(7) .compare-table {
+  #compareResult .compare-section:last-child .compare-table {
     min-width: 390px;
   }
 
-  #compareResult .compare-section:nth-of-type(7) .compare-table th {
+  #compareResult .compare-section:last-child .compare-table col.compare-label-column,
+  #compareResult .compare-section:last-child .compare-table th {
     width: 3.8rem;
     white-space: nowrap;
     text-align: center;
   }
 
-  #compareResult .compare-section:nth-of-type(7) .compare-table td {
+  #compareResult .compare-section:last-child .compare-table col.compare-value-column,
+  #compareResult .compare-section:last-child .compare-table td {
     width: calc((100% - 3.8rem) / 2);
     white-space: normal;
     word-break: break-word;
     overflow-wrap: anywhere;
   }
 
-  #compareResult .compare-section:nth-of-type(7) .compare-table th,
-  #compareResult .compare-section:nth-of-type(7) .compare-table td {
+  #compareResult .compare-section:last-child .compare-table th,
+  #compareResult .compare-section:last-child .compare-table td {
     padding-left: 0.45rem;
     padding-right: 0.45rem;
   }
