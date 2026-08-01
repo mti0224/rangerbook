@@ -1,5 +1,4 @@
 (() => {
-  const USAGE_URL_FRAGMENT = "pvp-data.warmycat.com/usage.json";
   const RANGER_CATALOG_URLS = [
     "../../res/Ranger_index.json",
     "../../res/Rangers_data.json",
@@ -11,6 +10,16 @@
   let catalogLoadedAt = 0;
 
   const text = (value) => String(value ?? "").trim();
+
+  function isUsageUrl(raw) {
+    if (!raw) return false;
+    try {
+      const url = new URL(raw, window.location.href);
+      return /\/usage(?:_[A-Z0-9_]+)?\.json$/i.test(url.pathname);
+    } catch {
+      return false;
+    }
+  }
 
   function valueFrom(row, keys) {
     if (!row || typeof row !== "object") return "";
@@ -152,7 +161,7 @@
   window.fetch = async (input, init) => {
     const response = await nativeFetch(input, init);
     const url = typeof input === "string" ? input : input?.url || "";
-    if (!url.includes(USAGE_URL_FRAGMENT) || !response.ok) return response;
+    if (!isUsageUrl(url) || !response.ok) return response;
 
     try {
       const [data, catalog] = await Promise.all([
