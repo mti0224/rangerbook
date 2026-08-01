@@ -148,6 +148,67 @@
     return 0;
   }
 
+  function spriteDims(part, imageName) {
+    const sprite = part?.sprites?.[imageName];
+    if (!sprite) return null;
+    const [, , sw, sh] = sprite.rect || [];
+    if (!sw || !sh) return null;
+    return { w: sw, h: sh };
+  }
+  function worldPosition(part, item) {
+    const [, resNum, objectMatrix, color] = item || [];
+    const imageDef = part?.images?.[resNum];
+    if (!imageDef || !Array.isArray(objectMatrix) || !Array.isArray(imageDef.m)) return null;
+    const dims = spriteDims(part, imageDef.name);
+    if (!dims) return null;
+    const [m00, m01, m10, m11, m02, m12] = objectMatrix;
+    const [i00, i01, i10, i11, i02, i12] = imageDef.m;
+    const cx = dims.w * 0.5, cy = dims.h * 0.5;
+    const postCx = i00 * cx + i01 * cy + i02;
+    const postCy = i10 * cx + i11 * cy + i12;
+    return {
+      x: m00 * postCx + m01 * postCy + m02,
+      y: m10 * postCx + m11 * postCy + m12,
+      color,
+    };
+  }
+  function frontMostPoint(part, frame) {
+    let best = null;
+    let bestX = -Infinity;
+    for (const item of frame || []) {
+      const color = item[3];
+      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
+      if (alpha === 0) continue;
+      const pos = worldPosition(part, item);
+      if (pos && pos.x > bestX) { bestX = pos.x; best = pos; }
+    }
+    return best;
+  }
+  function findMuzzlePoint(part, readyNames, triggerNames) {
+    const ready = getAnim(part, readyNames || []);
+    const attack = getAnim(part, triggerNames || []);
+    if (!ready || !attack) return null;
+    const readyFrames = ready.anim.frames || [];
+    const attackFrames = attack.anim.frames || [];
+    if (!readyFrames.length || !attackFrames.length) return null;
+    const lastReady = readyFrames[readyFrames.length - 1] || [];
+    const candidates = lastReady.filter((item) => {
+      const color = item[3];
+      return Array.isArray(color) && Number(color[3] ?? 255) === 0;
+    });
+    if (candidates.length) {
+      const firstAttack = attackFrames[0] || [];
+      const confirmedByObject = candidates.find((obj) => firstAttack.some((o) => o[0] === obj[0] && o[1] === obj[1]));
+      const confirmedByResource = candidates.find((obj) => firstAttack.some((o) => o[1] === obj[1]));
+      const confirmed = confirmedByObject || confirmedByResource;
+      if (confirmed) {
+        const pos = worldPosition(part, confirmed);
+        if (pos) return pos;
+      }
+    }
+    return frontMostPoint(part, lastReady);
+  }
+
   function buildProjectile(meta, clip, bodyPart, clipDuration) {
     if (!clip.bullet) return null;
     const bulletPart = meta?.parts?.[clip.bullet];
@@ -162,6 +223,7 @@
       ? 15 / bodyFps
       : Math.max(1, normalFrameCount) / bodyFps;
     const finishDuration = finishAnim ? finishAnim.anim.frame_count / bodyFps : 0;
+    const muzzle = findMuzzlePoint(bodyPart, clip.ready, clip.trigger);
     return {
       partName: clip.bullet,
       normalAnimName: normalAnim.name,
@@ -170,6 +232,8 @@
       normalDuration,
       finishDuration,
       duration: normalDuration + finishDuration,
+      muzzleX: muzzle ? muzzle.x : 0,
+      muzzleY: muzzle ? muzzle.y : 0,
       targetX: clip.targetX || 0,
       targetY: clip.targetY || 0,
     };
@@ -340,8 +404,8 @@
     const bulletPart = meta?.parts?.[projectile.partName];
     if (!bulletPart) return;
 
-    const startX = layout.rangerX + BODY_OFFSET_X * scale;
-    const startY = layout.groundY + BODY_OFFSET_Y * scale;
+    const startX = layout.bodyOriginX + (projectile.muzzleX || 0) * scale;
+    const startY = layout.bodyOriginY + (projectile.muzzleY || 0) * scale;
     const endX = layout.targetX + projectile.targetX * scale;
     const endY = layout.groundY + projectile.targetY * scale;
 
