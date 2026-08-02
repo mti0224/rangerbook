@@ -26,6 +26,8 @@
   window.RANGERBOOK_PVP_LEAGUE_NAME = (code) => LABELS[String(code || "").toUpperCase()] || String(code || "");
   window.RANGERBOOK_PVP_USAGE_DATA = null;
   window.RANGERBOOK_PVP_USAGE_DATA_PROMISE = null;
+  window.RANGERBOOK_PVP_PLAYER_TEAMS_DATA = null;
+  window.RANGERBOOK_PVP_PLAYER_TEAMS_DATA_PROMISE = null;
 
   function rewritePvpUrl(raw) {
     if (!raw || !suffix) return raw;
@@ -37,14 +39,32 @@
     return rewritten;
   }
 
-  function isUsageUrl(raw) {
+  function matchesJsonUrl(raw, base) {
     if (!raw) return false;
     try {
       const url = new URL(raw, location.href);
-      return /\/usage(?:_[A-Z0-9_]+)?\.json$/i.test(url.pathname);
+      return new RegExp(`/${base}(?:_[A-Z0-9_]+)?\\.json$`, "i").test(url.pathname);
     } catch {
       return false;
     }
+  }
+
+  function shareJsonResponse(responsePromise, dataKey, promiseKey, eventName, warning) {
+    const sharedPromise = responsePromise
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.clone().json();
+      })
+      .then((data) => {
+        window[dataKey] = data;
+        window.dispatchEvent(new CustomEvent(eventName, { detail: data }));
+        return data;
+      })
+      .catch((error) => {
+        console.warn(warning, error);
+        return null;
+      });
+    window[promiseKey] = sharedPromise;
   }
 
   window.fetch = (input, init) => {
@@ -53,22 +73,24 @@
     const request = typeof input === "string" ? raw : new Request(raw, input);
     const responsePromise = originalFetch(request, init);
 
-    if (isUsageUrl(raw)) {
-      const sharedPromise = responsePromise
-        .then((response) => {
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          return response.clone().json();
-        })
-        .then((data) => {
-          window.RANGERBOOK_PVP_USAGE_DATA = data;
-          window.dispatchEvent(new CustomEvent("rangerbook:pvp-usage-data-ready", { detail: data }));
-          return data;
-        })
-        .catch((error) => {
-          console.warn("Shared PvP usage data unavailable", error);
-          return null;
-        });
-      window.RANGERBOOK_PVP_USAGE_DATA_PROMISE = sharedPromise;
+    if (matchesJsonUrl(raw, "usage")) {
+      shareJsonResponse(
+        responsePromise,
+        "RANGERBOOK_PVP_USAGE_DATA",
+        "RANGERBOOK_PVP_USAGE_DATA_PROMISE",
+        "rangerbook:pvp-usage-data-ready",
+        "Shared PvP usage data unavailable",
+      );
+    }
+
+    if (matchesJsonUrl(raw, "player_teams")) {
+      shareJsonResponse(
+        responsePromise,
+        "RANGERBOOK_PVP_PLAYER_TEAMS_DATA",
+        "RANGERBOOK_PVP_PLAYER_TEAMS_DATA_PROMISE",
+        "rangerbook:pvp-player-teams-data-ready",
+        "Shared PvP player team data unavailable",
+      );
     }
 
     return responsePromise;
