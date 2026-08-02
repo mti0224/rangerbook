@@ -4,10 +4,10 @@
   const guildContent = document.getElementById("guildMemberModalContent");
   if (!pvpContent && !guildContent) return;
 
-  const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
   const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
-  let payloadPromise = null;
   let decorateQueued = false;
+  let currentPlayerKey = "";
+  let currentPlayerRank = 0;
 
   function itemLabel(item) {
     return item?.querySelector(":scope > div > span")?.textContent?.trim() || "";
@@ -112,23 +112,25 @@
     wrap.appendChild(icon);
   }
 
+  function capturePlayerIdentity(event) {
+    const row = event.target?.closest?.(".pvp-player-row[data-player-rank]");
+    if (!row) return;
+    currentPlayerKey = String(row.dataset.playerKey || "");
+    currentPlayerRank = Number(row.dataset.playerRank) || 0;
+  }
+
   function loadPayload() {
-    if (!payloadPromise) {
-      payloadPromise = fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" })
-        .then((response) => {
-          if (!response.ok) throw new Error(`player_teams HTTP ${response.status}`);
-          return response.json();
-        })
-        .catch((error) => {
-          payloadPromise = null;
-          console.warn("PvP team talent icon data unavailable", error);
-          return null;
-        });
+    if (window.RANGERBOOK_PVP_PLAYER_TEAMS_DATA) {
+      return Promise.resolve(window.RANGERBOOK_PVP_PLAYER_TEAMS_DATA);
     }
-    return payloadPromise;
+    if (window.RANGERBOOK_PVP_PLAYER_TEAMS_DATA_PROMISE) {
+      return window.RANGERBOOK_PVP_PLAYER_TEAMS_DATA_PROMISE;
+    }
+    return Promise.resolve(null);
   }
 
   function currentRank() {
+    if (currentPlayerRank) return currentPlayerRank;
     const text = pvpContent?.querySelector(".pvp-player-team-header > p")?.textContent || "";
     const match = text.match(/排名\s*#\s*(\d+)/);
     return match ? Number(match[1]) : 0;
@@ -147,12 +149,22 @@
       .flatMap((key) => normalizeUnits(value[key]));
   }
 
-  function findDetail(payload, rank) {
+  function findDetail(payload, rank, detailKey) {
     const players = payload?.players;
     if (Array.isArray(players)) {
+      if (detailKey) {
+        const byKey = players.find((item) => String(item?.detailKey || "") === detailKey);
+        if (byKey) return byKey;
+      }
       return players.find((item) => Number(item?.rank) === Number(rank)) || null;
     }
     if (players && typeof players === "object") {
+      if (detailKey && players[detailKey]) return players[detailKey];
+      if (detailKey) {
+        const byKey = Object.values(players)
+          .find((item) => String(item?.detailKey || "") === detailKey);
+        if (byKey) return byKey;
+      }
       return Object.values(players).find((item) => Number(item?.rank) === Number(rank)) || null;
     }
     return null;
@@ -165,16 +177,13 @@
     const buttons = [...pvpContent.querySelectorAll(".pvp-player-unit-button[data-unit-index]")];
     if (!buttons.length) return;
 
-    // Every card must use the same image wrapper, even when the ranger has no talent.
-    // Otherwise talent cards use a fixed 6rem image box while non-talent cards keep a
-    // bare image that stretches to the full grid cell.
     buttons.forEach((button) => ensureImageWrap(button));
 
     const pending = buttons.filter((button) => button.dataset.talentIconReady !== "1");
     if (!pending.length) return;
 
     const payload = await loadPayload();
-    const detail = findDetail(payload, currentRank());
+    const detail = findDetail(payload, currentRank(), currentPlayerKey);
     if (!detail) return;
 
     const units = normalizeUnits(detail?.teams?.[currentTeamKey()] ?? detail?.[currentTeamKey()]);
@@ -193,7 +202,6 @@
   function decorateGuildTeamTalentIcons() {
     if (!guildContent) return;
     guildContent.querySelectorAll(".pvp-player-unit-button[data-guildwar-unit-index]").forEach((button) => {
-      // Normalize every Guild War card before checking whether a talent icon exists.
       ensureImageWrap(button);
       if (button.dataset.talentIconReady === "1") return;
       button.dataset.talentIconReady = "1";
@@ -224,6 +232,12 @@
     guildContent.querySelectorAll(".pvp-player-unit-detail-card").forEach(enhanceGuildDetailCard);
     decorateGuildTeamTalentIcons();
   }
+
+  const leaderboardBody = document.getElementById("pvpLeaderboardBody");
+  leaderboardBody?.addEventListener("click", capturePlayerIdentity, true);
+  leaderboardBody?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") capturePlayerIdentity(event);
+  }, true);
 
   pvpContent?.addEventListener("change", (event) => {
     if (event.target.id === "pvpPlayerTeamSelect") queueDecoratePvpTeamTalentIcons();
