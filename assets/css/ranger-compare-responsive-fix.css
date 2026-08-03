@@ -20,82 +20,101 @@
 }
 
 /*
- * Every non-skill comparison table has exactly three columns.
- * Declare them explicitly so tablet browsers do not redistribute widths from
- * long content and make rows appear offset. Skill tables keep their own
- * seven-column layout.
+ * The comparison result is a grid item. Explicitly allow its sections and
+ * scroll wrappers to shrink inside the viewport so a wide table cannot expand
+ * the whole page on Safari.
+ */
+#compareResult,
+#compareResult .compare-section,
+#compareResult .compare-table-wrap {
+  min-width: 0;
+}
+
+#compareResult .compare-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/*
+ * Every non-skill table has exactly three columns. iPad Safari may resolve a
+ * mixed-unit width such as calc((100% - 7.4rem) / 2) incorrectly on <col> and
+ * fixed-layout cells, making the two value columns extremely wide or narrow.
+ * Percentages that add up to exactly 100% keep the three columns stable.
  */
 #compareResult .compare-section:not(.compare-skill-section) .compare-table {
+  width: 100%;
   min-width: 620px;
+  max-width: none;
+  table-layout: fixed;
 }
 
 #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-label-column,
 #compareResult .compare-section:not(.compare-skill-section) .compare-table th {
-  width: 9rem;
+  width: 18%;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-value-column,
 #compareResult .compare-section:not(.compare-skill-section) .compare-table td {
-  width: calc((100% - 9rem) / 2);
+  width: 41%;
+  min-width: 0;
+  white-space: pre-line;
+  word-break: normal;
+  overflow-wrap: anywhere;
 }
 
-/* Tablet: retain one stable three-column grid and scroll only when required. */
+/* Tablet landscape and portrait: maintain a predictable 20 / 40 / 40 grid. */
 @media (min-width: 721px) and (max-width: 1100px) {
   #compareResult .compare-section:not(.compare-skill-section) .compare-table {
-    min-width: 600px;
+    min-width: 560px;
   }
 
   #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-label-column,
   #compareResult .compare-section:not(.compare-skill-section) .compare-table th {
-    width: 8rem;
+    width: 20%;
   }
 
   #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-value-column,
   #compareResult .compare-section:not(.compare-skill-section) .compare-table td {
-    width: calc((100% - 8rem) / 2);
+    width: 40%;
   }
 }
 
-/* Only compress when the viewport is narrow. */
+/* Narrow tablet windows and phones scroll horizontally only when necessary. */
 @media (max-width: 720px) {
-  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table {
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table {
     min-width: 480px;
   }
 
-  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table col.compare-label-column,
-  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table th {
-    width: 7.4rem;
-    white-space: nowrap;
-    word-break: keep-all;
-    overflow-wrap: normal;
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-label-column,
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table th {
+    width: 24%;
   }
 
-  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table col.compare-value-column,
-  #compareResult .compare-section:not(.compare-skill-section):not(:last-child) .compare-table td {
-    width: calc((100% - 7.4rem) / 2);
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table col.compare-value-column,
+  #compareResult .compare-section:not(.compare-skill-section) .compare-table td {
+    width: 38%;
   }
 
-  /* 強化才能：左欄只有圖示，壓得更窄，文字欄用換行解決。 */
+  /* 強化才能：左欄只有圖示，保留更多寬度給兩側文字。 */
   #compareResult .compare-section:last-child .compare-table {
     min-width: 390px;
   }
 
   #compareResult .compare-section:last-child .compare-table col.compare-label-column,
   #compareResult .compare-section:last-child .compare-table th {
-    width: 3.8rem;
-    white-space: nowrap;
+    width: 16%;
     text-align: center;
   }
 
   #compareResult .compare-section:last-child .compare-table col.compare-value-column,
   #compareResult .compare-section:last-child .compare-table td {
-    width: calc((100% - 3.8rem) / 2);
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    width: 42%;
   }
 
   #compareResult .compare-section:last-child .compare-table th,
