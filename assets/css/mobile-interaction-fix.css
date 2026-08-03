@@ -9,7 +9,8 @@
   .ranger-card.active:hover,
   .gear-card.active:hover,
   .ability-card.active:hover,
-  .modal-close:hover {
+  .modal-close:hover,
+  .pvp-usage-modal-close:hover {
     filter: none !important;
     transform: none !important;
   }
@@ -51,7 +52,7 @@
   }
 
   .ranger-card:hover .ranger-tags span,
-  .gear-card:hover .ranger-tags span,
+  .gear-card:hover .gear-tags span,
   .ability-card:hover .tag,
   .ranger-tags span,
   .tag {
@@ -66,45 +67,49 @@
     color: var(--text) !important;
   }
 
-  .modal-close:hover {
-    background: #f3f4f6 !important;
+  .modal-close:hover,
+  .pvp-usage-modal-close:hover {
+    background: var(--panel, #f3f4f6) !important;
     color: var(--text) !important;
   }
 }
 
+html:has(body.modal-open),
 body.modal-open {
   overflow: hidden !important;
   overscroll-behavior: none;
+}
+
+body.modal-open {
+  position: relative;
   touch-action: none;
 }
 
 body.modal-open .site-header,
-body.modal-open .modal-panel {
+body.modal-open .modal-panel,
+body.modal-open .pvp-usage-modal-panel {
   touch-action: auto;
 }
 
 /*
- * Keep every modal inside the currently visible browser viewport.
- * On iOS Chrome/Safari, the top and bottom browser toolbars dynamically
- * resize the visual viewport while scrolling. Using a full fixed inset and
- * dvh lets the modal recalculate instead of remaining underneath the toolbar.
+ * Shared modal viewport correction.
+ * iOS Chrome and Safari resize the visual viewport when their toolbars expand.
+ * All regular information, enemy, equipment, ranking and stage modals use the
+ * shared modal-backdrop/modal-panel structure, so they are normalized here.
  */
 .modal-backdrop {
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  left: 0 !important;
+  position: fixed !important;
+  inset: 0 !important;
   width: 100% !important;
-  min-height: 100% !important;
+  height: 100vh !important;
   height: 100dvh !important;
-  z-index: 1100 !important;
+  min-height: 0 !important;
+  z-index: 1600 !important;
   display: flex !important;
   align-items: flex-start !important;
   justify-content: center !important;
-  padding-top: max(0.75rem, env(safe-area-inset-top)) !important;
-  padding-right: 1rem !important;
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
-  padding-left: 1rem !important;
+  box-sizing: border-box !important;
+  padding: max(0.75rem, env(safe-area-inset-top)) 1rem max(0.75rem, env(safe-area-inset-bottom)) !important;
   overflow: hidden !important;
   overscroll-behavior: contain;
   touch-action: none;
@@ -114,11 +119,15 @@ body.modal-open .modal-panel {
   display: none !important;
 }
 
-.modal-panel {
+.modal-panel,
+.ranking-modal-panel {
+  position: relative;
   width: min(920px, 100%) !important;
+  max-width: 100% !important;
   max-height: calc(100dvh - max(0.75rem, env(safe-area-inset-top)) - max(0.75rem, env(safe-area-inset-bottom))) !important;
   margin: 0 auto !important;
-  overflow: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   touch-action: pan-y;
@@ -126,39 +135,94 @@ body.modal-open .modal-panel {
 }
 
 .modal-close {
-  top: max(0.75rem, env(safe-area-inset-top)) !important;
+  top: 0.75rem !important;
+  z-index: 50 !important;
 }
 
-/* Fallback for older browsers without dynamic viewport units. */
+/* PvP / guild-war usage pages have a separate modal component and class set. */
+.pvp-usage-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  z-index: 1700 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  padding: max(0.75rem, env(safe-area-inset-top)) 1rem max(0.75rem, env(safe-area-inset-bottom)) !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+.pvp-usage-modal[hidden] {
+  display: none !important;
+}
+
+.pvp-usage-modal-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+.pvp-usage-modal-panel {
+  position: relative !important;
+  width: min(1080px, 100%) !important;
+  max-width: 100% !important;
+  max-height: calc(100dvh - max(0.75rem, env(safe-area-inset-top)) - max(0.75rem, env(safe-area-inset-bottom))) !important;
+  margin: 0 auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scroll-padding-top: 4rem;
+}
+
+.pvp-usage-modal-close {
+  top: 0.75rem !important;
+  z-index: 50 !important;
+}
+
 @supports not (height: 100dvh) {
-  .modal-backdrop {
+  .modal-backdrop,
+  .pvp-usage-modal {
     height: 100% !important;
   }
 
-  .modal-panel {
+  .modal-panel,
+  .ranking-modal-panel,
+  .pvp-usage-modal-panel {
     max-height: calc(100% - 1.5rem) !important;
   }
 }
 
-@media (max-width: 620px) {
-  .modal-backdrop {
-    padding-top: max(0.6rem, env(safe-area-inset-top)) !important;
-    padding-right: 0.6rem !important;
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
-    padding-left: 0.6rem !important;
+@media (max-width: 760px) {
+  .modal-backdrop,
+  .pvp-usage-modal {
+    align-items: flex-start !important;
+    padding: max(0.6rem, env(safe-area-inset-top)) 0.6rem max(0.75rem, env(safe-area-inset-bottom)) !important;
   }
 
-  .modal-panel {
+  .modal-panel,
+  .ranking-modal-panel,
+  .pvp-usage-modal-panel {
     width: 100% !important;
     max-height: calc(100dvh - max(0.6rem, env(safe-area-inset-top)) - max(0.75rem, env(safe-area-inset-bottom))) !important;
+    border-radius: 18px !important;
   }
 
-  .modal-close {
-    top: max(0.6rem, env(safe-area-inset-top)) !important;
+  .modal-close,
+  .pvp-usage-modal-close {
+    top: 0.6rem !important;
   }
 
   @supports not (height: 100dvh) {
-    .modal-panel {
+    .modal-panel,
+    .ranking-modal-panel,
+    .pvp-usage-modal-panel {
       max-height: calc(100% - 1.35rem) !important;
     }
   }
