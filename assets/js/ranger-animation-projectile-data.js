@@ -3,6 +3,7 @@
   const siteRoot = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const projectileDataUrl = `${siteRoot}res/projectile_data.json`;
   const animationMetaPattern = /\/animation_meta\/([^/?#]+)\.json(?:[?#]|$)/i;
+  const NATIVE_PROJECTILE_COORDINATE_SCALE = 0.5;
   let projectileDataPromise = null;
 
   const clipDefinitions = [
@@ -157,10 +158,15 @@
     ];
   }
 
+  function scaledCoordinate(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number * NATIVE_PROJECTILE_COORDINATE_SCALE : null;
+  }
+
   function injectMarker(bodyPart, definition, attack, markerId, unitId) {
     if (!attack || String(attack.attackType || "").toUpperCase() === "NONE") return;
-    const x = Number(attack.start?.x);
-    const y = Number(attack.start?.y);
+    const x = scaledCoordinate(attack.start?.x);
+    const y = scaledCoordinate(attack.start?.y);
     if (!Number.isFinite(x) || !Number.isFinite(y) || (x === 0 && y === 0)) return;
 
     const ready = findAnimation(bodyPart, definition.ready);
@@ -201,6 +207,19 @@
     ).trim();
   }
 
+  function attachProjectileData(meta, projectileData, unitId, unitData) {
+    meta.projectileData = {
+      schemaVersion: projectileData?.schemaVersion ?? null,
+      motionModelVersion: projectileData?.validation?.motionModelVersion ?? null,
+      coordinateScale: NATIVE_PROJECTILE_COORDINATE_SCALE,
+      unitId,
+      bullet: unitData?.bullet || null,
+      normal: unitData?.normal || null,
+      skill1: unitData?.skill1 || null,
+      skill2: unitData?.skill2 || null,
+    };
+  }
+
   async function enrichMetadata(response, url) {
     if (!response.ok || !animationMetaPattern.test(String(url || "")) || /\/index\.json(?:[?#]|$)/i.test(String(url || ""))) {
       return response;
@@ -216,6 +235,7 @@
       const bodyPart = meta?.parts?.body;
       if (!unitData || !bodyPart) return response;
 
+      attachProjectileData(meta, projectileData, unitId, unitData);
       clipDefinitions.forEach((definition, index) => {
         injectMarker(bodyPart, definition, unitData[definition.dataKey], 2147483000 + index, unitId);
       });

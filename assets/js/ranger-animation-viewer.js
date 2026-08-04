@@ -4,7 +4,13 @@
   const RESOURCE_PRIMARY_BASE = "https://res.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
+  const SITE_ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
+  const PROJECTILE_DATA_URL = `${SITE_ROOT}res/projectile_data.json`;
   const FRAME_INTERVAL_MS = 1000 / 30;
+  const NATIVE_ACTION_FPS = 60;
+  const DEFAULT_PROJECTILE_COORDINATE_SCALE = 0.5;
+  const MIN_FLIGHT_DURATION = FRAME_INTERVAL_MS / 1000;
+  const MAX_FLIGHT_DURATION = 8;
 
   const RANGER_X_RATIO = 0.50;
   const TARGET_X_RATIO = 0.90;
@@ -22,14 +28,15 @@
     { key: "idle", label: "待機", body: ["idle", "wait"] },
     { key: "move", label: "移動", body: ["walk"] },
     { key: "knockback", label: "被擊退", body: ["knockback"] },
-    { key: "attack", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], trigger: ["attack"], bullet: "bul", targetX: BUL_TARGET_X, targetY: BUL_TARGET_Y, isBasicAttack: true },
-    { key: "skill1", label: "技能1", body: ["s_attack_all", "s_action_attack_all"], ready: ["s_attack_ready", "s_action_attack_1"], trigger: ["s_attack", "s_action_attack_2", "s_action_attack_3"], bullet: "bul2", targetX: BUL2_TARGET_X, targetY: BUL2_TARGET_Y, isBasicAttack: false },
-    { key: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], trigger: ["s2_attack", "skill"], bullet: "bul3", targetX: BUL3_TARGET_X, targetY: BUL3_TARGET_Y, isBasicAttack: false },
+    { key: "attack", dataKey: "normal", label: "一般攻擊", body: ["attack_all"], ready: ["attack_ready"], trigger: ["attack"], bullet: "bul", targetX: BUL_TARGET_X, targetY: BUL_TARGET_Y, isBasicAttack: true },
+    { key: "skill1", dataKey: "skill1", label: "技能1", body: ["s_attack_all", "s_action_attack_all"], ready: ["s_attack_ready", "s_action_attack_1"], trigger: ["s_attack", "s_action_attack_2", "s_action_attack_3"], bullet: "bul2", targetX: BUL2_TARGET_X, targetY: BUL2_TARGET_Y, isBasicAttack: false },
+    { key: "skill2", dataKey: "skill2", label: "技能2", body: ["s2_attack_all"], ready: ["s2_attack_ready"], trigger: ["s2_attack", "skill"], bullet: "bul3", targetX: BUL3_TARGET_X, targetY: BUL3_TARGET_Y, isBasicAttack: false },
     { key: "full", label: "完整", sequence: ["move", "idle", "attack", "skill1", "skill2", "knockback"] },
   ];
 
   const state = {
     indexPromise: null,
+    projectileDataPromise: null,
     metaCache: new Map(),
     imageCache: new Map(),
     spriteCache: new Map(),
@@ -60,6 +67,17 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
   }
+  function finiteNumber(value, fallback = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+  function positiveNumber(value, fallback = 0) {
+    const number = finiteNumber(value, fallback);
+    return number > 0 ? number : fallback;
+  }
+  function clamp(value, minimum, maximum) {
+    return Math.min(maximum, Math.max(minimum, value));
+  }
   function normalizeResourcePath(path) {
     return String(path || "").replace(/^\/+/, "").replace(new RegExp(`^${OLD_PRIMARY_PREFIX}`), "");
   }
@@ -78,6 +96,32 @@
     return state.indexPromise;
   }
 
+  function loadProjectileData() {
+    if (!state.projectileDataPromise) {
+      state.projectileDataPromise = fetch(PROJECTILE_DATA_URL)
+        .then((res) => res.ok ? res.json() : null)
+        .catch(() => null);
+    }
+    return state.projectileDataPromise;
+  }
+
+  function attachProjectileDataFallback(meta, projectileData, unitId) {
+    if (!meta || meta.projectileData) return meta;
+    const unitData = projectileData?.units?.[unitId];
+    if (!unitData) return meta;
+    meta.projectileData = {
+      schemaVersion: projectileData?.schemaVersion ?? null,
+      motionModelVersion: projectileData?.validation?.motionModelVersion ?? null,
+      coordinateScale: DEFAULT_PROJECTILE_COORDINATE_SCALE,
+      unitId,
+      bullet: unitData.bullet || null,
+      normal: unitData.normal || null,
+      skill1: unitData.skill1 || null,
+      skill2: unitData.skill2 || null,
+    };
+    return meta;
+  }
+
   async function loadMeta(unitId) {
     if (!unitId) return null;
     if (state.metaCache.has(unitId)) return state.metaCache.get(unitId);
@@ -87,7 +131,11 @@
       state.metaCache.set(unitId, null);
       return null;
     }
-    const meta = await fetch(animationMetaUrl(entry.meta, unitId)).then((res) => res.ok ? res.json() : null).catch(() => null);
+    const [meta, projectileData] = await Promise.all([
+      fetch(animationMetaUrl(entry.meta, unitId)).then((res) => res.ok ? res.json() : null).catch(() => null),
+      loadProjectileData(),
+    ]);
+    attachProjectileDataFallback(meta, projectileData, unitId);
     state.metaCache.set(unitId, meta);
     return meta;
   }
@@ -209,33 +257,119 @@
     return frontMostPoint(part, lastReady);
   }
 
+  function normalizeMotionType(projectileConfig) {
+    const explicit = text(projectileConfig?.motion?.type).toUpperCase();
+    if (["LINEAR", "CURVE", "RETURN", "BEAM", "DIRECT", "NONE", "UNKNOWN"].includes(explicit)) return explicit;
+    const attackType = text(projectileConfig?.attackType).toUpperCase();
+    if (["ENERGY", "WEAPON", "DOUBLE"].includes(attackType)) return "LINEAR";
+    if (["ENERGYC", "WEAPONC", "DOUBLEC"].includes(attackType)) return "CURVE";
+    if (attackType === "RETURN") return "RETURN";
+    if (attackType === "BEAM") return "BEAM";
+    if (!attackType || attackType === "NONE") return "NONE";
+    if (["PUNCH", "KICK", "SWING", "STAB", "LASER", "ACTION"].includes(attackType)) return "DIRECT";
+    return "UNKNOWN";
+  }
+
+  function referenceScale() {
+    return Math.min(640 / 1400, 360 / 750) * 2.28;
+  }
+
+  function referenceFlightDistance(muzzleX, muzzleY, targetX, targetY, endOffsetX, endOffsetY) {
+    const scale = referenceScale();
+    const rangerX = 640 * RANGER_X_RATIO;
+    const targetBaseX = 640 * TARGET_X_RATIO;
+    const groundY = 360 * GROUND_Y_RATIO;
+    const bodyOriginX = rangerX + BODY_OFFSET_X * scale;
+    const bodyOriginY = groundY + BODY_OFFSET_Y * scale;
+    const startX = bodyOriginX + muzzleX * scale;
+    const startY = bodyOriginY + muzzleY * scale;
+    const endX = targetBaseX + (targetX + endOffsetX) * scale;
+    const endY = groundY + (targetY + endOffsetY) * scale;
+    return Math.hypot(endX - startX, endY - startY) / Math.max(0.001, scale);
+  }
+
+  function movementDuration(distance, moveSpeed) {
+    const speed = positiveNumber(moveSpeed, 0);
+    if (!speed) return 0;
+    return clamp(distance / (speed * NATIVE_ACTION_FPS), MIN_FLIGHT_DURATION, MAX_FLIGHT_DURATION);
+  }
+
   function buildProjectile(meta, clip, bodyPart, clipDuration) {
     if (!clip.bullet) return null;
-    const bulletPart = meta?.parts?.[clip.bullet];
+    const projectileConfig = meta?.projectileData?.[clip.dataKey] || null;
+    const motionType = normalizeMotionType(projectileConfig);
+    if (motionType === "NONE") return null;
+
+    const partName = text(projectileConfig?.animationPart) || clip.bullet;
+    const bulletPart = meta?.parts?.[partName] || meta?.parts?.[clip.bullet];
     if (!bulletPart) return null;
-    const normalAnim = getAnim(bulletPart, ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]);
-    if (!normalAnim) return null;
+
+    const standardNormal = getAnim(bulletPart, ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]);
+    const outboundAnim = motionType === "RETURN"
+      ? (getAnim(bulletPart, ["normal_a"]) || standardNormal)
+      : standardNormal;
+    if (!outboundAnim) return null;
+    const returnAnim = motionType === "RETURN"
+      ? (getAnim(bulletPart, ["normal_b"]) || outboundAnim)
+      : null;
     const finishAnim = getAnim(bulletPart, ["finish", "hit", "end"]);
     const spawnTime = projectileSpawnTime(bodyPart, clip, clipDuration);
-    const normalFrameCount = normalAnim.anim.frame_count || 0;
+    const localNormalDuration = Math.max(1, outboundAnim.anim.frame_count || 0) / Math.max(1, bulletPart.anim_rate || 24);
     const bodyFps = Math.max(1, bodyPart?.anim_rate || 24);
-    const normalDuration = clip.isBasicAttack && normalFrameCount <= 1
+    const legacyNormalDuration = clip.isBasicAttack && (outboundAnim.anim.frame_count || 0) <= 1
       ? 15 / bodyFps
-      : Math.max(1, normalFrameCount) / bodyFps;
-    const finishDuration = finishAnim ? finishAnim.anim.frame_count / bodyFps : 0;
+      : localNormalDuration;
+    const finishDuration = finishAnim ? animDuration(bulletPart, finishAnim) : 0;
     const muzzle = findMuzzlePoint(bodyPart, clip.ready, clip.trigger);
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, DEFAULT_PROJECTILE_COORDINATE_SCALE);
+    const endOffsetX = finiteNumber(projectileConfig?.end?.x, 0) * coordinateScale;
+    const endOffsetY = finiteNumber(projectileConfig?.end?.y, 0) * coordinateScale;
+    const distance = referenceFlightDistance(
+      muzzle ? muzzle.x : 0,
+      muzzle ? muzzle.y : 0,
+      clip.targetX || 0,
+      clip.targetY || 0,
+      endOffsetX,
+      endOffsetY,
+    );
+    const flightDuration = movementDuration(distance, projectileConfig?.moveSpeed);
+    const configuredEnabled = projectileConfig?.motion?.enabled;
+    const useNativeMotion = configuredEnabled === true && flightDuration > 0;
+    const renderMode = useNativeMotion ? motionType : (motionType === "DIRECT" ? "DIRECT" : "LEGACY");
+    const beamDuration = positiveNumber(meta?.projectileData?.bullet?.duration, 0) || localNormalDuration;
+
+    let motionDuration;
+    if (renderMode === "RETURN") motionDuration = flightDuration * 2;
+    else if (renderMode === "BEAM") motionDuration = beamDuration;
+    else if (renderMode === "DIRECT") motionDuration = localNormalDuration;
+    else if (renderMode === "LINEAR" || renderMode === "CURVE") motionDuration = flightDuration;
+    else motionDuration = legacyNormalDuration;
+
+    const includeFinish = renderMode !== "RETURN";
     return {
-      partName: clip.bullet,
-      normalAnimName: normalAnim.name,
+      partName: bulletPart === meta?.parts?.[partName] ? partName : clip.bullet,
+      config: projectileConfig,
+      motionType,
+      renderMode,
+      normalAnimName: outboundAnim.name,
+      returnAnimName: returnAnim?.name || outboundAnim.name,
       finishAnimName: finishAnim?.name || "",
       spawnTime,
-      normalDuration,
-      finishDuration,
-      duration: normalDuration + finishDuration,
+      flightDuration,
+      normalDuration: motionDuration,
+      localNormalDuration,
+      finishDuration: includeFinish ? finishDuration : 0,
+      duration: motionDuration + (includeFinish ? finishDuration : 0),
       muzzleX: muzzle ? muzzle.x : 0,
       muzzleY: muzzle ? muzzle.y : 0,
       targetX: clip.targetX || 0,
       targetY: clip.targetY || 0,
+      endOffsetX,
+      endOffsetY,
+      coordinateScale,
+      beamLength: positiveNumber(meta?.projectileData?.bullet?.length, 0),
+      loopNormal: renderMode === "LEGACY" ? true : projectileConfig?.motion?.loopNormal !== false,
+      rotationMode: text(projectileConfig?.motion?.rotation).toUpperCase() || "FIXED",
     };
   }
 
@@ -359,12 +493,12 @@
     ctx.restore();
   }
 
-  async function drawSamFrame(ctx, part, animName, frameIndex, originX, originY, scale) {
+  async function drawSamFrame(ctx, part, animName, frameIndexValue, originX, originY, scale) {
     const anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return false;
     const atlas = await loadImage(part.png);
     if (!atlas) return false;
-    const frame = anim.frames[Math.max(0, Math.min(frameIndex, anim.frame_count - 1))] || [];
+    const frame = anim.frames[Math.max(0, Math.min(frameIndexValue, anim.frame_count - 1))] || [];
     let drawn = false;
     for (const item of frame) {
       const [, resNum, objectMatrix, color] = item;
@@ -378,6 +512,16 @@
     return drawn;
   }
 
+  async function drawRotatedSamFrame(ctx, part, animName, frameIndexValue, originX, originY, scale, rotationDegrees = 0) {
+    if (!rotationDegrees) return drawSamFrame(ctx, part, animName, frameIndexValue, originX, originY, scale);
+    ctx.save();
+    ctx.translate(originX, originY);
+    ctx.rotate(rotationDegrees * Math.PI / 180);
+    const drawn = await drawSamFrame(ctx, part, animName, frameIndexValue, 0, 0, scale);
+    ctx.restore();
+    return drawn;
+  }
+
   function frameIndex(part, animName, elapsed, loop = false) {
     const anim = part?.animations?.[animName];
     if (!part || !anim?.frames?.length) return 0;
@@ -385,9 +529,75 @@
     return loop ? rawFrame % anim.frame_count : Math.min(anim.frame_count - 1, Math.max(0, rawFrame));
   }
 
-  function lerp(start, end, p) {
-    const t = Math.min(1, Math.max(0, p));
+  function lerp(start, end, progress) {
+    const t = clamp(progress, 0, 1);
     return start + (end - start) * t;
+  }
+
+  function cubicBezierPoint(p0, p1, p2, p3, progress) {
+    const t = clamp(progress, 0, 1);
+    const u = 1 - t;
+    const uu = u * u;
+    const tt = t * t;
+    return {
+      x: uu * u * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + tt * t * p3.x,
+      y: uu * u * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + tt * t * p3.y,
+    };
+  }
+
+  function projectileRotation(projectile, progress) {
+    if (projectile.rotationMode !== "ANGLE_LERP") return 0;
+    const start = finiteNumber(projectile.config?.angle?.start, 0);
+    const end = finiteNumber(projectile.config?.angle?.end, start);
+    return lerp(start, end, progress);
+  }
+
+  function partVisualWidth(part) {
+    let width = 0;
+    for (const sprite of Object.values(part?.sprites || {})) {
+      const rect = sprite?.rect;
+      if (Array.isArray(rect)) width = Math.max(width, finiteNumber(rect[2], 0));
+    }
+    return width || 64;
+  }
+
+  async function drawProjectileAnimation(ctx, bulletPart, animName, age, loop, x, y, scale, rotation = 0) {
+    const bulletFrame = frameIndex(bulletPart, animName, age, loop);
+    return drawRotatedSamFrame(ctx, bulletPart, animName, bulletFrame, x, y, scale, rotation);
+  }
+
+  async function drawFinish(ctx, bulletPart, projectile, finishAge, endX, endY, scale) {
+    if (!projectile.finishAnimName || finishAge < 0 || finishAge > projectile.finishDuration) return;
+    const finishFrame = frameIndex(bulletPart, projectile.finishAnimName, finishAge, false);
+    await drawSamFrame(ctx, bulletPart, projectile.finishAnimName, finishFrame, endX, endY, scale);
+  }
+
+  async function drawBeam(ctx, bulletPart, projectile, age, startX, startY, endX, endY, scale) {
+    if (age > projectile.normalDuration) {
+      await drawFinish(ctx, bulletPart, projectile, age - projectile.normalDuration, endX, endY, scale);
+      return;
+    }
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const distance = Math.hypot(dx, dy);
+    const configuredLength = projectile.beamLength * projectile.coordinateScale * scale;
+    const segmentLength = Math.max(4, configuredLength || partVisualWidth(bulletPart) * scale * 0.8);
+    const segmentCount = Math.min(128, Math.max(1, Math.ceil(distance / segmentLength) + 1));
+    const rotation = Math.atan2(dy, dx) * 180 / Math.PI;
+    for (let index = 0; index < segmentCount; index += 1) {
+      const progress = segmentCount === 1 ? 0 : index / (segmentCount - 1);
+      await drawProjectileAnimation(
+        ctx,
+        bulletPart,
+        projectile.normalAnimName,
+        age,
+        true,
+        lerp(startX, endX, progress),
+        lerp(startY, endY, progress),
+        scale,
+        rotation,
+      );
+    }
   }
 
   async function drawSegment(ctx, meta, segment, segmentAge, layout, scale) {
@@ -406,19 +616,97 @@
 
     const startX = layout.bodyOriginX + (projectile.muzzleX || 0) * scale;
     const startY = layout.bodyOriginY + (projectile.muzzleY || 0) * scale;
-    const endX = layout.targetX + projectile.targetX * scale;
-    const endY = layout.groundY + projectile.targetY * scale;
+    const endX = layout.targetX + (projectile.targetX + projectile.endOffsetX) * scale;
+    const endY = layout.groundY + (projectile.targetY + projectile.endOffsetY) * scale;
 
-    if (projectileAge < projectile.normalDuration || !projectile.finishAnimName) {
-      const bulletFrame = frameIndex(bulletPart, projectile.normalAnimName, projectileAge, true);
-      const progress = projectileAge / Math.max(0.001, projectile.normalDuration);
-      await drawSamFrame(ctx, bulletPart, projectile.normalAnimName, bulletFrame, lerp(startX, endX, progress), lerp(startY, endY, progress), scale);
+    if (projectile.renderMode === "BEAM") {
+      await drawBeam(ctx, bulletPart, projectile, projectileAge, startX, startY, endX, endY, scale);
       return;
     }
 
-    const finishAge = projectileAge - projectile.normalDuration;
-    const finishFrame = frameIndex(bulletPart, projectile.finishAnimName, finishAge, false);
-    await drawSamFrame(ctx, bulletPart, projectile.finishAnimName, finishFrame, endX, endY, scale);
+    if (projectile.renderMode === "DIRECT") {
+      if (projectileAge < projectile.normalDuration || !projectile.finishAnimName) {
+        await drawProjectileAnimation(ctx, bulletPart, projectile.normalAnimName, projectileAge, projectile.loopNormal, endX, endY, scale);
+      } else {
+        await drawFinish(ctx, bulletPart, projectile, projectileAge - projectile.normalDuration, endX, endY, scale);
+      }
+      return;
+    }
+
+    if (projectile.renderMode === "RETURN") {
+      const flightDuration = Math.max(MIN_FLIGHT_DURATION, projectile.flightDuration);
+      if (projectileAge < flightDuration) {
+        const progress = projectileAge / flightDuration;
+        await drawProjectileAnimation(
+          ctx,
+          bulletPart,
+          projectile.normalAnimName,
+          projectileAge,
+          true,
+          lerp(startX, endX, progress),
+          lerp(startY, endY, progress),
+          scale,
+          projectileRotation(projectile, progress),
+        );
+        return;
+      }
+      const rawStartX = finiteNumber(projectile.config?.start?.x, 0);
+      const rawStartY = finiteNumber(projectile.config?.start?.y, 0);
+      const rawSecondX = finiteNumber(projectile.config?.secondStart?.x, rawStartX);
+      const rawSecondY = finiteNumber(projectile.config?.secondStart?.y, rawStartY);
+      const returnEndX = startX + (rawSecondX - rawStartX) * projectile.coordinateScale * scale;
+      const returnEndY = startY + (rawSecondY - rawStartY) * projectile.coordinateScale * scale;
+      const returnAge = projectileAge - flightDuration;
+      const progress = returnAge / flightDuration;
+      await drawProjectileAnimation(
+        ctx,
+        bulletPart,
+        projectile.returnAnimName,
+        returnAge,
+        true,
+        lerp(endX, returnEndX, progress),
+        lerp(endY, returnEndY, progress),
+        scale,
+        projectileRotation(projectile, 1 - progress),
+      );
+      return;
+    }
+
+    if (projectileAge < projectile.normalDuration || !projectile.finishAnimName) {
+      const progress = projectileAge / Math.max(0.001, projectile.normalDuration);
+      let position = {
+        x: lerp(startX, endX, progress),
+        y: lerp(startY, endY, progress),
+      };
+      if (projectile.renderMode === "CURVE") {
+        const distance = Math.hypot(endX - startX, endY - startY);
+        const direction = endX >= startX ? 1 : -1;
+        position = cubicBezierPoint(
+          { x: startX, y: startY },
+          { x: startX, y: startY },
+          {
+            x: (startX + endX) * 0.5 + direction * distance * 0.4,
+            y: (startY + endY) * 0.5 - distance * 0.4,
+          },
+          { x: endX, y: endY },
+          progress,
+        );
+      }
+      await drawProjectileAnimation(
+        ctx,
+        bulletPart,
+        projectile.normalAnimName,
+        projectileAge,
+        projectile.loopNormal,
+        position.x,
+        position.y,
+        scale,
+        projectileRotation(projectile, progress),
+      );
+      return;
+    }
+
+    await drawFinish(ctx, bulletPart, projectile, projectileAge - projectile.normalDuration, endX, endY, scale);
   }
 
   async function drawTrack(canvas, meta, track, elapsed) {
