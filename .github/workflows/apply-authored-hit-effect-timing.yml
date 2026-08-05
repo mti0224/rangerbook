@@ -1,0 +1,40 @@
+name: Apply authored hit effect timing fix
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/apply-authored-hit-effect-timing.yml"
+      - ".github/scripts/patch_authored_hit_effect_timing.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/authored-hit-effect-timing-20260806
+      - name: Apply timing fix
+        run: python3 .github/scripts/patch_authored_hit_effect_timing.py
+      - name: Validate
+        run: |
+          node --check assets/js/ranger-animation-hit-effect.js
+          grep -q 'animationHasVisibleContent' assets/js/ranger-animation-hit-effect.js
+          grep -q 'authoredFinishStartsAtSpawn?0:projectileNormalEnd' assets/js/ranger-animation-hit-effect.js
+          grep -q 'authoredFinishStartsAtSpawn?projectile.finishDuration' assets/js/ranger-animation-hit-effect.js
+      - name: Remove temporary files
+        run: |
+          rm .github/scripts/patch_authored_hit_effect_timing.py
+          rm .github/workflows/apply-authored-hit-effect-timing.yml
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/js/ranger-animation-hit-effect.js
+          git add -u -- .github/scripts/patch_authored_hit_effect_timing.py .github/workflows/apply-authored-hit-effect-timing.yml
+          git commit -m "fix: sync authored hit effect timing"
+          git push origin HEAD:fix/authored-hit-effect-timing-20260806
