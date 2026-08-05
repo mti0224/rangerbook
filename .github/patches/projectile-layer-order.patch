@@ -1,126 +1,178 @@
-diff --git a/assets/js/ranger-animation-viewer.js b/assets/js/ranger-animation-viewer.js
---- a/assets/js/ranger-animation-viewer.js
-+++ b/assets/js/ranger-animation-viewer.js
-@@ -958,16 +958,16 @@
--  async function drawSegment(context, meta, segment, age, layout, sceneScale) {
-+  async function drawSegment(bodyContext, projectileContext, meta, segment, age, layout, sceneScale) {
-     const bodyPart = meta?.parts?.body;
-     if (!bodyPart) return;
-     const bodyAge = segment.loop ? age : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
-     const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
--    await drawSamFrame(context, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
-+    await drawSamFrame(bodyContext, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
- 
-     const projectile = segment.projectile;
-     if (!projectile) return;
-     const projectileAge = age - projectile.spawnTime;
-     if (projectileAge < 0) return;
--    await drawProjectile(context, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
-+    await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
-   }
- 
-   async function drawTrack(canvas, meta, track, elapsed) {
--    const context = canvas.getContext("2d");
--    if (!context || !track) return;
-+    const bodyContext = canvas.getContext("2d");
-+    if (!bodyContext || !track) return;
-     const width = canvas.width;
-     const height = canvas.height;
-+    const projectileCanvas = state.activeSection?.querySelector(".ranger-animation-projectile-canvas");
-+    if (projectileCanvas) {
-+      if (projectileCanvas.width !== width) projectileCanvas.width = width;
-+      if (projectileCanvas.height !== height) projectileCanvas.height = height;
-+    }
-+    const projectileContext = projectileCanvas?.getContext("2d") || bodyContext;
-     const zoom = state.zoom || 1;
-     const baseSceneScale = Math.min(width / 1400, height / 750) * VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE;
-     const sceneScale = baseSceneScale * zoom;
-@@ -1001,10 +1009,11 @@
-     layout.bodyOriginY = layout.actorY + BODY_OFFSET_Y * sceneScale;
-     sceneBridge.set(state.activeSection, { ...layout, width, height });
- 
--    context.clearRect(0, 0, width, height);
--    context.save();
--    context.fillStyle = "rgba(255,255,255,0.08)";
--    context.fillRect(0, Math.round(layout.actorY), width, 1);
--    context.restore();
-+    bodyContext.clearRect(0, 0, width, height);
-+    if (projectileContext !== bodyContext) projectileContext.clearRect(0, 0, width, height);
-+    bodyContext.save();
-+    bodyContext.fillStyle = "rgba(255,255,255,0.08)";
-+    bodyContext.fillRect(0, Math.round(layout.actorY), width, 1);
-+    bodyContext.restore();
- 
-     const nativeElapsed = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
-     const time = track.duration ? nativeElapsed % track.duration : nativeElapsed;
-@@ -1013,12 +1022,16 @@
-       const start = segment.start || 0;
-       const end = start + Math.max(segment.duration || 0, segment.bodyDuration || 0, 1);
-       if (time < start || time > end) continue;
--      await drawSegment(context, meta, segment, time - start, layout, sceneScale);
-+      await drawSegment(bodyContext, projectileContext, meta, segment, time - start, layout, sceneScale);
-     }
-   }
- 
-   function stopPlayback() {
-     if (state.rafId) cancelAnimationFrame(state.rafId);
-     state.rafId = 0;
-+    const projectileCanvas = state.activeSection?.querySelector(".ranger-animation-projectile-canvas");
-+    const projectileContext = projectileCanvas?.getContext("2d");
-+    projectileContext?.clearRect(0, 0, projectileCanvas.width, projectileCanvas.height);
-   }
-diff --git a/assets/js/ranger-animation-target.js b/assets/js/ranger-animation-target.js
---- a/assets/js/ranger-animation-target.js
-+++ b/assets/js/ranger-animation-target.js
-@@ -357,16 +357,28 @@
-       .ranger-animation-canvas-stack {
-         position: relative;
-         width: 100%;
-         overflow: hidden;
-         border-radius: 14px;
-       }
--      .ranger-animation-target-canvas {
-+      .ranger-animation-canvas-stack > .ranger-animation-canvas {
-+        position: relative;
-+        z-index: 0;
-+      }
-+      .ranger-animation-target-canvas,
-+      .ranger-animation-projectile-canvas {
-         position: absolute;
-         inset: 0;
-         display: block;
-         width: 100%;
-         height: 100%;
-         pointer-events: none;
-       }
-+      .ranger-animation-target-canvas {
-+        z-index: 1;
-+      }
-+      .ranger-animation-projectile-canvas {
-+        z-index: 2;
-+      }
-       .ranger-animation-controls.simplified.ranger-animation-target-enabled {
-         grid-template-columns: minmax(150px, 0.8fr) minmax(220px, 1.2fr) minmax(180px, 0.7fr);
-       }
-@@ -404,6 +416,13 @@
-     overlay.setAttribute("aria-hidden", "true");
-     stack.appendChild(overlay);
- 
-+    const projectileCanvas = document.createElement("canvas");
-+    projectileCanvas.className = "ranger-animation-projectile-canvas";
-+    projectileCanvas.width = baseCanvas.width;
-+    projectileCanvas.height = baseCanvas.height;
-+    projectileCanvas.setAttribute("aria-hidden", "true");
-+    stack.appendChild(projectileCanvas);
-+
-     const label = document.createElement("label");
-     label.className = "ranger-animation-target-label";
-     label.innerHTML = `<span>目標</span><select class="ranger-animation-target-select">${targetOptionsHtml()}</select>`;
-@@ -416,6 +435,7 @@
-       section,
-       baseCanvas,
-       overlay,
-+      projectileCanvas,
-       select,
-       unitId: "",
-       meta: null,
+from pathlib import Path
+
+
+def replace_once(path: str, old: str, new: str) -> None:
+    file_path = Path(path)
+    text = file_path.read_text(encoding="utf-8")
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(f"Expected one match in {path}, found {count}")
+    file_path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+replace_once(
+    "assets/js/ranger-animation-viewer.js",
+    '''  async function drawSegment(context, meta, segment, age, layout, sceneScale) {
+    const bodyPart = meta?.parts?.body;
+    if (!bodyPart) return;
+    const bodyAge = segment.loop ? age : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
+    const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
+    await drawSamFrame(context, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
+
+    const projectile = segment.projectile;
+    if (!projectile) return;
+    const projectileAge = age - projectile.spawnTime;
+    if (projectileAge < 0) return;
+    await drawProjectile(context, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
+  }
+
+  async function drawTrack(canvas, meta, track, elapsed) {
+    const context = canvas.getContext("2d");
+    if (!context || !track) return;
+    const width = canvas.width;
+    const height = canvas.height;
+''',
+    '''  async function drawSegment(bodyContext, projectileContext, meta, segment, age, layout, sceneScale) {
+    const bodyPart = meta?.parts?.body;
+    if (!bodyPart) return;
+    const bodyAge = segment.loop ? age : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
+    const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
+    await drawSamFrame(bodyContext, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
+
+    const projectile = segment.projectile;
+    if (!projectile) return;
+    const projectileAge = age - projectile.spawnTime;
+    if (projectileAge < 0) return;
+    await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
+  }
+
+  async function drawTrack(canvas, meta, track, elapsed) {
+    const bodyContext = canvas.getContext("2d");
+    if (!bodyContext || !track) return;
+    const width = canvas.width;
+    const height = canvas.height;
+    const projectileCanvas = state.activeSection?.querySelector(".ranger-animation-projectile-canvas");
+    if (projectileCanvas) {
+      if (projectileCanvas.width !== width) projectileCanvas.width = width;
+      if (projectileCanvas.height !== height) projectileCanvas.height = height;
+    }
+    const projectileContext = projectileCanvas?.getContext("2d") || bodyContext;
+''',
+)
+
+replace_once(
+    "assets/js/ranger-animation-viewer.js",
+    '''    context.clearRect(0, 0, width, height);
+    context.save();
+    context.fillStyle = "rgba(255,255,255,0.08)";
+    context.fillRect(0, Math.round(layout.actorY), width, 1);
+    context.restore();
+
+    const nativeElapsed = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
+    const time = track.duration ? nativeElapsed % track.duration : nativeElapsed;
+    for (const segment of track.segments) {
+      const start = segment.start || 0;
+      const end = start + Math.max(segment.duration || 0, segment.bodyDuration || 0, 1);
+      if (time < start || time > end) continue;
+      await drawSegment(context, meta, segment, time - start, layout, sceneScale);
+    }
+  }
+
+  function stopPlayback() {
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    state.rafId = 0;
+  }
+''',
+    '''    bodyContext.clearRect(0, 0, width, height);
+    if (projectileContext !== bodyContext) projectileContext.clearRect(0, 0, width, height);
+    bodyContext.save();
+    bodyContext.fillStyle = "rgba(255,255,255,0.08)";
+    bodyContext.fillRect(0, Math.round(layout.actorY), width, 1);
+    bodyContext.restore();
+
+    const nativeElapsed = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
+    const time = track.duration ? nativeElapsed % track.duration : nativeElapsed;
+    for (const segment of track.segments) {
+      const start = segment.start || 0;
+      const end = start + Math.max(segment.duration || 0, segment.bodyDuration || 0, 1);
+      if (time < start || time > end) continue;
+      await drawSegment(bodyContext, projectileContext, meta, segment, time - start, layout, sceneScale);
+    }
+  }
+
+  function stopPlayback() {
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    state.rafId = 0;
+    const projectileCanvas = state.activeSection?.querySelector(".ranger-animation-projectile-canvas");
+    const projectileContext = projectileCanvas?.getContext("2d");
+    projectileContext?.clearRect(0, 0, projectileCanvas.width, projectileCanvas.height);
+  }
+''',
+)
+
+replace_once(
+    "assets/js/ranger-animation-target.js",
+    '''      .ranger-animation-target-canvas {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+''',
+    '''      .ranger-animation-canvas-stack > .ranger-animation-canvas {
+        position: relative;
+        z-index: 0;
+      }
+      .ranger-animation-target-canvas,
+      .ranger-animation-projectile-canvas {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .ranger-animation-target-canvas {
+        z-index: 1;
+      }
+      .ranger-animation-projectile-canvas {
+        z-index: 2;
+      }
+''',
+)
+
+replace_once(
+    "assets/js/ranger-animation-target.js",
+    '''    overlay.setAttribute("aria-hidden", "true");
+    stack.appendChild(overlay);
+
+    const label = document.createElement("label");
+''',
+    '''    overlay.setAttribute("aria-hidden", "true");
+    stack.appendChild(overlay);
+
+    const projectileCanvas = document.createElement("canvas");
+    projectileCanvas.className = "ranger-animation-projectile-canvas";
+    projectileCanvas.width = baseCanvas.width;
+    projectileCanvas.height = baseCanvas.height;
+    projectileCanvas.setAttribute("aria-hidden", "true");
+    stack.appendChild(projectileCanvas);
+
+    const label = document.createElement("label");
+''',
+)
+
+replace_once(
+    "assets/js/ranger-animation-target.js",
+    '''      baseCanvas,
+      overlay,
+      select,
+''',
+    '''      baseCanvas,
+      overlay,
+      projectileCanvas,
+      select,
+''',
+)
