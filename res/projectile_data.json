@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "source": "data/unit.json",
+  "source": "data/raw/unit.json",
   "unitCount": 3081,
   "skippedWithoutUnitCode": 0,
   "validation": {

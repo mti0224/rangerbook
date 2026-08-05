@@ -1113,9 +1113,30 @@
         "element": "火"
     },
     {
+        "id": "u1009hsk-sally",
+        "name": "u1009hsk-sally",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1009sk-sally",
+        "name": "u1009sk-sally",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
         "id": "u1009u-sally",
         "name": "爆炸頭原始人莎莉",
         "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1009usk-sally",
+        "name": "u1009usk-sally",
+        "star": "8星",
         "type": "智慧型",
         "element": "火"
     },
@@ -2261,9 +2282,23 @@
         "element": "水"
     },
     {
+        "id": "u1063hsk-brown",
+        "name": "u1063hsk-brown",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
         "id": "u1063u-brown",
         "name": "絢麗小丑熊大",
         "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
+        "id": "u1063usk-brown",
+        "name": "u1063usk-brown",
+        "star": "8星",
         "type": "智慧型",
         "element": "水"
     },
@@ -2649,6 +2684,13 @@
         "id": "u1083h-crush",
         "name": "阿羅哈克勞許",
         "star": "超進化8星",
+        "type": "智慧型",
+        "element": "光"
+    },
+    {
+        "id": "u1083sk-crush",
+        "name": "u1083sk-crush",
+        "star": "8星",
         "type": "智慧型",
         "element": "光"
     },
@@ -3633,9 +3675,23 @@
         "element": "火"
     },
     {
+        "id": "u1131hsk-king",
+        "name": "u1131hsk-king",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
         "id": "u1131u-king",
         "name": "妖精王 金恩",
         "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1131usk-king",
+        "name": "u1131usk-king",
+        "star": "8星",
         "type": "智慧型",
         "element": "火"
     },
@@ -3778,6 +3834,13 @@
         "star": "超進化8星",
         "type": "智慧型",
         "element": "暗"
+    },
+    {
+        "id": "u1138sk-james",
+        "name": "u1138sk-james",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "水"
     },
     {
         "id": "u1139e-senjou",
@@ -4515,6 +4578,13 @@
         "element": "暗"
     },
     {
+        "id": "u1174hsk-cony",
+        "name": "u1174hsk-cony",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "暗"
+    },
+    {
         "id": "u1175e-shin",
         "name": "新之助",
         "star": "8星",
@@ -5012,6 +5082,13 @@
         "element": "光"
     },
     {
+        "id": "u1197sk-boss",
+        "name": "u1197sk-boss",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
         "id": "u1198e-natsu",
         "name": "納茲",
         "star": "8星",
@@ -5330,6 +5407,13 @@
         "id": "u1212h-brown",
         "name": "天使聖誕熊大",
         "star": "超進化8星",
+        "type": "力量型",
+        "element": "光"
+    },
+    {
+        "id": "u1212hsk-brown",
+        "name": "u1212hsk-brown",
+        "star": "8星",
         "type": "力量型",
         "element": "光"
     },
@@ -5943,6 +6027,13 @@
         "element": "光"
     },
     {
+        "id": "u1241sk-brown",
+        "name": "u1241sk-brown",
+        "star": "8星",
+        "type": "力量型",
+        "element": "光"
+    },
+    {
         "id": "u1242e-brown",
         "name": "執行者阿努比斯熊大",
         "star": "9星",
@@ -6440,6 +6531,13 @@
         "element": "暗"
     },
     {
+        "id": "u1276sk-cony",
+        "name": "u1276sk-cony",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "暗"
+    },
+    {
         "id": "u1277e-brown",
         "name": "黑衣英雄熊大",
         "star": "9星",
@@ -6606,6 +6704,13 @@
         "star": "9星",
         "type": "力量型",
         "element": "暗"
+    },
+    {
+        "id": "u1286sk-sally",
+        "name": "u1286sk-sally",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "水"
     },
     {
         "id": "u1287e-sally",
@@ -7735,11 +7840,32 @@
         "element": "暗"
     },
     {
+        "id": "u1352hsk-brown",
+        "name": "u1352hsk-brown",
+        "star": "8星",
+        "type": "力量型",
+        "element": "光"
+    },
+    {
+        "id": "u1352sk-brown",
+        "name": "u1352sk-brown",
+        "star": "8星",
+        "type": "力量型",
+        "element": "光"
+    },
+    {
         "id": "u1353e-brown",
         "name": "冥界代理人熊大",
         "star": "9星",
         "type": "力量型",
         "element": "暗"
+    },
+    {
+        "id": "u1353sk-brown",
+        "name": "u1353sk-brown",
+        "star": "8星",
+        "type": "力量型",
+        "element": "光"
     },
     {
         "id": "u1354e-aq",
@@ -8165,6 +8291,13 @@
         "id": "u1381e-mk",
         "name": "虛擬歌手 櫻花未來",
         "star": "9星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1381sk-mk",
+        "name": "u1381sk-mk",
+        "star": "8星",
         "type": "智慧型",
         "element": "火"
     },
@@ -9922,6 +10055,13 @@
         "id": "u1501h-cony",
         "name": "粉紅女僕兔兔",
         "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "暗"
+    },
+    {
+        "id": "u1501sk-cony",
+        "name": "u1501sk-cony",
+        "star": "8星",
         "type": "敏捷型",
         "element": "暗"
     },
@@ -12180,6 +12320,20 @@
         "element": "水"
     },
     {
+        "id": "u2011hsk-mettaur",
+        "name": "u2011hsk-mettaur",
+        "star": "8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
+        "id": "u2011sk-mettaur",
+        "name": "u2011sk-mettaur",
+        "star": "8星",
+        "type": "力量型",
+        "element": "水"
+    },
+    {
         "id": "u2012e-willy",
         "name": "Dr. WILY",
         "star": "8星",
@@ -14308,6 +14462,48 @@
         "element": "木"
     },
     {
+        "id": "u3911-tuto-brown",
+        "name": "u3911-tuto-brown",
+        "star": "9星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u3912-tuto-jessica",
+        "name": "u3912-tuto-jessica",
+        "star": "9星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u3913-tuto-cony",
+        "name": "u3913-tuto-cony",
+        "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "光"
+    },
+    {
+        "id": "u3914-tuto-james",
+        "name": "u3914-tuto-james",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "暗"
+    },
+    {
+        "id": "u3914sk-tuto-james",
+        "name": "u3914sk-tuto-james",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
+        "id": "u3915-tuto-moon",
+        "name": "u3915-tuto-moon",
+        "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
         "id": "u391e-conan",
         "name": "江戶川柯南",
         "star": "8星",
@@ -15090,6 +15286,13 @@
         "star": "終極進化8星",
         "type": "敏捷型",
         "element": "木"
+    },
+    {
+        "id": "u462e-sally",
+        "name": "u462e-sally",
+        "star": "5星",
+        "type": "智慧型",
+        "element": "無"
     },
     {
         "id": "u463e-brown",
