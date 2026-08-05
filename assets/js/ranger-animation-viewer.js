@@ -423,28 +423,31 @@
 
   function effectiveHitPointRate(meta, clip, motionType) {
     const raw = finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey], NaN);
-    if (Number.isFinite(raw) && raw <= 10) return Math.max(0, raw);
-    return defaultHitPointRate(motionType);
+    if (!Number.isFinite(raw)) return defaultHitPointRate(motionType);
+
+    // UnitData contains both ratio-form values (0, 0.3, 0.5, 1) and
+    // percentage-form values (20, 30, 50, 100). They describe the target's
+    // vertical hit point, measured upward from the target base.
+    const ratio = raw > 1 ? raw / 100 : raw;
+    return clamp(ratio, 0, 1);
   }
 
   function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
-    // Authored hidden markers follow the rendered sprite exactly. Synthetic markers use
-    // UnitData coordinates and are only a fallback when the animation has no native anchor.
-    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
-    if (authored) {
-      return { x: authored.x, y: authored.y, source: "animation-anchor" };
-    }
-
     const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
     const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
     const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
-    const runtimeMultiplier = 1;
-    if (Number.isFinite(rawX) && Number.isFinite(rawY) && (rawX !== 0 || rawY !== 0)) {
-      const x = rawX * coordinateScale * runtimeMultiplier;
-      const y = rawY * coordinateScale * runtimeMultiplier;
-      if (isPlausibleBasicAttackStart(bodyPart, clip, x, y)) {
-        return { x, y, source: "database" };
-      }
+    if (Number.isFinite(rawX) && Number.isFinite(rawY)) {
+      return {
+        x: rawX * coordinateScale,
+        y: rawY * coordinateScale,
+        source: "database",
+      };
+    }
+
+    // SAM-derived points are only used when UnitData does not contain coordinates.
+    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
+    if (authored) {
+      return { x: authored.x, y: authored.y, source: "animation-anchor" };
     }
     const fallback = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
     if (fallback) {
@@ -513,15 +516,14 @@
     };
   }
 
-  function resolveOutboundEnd(projectile, layout, sceneScale, start) {
-    const launchRelativeY = ["LINEAR", "CURVE", "RETURN", "BEAM"].includes(projectile.motionType);
+  function resolveOutboundEnd(projectile, bodyPart, layout, sceneScale) {
+    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
+    const targetHitHeight = targetHeight * finiteNumber(projectile.hitPointRate, 0);
     return {
       x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
-      // UnitData endY is an offset from the launch line for moving projectiles.
-      // Therefore endY=0 preserves a horizontal trajectory instead of snapping to target height.
-      y: launchRelativeY
-        ? start.y - projectile.endOffset.y * sceneScale
-        : layout.targetBaseY - projectile.endOffset.y * sceneScale,
+      // The native endpoint is based on the target hit point. endY is an
+      // additional positive-up offset, not an offset from the launch line.
+      y: layout.targetBaseY - (targetHitHeight + projectile.endOffset.y) * sceneScale,
     };
   }
 
@@ -529,7 +531,7 @@
     const layout = referenceLayout();
     const sceneScale = layout.sceneScale;
     const start = resolveStartScreen(projectile, layout, sceneScale);
-    const end = resolveOutboundEnd(projectile, layout, sceneScale, start);
+    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
     const nativeDistance = Math.hypot(end.x - start.x, end.y - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
 
@@ -798,7 +800,7 @@
 
   function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
     const start = resolveStartScreen(projectile, layout, sceneScale);
-    const end = resolveOutboundEnd(projectile, layout, sceneScale, start);
+    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
     const endX = end.x;
     const endY = end.y;
     const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);
