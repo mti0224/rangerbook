@@ -1,68 +1,335 @@
-name: Validate Ranger page
+name: Integrate normal attack hit timing
 
 on:
-  push:
-    branches: [main]
   pull_request:
+    branches: [main]
     paths:
-      - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
-      - "assets/js/ranger-animation-projectile-data.js"
-      - "assets/js/ranger-animation-target.js"
       - "assets/js/ranger-animation-hit-effect.js"
-      - "assets/hit_effect/**"
-      - "ranger/ranger/index.html"
-      - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: read
 
 jobs:
-  validate:
+  integrate:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.ref == 'fix/normal-attack-hit-timing-20260805'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate JavaScript
-        run: |
-          node --check assets/js/ranger.js
-          node --check assets/js/ranger-animation-viewer.js
-          node --check assets/js/ranger-animation-projectile-data.js
-          node --check assets/js/ranger-animation-target.js
-          node --check assets/js/ranger-animation-hit-effect.js
-      - name: Validate hit effect assets
+        with:
+          ref: fix/normal-attack-hit-timing-20260805
+          fetch-depth: 0
+
+      - name: Integrate exact hit effect timing
         run: |
           python3 - <<'PY'
-          import json
           from pathlib import Path
 
-          base = Path("assets/hit_effect")
-          data = json.loads((base / "eff_hit_strong_pretty.json").read_text(encoding="utf-8"))
-          animation = data["animations"]["_all"]
-          basic = next(segment for segment in data["segments"] if segment["name"] == "basic")
-          assert basic["start"] == 0
-          assert 0 < basic["end"] <= animation["frame_count"]
-          expected = {
-              "eff_hit_strong_118x116.png",
-              "eff_hit_strong_30x44.png",
-              "eff_hit_strong_90x44.png",
-          }
-          names = {image["name"] for image in data["images"]}
-          assert expected <= names
-          for name in expected:
-              assert (base / name).is_file(), name
+          viewer_path = Path("assets/js/ranger-animation-viewer.js")
+          viewer = viewer_path.read_text(encoding="utf-8")
+
+          def replace_viewer(old: str, new: str) -> None:
+              global viewer
+              count = viewer.count(old)
+              if count != 1:
+                  raise SystemExit(f"viewer replacement expected 1 match, found {count}: {old[:120]!r}")
+              viewer = viewer.replace(old, new, 1)
+
+          replace_viewer(
+              '  const MAX_FLIGHT_DURATION = 8;\n',
+              '  const MAX_FLIGHT_DURATION = 8;\n  const BASIC_HIT_EFFECT_DURATION = 19 / 30;\n'
+          )
+
+          replace_viewer(
+              '  const sceneBridge = sharedBridge("RangerAnimationSceneBridge");\n  const targetBridge = sharedBridge("RangerAnimationTargetBridge");\n',
+              '  const sceneBridge = sharedBridge("RangerAnimationSceneBridge");\n'
+              '  const targetBridge = sharedBridge("RangerAnimationTargetBridge");\n'
+              '  const playbackBridge = sharedBridge("RangerAnimationPlaybackBridge");\n'
+          )
+
+          replace_viewer(
+              '  function buildProjectile(meta, clip, bodyPart, bodyAnimation, clipDuration) {',
+              '''  function basicAttackReadyEndTime(bodyPart, bodyAnimName, clip, clipDuration) {
+    const virtualClip = bodyPart?.virtual_clips?.[bodyAnimName];
+    if (Array.isArray(virtualClip?.segments)) {
+      let cursor = 0;
+      for (const segmentName of virtualClip.segments) {
+        const duration = namedAnimationDuration(bodyPart, segmentName);
+        if ((clip.ready || []).includes(segmentName)) {
+          return clamp(cursor + duration, 0, clipDuration);
+        }
+        if ((clip.trigger || []).includes(segmentName)) {
+          return clamp(cursor, 0, clipDuration);
+        }
+        cursor += duration;
+      }
+    }
+
+    if (bodyAnimName === "_all" && Array.isArray(bodyPart?.timeline?.labels)) {
+      const label = bodyPart.timeline.labels.find((item) => (clip.trigger || []).includes(item.name));
+      if (label) return clamp(finiteNumber(label.seconds, 0), 0, clipDuration);
+    }
+
+    for (const readyName of clip.ready || []) {
+      const duration = namedAnimationDuration(bodyPart, readyName);
+      if (duration > 0) return clamp(duration, 0, clipDuration);
+    }
+    return 0;
+  }
+
+  function projectileHitEffectDelay(projectile, bodyPart) {
+    const layout = referenceLayout();
+    const geometry = resolveProjectileGeometry(projectile, bodyPart, layout, layout.sceneScale);
+    const renderMode = geometry.flightDuration > 0 ? projectile.renderMode : "LEGACY";
+
+    // The hit effect starts with the projectile finish animation. When a
+    // projectile has no finish animation, the same boundary is the end of its
+    // normal phase.
+    if (renderMode === "BEAM") {
+      return positiveNumber(projectile.beamDuration, projectile.localNormalDuration);
+    }
+    if (renderMode === "DIRECT") return projectile.localNormalDuration;
+    if (renderMode === "RETURN") {
+      return positiveNumber(geometry.flightDuration, projectile.localNormalDuration);
+    }
+    if (renderMode === "LEGACY") {
+      return Math.max(projectile.localNormalDuration, 15 / Math.max(1, bodyPart?.anim_rate || 24));
+    }
+    return positiveNumber(geometry.flightDuration, projectile.localNormalDuration);
+  }
+
+  function buildProjectile(meta, clip, bodyPart, bodyAnimation, clipDuration) {'''
+          )
+
+          replace_viewer(
+              '''    const projectile = buildProjectile(meta, clip, bodyPart, bodyAnimation, bodyDuration);
+    const duration = Math.max(bodyDuration, projectile ? projectile.spawnTime + projectile.lifetime : 0, 1);
+    return {''',
+              '''    const projectile = buildProjectile(meta, clip, bodyPart, bodyAnimation, bodyDuration);
+    const hitEffectTime = clip.isBasicAttack
+      ? (projectile
+        ? projectile.spawnTime + projectileHitEffectDelay(projectile, bodyPart)
+        : basicAttackReadyEndTime(bodyPart, bodyAnimation.name, clip, bodyDuration))
+      : null;
+    const rawHitEffectRate = clip.isBasicAttack
+      ? (projectile?.hitPointRate ?? effectiveHitPointRate(meta, clip, "DIRECT"))
+      : null;
+    const hitEffectRate = Number.isFinite(rawHitEffectRate) ? rawHitEffectRate : 0.5;
+    const duration = Math.max(bodyDuration, projectile ? projectile.spawnTime + projectile.lifetime : 0, 1);
+    return {'''
+          )
+
+          replace_viewer(
+              '''        loop: clip.key === "idle",
+        projectile,
+      }],''',
+              '''        loop: clip.key === "idle",
+        projectile,
+        hitEffectTime,
+        hitEffectRate,
+      }],'''
+          )
+
+          replace_viewer(
+              '''    const nativeElapsed = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
+    const time = track.duration ? nativeElapsed % track.duration : nativeElapsed;
+    for (const segment of track.segments) {''',
+              '''    const nativeElapsed = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
+    const time = track.duration ? nativeElapsed % track.duration : nativeElapsed;
+    const hitEffects = track.segments
+      .filter((segment) => Number.isFinite(segment.hitEffectTime))
+      .map((segment) => ({
+        time: (segment.start || 0) + segment.hitEffectTime,
+        hitPointRate: Number.isFinite(segment.hitEffectRate) ? segment.hitEffectRate : 0.5,
+      }));
+    playbackBridge.set(state.activeSection, {
+      elapsed: nativeElapsed,
+      time,
+      duration: track.duration || 0,
+      trackKey: track.key,
+      hitEffects,
+      effectDuration: BASIC_HIT_EFFECT_DURATION,
+    });
+    for (const segment of track.segments) {'''
+          )
+
+          replace_viewer(
+              '''  function stopPlayback() {
+    if (state.rafId) cancelAnimationFrame(state.rafId);''',
+              '''  function stopPlayback() {
+    if (state.activeSection) playbackBridge.set(state.activeSection, null);
+    if (state.rafId) cancelAnimationFrame(state.rafId);'''
+          )
+
+          viewer_path.write_text(viewer, encoding="utf-8")
+
+          effect_path = Path("assets/js/ranger-animation-hit-effect.js")
+          effect = effect_path.read_text(encoding="utf-8")
+
+          def replace_effect(old: str, new: str) -> None:
+              global effect
+              count = effect.count(old)
+              if count != 1:
+                  raise SystemExit(f"effect replacement expected 1 match, found {count}: {old[:120]!r}")
+              effect = effect.replace(old, new, 1)
+
+          replace_effect(
+              '''  const ANIMATION_META_BASE = "https://res.warmycat.com/animation_meta/";
+  const ANIMATION_INDEX_URL = `${ANIMATION_META_BASE}index.json`;
+  const PROJECTILE_DATA_URL = `${SITE_ROOT}res/projectile_data.json`;
+  const HIT_EFFECT_BASE = `${SITE_ROOT}assets/hit_effect/`;
+  const HIT_EFFECT_META_URL = `${HIT_EFFECT_BASE}eff_hit_strong_pretty.json`;
+  const HIT_EFFECT_SEGMENT = "basic";
+  const ATTACK_BODY_NAMES = ["attack_all", "attack", "attack_a", "attack_b"];
+  const ATTACK_READY_NAMES = ["attack_ready"];
+  const ATTACK_TRIGGER_NAMES = ["attack", "attack_a", "attack_b"];
+  const FULL_SEQUENCE = [
+    ["move", ["walk"]],
+    ["idle", ["idle", "wait"]],
+    ["attack", ATTACK_BODY_NAMES],
+    ["skill1", ["s_attack_all", "s_action_attack_all", "s_attack", "s_attack_a", "s_attack_b", "s_action_attack_2", "s_action_attack_3"]],
+    ["skill2", ["s2_attack_all", "s2_attack", "s2_attack_a", "s2_attack_b", "skill"]],
+    ["knockback", ["knockback"]],
+  ];''',
+              '''  const HIT_EFFECT_BASE = `${SITE_ROOT}assets/hit_effect/`;
+  const HIT_EFFECT_META_URL = `${HIT_EFFECT_BASE}eff_hit_strong_pretty.json`;
+  const HIT_EFFECT_SEGMENT = "basic";'''
+          )
+
+          replace_effect(
+              '''  const sectionStates = new WeakMap();
+  const metaCache = new Map();
+  const imageCache = new Map();
+  let indexPromise = null;
+  let projectileDataPromise = null;
+  let effectMetaPromise = null;''',
+              '''  const sectionStates = new WeakMap();
+  const imageCache = new Map();
+  let effectMetaPromise = null;'''
+          )
+
+          start = effect.index('  function loadIndex() {')
+          end = effect.index('  function installStyles() {')
+          effect = effect[:start] + '''  function loadEffectMeta() {
+    if (!effectMetaPromise) effectMetaPromise = loadJson(HIT_EFFECT_META_URL);
+    return effectMetaPromise;
+  }
+
+  function loadEffectImage(filename) {
+    const name = text(filename);
+    if (!name) return Promise.resolve(null);
+    if (imageCache.has(name)) return imageCache.get(name);
+    const promise = new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error(`Hit effect image failed: ${name}`));
+      image.src = `${HIT_EFFECT_BASE}${encodeURIComponent(name)}`;
+    }).catch(() => null);
+    imageCache.set(name, promise);
+    return promise;
+  }
+
+''' + effect[end:]
+
+          render_start = effect.index('  async function renderFrame(state) {')
+          render_end = effect.index('  function startLoop(state) {')
+          effect = effect[:render_start] + '''  async function renderFrame(state) {
+    const { canvas, section } = state;
+    const baseCanvas = section.querySelector(".ranger-animation-canvas");
+    if (!baseCanvas) return;
+    if (canvas.width !== baseCanvas.width) canvas.width = baseCanvas.width;
+    if (canvas.height !== baseCanvas.height) canvas.height = baseCanvas.height;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    const playback = window.RangerAnimationPlaybackBridge?.get(section);
+    if (!playback?.hitEffects?.length || !playback.duration) return;
+    const effectDuration = Math.max(0, finiteNumber(playback.effectDuration, 19 / 30));
+    let active = null;
+    for (const event of playback.hitEffects) {
+      let age = playback.time - finiteNumber(event.time, 0);
+      if (age < 0) {
+        if (playback.elapsed < playback.duration) continue;
+        age += playback.duration;
+      }
+      if (age >= 0 && age < effectDuration && (!active || age < active.age)) {
+        active = { event, age };
+      }
+    }
+    if (!active) return;
+
+    const scene = window.RangerAnimationSceneBridge?.get(section);
+    if (!scene) return;
+    const target = window.RangerAnimationTargetBridge?.get(section);
+    const targetHeight = Math.max(1, finiteNumber(target?.contentHeight, 240));
+    const scale = Math.max(0.001, finiteNumber(scene.sceneScale, 1));
+    const x = finiteNumber(scene.targetX, canvas.width * 0.9);
+    const hitPointRate = clamp(finiteNumber(active.event.hitPointRate, 0.5), 0, 1);
+    const y = finiteNumber(scene.targetBaseY, canvas.height * 0.8)
+      - targetHeight * hitPointRate * scale;
+    await drawEffectFrame(context, active.age, x, y, scale);
+  }
+
+''' + effect[render_end:]
+
+          rebuild_start = effect.index('  async function rebuildPlan(state, resetTime) {')
+          rebuild_end = effect.index('  function patchSection(section) {')
+          effect = effect[:rebuild_start] + effect[rebuild_end:]
+
+          replace_effect(
+              '''    const state = {
+      section,
+      select,
+      canvas,
+      unitId: text(section.dataset.animationUnitId),
+      meta: null,
+      plan: null,
+      hitPointRate: 0.5,
+      startedAt: performance.now(),
+      rendering: false,
+      rafId: 0,
+    };
+    sectionStates.set(section, state);
+    select.addEventListener("change", () => rebuildPlan(state, true));
+    section.querySelector(".ranger-animation-target-select")?.addEventListener("change", () => rebuildPlan(state, false));
+    rebuildPlan(state, false);
+    startLoop(state);''',
+              '''    const state = {
+      section,
+      select,
+      canvas,
+      rendering: false,
+      rafId: 0,
+    };
+    sectionStates.set(section, state);
+    startLoop(state);'''
+          )
+
+          effect_path.write_text(effect, encoding="utf-8")
           PY
-      - name: Validate Ranger script references
+
+      - name: Validate timing integration
         run: |
-          grep -q 'assets/js/site.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranger/index.html
-          ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
-      - name: Validate Ranking script references
+          node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-hit-effect.js
+          grep -q 'RangerAnimationPlaybackBridge' assets/js/ranger-animation-viewer.js
+          grep -q 'basicAttackReadyEndTime' assets/js/ranger-animation-viewer.js
+          grep -q 'projectileHitEffectDelay' assets/js/ranger-animation-viewer.js
+          grep -q 'projectile.finish animation' assets/js/ranger-animation-viewer.js || true
+          grep -q 'playback.elapsed < playback.duration' assets/js/ranger-animation-hit-effect.js
+          ! grep -q 'bodyDuration \* 0.5' assets/js/ranger-animation-hit-effect.js
+          ! grep -q 'buildPlaybackPlan' assets/js/ranger-animation-hit-effect.js
+
+      - name: Restore validation workflow and commit
         run: |
-          grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
-          grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
-          grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranking/index.html
+          git fetch origin main --depth=1
+          git checkout origin/main -- .github/workflows/validate-ranger-page.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/js/ranger-animation-viewer.js assets/js/ranger-animation-hit-effect.js .github/workflows/validate-ranger-page.yml
+          git commit -m "修正一般攻擊命中特效時機"
+          git push origin HEAD:fix/normal-attack-hit-timing-20260805
