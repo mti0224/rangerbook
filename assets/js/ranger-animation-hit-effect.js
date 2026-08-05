@@ -6,9 +6,12 @@
   const HIT_EFFECT_BASE = `${SITE_ROOT}assets/hit_effect/`;
   const HIT_EFFECT_META_URL = `${HIT_EFFECT_BASE}eff_hit_strong_pretty.json`;
   const HIT_EFFECT_SEGMENT = "basic";
+  const HIT_EFFECT_DURATION = 19 / 30;
   const ATTACK_BODY_NAMES = ["attack_all", "attack", "attack_a", "attack_b"];
   const ATTACK_READY_NAMES = ["attack_ready"];
   const ATTACK_TRIGGER_NAMES = ["attack", "attack_a", "attack_b"];
+  const BULLET_NORMAL_NAMES = ["normal", "normal_a", "idle", "wait", "shot", "fire", "attack", "_all"];
+  const BULLET_FINISH_NAMES = ["finish", "hit", "end"];
   const FULL_SEQUENCE = [
     ["move", ["walk"]],
     ["idle", ["idle", "wait"]],
@@ -87,6 +90,7 @@
         if (unitData) {
           meta.projectileData = {
             hitTiming: unitData.hitTiming || null,
+            normal: unitData.normal || null,
           };
         }
       }
@@ -110,13 +114,19 @@
     return animation.frame_count / Math.max(1, part.anim_rate || 24);
   }
 
-  function attackImpactTime(bodyPart, bodyAnimation, bodyDuration) {
+  function attackReadyEndTime(bodyPart, bodyAnimation, bodyDuration) {
     const virtualClip = bodyPart?.virtual_clips?.[bodyAnimation.name];
     if (Array.isArray(virtualClip?.segments)) {
       let cursor = 0;
       for (const segmentName of virtualClip.segments) {
-        if (ATTACK_TRIGGER_NAMES.includes(segmentName)) return clamp(cursor, 0, bodyDuration);
-        cursor += animationDuration(bodyPart, segmentName);
+        const duration = animationDuration(bodyPart, segmentName);
+        if (ATTACK_READY_NAMES.includes(segmentName)) {
+          return clamp(cursor + duration, 0, bodyDuration);
+        }
+        if (ATTACK_TRIGGER_NAMES.includes(segmentName)) {
+          return clamp(cursor, 0, bodyDuration);
+        }
+        cursor += duration;
       }
     }
 
@@ -129,8 +139,26 @@
       const readyDuration = animationDuration(bodyPart, readyName);
       if (readyDuration > 0) return clamp(readyDuration, 0, bodyDuration);
     }
+    return 0;
+  }
 
-    return clamp(bodyDuration * 0.5, 0, bodyDuration);
+  function resolveNormalBullet(meta) {
+    const projectileConfig = meta?.projectileData?.normal || null;
+    const requestedPartName = text(projectileConfig?.animationPart) || "bul";
+    const bulletPart = meta?.parts?.[requestedPartName] || meta?.parts?.bul;
+    if (!bulletPart) return null;
+
+    const normalAnimation = getAnimation(bulletPart, BULLET_NORMAL_NAMES);
+    if (!normalAnimation) return null;
+    const finishAnimation = getAnimation(bulletPart, BULLET_FINISH_NAMES);
+    return {
+      normalDuration: Math.max(
+        1 / Math.max(1, bulletPart.anim_rate || 24),
+        animationDuration(bulletPart, normalAnimation.name),
+      ),
+      finishDuration: finishAnimation ? animationDuration(bulletPart, finishAnimation.name) : 0,
+      hasFinish: Boolean(finishAnimation),
+    };
   }
 
   function clipBodyDuration(bodyPart, names) {
@@ -144,23 +172,44 @@
     if (!bodyPart) return null;
     const attackAnimation = getAnimation(bodyPart, ATTACK_BODY_NAMES);
     if (!attackAnimation) return null;
+
     const attackDuration = Math.max(animationDuration(bodyPart, attackAnimation.name), 1);
-    const localImpact = attackImpactTime(bodyPart, attackAnimation, attackDuration);
+    const readyEnd = attackReadyEndTime(bodyPart, attackAnimation, attackDuration);
+    const bullet = resolveNormalBullet(meta);
+    const localImpact = bullet ? readyEnd + bullet.normalDuration : readyEnd;
+    const attackCycleDuration = Math.max(
+      attackDuration,
+      bullet ? localImpact + bullet.finishDuration : attackDuration,
+      1,
+    );
 
     if (selectedClip === "attack") {
-      return { cycleDuration: attackDuration, impactTime: localImpact };
+      return {
+        cycleDuration: attackCycleDuration,
+        impactTime: localImpact,
+        timingSource: bullet ? (bullet.hasFinish ? "bullet-finish-start" : "bullet-normal-end") : "attack-ready-end",
+      };
     }
 
     if (selectedClip !== "full") return null;
     let cursor = 0;
     let impactTime = null;
     for (const [key, names] of FULL_SEQUENCE) {
-      const duration = clipBodyDuration(bodyPart, names);
+      let duration = clipBodyDuration(bodyPart, names);
       if (!duration) continue;
-      if (key === "attack") impactTime = cursor + localImpact;
+      if (key === "attack") {
+        impactTime = cursor + localImpact;
+        duration = attackCycleDuration;
+      }
       cursor += duration;
     }
-    return impactTime === null ? null : { cycleDuration: Math.max(cursor, 1), impactTime };
+    return impactTime === null
+      ? null
+      : {
+        cycleDuration: Math.max(cursor, 1),
+        impactTime,
+        timingSource: bullet ? (bullet.hasFinish ? "bullet-finish-start" : "bullet-normal-end") : "attack-ready-end",
+      };
   }
 
   function normalizedHitPointRate(meta) {
@@ -248,8 +297,12 @@
 
     const elapsed = (performance.now() - state.startedAt) / 1000;
     const time = state.plan.cycleDuration > 0 ? elapsed % state.plan.cycleDuration : elapsed;
-    const age = time - state.plan.impactTime;
-    if (age < 0) return;
+    let age = time - state.plan.impactTime;
+    if (age < 0) {
+      if (elapsed < state.plan.cycleDuration) return;
+      age += state.plan.cycleDuration;
+    }
+    if (age < 0 || age >= HIT_EFFECT_DURATION) return;
 
     const scene = window.RangerAnimationSceneBridge?.get(section);
     if (!scene) return;
