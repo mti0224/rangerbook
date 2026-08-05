@@ -1,218 +1,38 @@
-name: Integrate normal attack hit effect
+name: Validate Ranger page
 
 on:
-  pull_request:
+  push:
     branches: [main]
+  pull_request:
     paths:
+      - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
+      - "assets/js/ranger-animation-projectile-data.js"
+      - "assets/js/ranger-animation-target.js"
+      - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
+      - "ranger/ranger/index.html"
+      - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: read
+  contents: read
 
 jobs:
   validate:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.ref == 'feat/normal-attack-hit-effect-20260805'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: feat/normal-attack-hit-effect-20260805
-          fetch-depth: 0
-
-      - name: Integrate normal attack hit effect
+      - name: Validate JavaScript
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path("assets/js/ranger-animation-viewer.js")
-          source = path.read_text(encoding="utf-8")
-
-          def replace_once(old: str, new: str) -> None:
-              global source
-              count = source.count(old)
-              if count != 1:
-                  raise SystemExit(f"Expected exactly one match, found {count}: {old[:100]!r}")
-              source = source.replace(old, new, 1)
-
-          replace_once(
-              '  const PROJECTILE_DATA_URL = `${SITE_ROOT}res/projectile_data.json`;\n\n  const NATIVE_ACTION_FPS = 60;',
-              '  const PROJECTILE_DATA_URL = `${SITE_ROOT}res/projectile_data.json`;\n'
-              '  const HIT_EFFECT_BASE = `${SITE_ROOT}assets/hit_effect/`;\n'
-              '  const BASIC_HIT_EFFECT_URL = `${HIT_EFFECT_BASE}eff_hit_strong_pretty.json`;\n'
-              '  const BASIC_HIT_EFFECT_SEGMENT = "basic";\n'
-              '  const BASIC_HIT_EFFECT_FALLBACK_DURATION = 19 / 30;\n\n'
-              '  const NATIVE_ACTION_FPS = 60;'
-          )
-
-          replace_once(
-              '    projectileDataPromise: null,\n    metaCache: new Map(),\n    imageCache: new Map(),',
-              '    projectileDataPromise: null,\n'
-              '    hitEffectPromise: null,\n'
-              '    metaCache: new Map(),\n'
-              '    imageCache: new Map(),\n'
-              '    hitEffectImageCache: new Map(),'
-          )
-
-          replace_once(
-              '  function attachProjectileDataFallback(meta, projectileData, unitId) {',
-              '''  function loadBasicHitEffectMeta() {
-    if (!state.hitEffectPromise) {
-      state.hitEffectPromise = fetch(BASIC_HIT_EFFECT_URL)
-        .then((response) => (response.ok ? response.json() : null))
-        .catch(() => null);
-    }
-    return state.hitEffectPromise;
-  }
-
-  function loadBasicHitEffectImage(filename) {
-    const name = text(filename);
-    if (!name) return Promise.resolve(null);
-    if (state.hitEffectImageCache.has(name)) return state.hitEffectImageCache.get(name);
-    const promise = new Promise((resolve, reject) => {
-      const image = new Image();
-      image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error(`Hit effect image failed: ${name}`));
-      image.src = `${HIT_EFFECT_BASE}${encodeURIComponent(name)}`;
-    }).catch(() => null);
-    state.hitEffectImageCache.set(name, promise);
-    return promise;
-  }
-
-  function attachProjectileDataFallback(meta, projectileData, unitId) {'''
-          )
-
-          replace_once(
-              '  function buildProjectile(meta, clip, bodyPart, bodyAnimation, clipDuration) {',
-              '''  function estimateProjectileImpactDelay(projectile, bodyPart) {
-    if (!projectile) return 0;
-    if (["BEAM", "DIRECT"].includes(projectile.renderMode)) return 0;
-    const layout = referenceLayout();
-    const sceneScale = layout.sceneScale;
-    const start = resolveStartScreen(projectile, layout, sceneScale);
-    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
-    const nativeDistance = Math.hypot(end.x - start.x, end.y - start.y) / Math.max(0.0001, sceneScale);
-    const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
-    if (["LINEAR", "CURVE", "RETURN"].includes(projectile.renderMode) && flightDuration > 0) {
-      return flightDuration;
-    }
-    return Math.min(projectile.localNormalDuration, 6 / Math.max(1, bodyPart?.anim_rate || 24));
-  }
-
-  function nativeBasicAttackImpactTime(bodyPart, bodyAnimation, clip, bodyDuration) {
-    const triggerTime = nativeProjectileSpawnTime(bodyPart, bodyAnimation.name, clip, bodyDuration);
-    if (triggerTime > 0) return triggerTime;
-    return clamp(bodyDuration * 0.5, 0, Math.max(0, bodyDuration - MIN_FLIGHT_DURATION));
-  }
-
-  function buildProjectile(meta, clip, bodyPart, bodyAnimation, clipDuration) {'''
-          )
-
-          replace_once(
-              '''    const projectile = buildProjectile(meta, clip, bodyPart, bodyAnimation, bodyDuration);
-    const duration = Math.max(bodyDuration, projectile ? projectile.spawnTime + projectile.lifetime : 0, 1);''',
-              '''    const projectile = buildProjectile(meta, clip, bodyPart, bodyAnimation, bodyDuration);
-    const fallbackImpactTime = clip.isBasicAttack
-      ? nativeBasicAttackImpactTime(bodyPart, bodyAnimation, clip, bodyDuration)
-      : null;
-    const hitEffectTime = clip.isBasicAttack
-      ? (projectile
-        ? projectile.spawnTime + estimateProjectileImpactDelay(projectile, bodyPart)
-        : fallbackImpactTime)
-      : null;
-    const rawHitEffectRate = clip.isBasicAttack
-      ? effectiveHitPointRate(meta, clip, projectile?.motionType || "DIRECT")
-      : null;
-    const hitEffectRate = clip.isBasicAttack
-      ? (Number.isFinite(rawHitEffectRate) ? rawHitEffectRate : 0.5)
-      : null;
-    const duration = Math.max(
-      bodyDuration,
-      projectile ? projectile.spawnTime + projectile.lifetime : 0,
-      hitEffectTime === null ? 0 : hitEffectTime + BASIC_HIT_EFFECT_FALLBACK_DURATION,
-      1,
-    );'''
-          )
-
-          replace_once(
-              '''        loop: clip.key === "idle",
-        projectile,
-      }],''',
-              '''        loop: clip.key === "idle",
-        projectile,
-        hitEffectTime,
-        hitEffectRate,
-      }],'''
-          )
-
-          replace_once(
-              '  function frameIndex(part, animName, elapsed, loop = false) {',
-              '''  async function drawBasicHitEffect(context, age, x, y, sceneScale) {
-    if (!context || age < 0) return false;
-    const part = await loadBasicHitEffectMeta();
-    const animation = part?.animations?._all;
-    if (!animation?.frames?.length) return false;
-    const segment = (part.segments || []).find((item) => item?.name === BASIC_HIT_EFFECT_SEGMENT);
-    const start = Math.max(0, Math.trunc(finiteNumber(segment?.start, 0)));
-    const end = Math.min(
-      animation.frame_count,
-      Math.max(start, Math.trunc(finiteNumber(segment?.end, animation.frame_count))),
-    );
-    const frameIndexValue = start + Math.floor(age * Math.max(1, part.anim_rate || 30));
-    if (frameIndexValue < start || frameIndexValue >= end) return false;
-    const frame = animation.frames[frameIndexValue] || [];
-    let drawn = false;
-    for (const item of frame) {
-      const [, resourceNumber, objectMatrix, color] = item || [];
-      const imageDefinition = part.images?.[resourceNumber];
-      if (!imageDefinition || !Array.isArray(objectMatrix) || !Array.isArray(imageDefinition.m)) continue;
-      const spriteImage = await loadBasicHitEffectImage(imageDefinition.name);
-      if (!spriteImage) continue;
-      drawSprite(context, spriteImage, objectMatrix, imageDefinition.m, color, x, y, sceneScale, sceneScale);
-      drawn = true;
-    }
-    return drawn;
-  }
-
-  function frameIndex(part, animName, elapsed, loop = false) {'''
-          )
-
-          replace_once(
-              '''    const projectile = segment.projectile;
-    if (!projectile) return;
-    const projectileAge = age - projectile.spawnTime;
-    if (projectileAge < 0) return;
-    await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);''',
-              '''    const projectile = segment.projectile;
-    if (projectile) {
-      const projectileAge = age - projectile.spawnTime;
-      if (projectileAge >= 0) {
-        await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
-      }
-    }
-
-    if (segment.hitEffectTime === null || segment.hitEffectTime === undefined) return;
-    const hitEffectAge = age - segment.hitEffectTime;
-    if (hitEffectAge < 0) return;
-    const hitPoint = projectile
-      ? resolveOutboundEnd(projectile, bodyPart, layout, sceneScale)
-      : {
-        x: layout.targetX,
-        y: layout.targetBaseY
-          - selectedTargetProfile(bodyPart).contentHeight * segment.hitEffectRate * sceneScale,
-      };
-    await drawBasicHitEffect(projectileContext, hitEffectAge, hitPoint.x, hitPoint.y, sceneScale);'''
-          )
-
-          path.write_text(source, encoding="utf-8")
-          PY
-
-      - name: Validate JavaScript and hit effect assets
-        run: |
+          node --check assets/js/ranger.js
           node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-projectile-data.js
+          node --check assets/js/ranger-animation-target.js
+          node --check assets/js/ranger-animation-hit-effect.js
+      - name: Validate hit effect assets
+        run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -223,31 +43,26 @@ jobs:
           basic = next(segment for segment in data["segments"] if segment["name"] == "basic")
           assert basic["start"] == 0
           assert 0 < basic["end"] <= animation["frame_count"]
-          names = {image["name"] for image in data["images"]}
           expected = {
               "eff_hit_strong_118x116.png",
               "eff_hit_strong_30x44.png",
               "eff_hit_strong_90x44.png",
           }
+          names = {image["name"] for image in data["images"]}
           assert expected <= names
           for name in expected:
               assert (base / name).is_file(), name
           PY
-          grep -q 'BASIC_HIT_EFFECT_SEGMENT = "basic"' assets/js/ranger-animation-viewer.js
-          grep -q 'clip.isBasicAttack' assets/js/ranger-animation-viewer.js
-          grep -q 'segment.hitEffectTime' assets/js/ranger-animation-viewer.js
-          grep -q 'ranger-animation-projectile-canvas' assets/js/ranger-animation-viewer.js
-
-      - name: Restore workflow and commit integrated source
+      - name: Validate Ranger script references
         run: |
-          git fetch origin main --depth=1
-          git checkout origin/main -- .github/workflows/validate-ranger-page.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- assets/js/ranger-animation-viewer.js .github/workflows/validate-ranger-page.yml
-          if git diff --cached --quiet; then
-            echo "No integrated changes to commit."
-            exit 0
-          fi
-          git commit -m "加入一般攻擊命中特效"
-          git push origin HEAD:feat/normal-attack-hit-effect-20260805
+          grep -q 'assets/js/site.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranger/index.html
+          ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
+      - name: Validate Ranking script references
+        run: |
+          grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
+          grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
+          grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranking/index.html
