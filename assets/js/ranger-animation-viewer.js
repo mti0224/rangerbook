@@ -347,7 +347,6 @@
     if (["LINEAR", "RETURN"].includes(motionType)) return 0.25;
     return null;
   }
-
   function effectiveHitPointRate(meta, clip, motionType) {
     const raw = finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey], NaN);
     if (Number.isFinite(raw) && raw <= 10) return Math.max(0, raw);
@@ -400,11 +399,9 @@
     const databaseStart = projectile.start.source === "database";
     const bodyOriginX = actorX + BODY_OFFSET_X * referenceScale;
     const bodyOriginY = actorY + BODY_OFFSET_Y * referenceScale;
-    const startX = databaseStart
-      ? actorX + projectile.start.x * referenceScale
-      : bodyOriginX + projectile.start.x * referenceScale;
+    const startX = bodyOriginX + projectile.start.x * referenceScale;
     const startY = databaseStart
-      ? actorY - projectile.start.y * referenceScale
+      ? bodyOriginY - projectile.start.y * referenceScale
       : bodyOriginY + projectile.start.y * referenceScale;
     const endX = targetX + projectile.endOffset.x * referenceScale;
     const endY = actorY - (hitHeight + projectile.endOffset.y) * referenceScale;
@@ -693,11 +690,9 @@
 
   function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
     const databaseStart = projectile.start.source === "database";
-    const startX = databaseStart
-      ? layout.actorX + projectile.start.x * sceneScale
-      : layout.bodyOriginX + projectile.start.x * sceneScale;
+    const startX = layout.bodyOriginX + projectile.start.x * sceneScale;
     const startY = databaseStart
-      ? layout.actorY - projectile.start.y * sceneScale
+      ? layout.bodyOriginY - projectile.start.y * sceneScale
       : layout.bodyOriginY + projectile.start.y * sceneScale;
     const targetHeight = syntheticTargetContentHeight(bodyPart);
     const hitHeight = Number.isFinite(projectile.hitPointRate)
@@ -796,8 +791,8 @@
       }
       const returnAge = age - geometry.flightDuration;
       const progress = returnAge / geometry.flightDuration;
-      const returnEndX = layout.actorX + projectile.secondStart.x * sceneScale;
-      const returnEndY = layout.actorY - projectile.secondStart.y * sceneScale;
+      const returnEndX = layout.bodyOriginX + projectile.secondStart.x * sceneScale;
+      const returnEndY = layout.bodyOriginY - projectile.secondStart.y * sceneScale;
       await drawProjectileFrame(
         context,
         bulletPart,
