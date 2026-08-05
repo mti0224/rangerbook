@@ -35,7 +35,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- assets/js/ranger-animation-hit-effect.js
-          git rm --cached --ignore-unmatch .github/scripts/patch_no_projectile_hit_effect.py .github/workflows/apply-no-projectile-hit-effect-center.yml || true
           git add -u -- .github/scripts/patch_no_projectile_hit_effect.py .github/workflows/apply-no-projectile-hit-effect-center.yml
           git commit -m "fix: center no-projectile hit effect on target"
           git push origin HEAD:fix/no-projectile-hit-effect-center-20260806
+
+# PR #92 trigger
