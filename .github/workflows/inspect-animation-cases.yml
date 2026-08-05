@@ -99,6 +99,12 @@ jobs:
           summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
           print(summary_path.read_text(encoding="utf-8"))
           PY
+      - name: Include current renderer sources
+        run: |
+          mkdir -p inspection/source
+          cp assets/js/ranger-animation-viewer.js inspection/source/
+          cp assets/js/ranger-animation-target.js inspection/source/
+          cp assets/js/ranger-animation-hit-effect.js inspection/source/
       - uses: actions/upload-artifact@v4
         with:
           name: animation-case-inspection
