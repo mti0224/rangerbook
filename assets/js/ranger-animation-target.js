@@ -4,10 +4,6 @@
   const RESOURCE_PRIMARY_BASE = "https://res.warmycat.com/";
   const RESOURCE_FALLBACK_BASE = "https://rangers.lerico.net/res/";
   const OLD_PRIMARY_PREFIX = "res_from_emulator/";
-  const VIEWER_RESOURCE_SCALE = 2.28;
-  const NORMAL_STAGE_INITIAL_SCALE = 0.85;
-  const TARGET_X_RATIO = 0.90;
-  const GROUND_Y_RATIO = 0.80;
 
   const TARGET_OPTIONS = [
     { id: "", label: "無" },
@@ -18,12 +14,45 @@
     { id: "u1353sk-brown", label: "冥界熊大的幽魂鬼怪（九星）" },
   ];
 
+  function sharedBridge(name) {
+    if (window[name]?.get && window[name]?.set) return window[name];
+    const values = new WeakMap();
+    const bridge = {
+      get(section) {
+        return section ? values.get(section) || null : null;
+      },
+      set(section, value) {
+        if (!section) return;
+        if (value === null || value === undefined) values.delete(section);
+        else values.set(section, value);
+      },
+    };
+    window[name] = bridge;
+    return bridge;
+  }
+
+  const sceneBridge = sharedBridge("RangerAnimationSceneBridge");
+  const targetBridge = sharedBridge("RangerAnimationTargetBridge");
   const sectionStates = new WeakMap();
   const metaCache = new Map();
   const imageCache = new Map();
   const spriteCache = new Map();
   let indexPromise = null;
   let patchScheduled = false;
+
+  function finiteNumber(value, fallback = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+
+  function positiveNumber(value, fallback = 0) {
+    const number = finiteNumber(value, fallback);
+    return number > 0 ? number : fallback;
+  }
+
+  function clamp(value, minimum, maximum) {
+    return Math.min(maximum, Math.max(minimum, value));
+  }
 
   function normalizeResourcePath(path) {
     return String(path || "")
@@ -113,10 +142,6 @@
     return canvas;
   }
 
-  function clamp(value, minimum, maximum) {
-    return Math.min(maximum, Math.max(minimum, value));
-  }
-
   function drawSprite(context, spriteCanvas, objectMatrix, imageMatrix, color, originX, originY, scaleX, scaleY) {
     const [m00, m01, m10, m11, m02, m12] = objectMatrix;
     const [i00, i01, i10, i11, i02, i12] = imageMatrix;
@@ -172,7 +197,8 @@
       const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
       const imageDefinition = part?.images?.[resourceNumber];
       const sprite = part?.sprites?.[imageDefinition?.name];
-      const [width, height] = [Number(sprite?.rect?.[2]), Number(sprite?.rect?.[3])];
+      const width = Number(sprite?.rect?.[2]);
+      const height = Number(sprite?.rect?.[3]);
       if (alpha === 0 || !width || !height || !Array.isArray(objectMatrix) || !Array.isArray(imageDefinition?.m)) continue;
 
       const [m00, m01, m10, m11, m02, m12] = objectMatrix;
@@ -199,6 +225,29 @@
     return { minX, minY, maxX, maxY, facesLeft: facingScore < 0 };
   }
 
+  function targetSizeRatio(meta) {
+    return positiveNumber(meta?.projectileData?.render?.sizeRatio, 1);
+  }
+
+  function buildTargetProfile(unitId, meta, part, geometry) {
+    const sizeRatio = targetSizeRatio(meta);
+    const visibleWidth = geometry ? geometry.maxX - geometry.minX : 0;
+    const visibleHeight = geometry ? geometry.maxY - geometry.minY : 0;
+    return {
+      unitId,
+      sizeRatio,
+      contentWidth: positiveNumber(part?.canvas?.w, positiveNumber(visibleWidth, 1)) * sizeRatio,
+      contentHeight: positiveNumber(part?.canvas?.h, positiveNumber(visibleHeight, 1)) * sizeRatio,
+    };
+  }
+
+  function publishTarget(state, profile) {
+    targetBridge.set(state.section, profile);
+    state.section.dispatchEvent(new CustomEvent("ranger-animation-target-change", {
+      detail: profile,
+    }));
+  }
+
   async function drawTarget(state, elapsed) {
     const { overlay, baseCanvas, meta } = state;
     const context = overlay.getContext("2d");
@@ -207,6 +256,8 @@
     if (overlay.height !== baseCanvas.height) overlay.height = baseCanvas.height;
     context.clearRect(0, 0, overlay.width, overlay.height);
 
+    const scene = sceneBridge.get(state.section);
+    if (!scene) return;
     const part = meta?.parts?.body;
     const selectedAnimation = targetAnimation(part);
     if (!part || !selectedAnimation) return;
@@ -220,18 +271,13 @@
     const geometry = frameGeometry(part, frame);
     if (!geometry) return;
 
-    const zoom = Number(state.zoomInput?.value) || 1;
-    const sizeRatioValue = Number(meta?.projectileData?.render?.sizeRatio);
-    const sizeRatio = Number.isFinite(sizeRatioValue) && sizeRatioValue > 0 ? sizeRatioValue : 1;
-    const targetScale = Math.min(overlay.width / 1400, overlay.height / 750) *
-      VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE * zoom * sizeRatio;
+    const sizeRatio = targetSizeRatio(meta);
+    const targetScale = scene.sceneScale * sizeRatio;
     const scaleX = geometry.facesLeft ? targetScale : -targetScale;
-    const targetX = overlay.width * TARGET_X_RATIO + state.panX;
-    const targetBaseY = overlay.height * GROUND_Y_RATIO + state.panY;
     const scaledMinX = Math.min(geometry.minX * scaleX, geometry.maxX * scaleX);
     const scaledMaxX = Math.max(geometry.minX * scaleX, geometry.maxX * scaleX);
-    const originX = targetX - (scaledMinX + scaledMaxX) * 0.5;
-    const originY = targetBaseY - geometry.maxY * targetScale;
+    const originX = scene.targetX - (scaledMinX + scaledMaxX) * 0.5;
+    const originY = scene.targetBaseY - geometry.maxY * targetScale;
 
     for (const item of frame) {
       const [, resourceNumber, objectMatrix, color] = item || [];
@@ -239,17 +285,7 @@
       if (!imageDefinition || !Array.isArray(objectMatrix) || !Array.isArray(imageDefinition.m)) continue;
       const spriteCanvas = getSpriteCanvas(part, atlas, imageDefinition.name);
       if (!spriteCanvas) continue;
-      drawSprite(
-        context,
-        spriteCanvas,
-        objectMatrix,
-        imageDefinition.m,
-        color,
-        originX,
-        originY,
-        scaleX,
-        targetScale,
-      );
+      drawSprite(context, spriteCanvas, objectMatrix, imageDefinition.m, color, originX, originY, scaleX, targetScale);
     }
   }
 
@@ -284,7 +320,9 @@
     stopTargetLoop(state);
     state.meta = null;
     state.select.title = "";
+    publishTarget(state, null);
     if (!unitId) return;
+
     state.select.disabled = true;
     const meta = await loadTargetMeta(unitId);
     if (token !== state.loadToken) return;
@@ -294,33 +332,19 @@
       console.warn("Target animation metadata unavailable:", unitId);
       return;
     }
+
+    const part = meta.parts.body;
+    const selectedAnimation = targetAnimation(part);
+    const firstFrame = selectedAnimation?.animation?.frames?.[0] || [];
+    const geometry = frameGeometry(part, firstFrame);
     state.meta = meta;
+    state.unitId = unitId;
+    publishTarget(state, buildTargetProfile(unitId, meta, part, geometry));
     startTargetLoop(state);
   }
 
-  function bindTargetPan(state) {
-    const canvas = state.baseCanvas;
-    canvas.addEventListener("pointerdown", (event) => {
-      state.dragging = true;
-      state.dragStartX = event.clientX;
-      state.dragStartY = event.clientY;
-      state.dragPanX = state.panX;
-      state.dragPanY = state.panY;
-    });
-    canvas.addEventListener("pointermove", (event) => {
-      if (!state.dragging) return;
-      state.panX = state.dragPanX + event.clientX - state.dragStartX;
-      state.panY = state.dragPanY + event.clientY - state.dragStartY;
-    });
-    ["pointerup", "pointercancel", "pointerleave"].forEach((eventName) => {
-      canvas.addEventListener(eventName, () => { state.dragging = false; });
-    });
-  }
-
   function targetOptionsHtml() {
-    return TARGET_OPTIONS
-      .map(({ id, label }) => `<option value="${id}">${label}</option>`)
-      .join("");
+    return TARGET_OPTIONS.map(({ id, label }) => `<option value="${id}">${label}</option>`).join("");
   }
 
   function installStyles() {
@@ -389,22 +413,14 @@
       baseCanvas,
       overlay,
       select,
-      zoomInput: controls.querySelector(".ranger-animation-zoom"),
+      unitId: "",
       meta: null,
       rafId: 0,
       startedAt: 0,
       rendering: false,
       loadToken: 0,
-      panX: 0,
-      panY: 0,
-      dragging: false,
-      dragStartX: 0,
-      dragStartY: 0,
-      dragPanX: 0,
-      dragPanY: 0,
     };
     sectionStates.set(section, state);
-    bindTargetPan(state);
     select.addEventListener("change", () => selectTarget(state, select.value));
   }
 

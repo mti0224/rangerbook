@@ -20,6 +20,26 @@
   const BODY_OFFSET_X = -130;
   const BODY_OFFSET_Y = -88;
 
+  function sharedBridge(name) {
+    if (window[name]?.get && window[name]?.set) return window[name];
+    const values = new WeakMap();
+    const bridge = {
+      get(section) {
+        return section ? values.get(section) || null : null;
+      },
+      set(section, value) {
+        if (!section) return;
+        if (value === null || value === undefined) values.delete(section);
+        else values.set(section, value);
+      },
+    };
+    window[name] = bridge;
+    return bridge;
+  }
+
+  const sceneBridge = sharedBridge("RangerAnimationSceneBridge");
+  const targetBridge = sharedBridge("RangerAnimationTargetBridge");
+
   const CLIPS = [
     { key: "idle", label: "待機", body: ["idle", "wait"] },
     { key: "move", label: "移動", body: ["walk"] },
@@ -70,6 +90,7 @@
     rafId: 0,
     startedAt: 0,
     activeCanvas: null,
+    activeSection: null,
     activeMeta: null,
     activeClip: "idle",
     zoom: 1,
@@ -256,9 +277,7 @@
 
     if (bodyAnimName === "_all" && Array.isArray(bodyPart?.timeline?.labels)) {
       const label = bodyPart.timeline.labels.find((item) => (clip.trigger || []).includes(item.name));
-      if (label) {
-        return clamp(finiteNumber(label.seconds, 0), 0, Math.max(0, clipDuration - 0.001));
-      }
+      if (label) return clamp(finiteNumber(label.seconds, 0), 0, Math.max(0, clipDuration - 0.001));
     }
 
     for (const readyName of clip.ready || []) {
@@ -326,11 +345,44 @@
     return (marker && worldPosition(part, marker)) || frontMostPoint(part, lastReady);
   }
 
+  function frameMetrics(part, frame) {
+    const points = [];
+    for (const item of frame || []) {
+      const color = item?.[3];
+      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
+      if (alpha === 0) continue;
+      const point = worldPosition(part, item);
+      if (point) points.push(point);
+    }
+    if (!points.length) return null;
+    const xs = points.map((point) => point.x);
+    const ys = points.map((point) => point.y);
+    return {
+      width: Math.max(...xs) - Math.min(...xs),
+      height: Math.max(...ys) - Math.min(...ys),
+    };
+  }
+
+  function isPlausibleBasicAttackStart(bodyPart, clip, x, y) {
+    if (!clip.isBasicAttack || (x === 0 && y === 0)) return true;
+    const reference = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
+    if (!reference) return true;
+    const ready = getAnim(bodyPart, clip.ready);
+    const readyFrame = ready?.anim?.frames?.[ready.anim.frames.length - 1] || [];
+    const metrics = frameMetrics(bodyPart, readyFrame);
+    const width = Math.max(1, metrics?.width || 0);
+    const height = Math.max(1, metrics?.height || 0);
+    const dx = Math.abs(x - reference.x);
+    const dy = Math.abs(y - reference.y);
+    const distance = Math.hypot(dx, dy);
+    const maxDistance = Math.max(80, Math.min(180, Math.hypot(width, height) * 0.30));
+    const maxVerticalDistance = Math.max(50, Math.min(110, height * 0.30));
+    return distance <= maxDistance && dy <= maxVerticalDistance;
+  }
+
   function normalizeMotionType(projectileConfig) {
     const explicit = text(projectileConfig?.motion?.type).toUpperCase();
-    if (["LINEAR", "CURVE", "RETURN", "BEAM", "DIRECT", "NONE", "UNKNOWN"].includes(explicit)) {
-      return explicit;
-    }
+    if (["LINEAR", "CURVE", "RETURN", "BEAM", "DIRECT", "NONE", "UNKNOWN"].includes(explicit)) return explicit;
     const attackType = text(projectileConfig?.attackType).toUpperCase();
     if (["ENERGY", "WEAPON", "DOUBLE"].includes(attackType)) return "LINEAR";
     if (["ENERGYC", "WEAPONC", "DOUBLEC"].includes(attackType)) return "CURVE";
@@ -347,6 +399,7 @@
     if (["LINEAR", "RETURN"].includes(motionType)) return 0.25;
     return null;
   }
+
   function effectiveHitPointRate(meta, clip, motionType) {
     const raw = finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey], NaN);
     if (Number.isFinite(raw) && raw <= 10) return Math.max(0, raw);
@@ -354,19 +407,16 @@
   }
 
   function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
-    const coordinateScale = positiveNumber(
-      meta?.projectileData?.coordinateScale,
-      NATIVE_PROJECTILE_COORDINATE_SCALE,
-    );
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
     const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
     const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
     const runtimeMultiplier = 1;
-    if (Number.isFinite(rawX) && Number.isFinite(rawY) && (rawX !== 0 || rawY !== 0)) {
-      return {
-        x: rawX * coordinateScale * runtimeMultiplier,
-        y: rawY * coordinateScale * runtimeMultiplier,
-        source: "database",
-      };
+    if (Number.isFinite(rawX) && Number.isFinite(rawY)) {
+      const x = rawX * coordinateScale * runtimeMultiplier;
+      const y = rawY * coordinateScale * runtimeMultiplier;
+      if (isPlausibleBasicAttackStart(bodyPart, clip, x, y)) {
+        return { x, y, source: "database" };
+      }
     }
     const fallback = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
     return {
@@ -386,38 +436,80 @@
     return positiveNumber(bodyPart?.canvas?.h, 240);
   }
 
+  function selectedTargetProfile(bodyPart) {
+    const profile = targetBridge.get(state.activeSection);
+    return {
+      contentHeight: positiveNumber(profile?.contentHeight, syntheticTargetContentHeight(bodyPart)),
+      contentWidth: positiveNumber(profile?.contentWidth, positiveNumber(bodyPart?.canvas?.w, 0)),
+      unitId: text(profile?.unitId),
+    };
+  }
+
+  function referenceLayout() {
+    const width = 640;
+    const height = 360;
+    const zoom = 1;
+    const baseSceneScale = Math.min(width / 1400, height / 750) * VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE;
+    const sceneScale = baseSceneScale * zoom;
+    const actorX = width * RANGER_X_RATIO;
+    const actorY = height * GROUND_Y_RATIO;
+    const targetX = actorX + width * (TARGET_X_RATIO - RANGER_X_RATIO) * zoom;
+    return {
+      actorX,
+      actorY,
+      targetX,
+      targetBaseY: actorY,
+      bodyOriginX: actorX + BODY_OFFSET_X * sceneScale,
+      bodyOriginY: actorY + BODY_OFFSET_Y * sceneScale,
+      sceneScale,
+      facing: 1,
+    };
+  }
+
+  function resolveStartScreen(projectile, layout, sceneScale) {
+    if (projectile.start.source === "database") {
+      return {
+        x: layout.actorX + layout.facing * projectile.start.x * sceneScale,
+        y: layout.actorY - projectile.start.y * sceneScale,
+      };
+    }
+    return {
+      x: layout.bodyOriginX + layout.facing * projectile.start.x * sceneScale,
+      y: layout.bodyOriginY + projectile.start.y * sceneScale,
+    };
+  }
+
+  function resolveReturnEnd(projectile, layout, sceneScale) {
+    return {
+      x: layout.actorX + layout.facing * projectile.secondStart.x * sceneScale,
+      y: layout.actorY - projectile.secondStart.y * sceneScale,
+    };
+  }
+
   function estimateProjectileLifetime(projectile, bodyPart) {
-    const referenceScale = Math.min(640 / 1400, 360 / 750) *
-      VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE;
-    const actorX = 640 * RANGER_X_RATIO;
-    const actorY = 360 * GROUND_Y_RATIO;
-    const targetX = 640 * TARGET_X_RATIO;
-    const targetHeight = syntheticTargetContentHeight(bodyPart);
-    const hitHeight = Number.isFinite(projectile.hitPointRate)
-      ? targetHeight * projectile.hitPointRate
-      : 0;
-    const databaseStart = projectile.start.source === "database";
-    const bodyOriginX = actorX + BODY_OFFSET_X * referenceScale;
-    const bodyOriginY = actorY + BODY_OFFSET_Y * referenceScale;
-    const startX = bodyOriginX + projectile.start.x * referenceScale;
-    const startY = databaseStart
-      ? bodyOriginY - projectile.start.y * referenceScale
-      : bodyOriginY + projectile.start.y * referenceScale;
-    const endX = targetX + projectile.endOffset.x * referenceScale;
-    const endY = actorY - (hitHeight + projectile.endOffset.y) * referenceScale;
-    const nativeDistance = Math.hypot(endX - startX, endY - startY) / Math.max(0.0001, referenceScale);
+    const layout = referenceLayout();
+    const sceneScale = layout.sceneScale;
+    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
+    const hitHeight = Number.isFinite(projectile.hitPointRate) ? targetHeight * projectile.hitPointRate : 0;
+    const start = resolveStartScreen(projectile, layout, sceneScale);
+    const end = {
+      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
+      y: layout.targetBaseY - (hitHeight + projectile.endOffset.y) * sceneScale,
+    };
+    const nativeDistance = Math.hypot(end.x - start.x, end.y - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
 
-    if (projectile.renderMode === "RETURN" && flightDuration > 0) return flightDuration * 2;
+    if (projectile.renderMode === "RETURN" && flightDuration > 0) {
+      const returnEnd = resolveReturnEnd(projectile, layout, sceneScale);
+      const returnDistance = Math.hypot(returnEnd.x - end.x, returnEnd.y - end.y) / Math.max(0.0001, sceneScale);
+      return flightDuration + movementDuration(returnDistance, projectile.moveSpeed);
+    }
     if (projectile.renderMode === "BEAM") return projectile.beamDuration + projectile.finishDuration;
     if (projectile.renderMode === "DIRECT") return projectile.localNormalDuration + projectile.finishDuration;
     if (["LINEAR", "CURVE"].includes(projectile.renderMode) && flightDuration > 0) {
       return flightDuration + projectile.finishDuration;
     }
-    return Math.max(
-      projectile.localNormalDuration,
-      15 / Math.max(1, bodyPart?.anim_rate || 24),
-    ) + projectile.finishDuration;
+    return Math.max(projectile.localNormalDuration, 15 / Math.max(1, bodyPart?.anim_rate || 24)) + projectile.finishDuration;
   }
 
   function buildProjectile(meta, clip, bodyPart, bodyAnimation, clipDuration) {
@@ -431,24 +523,16 @@
     if (!bulletPart) return null;
 
     const standardNormal = getAnim(bulletPart, ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]);
-    const outboundAnimation = motionType === "RETURN"
-      ? (getAnim(bulletPart, ["normal_a"]) || standardNormal)
-      : standardNormal;
+    const outboundAnimation = motionType === "RETURN" ? (getAnim(bulletPart, ["normal_a"]) || standardNormal) : standardNormal;
     if (!outboundAnimation) return null;
-    const returnAnimation = motionType === "RETURN"
-      ? (getAnim(bulletPart, ["normal_b"]) || outboundAnimation)
-      : null;
+    const returnAnimation = motionType === "RETURN" ? (getAnim(bulletPart, ["normal_b"]) || outboundAnimation) : null;
     const finishAnimation = getAnim(bulletPart, ["finish", "hit", "end"]);
 
     const spawnTime = nativeProjectileSpawnTime(bodyPart, bodyAnimation.name, clip, clipDuration);
-    const localNormalDuration = Math.max(1, outboundAnimation.anim.frame_count || 0) /
-      Math.max(1, bulletPart.anim_rate || 24);
+    const localNormalDuration = Math.max(1, outboundAnimation.anim.frame_count || 0) / Math.max(1, bulletPart.anim_rate || 24);
     const finishDuration = finishAnimation ? animDuration(bulletPart, finishAnimation) : 0;
     const start = nativeStartPoint(meta, clip, projectileConfig, bodyPart);
-    const coordinateScale = positiveNumber(
-      meta?.projectileData?.coordinateScale,
-      NATIVE_PROJECTILE_COORDINATE_SCALE,
-    );
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
     const endOffset = {
       x: finiteNumber(projectileConfig?.end?.x, 0) * coordinateScale,
       y: finiteNumber(projectileConfig?.end?.y, 0) * coordinateScale,
@@ -502,9 +586,7 @@
       for (const childKey of clip.sequence) {
         const childTrack = buildTrack(meta, childKey);
         if (!childTrack.segments.length) continue;
-        for (const segment of childTrack.segments) {
-          segments.push({ ...segment, start: (segment.start || 0) + cursor });
-        }
+        for (const segment of childTrack.segments) segments.push({ ...segment, start: (segment.start || 0) + cursor });
         cursor += childTrack.duration || 0;
       }
       return { key: clip.key, label: clip.label, segments, duration: cursor || 1 };
@@ -515,11 +597,7 @@
     if (!bodyAnimation) return { key: clip.key, label: clip.label, segments: [], duration: 0 };
     const bodyDuration = animDuration(bodyPart, bodyAnimation) || 1;
     const projectile = buildProjectile(meta, clip, bodyPart, bodyAnimation, bodyDuration);
-    const duration = Math.max(
-      bodyDuration,
-      projectile ? projectile.spawnTime + projectile.lifetime : 0,
-      1,
-    );
+    const duration = Math.max(bodyDuration, projectile ? projectile.spawnTime + projectile.lifetime : 0, 1);
     return {
       key: clip.key,
       label: clip.label,
@@ -545,15 +623,11 @@
   }
 
   function availableClips(meta) {
-    return CLIPS
-      .map((clip) => ({ clip, track: buildTrack(meta, clip.key) }))
-      .filter(({ track }) => track.segments.length > 0);
+    return CLIPS.map((clip) => ({ clip, track: buildTrack(meta, clip.key) })).filter(({ track }) => track.segments.length > 0);
   }
 
   function clipOptions(meta) {
-    return availableClips(meta)
-      .map(({ clip }) => `<option value="${escapeHtml(clip.key)}">${escapeHtml(clip.label)}</option>`)
-      .join("");
+    return availableClips(meta).map(({ clip }) => `<option value="${escapeHtml(clip.key)}">${escapeHtml(clip.label)}</option>`).join("");
   }
 
   function defaultClipKey(meta) {
@@ -567,7 +641,7 @@
         <h3>角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
-          <p class="ranger-animation-hint">一般關卡場景比例 0.85；可拖曳畫面平移角色動畫位置。</p>
+          <p class="ranger-animation-hint">一般關卡場景比例 0.85；縮放會以攻擊者為錨點同步縮放角色、目標與投射物。</p>
           <div class="ranger-animation-controls simplified">
             <label><span>動畫</span><select class="ranger-animation-select">${clipOptions(meta)}</select></label>
             <label class="ranger-animation-zoom-label"><span>縮放 <strong class="ranger-animation-zoom-percent">100%</strong></span><input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
@@ -689,20 +763,29 @@
   }
 
   function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
-    const databaseStart = projectile.start.source === "database";
-    const startX = layout.bodyOriginX + projectile.start.x * sceneScale;
-    const startY = databaseStart
-      ? layout.bodyOriginY - projectile.start.y * sceneScale
-      : layout.bodyOriginY + projectile.start.y * sceneScale;
-    const targetHeight = syntheticTargetContentHeight(bodyPart);
-    const hitHeight = Number.isFinite(projectile.hitPointRate)
-      ? targetHeight * projectile.hitPointRate
-      : 0;
-    const endX = layout.targetX + projectile.endOffset.x * sceneScale;
+    const start = resolveStartScreen(projectile, layout, sceneScale);
+    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
+    const hitHeight = Number.isFinite(projectile.hitPointRate) ? targetHeight * projectile.hitPointRate : 0;
+    const endX = layout.targetX + layout.facing * projectile.endOffset.x * sceneScale;
     const endY = layout.targetBaseY - (hitHeight + projectile.endOffset.y) * sceneScale;
-    const nativeDistance = Math.hypot(endX - startX, endY - startY) / Math.max(0.0001, sceneScale);
+    const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
-    return { startX, startY, endX, endY, nativeDistance, flightDuration };
+    const returnEnd = resolveReturnEnd(projectile, layout, sceneScale);
+    const returnNativeDistance = Math.hypot(returnEnd.x - endX, returnEnd.y - endY) / Math.max(0.0001, sceneScale);
+    const returnDuration = movementDuration(returnNativeDistance, projectile.moveSpeed);
+    return {
+      startX: start.x,
+      startY: start.y,
+      endX,
+      endY,
+      nativeDistance,
+      flightDuration,
+      returnEndX: returnEnd.x,
+      returnEndY: returnEnd.y,
+      returnNativeDistance,
+      returnDuration,
+      facing: layout.facing,
+    };
   }
 
   async function drawProjectileFrame(context, bulletPart, animationName, age, loop, x, y, scaleX, scaleY, rotation = 0) {
@@ -727,7 +810,7 @@
     const dx = geometry.endX - geometry.startX;
     const dy = geometry.endY - geometry.startY;
     const rotation = Math.atan2(dy, dx) * 180 / Math.PI;
-    const unitX = geometry.nativeDistance > 0 ? dx / (geometry.nativeDistance * sceneScale) : 1;
+    const unitX = geometry.nativeDistance > 0 ? dx / (geometry.nativeDistance * sceneScale) : geometry.facing;
     const unitY = geometry.nativeDistance > 0 ? dy / (geometry.nativeDistance * sceneScale) : 0;
 
     for (let index = 0; index < count; index += 1) {
@@ -742,7 +825,7 @@
         true,
         x,
         y,
-        sceneScale * layerScaleX,
+        sceneScale * layerScaleX * geometry.facing,
         sceneScale,
         rotation,
       );
@@ -771,10 +854,10 @@
     }
 
     if (renderMode === "RETURN") {
-      const totalDuration = geometry.flightDuration * 2;
+      const totalDuration = geometry.flightDuration + geometry.returnDuration;
       if (age > totalDuration) return;
       if (age < geometry.flightDuration) {
-        const progress = age / geometry.flightDuration;
+        const progress = age / Math.max(MIN_FLIGHT_DURATION, geometry.flightDuration);
         await drawProjectileFrame(
           context,
           bulletPart,
@@ -790,17 +873,15 @@
         return;
       }
       const returnAge = age - geometry.flightDuration;
-      const progress = returnAge / geometry.flightDuration;
-      const returnEndX = layout.bodyOriginX + projectile.secondStart.x * sceneScale;
-      const returnEndY = layout.bodyOriginY - projectile.secondStart.y * sceneScale;
+      const progress = returnAge / Math.max(MIN_FLIGHT_DURATION, geometry.returnDuration);
       await drawProjectileFrame(
         context,
         bulletPart,
         projectile.returnAnimName,
         returnAge,
         true,
-        lerp(geometry.endX, returnEndX, progress),
-        lerp(geometry.endY, returnEndY, progress),
+        lerp(geometry.endX, geometry.returnEndX, progress),
+        lerp(geometry.endY, geometry.returnEndY, progress),
         sceneScale,
         sceneScale,
         projectileRotation(projectile, 1 - progress),
@@ -823,7 +904,7 @@
           { x: geometry.startX, y: geometry.startY },
           { x: geometry.startX, y: geometry.startY },
           {
-            x: (geometry.startX + geometry.endX) * 0.5 + pixelDistance * 0.4,
+            x: (geometry.startX + geometry.endX) * 0.5 + geometry.facing * pixelDistance * 0.4,
             y: (geometry.startY + geometry.endY) * 0.5 - pixelDistance * 0.4,
           },
           { x: geometry.endX, y: geometry.endY },
@@ -851,19 +932,9 @@
   async function drawSegment(context, meta, segment, age, layout, sceneScale) {
     const bodyPart = meta?.parts?.body;
     if (!bodyPart) return;
-    const bodyAge = segment.loop
-      ? age
-      : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
+    const bodyAge = segment.loop ? age : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
     const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
-    await drawSamFrame(
-      context,
-      bodyPart,
-      segment.animName,
-      bodyFrame,
-      layout.bodyOriginX,
-      layout.bodyOriginY,
-      sceneScale,
-    );
+    await drawSamFrame(context, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
 
     const projectile = segment.projectile;
     if (!projectile) return;
@@ -877,16 +948,26 @@
     if (!context || !track) return;
     const width = canvas.width;
     const height = canvas.height;
-    const sceneScale = Math.min(width / 1400, height / 750) *
-      VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE * (state.zoom || 1);
+    const zoom = state.zoom || 1;
+    const baseSceneScale = Math.min(width / 1400, height / 750) * VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE;
+    const sceneScale = baseSceneScale * zoom;
+    const actorX = width * RANGER_X_RATIO + state.panX;
+    const actorY = height * GROUND_Y_RATIO + state.panY;
     const layout = {
-      actorX: width * RANGER_X_RATIO + state.panX,
-      actorY: height * GROUND_Y_RATIO + state.panY,
-      targetX: width * TARGET_X_RATIO + state.panX,
-      targetBaseY: height * GROUND_Y_RATIO + state.panY,
+      actorX,
+      actorY,
+      targetX: actorX + width * (TARGET_X_RATIO - RANGER_X_RATIO) * zoom,
+      targetBaseY: actorY,
+      facing: 1,
+      zoom,
+      baseSceneScale,
+      sceneScale,
+      panX: state.panX,
+      panY: state.panY,
     };
     layout.bodyOriginX = layout.actorX + BODY_OFFSET_X * sceneScale;
     layout.bodyOriginY = layout.actorY + BODY_OFFSET_Y * sceneScale;
+    sceneBridge.set(state.activeSection, { ...layout, width, height });
 
     context.clearRect(0, 0, width, height);
     context.save();
@@ -912,17 +993,13 @@
   function playLoop() {
     if (!state.activeCanvas || !state.activeMeta) return;
     const track = buildTrack(state.activeMeta, state.activeClip);
-    drawTrack(
-      state.activeCanvas,
-      state.activeMeta,
-      track,
-      (performance.now() - state.startedAt) / 1000,
-    );
+    drawTrack(state.activeCanvas, state.activeMeta, track, (performance.now() - state.startedAt) / 1000);
     state.rafId = requestAnimationFrame(playLoop);
   }
 
   function startPlayback(section) {
     stopPlayback();
+    state.activeSection = section;
     state.activeCanvas = section.querySelector(".ranger-animation-canvas");
     state.startedAt = performance.now();
     state.rafId = requestAnimationFrame(playLoop);
@@ -961,12 +1038,14 @@
     const defaultKey = defaultClipKey(meta);
     if (defaultKey) select.value = defaultKey;
     if (zoom) zoom.value = "1";
+    state.activeSection = section;
     state.activeMeta = meta;
     state.activeCanvas = canvas;
     state.activeClip = select.value || defaultKey;
     state.zoom = Number(zoom?.value) || 1;
     state.panX = 0;
     state.panY = 0;
+    state.trackCache.delete(meta);
     bindDrag(canvas);
     select.addEventListener("change", () => {
       state.activeClip = select.value || defaultKey;
@@ -975,6 +1054,10 @@
     zoom?.addEventListener("input", () => {
       state.zoom = Number(zoom.value) || 1;
       if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
+    });
+    section.addEventListener("ranger-animation-target-change", () => {
+      state.trackCache.delete(meta);
+      if (state.activeSection === section) startPlayback(section);
     });
     if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
     startPlayback(section);
@@ -995,9 +1078,7 @@
     return mutations.length > 0 && mutations.every((mutation) => {
       const added = [...mutation.addedNodes].filter((node) => node.nodeType === Node.ELEMENT_NODE);
       const removed = [...mutation.removedNodes].filter((node) => node.nodeType === Node.ELEMENT_NODE);
-      return removed.length === 0 && added.length > 0 && added.every(
-        (node) => node.classList?.contains("ranger-animation-section")
-      );
+      return removed.length === 0 && added.length > 0 && added.every((node) => node.classList?.contains("ranger-animation-section"));
     });
   }
 
