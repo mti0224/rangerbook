@@ -300,6 +300,15 @@
       : (bottoms[middle - 1] + bottoms[middle]) * 0.5;
   }
 
+  function animationFinalVisibleBottom(part, animationResult) {
+    const frames = animationResult?.anim?.frames || [];
+    for (let index = frames.length - 1; index >= 0; index -= 1) {
+      const bottom = frameVisibleBottom(part, frames[index]);
+      if (Number.isFinite(bottom)) return bottom;
+    }
+    return NaN;
+  }
+
   function namedAnimationDuration(part, name) {
     const animation = part?.animations?.[name];
     return animation?.frame_count
@@ -516,6 +525,14 @@
     };
   }
 
+  function selectedTargetAnchor(layout) {
+    const profile = targetBridge.get(state.activeSection);
+    return {
+      x: finiteNumber(profile?.anchorX, finiteNumber(profile?.targetX, layout.targetX)),
+      baseY: finiteNumber(profile?.anchorBaseY, finiteNumber(profile?.targetBaseY, layout.targetBaseY)),
+    };
+  }
+
   function referenceLayout() {
     const width = 640;
     const height = 360;
@@ -654,6 +671,7 @@
       finishDuration,
       normalGroundOffset: animationGroundOffset(bulletPart, outboundAnimation),
       finishGroundOffset: animationGroundOffset(bulletPart, finishAnimation),
+      finishFinalBottom: animationFinalVisibleBottom(bulletPart, finishAnimation),
       beamLength,
       beamDuration,
       loopNormal: renderMode === "LEGACY" ? true : projectileConfig?.motion?.loopNormal !== false,
@@ -933,13 +951,17 @@
     }
 
     if (renderMode === "AUTHORED_FINISH") {
+      const targetAnchor = selectedTargetAnchor(layout);
+      const finishBottom = Number.isFinite(projectile.finishFinalBottom)
+        ? projectile.finishFinalBottom
+        : projectile.finishGroundOffset;
       await drawFinish(
         context,
         bulletPart,
         projectile,
         age,
         geometry.endX,
-        geometry.endY - projectile.finishGroundOffset * sceneScale,
+        targetAnchor.baseY - finishBottom * sceneScale,
         sceneScale,
       );
       return;
@@ -959,13 +981,17 @@
           sceneScale,
         );
       } else {
+        const targetAnchor = selectedTargetAnchor(layout);
+        const finishBottom = Number.isFinite(projectile.finishFinalBottom)
+          ? projectile.finishFinalBottom
+          : projectile.finishGroundOffset;
         await drawFinish(
           context,
           bulletPart,
           projectile,
           age - projectile.localNormalDuration,
           geometry.endX,
-          geometry.endY - projectile.finishGroundOffset * sceneScale,
+          targetAnchor.baseY - finishBottom * sceneScale,
           sceneScale,
         );
       }
