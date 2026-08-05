@@ -331,7 +331,12 @@
     return best;
   }
 
-  function animationDerivedMuzzle(part, readyNames, triggerNames) {
+  function isInjectedProjectileMarker(item) {
+    const markerId = Number(item?.[0]);
+    return Number.isFinite(markerId) && markerId >= 2147483000 && markerId < 2147484000;
+  }
+
+  function animationMarkerMuzzle(part, readyNames, triggerNames, includeInjected = true) {
     const ready = getAnim(part, readyNames);
     const trigger = getAnim(part, triggerNames);
     if (!ready || !trigger) return null;
@@ -342,12 +347,22 @@
     const firstTrigger = triggerFrames[0] || [];
     const hidden = lastReady.filter((item) => {
       const color = item?.[3];
-      return Array.isArray(color) && Number(color[3] ?? 255) === 0;
+      const hiddenItem = Array.isArray(color) && Number(color[3] ?? 255) === 0;
+      return hiddenItem && (includeInjected || !isInjectedProjectileMarker(item));
     });
     const marker = hidden.find((candidate) => firstTrigger.some(
       (item) => item?.[0] === candidate?.[0] && item?.[1] === candidate?.[1]
     )) || hidden.find((candidate) => firstTrigger.some((item) => item?.[1] === candidate?.[1]));
-    return (marker && worldPosition(part, marker)) || frontMostPoint(part, lastReady);
+    return marker ? worldPosition(part, marker) : null;
+  }
+
+  function animationDerivedMuzzle(part, readyNames, triggerNames) {
+    const ready = getAnim(part, readyNames);
+    if (!ready) return null;
+    const readyFrames = ready.anim.frames || [];
+    if (!readyFrames.length) return null;
+    const marker = animationMarkerMuzzle(part, readyNames, triggerNames, true);
+    return marker || frontMostPoint(part, readyFrames[readyFrames.length - 1] || []);
   }
 
   function frameMetrics(part, frame) {
@@ -413,11 +428,18 @@
   }
 
   function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
+    // Authored hidden markers follow the rendered sprite exactly. Synthetic markers use
+    // UnitData coordinates and are only a fallback when the animation has no native anchor.
+    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
+    if (authored) {
+      return { x: authored.x, y: authored.y, source: "animation-anchor" };
+    }
+
     const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
     const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
     const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
     const runtimeMultiplier = 1;
-    if (Number.isFinite(rawX) && Number.isFinite(rawY)) {
+    if (Number.isFinite(rawX) && Number.isFinite(rawY) && (rawX !== 0 || rawY !== 0)) {
       const x = rawX * coordinateScale * runtimeMultiplier;
       const y = rawY * coordinateScale * runtimeMultiplier;
       if (isPlausibleBasicAttackStart(bodyPart, clip, x, y)) {
@@ -425,11 +447,10 @@
       }
     }
     const fallback = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
-    return {
-      x: fallback?.x || 0,
-      y: fallback?.y || 0,
-      source: "animation-fallback",
-    };
+    if (fallback) {
+      return { x: fallback.x, y: fallback.y, source: "animation-fallback" };
+    }
+    return { x: 0, y: 0, source: "database" };
   }
 
   function movementDuration(distance, moveSpeed) {
@@ -492,16 +513,23 @@
     };
   }
 
+  function resolveOutboundEnd(projectile, layout, sceneScale, start) {
+    const launchRelativeY = ["LINEAR", "CURVE", "RETURN", "BEAM"].includes(projectile.motionType);
+    return {
+      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
+      // UnitData endY is an offset from the launch line for moving projectiles.
+      // Therefore endY=0 preserves a horizontal trajectory instead of snapping to target height.
+      y: launchRelativeY
+        ? start.y - projectile.endOffset.y * sceneScale
+        : layout.targetBaseY - projectile.endOffset.y * sceneScale,
+    };
+  }
+
   function estimateProjectileLifetime(projectile, bodyPart) {
     const layout = referenceLayout();
     const sceneScale = layout.sceneScale;
-    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
-    const hitHeight = Number.isFinite(projectile.hitPointRate) ? targetHeight * projectile.hitPointRate : 0;
     const start = resolveStartScreen(projectile, layout, sceneScale);
-    const end = {
-      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
-      y: layout.targetBaseY - (hitHeight + projectile.endOffset.y) * sceneScale,
-    };
+    const end = resolveOutboundEnd(projectile, layout, sceneScale, start);
     const nativeDistance = Math.hypot(end.x - start.x, end.y - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
 
@@ -770,10 +798,9 @@
 
   function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
     const start = resolveStartScreen(projectile, layout, sceneScale);
-    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
-    const hitHeight = Number.isFinite(projectile.hitPointRate) ? targetHeight * projectile.hitPointRate : 0;
-    const endX = layout.targetX + layout.facing * projectile.endOffset.x * sceneScale;
-    const endY = layout.targetBaseY - (hitHeight + projectile.endOffset.y) * sceneScale;
+    const end = resolveOutboundEnd(projectile, layout, sceneScale, start);
+    const endX = end.x;
+    const endY = end.y;
     const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
     const returnEnd = resolveReturnEnd(projectile, layout, sceneScale);
