@@ -1,3 +1,4 @@
+# Temporary PR validation trigger; reverted after checks.
 name: Validate Ranger page
 
 on:
