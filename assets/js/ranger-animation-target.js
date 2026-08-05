@@ -236,8 +236,11 @@
     return {
       unitId,
       sizeRatio,
-      contentWidth: positiveNumber(part?.canvas?.w, positiveNumber(visibleWidth, 1)) * sizeRatio,
-      contentHeight: positiveNumber(part?.canvas?.h, positiveNumber(visibleHeight, 1)) * sizeRatio,
+      // Projectile hit points are measured against the rendered target bounds.
+      // SAM canvas dimensions may contain transparent margins and cannot be used
+      // as the target's hittable height.
+      contentWidth: positiveNumber(visibleWidth, positiveNumber(part?.canvas?.w, 1)) * sizeRatio,
+      contentHeight: positiveNumber(visibleHeight, positiveNumber(part?.canvas?.h, 1)) * sizeRatio,
     };
   }
 
