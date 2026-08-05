@@ -1,0 +1,37 @@
+name: Apply unified basic hit effect center
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/apply-unify-basic-hit-effect-center.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/unify-basic-hit-effect-center-20260806
+      - name: Apply fix
+        run: python3 .github/scripts/patch_unify_basic_hit_effect_center.py
+      - name: Validate JavaScript and implementation marker
+        run: |
+          node --check assets/js/ranger-animation-hit-effect.js
+          grep -q 'const centeredOnTarget=true;' assets/js/ranger-animation-hit-effect.js
+      - name: Remove temporary files
+        run: |
+          rm .github/scripts/patch_unify_basic_hit_effect_center.py
+          rm .github/workflows/apply-unify-basic-hit-effect-center.yml
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/js/ranger-animation-hit-effect.js
+          git add -u -- .github/scripts/patch_unify_basic_hit_effect_center.py .github/workflows/apply-unify-basic-hit-effect-center.yml
+          git commit -m "fix: unify basic hit effect target centering"
+          git push origin HEAD:fix/unify-basic-hit-effect-center-20260806
