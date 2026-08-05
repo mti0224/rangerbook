@@ -274,13 +274,37 @@
     const geometry = frameGeometry(part, frame);
     if (!geometry) return;
 
+    // Keep the target's facing and ground anchor stable for the whole animation.
+    // Recomputing them from every frame makes asymmetric effects flip the target
+    // and makes frames with content below the baseline lift the whole target.
+    const referenceGeometry = state.referenceGeometry || geometry;
     const sizeRatio = targetSizeRatio(meta);
     const targetScale = scene.sceneScale * sizeRatio;
-    const scaleX = geometry.facesLeft ? targetScale : -targetScale;
-    const scaledMinX = Math.min(geometry.minX * scaleX, geometry.maxX * scaleX);
-    const scaledMaxX = Math.max(geometry.minX * scaleX, geometry.maxX * scaleX);
-    const originX = scene.targetX - (scaledMinX + scaledMaxX) * 0.5;
-    const originY = scene.targetBaseY - geometry.maxY * targetScale;
+    const scaleX = referenceGeometry.facesLeft ? targetScale : -targetScale;
+    const scaledReferenceMinX = Math.min(referenceGeometry.minX * scaleX, referenceGeometry.maxX * scaleX);
+    const scaledReferenceMaxX = Math.max(referenceGeometry.minX * scaleX, referenceGeometry.maxX * scaleX);
+    const originX = scene.targetX - (scaledReferenceMinX + scaledReferenceMaxX) * 0.5;
+    const originY = scene.targetBaseY - referenceGeometry.maxY * targetScale;
+
+    const visibleLeft = Math.min(
+      originX + geometry.minX * scaleX,
+      originX + geometry.maxX * scaleX,
+    );
+    const visibleRight = Math.max(
+      originX + geometry.minX * scaleX,
+      originX + geometry.maxX * scaleX,
+    );
+    const visibleTop = originY + geometry.minY * targetScale;
+    const visibleBottom = originY + geometry.maxY * targetScale;
+    targetBridge.set(state.section, {
+      ...(state.profile || {}),
+      targetX: (visibleLeft + visibleRight) * 0.5,
+      targetBaseY: visibleBottom,
+      targetTopY: visibleTop,
+      targetCenterY: (visibleTop + visibleBottom) * 0.5,
+      renderedWidth: visibleRight - visibleLeft,
+      renderedHeight: visibleBottom - visibleTop,
+    });
 
     for (const item of frame) {
       const [, resourceNumber, objectMatrix, color] = item || [];
@@ -340,9 +364,12 @@
     const selectedAnimation = targetAnimation(part);
     const firstFrame = selectedAnimation?.animation?.frames?.[0] || [];
     const geometry = frameGeometry(part, firstFrame);
+    const profile = buildTargetProfile(unitId, meta, part, geometry);
     state.meta = meta;
     state.unitId = unitId;
-    publishTarget(state, buildTargetProfile(unitId, meta, part, geometry));
+    state.referenceGeometry = geometry;
+    state.profile = profile;
+    publishTarget(state, profile);
     startTargetLoop(state);
   }
 
