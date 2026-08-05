@@ -8,7 +8,9 @@ on:
       - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
       - "assets/js/ranger-animation-projectile-data.js"
+      - "assets/js/ranger-animation-target.js"
       - "ranger/ranger/index.html"
+      - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
   workflow_dispatch:
 
@@ -25,9 +27,15 @@ jobs:
           node --check assets/js/ranger.js
           node --check assets/js/ranger-animation-viewer.js
           node --check assets/js/ranger-animation-projectile-data.js
+          node --check assets/js/ranger-animation-target.js
       - name: Validate Ranger script references
         run: |
           grep -q 'assets/js/site.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
           ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
+      - name: Validate Ranking script references
+        run: |
+          grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
+          grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
