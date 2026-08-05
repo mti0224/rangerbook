@@ -14,6 +14,8 @@
     { id: "u1353sk-brown", label: "冥界熊大的幽魂鬼怪（九星）" },
   ];
 
+  const TARGET_MIRROR_OVERRIDES = new Set(["u1138sk-james"]);
+
   function sharedBridge(name) {
     if (window[name]?.get && window[name]?.set) return window[name];
     const values = new WeakMap();
@@ -280,7 +282,8 @@
     const referenceGeometry = state.referenceGeometry || geometry;
     const sizeRatio = targetSizeRatio(meta);
     const targetScale = scene.sceneScale * sizeRatio;
-    const scaleX = referenceGeometry.facesLeft ? targetScale : -targetScale;
+    const detectedScaleX = referenceGeometry.facesLeft ? targetScale : -targetScale;
+    const scaleX = TARGET_MIRROR_OVERRIDES.has(state.unitId) ? -detectedScaleX : detectedScaleX;
     const scaledReferenceMinX = Math.min(referenceGeometry.minX * scaleX, referenceGeometry.maxX * scaleX);
     const scaledReferenceMaxX = Math.max(referenceGeometry.minX * scaleX, referenceGeometry.maxX * scaleX);
     const originX = scene.targetX - (scaledReferenceMinX + scaledReferenceMaxX) * 0.5;
@@ -296,6 +299,8 @@
     );
     const visibleTop = originY + geometry.minY * targetScale;
     const visibleBottom = originY + geometry.maxY * targetScale;
+    const anchorTopY = originY + referenceGeometry.minY * targetScale;
+    const anchorBaseY = scene.targetBaseY;
     targetBridge.set(state.section, {
       ...(state.profile || {}),
       targetX: (visibleLeft + visibleRight) * 0.5,
@@ -304,6 +309,14 @@
       targetCenterY: (visibleTop + visibleBottom) * 0.5,
       renderedWidth: visibleRight - visibleLeft,
       renderedHeight: visibleBottom - visibleTop,
+      // Stable target-space anchors. Projectile landings and hit effects
+      // should follow the target position, not per-frame visual bounds.
+      anchorX: scene.targetX,
+      anchorBaseY,
+      anchorTopY,
+      anchorCenterY: (anchorTopY + anchorBaseY) * 0.5,
+      anchorWidth: scaledReferenceMaxX - scaledReferenceMinX,
+      anchorHeight: anchorBaseY - anchorTopY,
     });
 
     for (const item of frame) {
