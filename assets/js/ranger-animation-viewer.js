@@ -964,25 +964,31 @@
     await drawFinish(context, bulletPart, projectile, age - duration, geometry.endX, geometry.endY, sceneScale);
   }
 
-  async function drawSegment(context, meta, segment, age, layout, sceneScale) {
+  async function drawSegment(bodyContext, projectileContext, meta, segment, age, layout, sceneScale) {
     const bodyPart = meta?.parts?.body;
     if (!bodyPart) return;
     const bodyAge = segment.loop ? age : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
     const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
-    await drawSamFrame(context, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
+    await drawSamFrame(bodyContext, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
 
     const projectile = segment.projectile;
     if (!projectile) return;
     const projectileAge = age - projectile.spawnTime;
     if (projectileAge < 0) return;
-    await drawProjectile(context, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
+    await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
   }
 
   async function drawTrack(canvas, meta, track, elapsed) {
-    const context = canvas.getContext("2d");
-    if (!context || !track) return;
+    const bodyContext = canvas.getContext("2d");
+    if (!bodyContext || !track) return;
     const width = canvas.width;
     const height = canvas.height;
+    const projectileCanvas = state.activeSection?.querySelector(".ranger-animation-projectile-canvas");
+    if (projectileCanvas) {
+      if (projectileCanvas.width !== width) projectileCanvas.width = width;
+      if (projectileCanvas.height !== height) projectileCanvas.height = height;
+    }
+    const projectileContext = projectileCanvas?.getContext("2d") || bodyContext;
     const zoom = state.zoom || 1;
     const baseSceneScale = Math.min(width / 1400, height / 750) * VIEWER_RESOURCE_SCALE * NORMAL_STAGE_INITIAL_SCALE;
     const sceneScale = baseSceneScale * zoom;
@@ -1004,11 +1010,12 @@
     layout.bodyOriginY = layout.actorY + BODY_OFFSET_Y * sceneScale;
     sceneBridge.set(state.activeSection, { ...layout, width, height });
 
-    context.clearRect(0, 0, width, height);
-    context.save();
-    context.fillStyle = "rgba(255,255,255,0.08)";
-    context.fillRect(0, Math.round(layout.actorY), width, 1);
-    context.restore();
+    bodyContext.clearRect(0, 0, width, height);
+    if (projectileContext !== bodyContext) projectileContext.clearRect(0, 0, width, height);
+    bodyContext.save();
+    bodyContext.fillStyle = "rgba(255,255,255,0.08)";
+    bodyContext.fillRect(0, Math.round(layout.actorY), width, 1);
+    bodyContext.restore();
 
     const nativeElapsed = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
     const time = track.duration ? nativeElapsed % track.duration : nativeElapsed;
@@ -1016,13 +1023,16 @@
       const start = segment.start || 0;
       const end = start + Math.max(segment.duration || 0, segment.bodyDuration || 0, 1);
       if (time < start || time > end) continue;
-      await drawSegment(context, meta, segment, time - start, layout, sceneScale);
+      await drawSegment(bodyContext, projectileContext, meta, segment, time - start, layout, sceneScale);
     }
   }
 
   function stopPlayback() {
     if (state.rafId) cancelAnimationFrame(state.rafId);
     state.rafId = 0;
+    const projectileCanvas = state.activeSection?.querySelector(".ranger-animation-projectile-canvas");
+    const projectileContext = projectileCanvas?.getContext("2d");
+    projectileContext?.clearRect(0, 0, projectileCanvas.width, projectileCanvas.height);
   }
 
   function playLoop() {

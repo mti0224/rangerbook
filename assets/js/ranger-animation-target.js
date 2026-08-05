@@ -361,13 +361,24 @@
         overflow: hidden;
         border-radius: 14px;
       }
-      .ranger-animation-target-canvas {
+      .ranger-animation-canvas-stack > .ranger-animation-canvas {
+        position: relative;
+        z-index: 0;
+      }
+      .ranger-animation-target-canvas,
+      .ranger-animation-projectile-canvas {
         position: absolute;
         inset: 0;
         display: block;
         width: 100%;
         height: 100%;
         pointer-events: none;
+      }
+      .ranger-animation-target-canvas {
+        z-index: 1;
+      }
+      .ranger-animation-projectile-canvas {
+        z-index: 2;
       }
       .ranger-animation-controls.simplified.ranger-animation-target-enabled {
         grid-template-columns: minmax(150px, 0.8fr) minmax(220px, 1.2fr) minmax(180px, 0.7fr);
@@ -403,6 +414,13 @@
     overlay.setAttribute("aria-hidden", "true");
     stack.appendChild(overlay);
 
+    const projectileCanvas = document.createElement("canvas");
+    projectileCanvas.className = "ranger-animation-projectile-canvas";
+    projectileCanvas.width = baseCanvas.width;
+    projectileCanvas.height = baseCanvas.height;
+    projectileCanvas.setAttribute("aria-hidden", "true");
+    stack.appendChild(projectileCanvas);
+
     const label = document.createElement("label");
     label.className = "ranger-animation-target-label";
     label.innerHTML = `<span>目標</span><select class="ranger-animation-target-select">${targetOptionsHtml()}</select>`;
@@ -415,6 +433,7 @@
       section,
       baseCanvas,
       overlay,
+      projectileCanvas,
       select,
       unitId: "",
       meta: null,

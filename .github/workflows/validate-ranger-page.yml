@@ -11,42 +11,23 @@ on:
       - "assets/js/ranger-animation-target.js"
       - "ranger/ranger/index.html"
       - "ranger/ranking/index.html"
-      - ".github/patches/projectile-layer-order.patch"
       - ".github/workflows/validate-ranger-page.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: read
+  contents: read
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-          fetch-depth: 1
-      - name: Integrate projectile layer sources
-        if: github.event_name == 'pull_request' && github.head_ref == 'fix/projectile-layer-order-20260805' && hashFiles('.github/patches/projectile-layer-order.patch') != ''
-        run: |
-          python3 .github/patches/projectile-layer-order.patch
-          rm .github/patches/projectile-layer-order.patch
-          git fetch origin main --depth=1
-          git checkout origin/main -- .github/workflows/validate-ranger-page.yml
-          echo "PROJECTILE_LAYER_PATCH_APPLIED=1" >> "$GITHUB_ENV"
       - name: Validate JavaScript
         run: |
           node --check assets/js/ranger.js
           node --check assets/js/ranger-animation-viewer.js
           node --check assets/js/ranger-animation-projectile-data.js
           node --check assets/js/ranger-animation-target.js
-      - name: Validate projectile canvas layering
-        run: |
-          grep -q 'ranger-animation-projectile-canvas' assets/js/ranger-animation-viewer.js
-          grep -q 'ranger-animation-projectile-canvas' assets/js/ranger-animation-target.js
-          grep -q 'drawSegment(bodyContext, projectileContext' assets/js/ranger-animation-viewer.js
-          grep -q 'z-index: 2' assets/js/ranger-animation-target.js
       - name: Validate Ranger script references
         run: |
           grep -q 'assets/js/site.js' ranger/ranger/index.html
@@ -58,12 +39,3 @@ jobs:
         run: |
           grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
-      - name: Commit integrated projectile layer sources
-        if: env.PROJECTILE_LAYER_PATCH_APPLIED == '1'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- assets/js/ranger-animation-viewer.js assets/js/ranger-animation-target.js .github/workflows/validate-ranger-page.yml .github/patches/projectile-layer-order.patch
-          git diff --cached --check
-          git commit -m "將投射物移至目標物上層"
-          git push origin HEAD:${{ github.head_ref }}
