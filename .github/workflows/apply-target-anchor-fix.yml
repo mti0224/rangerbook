@@ -1,0 +1,49 @@
+name: Apply target anchor fix
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - ".github/workflows/apply-target-anchor-fix.yml"
+      - ".github/scripts/apply_target_anchor_fix.py"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - name: Apply fixes
+        run: python3 .github/scripts/apply_target_anchor_fix.py
+
+      - name: Validate JavaScript and implementation markers
+        run: |
+          node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-target.js
+          node --check assets/js/ranger-animation-hit-effect.js
+          grep -q 'TARGET_MIRROR_OVERRIDES' assets/js/ranger-animation-target.js
+          grep -q 'anchorBaseY' assets/js/ranger-animation-target.js
+          grep -q 'finishFinalBottom' assets/js/ranger-animation-viewer.js
+          grep -q 'activeEffect' assets/js/ranger-animation-hit-effect.js
+
+      - name: Remove temporary files
+        run: |
+          git rm -- .github/scripts/apply_target_anchor_fix.py
+          git rm -- .github/workflows/apply-target-anchor-fix.yml
+
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/js/ranger-animation-viewer.js
+          git add -- assets/js/ranger-animation-target.js
+          git add -- assets/js/ranger-animation-hit-effect.js
+          git commit -m "修正目標錨點與落地動畫定位"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
