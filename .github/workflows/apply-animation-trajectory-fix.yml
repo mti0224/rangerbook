@@ -1,0 +1,104 @@
+name: Apply animation trajectory fix
+
+on:
+  push:
+    branches:
+      - fix/animation-distance-trajectory-20260805
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/animation-distance-trajectory-20260805
+
+      - name: Patch animation geometry
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('assets/js/ranger-animation-viewer.js')
+          text = path.read_text(encoding='utf-8')
+
+          replacements = [
+              (
+                  '  const RANGER_X_RATIO = 0.50;\n  const TARGET_X_RATIO = 0.90;\n  const GROUND_Y_RATIO = 0.80;',
+                  '  const RANGER_X_RATIO = 0.50;\n  const TARGET_X_RATIO = 0.90;\n  const TARGET_DISTANCE_MULTIPLIER = 1.5;\n  const GROUND_Y_RATIO = 0.80;',
+              ),
+              (
+                  '  function clamp(value, minimum, maximum) {\n    return Math.min(maximum, Math.max(minimum, value));\n  }\n\n  function normalizeResourcePath(path) {',
+                  '  function clamp(value, minimum, maximum) {\n    return Math.min(maximum, Math.max(minimum, value));\n  }\n\n  function targetSceneDistance(width, zoom) {\n    return width * (TARGET_X_RATIO - RANGER_X_RATIO) * TARGET_DISTANCE_MULTIPLIER * zoom;\n  }\n\n  function normalizeResourcePath(path) {',
+              ),
+              (
+                  '  function isPlausibleBasicAttackStart(bodyPart, clip, x, y) {\n    if (!clip.isBasicAttack || (x === 0 && y === 0)) return true;',
+                  '  function isPlausibleBasicAttackStart(bodyPart, clip, databaseX, databaseY) {\n    if (!clip.isBasicAttack || (databaseX === 0 && databaseY === 0)) return true;',
+              ),
+              (
+                  '    const dx = Math.abs(x - reference.x);\n    const dy = Math.abs(y - reference.y);',
+                  '    const dx = Math.abs(databaseX - reference.x);\n    // UnitData uses positive-up Y, while SAM/body-local coordinates use positive-down Y.\n    const dy = Math.abs(-databaseY - reference.y);',
+              ),
+              (
+                  '    const targetX = actorX + width * (TARGET_X_RATIO - RANGER_X_RATIO) * zoom;',
+                  '    const targetX = actorX + targetSceneDistance(width, zoom);',
+              ),
+              (
+                  '        x: layout.actorX + layout.facing * projectile.start.x * sceneScale,\n        y: layout.actorY - projectile.start.y * sceneScale,',
+                  '        x: layout.bodyOriginX + layout.facing * projectile.start.x * sceneScale,\n        y: layout.bodyOriginY - projectile.start.y * sceneScale,',
+              ),
+              (
+                  '      x: layout.actorX + layout.facing * projectile.secondStart.x * sceneScale,\n      y: layout.actorY - projectile.secondStart.y * sceneScale,',
+                  '      x: layout.bodyOriginX + layout.facing * projectile.secondStart.x * sceneScale,\n      y: layout.bodyOriginY - projectile.secondStart.y * sceneScale,',
+              ),
+              (
+                  '          <p class="ranger-animation-hint">一般關卡場景比例 0.85；縮放會以攻擊者為錨點同步縮放角色、目標與投射物。</p>',
+                  '          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離已增加 50%，縮放時目標可能移出畫面。</p>',
+              ),
+              (
+                  '      targetX: actorX + width * (TARGET_X_RATIO - RANGER_X_RATIO) * zoom,',
+                  '      targetX: actorX + targetSceneDistance(width, zoom),',
+              ),
+          ]
+
+          for old, new in replacements:
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'Expected exactly one match, found {count}: {old[:100]!r}')
+              text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate animation geometry
+        run: |
+          node --check assets/js/ranger-animation-viewer.js
+          python3 - <<'PY'
+          from pathlib import Path
+
+          text = Path('assets/js/ranger-animation-viewer.js').read_text(encoding='utf-8')
+          assert 'const TARGET_DISTANCE_MULTIPLIER = 1.5;' in text
+          assert 'const targetX = actorX + targetSceneDistance(width, zoom);' in text
+          assert 'targetX: actorX + targetSceneDistance(width, zoom),' in text
+          assert 'x: layout.bodyOriginX + layout.facing * projectile.start.x * sceneScale' in text
+          assert 'y: layout.bodyOriginY - projectile.start.y * sceneScale' in text
+          assert 'x: layout.bodyOriginX + layout.facing * projectile.secondStart.x * sceneScale' in text
+          assert 'const dy = Math.abs(-databaseY - reference.y);' in text
+
+          width = 640
+          actor_x = width * 0.50
+          target_x = actor_x + width * (0.90 - 0.50) * 1.5
+          assert target_x == 704.0
+          PY
+
+      - name: Commit patched viewer
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- assets/js/ranger-animation-viewer.js
+          git rm -- .github/workflows/apply-animation-trajectory-fix.yml
+          git commit -m '修正動畫目標距離與投射物起點'
+          git push origin HEAD:fix/animation-distance-trajectory-20260805
