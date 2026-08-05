@@ -259,6 +259,47 @@
     return animationResult.anim.frame_count / Math.max(1, part?.anim_rate || 24);
   }
 
+  function animationHasVisibleContent(animationResult) {
+    return Boolean(animationResult?.anim?.frames?.some((frame) => (frame || []).some((item) => {
+      const color = item?.[3];
+      return !Array.isArray(color) || Number(color[3] ?? 255) > 0;
+    })));
+  }
+
+  function frameVisibleBottom(part, frame) {
+    let bottom = -Infinity;
+    for (const item of frame || []) {
+      const [, resourceNumber, objectMatrix, color] = item || [];
+      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
+      const imageDefinition = part?.images?.[resourceNumber];
+      const sprite = part?.sprites?.[imageDefinition?.name];
+      const width = Number(sprite?.rect?.[2]);
+      const height = Number(sprite?.rect?.[3]);
+      if (alpha === 0 || !width || !height || !Array.isArray(objectMatrix) || !Array.isArray(imageDefinition?.m)) continue;
+      const [m00, m01, m10, m11, m02, m12] = objectMatrix;
+      const [i00, i01, i10, i11, i02, i12] = imageDefinition.m;
+      const f10 = m10 * i00 + m11 * i10;
+      const f11 = m10 * i01 + m11 * i11;
+      const ty = m10 * i02 + m11 * i12 + m12;
+      for (const [x, y] of [[0, 0], [width, 0], [0, height], [width, height]]) {
+        bottom = Math.max(bottom, f10 * x + f11 * y + ty);
+      }
+    }
+    return Number.isFinite(bottom) ? bottom : null;
+  }
+
+  function animationGroundOffset(part, animationResult) {
+    const bottoms = (animationResult?.anim?.frames || [])
+      .map((frame) => frameVisibleBottom(part, frame))
+      .filter(Number.isFinite)
+      .sort((a, b) => a - b);
+    if (!bottoms.length) return 0;
+    const middle = Math.floor(bottoms.length / 2);
+    return bottoms.length % 2
+      ? bottoms[middle]
+      : (bottoms[middle - 1] + bottoms[middle]) * 0.5;
+  }
+
   function namedAnimationDuration(part, name) {
     const animation = part?.animations?.[name];
     return animation?.frame_count
@@ -541,7 +582,8 @@
       return flightDuration + movementDuration(returnDistance, projectile.moveSpeed);
     }
     if (projectile.renderMode === "BEAM") return projectile.beamDuration + projectile.finishDuration;
-    if (projectile.renderMode === "DIRECT") return projectile.localNormalDuration + projectile.finishDuration;
+    if (projectile.renderMode === "AUTHORED_FINISH") return projectile.finishDuration;
+    if (["AUTHORED", "DIRECT"].includes(projectile.renderMode)) return projectile.localNormalDuration + projectile.finishDuration;
     if (["LINEAR", "CURVE"].includes(projectile.renderMode) && flightDuration > 0) {
       return flightDuration + projectile.finishDuration;
     }
@@ -579,9 +621,15 @@
     };
 
     const configuredEnabled = projectileConfig?.motion?.enabled;
+    const normalHasVisibleContent = animationHasVisibleContent(outboundAnimation);
     let renderMode = motionType;
     if (motionType === "SPECIAL" || motionType === "UNKNOWN") renderMode = "LEGACY";
-    if (configuredEnabled === false && !["DIRECT", "SPECIAL"].includes(motionType)) renderMode = "LEGACY";
+    if (configuredEnabled === false && !["DIRECT", "SPECIAL"].includes(motionType)) {
+      // Disabled native motion means the SAM part contains the authored action.
+      // An empty normal followed by finish must start finish immediately at the
+      // target instead of inventing a half-second flight from actor to target.
+      renderMode = !normalHasVisibleContent && finishAnimation ? "AUTHORED_FINISH" : "AUTHORED";
+    }
 
     const beamLength = positiveNumber(meta?.projectileData?.bullet?.length, 0);
     const beamDuration = positiveNumber(meta?.projectileData?.bullet?.duration, 0);
@@ -604,6 +652,8 @@
       hitPointRate: effectiveHitPointRate(meta, clip, motionType),
       localNormalDuration,
       finishDuration,
+      normalGroundOffset: animationGroundOffset(bulletPart, outboundAnimation),
+      finishGroundOffset: animationGroundOffset(bulletPart, finishAnimation),
       beamLength,
       beamDuration,
       loopNormal: renderMode === "LEGACY" ? true : projectileConfig?.motion?.loopNormal !== false,
@@ -872,10 +922,53 @@
     if (!bulletPart) return;
     const geometry = resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale);
     const nativeMotionAvailable = geometry.flightDuration > 0;
-    const renderMode = nativeMotionAvailable ? projectile.renderMode : "LEGACY";
+    const fixedPositionMode = ["AUTHORED", "AUTHORED_FINISH", "DIRECT", "BEAM"].includes(projectile.renderMode);
+    const renderMode = fixedPositionMode
+      ? projectile.renderMode
+      : (nativeMotionAvailable ? projectile.renderMode : "LEGACY");
 
     if (renderMode === "BEAM") {
       await drawBeam(context, bulletPart, projectile, age, geometry, sceneScale);
+      return;
+    }
+
+    if (renderMode === "AUTHORED_FINISH") {
+      await drawFinish(
+        context,
+        bulletPart,
+        projectile,
+        age,
+        geometry.endX,
+        geometry.endY - projectile.finishGroundOffset * sceneScale,
+        sceneScale,
+      );
+      return;
+    }
+
+    if (renderMode === "AUTHORED") {
+      if (age <= projectile.localNormalDuration || !projectile.finishAnimName) {
+        await drawProjectileFrame(
+          context,
+          bulletPart,
+          projectile.normalAnimName,
+          age,
+          false,
+          geometry.endX,
+          geometry.endY - projectile.normalGroundOffset * sceneScale,
+          sceneScale,
+          sceneScale,
+        );
+      } else {
+        await drawFinish(
+          context,
+          bulletPart,
+          projectile,
+          age - projectile.localNormalDuration,
+          geometry.endX,
+          geometry.endY - projectile.finishGroundOffset * sceneScale,
+          sceneScale,
+        );
+      }
       return;
     }
 
