@@ -16,6 +16,7 @@
 
   const RANGER_X_RATIO = 0.50;
   const TARGET_X_RATIO = 0.90;
+  const TARGET_DISTANCE_MULTIPLIER = 1.5;
   const GROUND_Y_RATIO = 0.80;
   const BODY_OFFSET_X = -130;
   const BODY_OFFSET_Y = -88;
@@ -128,6 +129,10 @@
 
   function clamp(value, minimum, maximum) {
     return Math.min(maximum, Math.max(minimum, value));
+  }
+
+  function targetSceneDistance(width, zoom) {
+    return width * (TARGET_X_RATIO - RANGER_X_RATIO) * TARGET_DISTANCE_MULTIPLIER * zoom;
   }
 
   function normalizeResourcePath(path) {
@@ -363,8 +368,8 @@
     };
   }
 
-  function isPlausibleBasicAttackStart(bodyPart, clip, x, y) {
-    if (!clip.isBasicAttack || (x === 0 && y === 0)) return true;
+  function isPlausibleBasicAttackStart(bodyPart, clip, databaseX, databaseY) {
+    if (!clip.isBasicAttack || (databaseX === 0 && databaseY === 0)) return true;
     const reference = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
     if (!reference) return true;
     const ready = getAnim(bodyPart, clip.ready);
@@ -372,8 +377,9 @@
     const metrics = frameMetrics(bodyPart, readyFrame);
     const width = Math.max(1, metrics?.width || 0);
     const height = Math.max(1, metrics?.height || 0);
-    const dx = Math.abs(x - reference.x);
-    const dy = Math.abs(y - reference.y);
+    const dx = Math.abs(databaseX - reference.x);
+    // UnitData uses positive-up Y, while SAM/body-local coordinates use positive-down Y.
+    const dy = Math.abs(-databaseY - reference.y);
     const distance = Math.hypot(dx, dy);
     const maxDistance = Math.max(80, Math.min(180, Math.hypot(width, height) * 0.30));
     const maxVerticalDistance = Math.max(50, Math.min(110, height * 0.30));
@@ -453,7 +459,7 @@
     const sceneScale = baseSceneScale * zoom;
     const actorX = width * RANGER_X_RATIO;
     const actorY = height * GROUND_Y_RATIO;
-    const targetX = actorX + width * (TARGET_X_RATIO - RANGER_X_RATIO) * zoom;
+    const targetX = actorX + targetSceneDistance(width, zoom);
     return {
       actorX,
       actorY,
@@ -469,8 +475,8 @@
   function resolveStartScreen(projectile, layout, sceneScale) {
     if (projectile.start.source === "database") {
       return {
-        x: layout.actorX + layout.facing * projectile.start.x * sceneScale,
-        y: layout.actorY - projectile.start.y * sceneScale,
+        x: layout.bodyOriginX + layout.facing * projectile.start.x * sceneScale,
+        y: layout.bodyOriginY - projectile.start.y * sceneScale,
       };
     }
     return {
@@ -481,8 +487,8 @@
 
   function resolveReturnEnd(projectile, layout, sceneScale) {
     return {
-      x: layout.actorX + layout.facing * projectile.secondStart.x * sceneScale,
-      y: layout.actorY - projectile.secondStart.y * sceneScale,
+      x: layout.bodyOriginX + layout.facing * projectile.secondStart.x * sceneScale,
+      y: layout.bodyOriginY - projectile.secondStart.y * sceneScale,
     };
   }
 
@@ -641,7 +647,7 @@
         <h3>角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
-          <p class="ranger-animation-hint">一般關卡場景比例 0.85；縮放會以攻擊者為錨點同步縮放角色、目標與投射物。</p>
+          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離已增加 50%，縮放時目標可能移出畫面。</p>
           <div class="ranger-animation-controls simplified">
             <label><span>動畫</span><select class="ranger-animation-select">${clipOptions(meta)}</select></label>
             <label class="ranger-animation-zoom-label"><span>縮放 <strong class="ranger-animation-zoom-percent">100%</strong></span><input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
@@ -956,7 +962,7 @@
     const layout = {
       actorX,
       actorY,
-      targetX: actorX + width * (TARGET_X_RATIO - RANGER_X_RATIO) * zoom,
+      targetX: actorX + targetSceneDistance(width, zoom),
       targetBaseY: actorY,
       facing: 1,
       zoom,
