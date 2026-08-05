@@ -130,7 +130,9 @@
     const width = Math.max(1, metrics?.width || 0);
     const height = Math.max(1, metrics?.height || 0);
     const dx = Math.abs(x - reference.x);
-    const dy = Math.abs(y - reference.y);
+    // UnitData uses positive-up Y; SAM animation-local coordinates use positive-down Y.
+    const samY = -y;
+    const dy = Math.abs(samY - reference.y);
     const distance = Math.hypot(dx, dy);
     const maxDistance = Math.max(80, Math.min(180, Math.hypot(width, height) * 0.30));
     const maxVerticalDistance = Math.max(50, Math.min(110, height * 0.30));
@@ -186,7 +188,7 @@
       return;
     }
 
-    const marker = createMarker(bodyPart, x, y, markerId);
+    const marker = createMarker(bodyPart, x, -y, markerId);
     if (!marker) return;
     readyFrame.unshift(marker);
     triggerFrame.unshift([

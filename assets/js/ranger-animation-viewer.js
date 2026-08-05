@@ -16,7 +16,7 @@
 
   const RANGER_X_RATIO = 0.50;
   const TARGET_X_RATIO = 0.90;
-  const TARGET_DISTANCE_MULTIPLIER = 1.5;
+  const TARGET_DISTANCE_MULTIPLIER = 2.25;
   const GROUND_Y_RATIO = 0.80;
   const BODY_OFFSET_X = -130;
   const BODY_OFFSET_Y = -88;
@@ -551,7 +551,7 @@
     const configuredEnabled = projectileConfig?.motion?.enabled;
     let renderMode = motionType;
     if (motionType === "SPECIAL" || motionType === "UNKNOWN") renderMode = "LEGACY";
-    if (configuredEnabled !== true && !["DIRECT", "SPECIAL"].includes(motionType)) renderMode = "LEGACY";
+    if (configuredEnabled === false && !["DIRECT", "SPECIAL"].includes(motionType)) renderMode = "LEGACY";
 
     const beamLength = positiveNumber(meta?.projectileData?.bullet?.length, 0);
     const beamDuration = positiveNumber(meta?.projectileData?.bullet?.duration, 0);
@@ -647,7 +647,7 @@
         <h3>角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
-          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離已增加 50%，縮放時目標可能移出畫面。</p>
+          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離在目前基礎上再增加 50%，目標可移出畫面。</p>
           <div class="ranger-animation-controls simplified">
             <label><span>動畫</span><select class="ranger-animation-select">${clipOptions(meta)}</select></label>
             <label class="ranger-animation-zoom-label"><span>縮放 <strong class="ranger-animation-zoom-percent">100%</strong></span><input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
@@ -904,7 +904,7 @@
         x: lerp(geometry.startX, geometry.endX, progress),
         y: lerp(geometry.startY, geometry.endY, progress),
       };
-      if (renderMode === "CURVE") {
+      if (projectile.motionType === "CURVE") {
         const pixelDistance = Math.hypot(geometry.endX - geometry.startX, geometry.endY - geometry.startY);
         position = cubicBezierPoint(
           { x: geometry.startX, y: geometry.startY },
