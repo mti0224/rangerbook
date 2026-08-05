@@ -6,6 +6,7 @@ on:
       - fix/no-projectile-hit-effect-center-20260806
     paths:
       - ".github/workflows/apply-no-projectile-hit-effect-center.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
