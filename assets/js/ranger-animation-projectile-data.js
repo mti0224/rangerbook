@@ -10,18 +10,18 @@
     {
       dataKey: "normal",
       ready: ["attack_ready"],
-      trigger: ["attack"],
+      trigger: ["attack", "attack_a", "attack_b"],
       validateStart: true,
     },
     {
       dataKey: "skill1",
       ready: ["s_attack_ready", "s_action_attack_1"],
-      trigger: ["s_attack", "s_action_attack_2", "s_action_attack_3"],
+      trigger: ["s_attack", "s_attack_a", "s_attack_b", "s_action_attack_2", "s_action_attack_3"],
     },
     {
       dataKey: "skill2",
       ready: ["s2_attack_ready"],
-      trigger: ["s2_attack", "skill"],
+      trigger: ["s2_attack", "s2_attack_a", "s2_attack_b", "skill"],
     },
   ];
 
@@ -213,10 +213,19 @@
       motionModelVersion: projectileData?.validation?.motionModelVersion ?? null,
       coordinateScale: NATIVE_PROJECTILE_COORDINATE_SCALE,
       unitId,
+      unitCode: unitData?.unitCode || unitId,
+      resourceCode: unitData?.resourceCode || unitId,
+      guardianResourceCode: unitData?.guardianResourceCode || "",
+      useEnemySideResource: unitData?.useEnemySideResource ?? 0,
+      render: unitData?.render || null,
+      movement: unitData?.movement || null,
+      hitTiming: unitData?.hitTiming || null,
       bullet: unitData?.bullet || null,
       normal: unitData?.normal || null,
       skill1: unitData?.skill1 || null,
       skill2: unitData?.skill2 || null,
+      effects: unitData?.effects || null,
+      sounds: unitData?.sounds || null,
     };
   }
 
