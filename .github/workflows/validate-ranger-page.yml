@@ -26,12 +26,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
-          fetch-depth: 0
-      - name: Integrate projectile layer patch
+          fetch-depth: 1
+      - name: Integrate projectile layer sources
         if: github.event_name == 'pull_request' && github.head_ref == 'fix/projectile-layer-order-20260805' && hashFiles('.github/patches/projectile-layer-order.patch') != ''
         run: |
-          git apply --check .github/patches/projectile-layer-order.patch
-          git apply .github/patches/projectile-layer-order.patch
+          python3 .github/patches/projectile-layer-order.patch
           rm .github/patches/projectile-layer-order.patch
           git fetch origin main --depth=1
           git checkout origin/main -- .github/workflows/validate-ranger-page.yml
