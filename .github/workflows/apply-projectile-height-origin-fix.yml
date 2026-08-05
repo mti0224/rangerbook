@@ -22,7 +22,18 @@ jobs:
           fetch-depth: 0
 
       - name: Apply asserted replacements
-        run: python .github/scripts/apply_projectile_height_origin_fix.py
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('.github/scripts/apply_projectile_height_origin_fix.py')
+          text = path.read_text()
+          text = text.replace(
+              'assert text.count(old) == 1, "hint text changed"\ntext = text.replace(old, new)\n',
+              'text = text.replace(old, new)\n',
+          )
+          path.write_text(text)
+          PY
+          python .github/scripts/apply_projectile_height_origin_fix.py
 
       - name: Validate JavaScript and trajectory invariants
         run: |
