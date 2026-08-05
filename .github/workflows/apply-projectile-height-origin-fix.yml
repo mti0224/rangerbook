@@ -1,0 +1,228 @@
+name: Apply projectile height and origin fix
+
+on:
+  push:
+    branches:
+      - fix/projectile-height-origin-20260805
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/projectile-height-origin-20260805
+          fetch-depth: 0
+
+      - name: Apply asserted replacements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('assets/js/ranger-animation-viewer.js')
+          text = path.read_text()
+
+          old = '''  function animationDerivedMuzzle(part, readyNames, triggerNames) {
+    const ready = getAnim(part, readyNames);
+    const trigger = getAnim(part, triggerNames);
+    if (!ready || !trigger) return null;
+    const readyFrames = ready.anim.frames || [];
+    const triggerFrames = trigger.anim.frames || [];
+    if (!readyFrames.length || !triggerFrames.length) return null;
+    const lastReady = readyFrames[readyFrames.length - 1] || [];
+    const firstTrigger = triggerFrames[0] || [];
+    const hidden = lastReady.filter((item) => {
+      const color = item?.[3];
+      return Array.isArray(color) && Number(color[3] ?? 255) === 0;
+    });
+    const marker = hidden.find((candidate) => firstTrigger.some(
+      (item) => item?.[0] === candidate?.[0] && item?.[1] === candidate?.[1]
+    )) || hidden.find((candidate) => firstTrigger.some((item) => item?.[1] === candidate?.[1]));
+    return (marker && worldPosition(part, marker)) || frontMostPoint(part, lastReady);
+  }
+'''
+          new = '''  function isInjectedProjectileMarker(item) {
+    const markerId = Number(item?.[0]);
+    return Number.isFinite(markerId) && markerId >= 2147483000 && markerId < 2147484000;
+  }
+
+  function animationMarkerMuzzle(part, readyNames, triggerNames, includeInjected = true) {
+    const ready = getAnim(part, readyNames);
+    const trigger = getAnim(part, triggerNames);
+    if (!ready || !trigger) return null;
+    const readyFrames = ready.anim.frames || [];
+    const triggerFrames = trigger.anim.frames || [];
+    if (!readyFrames.length || !triggerFrames.length) return null;
+    const lastReady = readyFrames[readyFrames.length - 1] || [];
+    const firstTrigger = triggerFrames[0] || [];
+    const hidden = lastReady.filter((item) => {
+      const color = item?.[3];
+      const hiddenItem = Array.isArray(color) && Number(color[3] ?? 255) === 0;
+      return hiddenItem && (includeInjected || !isInjectedProjectileMarker(item));
+    });
+    const marker = hidden.find((candidate) => firstTrigger.some(
+      (item) => item?.[0] === candidate?.[0] && item?.[1] === candidate?.[1]
+    )) || hidden.find((candidate) => firstTrigger.some((item) => item?.[1] === candidate?.[1]));
+    return marker ? worldPosition(part, marker) : null;
+  }
+
+  function animationDerivedMuzzle(part, readyNames, triggerNames) {
+    const ready = getAnim(part, readyNames);
+    if (!ready) return null;
+    const readyFrames = ready.anim.frames || [];
+    if (!readyFrames.length) return null;
+    const marker = animationMarkerMuzzle(part, readyNames, triggerNames, true);
+    return marker || frontMostPoint(part, readyFrames[readyFrames.length - 1] || []);
+  }
+'''
+          assert text.count(old) == 1, 'animationDerivedMuzzle block changed'
+          text = text.replace(old, new)
+
+          old = '''  function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
+    const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
+    const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
+    const runtimeMultiplier = 1;
+    if (Number.isFinite(rawX) && Number.isFinite(rawY)) {
+      const x = rawX * coordinateScale * runtimeMultiplier;
+      const y = rawY * coordinateScale * runtimeMultiplier;
+      if (isPlausibleBasicAttackStart(bodyPart, clip, x, y)) {
+        return { x, y, source: "database" };
+      }
+    }
+    const fallback = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
+    return {
+      x: fallback?.x || 0,
+      y: fallback?.y || 0,
+      source: "animation-fallback",
+    };
+  }
+'''
+          new = '''  function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
+    // Authored hidden markers follow the rendered sprite exactly. Synthetic markers use
+    // UnitData coordinates and are only a fallback when the animation has no native anchor.
+    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
+    if (authored) {
+      return { x: authored.x, y: authored.y, source: "animation-anchor" };
+    }
+
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
+    const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
+    const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
+    const runtimeMultiplier = 1;
+    if (Number.isFinite(rawX) && Number.isFinite(rawY) && (rawX !== 0 || rawY !== 0)) {
+      const x = rawX * coordinateScale * runtimeMultiplier;
+      const y = rawY * coordinateScale * runtimeMultiplier;
+      if (isPlausibleBasicAttackStart(bodyPart, clip, x, y)) {
+        return { x, y, source: "database" };
+      }
+    }
+    const fallback = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
+    if (fallback) {
+      return { x: fallback.x, y: fallback.y, source: "animation-fallback" };
+    }
+    return { x: 0, y: 0, source: "database" };
+  }
+'''
+          assert text.count(old) == 1, 'nativeStartPoint block changed'
+          text = text.replace(old, new)
+
+          old = '''  function resolveReturnEnd(projectile, layout, sceneScale) {
+    return {
+      x: layout.bodyOriginX + layout.facing * projectile.secondStart.x * sceneScale,
+      y: layout.bodyOriginY - projectile.secondStart.y * sceneScale,
+    };
+  }
+
+  function estimateProjectileLifetime(projectile, bodyPart) {
+    const layout = referenceLayout();
+    const sceneScale = layout.sceneScale;
+    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
+    const hitHeight = Number.isFinite(projectile.hitPointRate) ? targetHeight * projectile.hitPointRate : 0;
+    const start = resolveStartScreen(projectile, layout, sceneScale);
+    const end = {
+      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
+      y: layout.targetBaseY - (hitHeight + projectile.endOffset.y) * sceneScale,
+    };
+'''
+          new = '''  function resolveReturnEnd(projectile, layout, sceneScale) {
+    return {
+      x: layout.bodyOriginX + layout.facing * projectile.secondStart.x * sceneScale,
+      y: layout.bodyOriginY - projectile.secondStart.y * sceneScale,
+    };
+  }
+
+  function resolveOutboundEnd(projectile, layout, sceneScale, start) {
+    const launchRelativeY = ["LINEAR", "CURVE", "RETURN", "BEAM"].includes(projectile.motionType);
+    return {
+      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
+      // UnitData endY is an offset from the launch line for moving projectiles.
+      // Therefore endY=0 preserves a horizontal trajectory instead of snapping to target height.
+      y: launchRelativeY
+        ? start.y - projectile.endOffset.y * sceneScale
+        : layout.targetBaseY - projectile.endOffset.y * sceneScale,
+    };
+  }
+
+  function estimateProjectileLifetime(projectile, bodyPart) {
+    const layout = referenceLayout();
+    const sceneScale = layout.sceneScale;
+    const start = resolveStartScreen(projectile, layout, sceneScale);
+    const end = resolveOutboundEnd(projectile, layout, sceneScale, start);
+'''
+          assert text.count(old) == 1, 'lifetime endpoint block changed'
+          text = text.replace(old, new)
+
+          old = '''  function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
+    const start = resolveStartScreen(projectile, layout, sceneScale);
+    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
+    const hitHeight = Number.isFinite(projectile.hitPointRate) ? targetHeight * projectile.hitPointRate : 0;
+    const endX = layout.targetX + layout.facing * projectile.endOffset.x * sceneScale;
+    const endY = layout.targetBaseY - (hitHeight + projectile.endOffset.y) * sceneScale;
+    const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);
+'''
+          new = '''  function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
+    const start = resolveStartScreen(projectile, layout, sceneScale);
+    const end = resolveOutboundEnd(projectile, layout, sceneScale, start);
+    const endX = end.x;
+    const endY = end.y;
+    const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);
+'''
+          assert text.count(old) == 1, 'render endpoint block changed'
+          text = text.replace(old, new)
+
+          old = '一般關卡場景比例 0.85；角色與目標距離已增加 50%，縮放時目標可能移出畫面。'
+          new = '一般關卡場景比例 0.85；移動型投射物依原生發射高度與 endY 位移計算，目標可能位於畫面外。'
+          assert text.count(old) == 1, 'hint text changed'
+          text = text.replace(old, new)
+
+          path.write_text(text)
+          PY
+
+      - name: Validate JavaScript and trajectory invariants
+        run: |
+          node --check assets/js/ranger-animation-viewer.js
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('assets/js/ranger-animation-viewer.js').read_text()
+          assert 'function animationMarkerMuzzle' in text
+          assert 'source: "animation-anchor"' in text
+          assert '&& (rawX !== 0 || rawY !== 0)' in text
+          assert 'function resolveOutboundEnd' in text
+          assert 'start.y - projectile.endOffset.y * sceneScale' in text
+          assert 'targetHeight * projectile.hitPointRate' not in text
+          assert text.count('resolveOutboundEnd(projectile, layout, sceneScale, start)') == 3
+          PY
+
+      - name: Commit generated fix and remove workflow
+        run: |
+          rm .github/workflows/apply-projectile-height-origin-fix.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add assets/js/ranger-animation-viewer.js .github/workflows/apply-projectile-height-origin-fix.yml
+          git commit -m "fix: align projectile launch and impact heights"
+          git push origin HEAD:fix/projectile-height-origin-20260805
