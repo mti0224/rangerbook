@@ -1,0 +1,191 @@
+name: Inspect animation cases
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/inspect-animation-cases.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and summarize animation metadata
+        run: |
+          python3 - <<'PY'
+          import json
+          import math
+          import urllib.request
+          from pathlib import Path
+
+          IDS = ["u1280h-lv", "u1539e-en", "u1588e-es", "u1138sk-james"]
+          META_BASE = "https://res.warmycat.com/animation_meta/"
+          out_dir = Path("inspection")
+          out_dir.mkdir(exist_ok=True)
+
+          def fetch_json(url):
+              request = urllib.request.Request(url, headers={"User-Agent": "rangerbook-animation-inspector/1.0"})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          def duration(part, name):
+              animation = (part or {}).get("animations", {}).get(name)
+              if not animation:
+                  return 0
+              return float(animation.get("frame_count", len(animation.get("frames", [])))) / max(1.0, float((part or {}).get("anim_rate", 24)))
+
+          def transform_point(matrix, x, y):
+              return (
+                  matrix[0] * x + matrix[1] * y + matrix[4],
+                  matrix[2] * x + matrix[3] * y + matrix[5],
+              )
+
+          def frame_bounds(part, frame):
+              xs, ys = [], []
+              images = part.get("images", {})
+              sprites = part.get("sprites", {})
+              for item in frame or []:
+                  if len(item) < 3:
+                      continue
+                  _, resource_number, object_matrix, *rest = item
+                  color = rest[0] if rest else None
+                  if isinstance(color, list) and len(color) > 3 and float(color[3]) == 0:
+                      continue
+                  image_def = images.get(str(resource_number), images.get(resource_number))
+                  if not image_def or not isinstance(object_matrix, list) or len(object_matrix) < 6:
+                      continue
+                  image_matrix = image_def.get("m")
+                  sprite = sprites.get(image_def.get("name"))
+                  if not isinstance(image_matrix, list) or len(image_matrix) < 6 or not sprite:
+                      continue
+                  rect = sprite.get("rect", [])
+                  if len(rect) < 4:
+                      continue
+                  width, height = float(rect[2]), float(rect[3])
+                  for local_x, local_y in ((0, 0), (width, 0), (width, height), (0, height)):
+                      image_x, image_y = transform_point(image_matrix, local_x, local_y)
+                      world_x, world_y = transform_point(object_matrix, image_x, image_y)
+                      xs.append(world_x)
+                      ys.append(world_y)
+              if not xs:
+                  return None
+              return {
+                  "left": min(xs), "right": max(xs), "top": min(ys), "bottom": max(ys),
+                  "centerX": (min(xs) + max(xs)) / 2,
+                  "centerY": (min(ys) + max(ys)) / 2,
+                  "width": max(xs) - min(xs), "height": max(ys) - min(ys),
+              }
+
+          def animation_metrics(part, name):
+              animation = part.get("animations", {}).get(name)
+              if not animation:
+                  return None
+              frames = animation.get("frames", [])
+              metrics = [frame_bounds(part, frame) for frame in frames]
+              metrics = [metric for metric in metrics if metric]
+              if not metrics:
+                  return {"frameCount": len(frames), "duration": duration(part, name), "framesWithBounds": 0}
+              def span(key):
+                  values = [metric[key] for metric in metrics]
+                  return {"min": min(values), "max": max(values), "range": max(values) - min(values)}
+              return {
+                  "frameCount": len(frames),
+                  "duration": duration(part, name),
+                  "framesWithBounds": len(metrics),
+                  "left": span("left"), "right": span("right"),
+                  "top": span("top"), "bottom": span("bottom"),
+                  "centerX": span("centerX"), "centerY": span("centerY"),
+                  "width": span("width"), "height": span("height"),
+                  "first": metrics[0], "last": metrics[-1],
+              }
+
+          def first_animation(part, names):
+              for name in names:
+                  animation = part.get("animations", {}).get(name)
+                  if animation and animation.get("frames"):
+                      return name
+              return None
+
+          index = fetch_json(META_BASE + "index.json")
+          projectile_data = json.loads(Path("res/projectile_data.json").read_text(encoding="utf-8"))
+          result = {}
+
+          for unit_id in IDS:
+              entry = index.get("units", {}).get(unit_id)
+              if not entry:
+                  result[unit_id] = {"error": "missing from animation index"}
+                  continue
+              filename = str(entry.get("meta", f"{unit_id}.json")).split("/")[-1]
+              meta = fetch_json(META_BASE + filename)
+              unit_projectile = projectile_data.get("units", {}).get(unit_id, {})
+              if not meta.get("projectileData"):
+                  meta["projectileData"] = {
+                      "coordinateScale": projectile_data.get("coordinateScale", 0.5),
+                      "render": unit_projectile.get("render"),
+                      "movement": unit_projectile.get("movement"),
+                      "hitTiming": unit_projectile.get("hitTiming"),
+                      "bullet": unit_projectile.get("bullet"),
+                      "normal": unit_projectile.get("normal"),
+                      "skill1": unit_projectile.get("skill1"),
+                      "skill2": unit_projectile.get("skill2"),
+                  }
+              (out_dir / f"{unit_id}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+
+              body = meta.get("parts", {}).get("body", {})
+              chosen = {
+                  "idle": first_animation(body, ["idle", "wait"]),
+                  "targetCurrent": first_animation(body, ["wait", "idle", "_all", "normal", "attack", "walk"]),
+                  "normalAttack": first_animation(body, ["attack_all", "attack", "attack_a", "attack_b"]),
+                  "skill2": first_animation(body, ["s2_attack_all", "s2_attack", "s2_attack_a", "s2_attack_b", "skill"]),
+              }
+              body_names = list(body.get("animations", {}).keys())
+              relevant_names = []
+              for name in [*chosen.values(), "attack_ready", "attack", "attack_a", "attack_b", "s2_attack_ready", "s2_attack", "s2_attack_a", "s2_attack_b", "wait", "idle", "_all"]:
+                  if name and name in body_names and name not in relevant_names:
+                      relevant_names.append(name)
+
+              part_summary = {}
+              for part_name, part in meta.get("parts", {}).items():
+                  if part_name == "body" or part_name.startswith("bul"):
+                      part_summary[part_name] = {
+                          "animRate": part.get("anim_rate"),
+                          "canvas": part.get("canvas"),
+                          "animationNames": list(part.get("animations", {}).keys()),
+                          "animationDurations": {
+                              name: duration(part, name)
+                              for name in part.get("animations", {}).keys()
+                          },
+                      }
+
+              virtual = {}
+              for name in relevant_names:
+                  clip = body.get("virtual_clips", {}).get(name)
+                  if clip:
+                      virtual[name] = clip
+
+              timeline = body.get("timeline")
+              result[unit_id] = {
+                  "metaFile": filename,
+                  "chosenAnimations": chosen,
+                  "bodyAnimRate": body.get("anim_rate"),
+                  "bodyCanvas": body.get("canvas"),
+                  "bodyAnimationNames": body_names,
+                  "bodyVirtualClips": virtual,
+                  "bodyTimeline": timeline,
+                  "bodyMetrics": {name: animation_metrics(body, name) for name in relevant_names},
+                  "projectileData": meta.get("projectileData"),
+                  "parts": part_summary,
+              }
+
+          output = out_dir / "inspection.json"
+          output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+          print(output.read_text(encoding="utf-8"))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: animation-case-inspection
+          path: inspection/
