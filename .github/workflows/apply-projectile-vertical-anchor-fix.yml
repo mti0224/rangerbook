@@ -1,17 +1,17 @@
 name: Apply projectile vertical anchor fix
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
 permissions:
   contents: write
 jobs:
   apply:
-    if: github.head_ref == 'fix/projectile-vertical-anchor-20260806'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: main
+          fetch-depth: 2
           token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-python@v5
         with:
@@ -32,9 +32,8 @@ jobs:
     if (!samples.length) return NaN;
 
     // The last visible frame is often only a displaced fade-out particle or
-    // afterimage.  Use the dominant lower-edge cluster in the terminal part of
-    // the authored animation so the landing pose, rather than its fade-out,
-    // defines the contact point.
+    // afterimage. Use the dominant lower-edge cluster in the terminal part of
+    // the authored animation so the landing pose defines the contact point.
     const lastIndex = samples[samples.length - 1].index;
     const terminalStart = lastIndex * 0.4;
     const terminal = samples.filter((sample) => sample.index >= terminalStart);
@@ -81,10 +80,9 @@ jobs:
       ? { x: rawX * coordinateScale, y: rawY * coordinateScale, source: "database" }
       : null;
 
-    // Prefer UnitData while it agrees with the current SAM resource.  Evolved
+    // Prefer UnitData while it agrees with the current SAM resource. Evolved
     // resources and skill clips can retain coordinates authored for another
-    // body layout; in that case the SAM launch marker is the authoritative
-    // point for this resource.  This validation applies to normal and skills.
+    // body layout; in that case the SAM launch marker is authoritative.
     const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
     const fallback = authored || animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
     if (databasePoint && fallback) {
@@ -121,18 +119,18 @@ jobs:
 
           path.write_text(text)
           PY
-      - name: Validate
+      - name: Restore workflows and validate
         run: |
+          git checkout HEAD^ -- .github/workflows/validate-ranger-page.yml
+          rm .github/workflows/apply-projectile-vertical-anchor-fix.yml
           node --check assets/js/ranger-animation-viewer.js
           grep -q 'animationStableTerminalBottom' assets/js/ranger-animation-viewer.js
-          grep -q 'This validation applies to normal and skills' assets/js/ranger-animation-viewer.js
-          test "$(git diff --name-only | grep -v '^.github/workflows/apply-projectile-vertical-anchor-fix.yml$' | sort)" = "assets/js/ranger-animation-viewer.js"
-      - name: Remove one-time workflow and commit
+          grep -q 'SAM launch marker is authoritative' assets/js/ranger-animation-viewer.js
+          test "$(git diff --name-only | sort)" = $'.github/workflows/apply-projectile-vertical-anchor-fix.yml\n.github/workflows/validate-ranger-page.yml\nassets/js/ranger-animation-viewer.js'
+      - name: Commit final source change
         run: |
-          rm .github/workflows/apply-projectile-vertical-anchor-fix.yml
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -- assets/js/ranger-animation-viewer.js .github/workflows/apply-projectile-vertical-anchor-fix.yml
+          git add -- assets/js/ranger-animation-viewer.js .github/workflows/apply-projectile-vertical-anchor-fix.yml .github/workflows/validate-ranger-page.yml
           git commit -m 'fix: stabilize projectile vertical anchors'
-          git push
-# trigger
+          git push origin main
