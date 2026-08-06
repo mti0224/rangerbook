@@ -15,8 +15,8 @@
   const MAX_FLIGHT_DURATION = 8;
 
   const RANGER_X_RATIO = 0.50;
-  const TARGET_X_RATIO = 0.90;
-  const TARGET_DISTANCE_MULTIPLIER = 2.25;
+  const TARGET_DISTANCE_WIDTH_RATIO = 0.90;
+  const DEFAULT_ATTACK_RANGE = 384;
   const GROUND_Y_RATIO = 0.80;
   const BODY_OFFSET_X = -130;
   const BODY_OFFSET_Y = -88;
@@ -88,6 +88,7 @@
     imageCache: new Map(),
     spriteCache: new Map(),
     trackCache: new WeakMap(),
+    attackRangeByMeta: new WeakMap(),
     rafId: 0,
     startedAt: 0,
     activeCanvas: null,
@@ -131,8 +132,14 @@
     return Math.min(maximum, Math.max(minimum, value));
   }
 
-  function targetSceneDistance(width, zoom) {
-    return width * (TARGET_X_RATIO - RANGER_X_RATIO) * TARGET_DISTANCE_MULTIPLIER * zoom;
+  function targetSceneDistance(width, zoom, attackRange) {
+    const normalizedAttackRange = positiveNumber(attackRange, DEFAULT_ATTACK_RANGE);
+    return (
+      width *
+      TARGET_DISTANCE_WIDTH_RATIO *
+      zoom *
+      (normalizedAttackRange / DEFAULT_ATTACK_RANGE)
+    );
   }
 
   function normalizeResourcePath(path) {
@@ -243,6 +250,23 @@
     const src = image?.getAttribute("src") || image?.src || "";
     const match = src.match(/res(?:_from_emulator)?\/([^/]+)\//) || src.match(/\/([^/]+)\/[^/]+-thum/i);
     return match ? decodeURIComponent(match[1]) : "";
+  }
+
+  function inferAttackRangeFromModal(modalContent) {
+    for (const item of modalContent.querySelectorAll(".ranger-stat")) {
+      const label = text(item.querySelector("span")?.textContent);
+      if (label !== "攻擊範圍") continue;
+
+      const rawValue = text(item.querySelector("strong")?.textContent).replaceAll(",", "");
+      const match = rawValue.match(/-?\d+(?:\.\d+)?/);
+      const parsed = match ? Number(match[0]) : NaN;
+      return positiveNumber(parsed, DEFAULT_ATTACK_RANGE);
+    }
+    return DEFAULT_ATTACK_RANGE;
+  }
+
+  function attackRangeForMeta(meta) {
+    return positiveNumber(state.attackRangeByMeta.get(meta), DEFAULT_ATTACK_RANGE);
   }
 
   function getAnim(part, names) {
@@ -737,7 +761,7 @@
     };
   }
 
-  function referenceLayout() {
+  function referenceLayout(attackRange) {
     const width = 640;
     const height = 360;
     const zoom = 1;
@@ -745,7 +769,7 @@
     const sceneScale = baseSceneScale * zoom;
     const actorX = width * RANGER_X_RATIO;
     const actorY = height * GROUND_Y_RATIO;
-    const targetX = actorX + targetSceneDistance(width, zoom);
+    const targetX = actorX + targetSceneDistance(width, zoom, attackRange);
     return {
       actorX,
       actorY,
@@ -790,7 +814,7 @@
   }
 
   function estimateProjectileLifetime(projectile, bodyPart) {
-    const layout = referenceLayout();
+    const layout = referenceLayout(projectile.attackRange);
     const sceneScale = layout.sceneScale;
     const start = resolveStartScreen(projectile, layout, sceneScale);
     const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
@@ -880,6 +904,7 @@
       beamDuration,
       loopNormal: renderMode === "LEGACY" ? true : projectileConfig?.motion?.loopNormal !== false,
       rotationMode: text(projectileConfig?.motion?.rotation).toUpperCase() || "FIXED",
+      attackRange: attackRangeForMeta(meta),
       isBasicAttack: clip.isBasicAttack === true,
     };
     projectile.lifetime = estimateProjectileLifetime(projectile, bodyPart);
@@ -944,12 +969,13 @@
   }
 
   function renderPanel(unitId, meta) {
+    const attackRange = attackRangeForMeta(meta);
     return `
       <section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}">
         <h3>角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
-          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離在目前基礎上再增加 50%，目標可移出畫面。</p>
+          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離依攻擊範圍 ${attackRange} 按比例顯示（384 點在 100% 縮放時為 576 px），目標可移出畫面。</p>
           <div class="ranger-animation-controls simplified">
             <label><span>動畫</span><select class="ranger-animation-select">${clipOptions(meta)}</select></label>
             <label class="ranger-animation-zoom-label"><span>縮放 <strong class="ranger-animation-zoom-percent">100%</strong></span><input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
@@ -1320,7 +1346,7 @@
     const layout = {
       actorX,
       actorY,
-      targetX: actorX + targetSceneDistance(width, zoom),
+      targetX: actorX + targetSceneDistance(width, zoom, attackRangeForMeta(meta)),
       targetBaseY: actorY,
       facing: 1,
       zoom,
@@ -1437,6 +1463,10 @@
     const unitId = inferUnitIdFromModal(modalContent);
     if (!unitId || modalContent.querySelector(`.ranger-animation-section[data-animation-unit-id="${CSS.escape(unitId)}"]`)) return;
     const meta = await loadMeta(unitId);
+    if (meta) {
+      state.attackRangeByMeta.set(meta, inferAttackRangeFromModal(modalContent));
+      state.trackCache.delete(meta);
+    }
     modalContent.insertAdjacentHTML("beforeend", meta ? renderPanel(unitId, meta) : fallbackMissingPanel(unitId));
     const section = modalContent.querySelector(`.ranger-animation-section[data-animation-unit-id="${CSS.escape(unitId)}"]`);
     if (section && meta) bindPanel(section, meta);
