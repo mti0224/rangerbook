@@ -1,0 +1,98 @@
+name: Apply attack-range target distance
+
+on:
+  push:
+    branches:
+      - feat/attack-range-target-distance
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/attack-range-target-distance
+          fetch-depth: 0
+
+      - name: Patch animation target distance
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("assets/js/ranger-animation-viewer.js")
+          source = path.read_text()
+
+          replacements = [
+              (
+                  '''  const RANGER_X_RATIO = 0.50;\n  const TARGET_X_RATIO = 0.90;\n  const TARGET_DISTANCE_MULTIPLIER = 2.25;\n  const GROUND_Y_RATIO = 0.80;''',
+                  '''  const RANGER_X_RATIO = 0.50;\n  const TARGET_DISTANCE_WIDTH_RATIO = 0.90;\n  const DEFAULT_ATTACK_RANGE = 384;\n  const GROUND_Y_RATIO = 0.80;''',
+              ),
+              (
+                  '''    trackCache: new WeakMap(),\n    rafId: 0,''',
+                  '''    trackCache: new WeakMap(),\n    attackRangeByMeta: new WeakMap(),\n    rafId: 0,''',
+              ),
+              (
+                  '''  function targetSceneDistance(width, zoom) {\n    return width * (TARGET_X_RATIO - RANGER_X_RATIO) * TARGET_DISTANCE_MULTIPLIER * zoom;\n  }''',
+                  '''  function targetSceneDistance(width, zoom, attackRange) {\n    const normalizedAttackRange = positiveNumber(attackRange, DEFAULT_ATTACK_RANGE);\n    return (\n      width *\n      TARGET_DISTANCE_WIDTH_RATIO *\n      zoom *\n      (normalizedAttackRange / DEFAULT_ATTACK_RANGE)\n    );\n  }''',
+              ),
+              (
+                  '''  function inferUnitIdFromModal(modalContent) {\n    const image = modalContent.querySelector(".ranger-detail-image");\n    const src = image?.getAttribute("src") || image?.src || "";\n    const match = src.match(/res(?:_from_emulator)?\\/([^/]+)\\//) || src.match(/\\/([^/]+)\\/[^/]+-thum/i);\n    return match ? decodeURIComponent(match[1]) : "";\n  }\n\n  function getAnim(part, names) {''',
+                  '''  function inferUnitIdFromModal(modalContent) {\n    const image = modalContent.querySelector(".ranger-detail-image");\n    const src = image?.getAttribute("src") || image?.src || "";\n    const match = src.match(/res(?:_from_emulator)?\\/([^/]+)\\//) || src.match(/\\/([^/]+)\\/[^/]+-thum/i);\n    return match ? decodeURIComponent(match[1]) : "";\n  }\n\n  function inferAttackRangeFromModal(modalContent) {\n    for (const item of modalContent.querySelectorAll(".ranger-stat")) {\n      const label = text(item.querySelector("span")?.textContent);\n      if (label !== "攻擊範圍") continue;\n\n      const rawValue = text(item.querySelector("strong")?.textContent).replaceAll(",", "");\n      const match = rawValue.match(/-?\\d+(?:\\.\\d+)?/);\n      const parsed = match ? Number(match[0]) : NaN;\n      return positiveNumber(parsed, DEFAULT_ATTACK_RANGE);\n    }\n    return DEFAULT_ATTACK_RANGE;\n  }\n\n  function attackRangeForMeta(meta) {\n    return positiveNumber(state.attackRangeByMeta.get(meta), DEFAULT_ATTACK_RANGE);\n  }\n\n  function getAnim(part, names) {''',
+              ),
+              ('''  function referenceLayout() {''', '''  function referenceLayout(attackRange) {'''),
+              (
+                  '''    const targetX = actorX + targetSceneDistance(width, zoom);''',
+                  '''    const targetX = actorX + targetSceneDistance(width, zoom, attackRange);''',
+              ),
+              (
+                  '''  function estimateProjectileLifetime(projectile, bodyPart) {\n    const layout = referenceLayout();''',
+                  '''  function estimateProjectileLifetime(projectile, bodyPart) {\n    const layout = referenceLayout(projectile.attackRange);''',
+              ),
+              (
+                  '''      rotationMode: text(projectileConfig?.motion?.rotation).toUpperCase() || "FIXED",\n      isBasicAttack: clip.isBasicAttack === true,''',
+                  '''      rotationMode: text(projectileConfig?.motion?.rotation).toUpperCase() || "FIXED",\n      attackRange: attackRangeForMeta(meta),\n      isBasicAttack: clip.isBasicAttack === true,''',
+              ),
+              (
+                  '''  function renderPanel(unitId, meta) {\n    return `''',
+                  '''  function renderPanel(unitId, meta) {\n    const attackRange = attackRangeForMeta(meta);\n    return `''',
+              ),
+              (
+                  '''          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離在目前基礎上再增加 50%，目標可移出畫面。</p>''',
+                  '''          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離依攻擊範圍 ${attackRange} 按比例顯示（384 點在 100% 縮放時為 576 px），目標可移出畫面。</p>''',
+              ),
+              (
+                  '''      targetX: actorX + targetSceneDistance(width, zoom),''',
+                  '''      targetX: actorX + targetSceneDistance(width, zoom, attackRangeForMeta(meta)),''',
+              ),
+              (
+                  '''    const meta = await loadMeta(unitId);\n    modalContent.insertAdjacentHTML("beforeend", meta ? renderPanel(unitId, meta) : fallbackMissingPanel(unitId));''',
+                  '''    const meta = await loadMeta(unitId);\n    if (meta) {\n      state.attackRangeByMeta.set(meta, inferAttackRangeFromModal(modalContent));\n      state.trackCache.delete(meta);\n    }\n    modalContent.insertAdjacentHTML("beforeend", meta ? renderPanel(unitId, meta) : fallbackMissingPanel(unitId));''',
+              ),
+          ]
+
+          for old, new in replacements:
+              count = source.count(old)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one match, found {count}: {old[:80]!r}")
+              source = source.replace(old, new, 1)
+
+          path.write_text(source)
+          PY
+
+      - name: Validate JavaScript
+        run: node --check assets/js/ranger-animation-viewer.js
+
+      - name: Commit generated change and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-attack-range-target-distance.yml
+          git add assets/js/ranger-animation-viewer.js
+          git commit -m "feat: scale animation target distance by attack range"
+          git push origin HEAD:feat/attack-range-target-distance
