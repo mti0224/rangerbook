@@ -3,6 +3,56 @@
   const animationMetaPattern = /\/animation_meta\/([^/?#]+)\.json(?:[?#]|$)/i;
   const DEFAULT_COORDINATE_SCALE = 0.5;
 
+  const STANDARD_ATTACK_SLOTS = [
+    {
+      key: "normal",
+      defaultPart: "bul",
+      hitRateKey: "normalHitPointRate",
+      bodyAnimations: [
+        "attack_all",
+        "attack",
+        "attack_a",
+        "attack_b",
+        "attack_ready",
+        "idle",
+        "wait",
+      ],
+    },
+    {
+      key: "skill1",
+      defaultPart: "bul2",
+      hitRateKey: "skill1HitPointRate",
+      bodyAnimations: [
+        "s_attack_all",
+        "s_action_attack_all",
+        "s_attack",
+        "s_attack_a",
+        "s_attack_b",
+        "s_action_attack_2",
+        "s_action_attack_3",
+        "s_attack_ready",
+        "s_action_attack_1",
+        "idle",
+        "wait",
+      ],
+    },
+    {
+      key: "skill2",
+      defaultPart: "bul3",
+      hitRateKey: "skill2HitPointRate",
+      bodyAnimations: [
+        "s2_attack_all",
+        "s2_attack",
+        "s2_attack_a",
+        "s2_attack_b",
+        "s2_attack_ready",
+        "skill",
+        "idle",
+        "wait",
+      ],
+    },
+  ];
+
   function finiteNumber(value, fallback = 0) {
     const number = Number(value);
     return Number.isFinite(number) ? number : fallback;
@@ -91,8 +141,15 @@
 
   function animationSamples(part, animation) {
     return (animation?.frames || [])
-      .map((frame, index) => ({ index, ...frameVisibleBounds(part, frame) }))
-      .filter((sample) => Number.isFinite(sample.bottom));
+      .map((frame, index) => {
+        const bounds = frameVisibleBounds(part, frame);
+        return bounds ? { index, ...bounds } : null;
+      })
+      .filter(Boolean);
+  }
+
+  function animationGroundBottom(part, animation) {
+    return median(animationSamples(part, animation).map((sample) => sample.bottom));
   }
 
   function stableTerminalBottom(part, animation) {
@@ -148,6 +205,7 @@
       width: median(samples.map((sample) => sample.width)),
       height: median(samples.map((sample) => sample.height)),
       visibleItems: median(samples.map((sample) => sample.visibleItems)),
+      bottom: median(samples.map((sample) => sample.bottom)),
       horizontalTravel: Math.abs(lateCenterX - earlyCenterX),
       horizontalRange: Math.max(...centerXs) - Math.min(...centerXs),
     };
@@ -171,30 +229,66 @@
     if (explicit) return explicit;
 
     const attackType = String(attack?.attackType || "").trim().toUpperCase();
+    if (["ENERGY", "WEAPON", "DOUBLE"].includes(attackType)) return "LINEAR";
     return ["PUNCH", "KICK", "SWING", "STAB"].includes(attackType)
       ? "DIRECT"
       : attackType;
   }
 
-  function bodyReferenceProfile(meta) {
+  function dynamicAttackSlots(projectileData) {
+    const slots = STANDARD_ATTACK_SLOTS.map((slot) => ({ ...slot }));
+    const known = new Set(slots.map((slot) => slot.key));
+
+    for (const key of Object.keys(projectileData || {})) {
+      if (known.has(key)) continue;
+      const match = key.match(/^skill(\d+)$/i);
+      const attack = projectileData?.[key];
+      if (!match || !attack || typeof attack !== "object") continue;
+
+      const skillNumber = Number(match[1]);
+      slots.push({
+        key,
+        defaultPart: `bul${skillNumber + 1}`,
+        hitRateKey: `${key}HitPointRate`,
+        bodyAnimations: [
+          `s${skillNumber}_attack_all`,
+          `s${skillNumber}_attack`,
+          `s${skillNumber}_attack_a`,
+          `s${skillNumber}_attack_b`,
+          `s${skillNumber}_attack_ready`,
+          "skill",
+          "idle",
+          "wait",
+        ],
+      });
+      known.add(key);
+    }
+
+    return slots;
+  }
+
+  function bodyReferenceProfile(meta, slot) {
     const bodyPart = meta?.parts?.body;
     if (!bodyPart) return null;
 
-    const bodyAnimation = findAnimation(bodyPart, [
-      "attack_all",
-      "attack",
-      "attack_a",
-      "attack_b",
-      "attack_ready",
+    const sizeAnimation = findAnimation(bodyPart, slot.bodyAnimations);
+    const groundAnimation = findAnimation(bodyPart, [
       "idle",
       "wait",
+      ...slot.bodyAnimations,
     ]);
-    return animationProfile(bodyPart, bodyAnimation);
+    const sizeProfile = animationProfile(bodyPart, sizeAnimation);
+    const groundBottom = animationGroundBottom(bodyPart, groundAnimation || sizeAnimation);
+
+    if (!sizeProfile || !Number.isFinite(groundBottom)) return null;
+    return {
+      ...sizeProfile,
+      groundBottom,
+    };
   }
 
-  function isActorMovementAnimation(meta, bulletPart, normalAnimation, motionType) {
-    const bodyProfile = bodyReferenceProfile(meta);
-    const projectileProfile = animationProfile(bulletPart, normalAnimation);
+  function isActorMovementAnimation(bodyProfile, bulletPart, attackAnimation, motionType) {
+    const projectileProfile = animationProfile(bulletPart, attackAnimation);
     if (!bodyProfile || !projectileProfile || projectileProfile.frameCount < 4) return false;
     if (!(bodyProfile.width > 0) || !(bodyProfile.height > 0)) return false;
 
@@ -202,9 +296,6 @@
     const widthRatio = projectileProfile.width / bodyProfile.width;
     const itemRatio = projectileProfile.visibleItems / Math.max(1, bodyProfile.visibleItems);
 
-    // Reject tiny one-sprite sparks and oversized effects before considering how
-    // the viewer moves the animation. Actor parts stay broadly comparable with
-    // the character body and preserve a meaningful portion of its composition.
     const sizeComparable =
       heightRatio >= 0.45 &&
       heightRatio <= 2.25 &&
@@ -216,9 +307,6 @@
     if (!sizeComparable || !compositionComparable) return false;
 
     if (motionType === "DIRECT") {
-      // DIRECT dash/teleport parts carry their translation inside the local
-      // animation. Ordinary punches, slashes and hit flashes stay near one
-      // target-local point and therefore fail this movement test.
       const requiredTravel = Math.max(
         20,
         bodyProfile.width * 0.18,
@@ -232,10 +320,6 @@
 
     if (motionType !== "LINEAR") return false;
 
-    // Some normal attacks place the complete character in `bul` and let the
-    // viewer perform the world-space LINEAR translation. Their local frames do
-    // not travel horizontally, so identify them by stricter actor-like size and
-    // composition instead of requiring local X movement.
     const actorSized =
       heightRatio >= 0.55 &&
       heightRatio <= 1.95 &&
@@ -248,60 +332,83 @@
     return actorSized && actorComposed;
   }
 
-  function alignActorBasicAttackEndpoint(meta) {
+  function alignActorAttack(meta, slot) {
     const projectileData = meta?.projectileData;
-    const attack = projectileData?.normal;
+    const attack = projectileData?.[slot.key];
     if (!attack) return false;
 
     const motionType = normalizedMotionType(attack);
     if (!["DIRECT", "LINEAR"].includes(motionType)) return false;
 
-    const requestedPartName = String(attack.animationPart || "").trim() || "bul";
-    const bulletPart = meta?.parts?.[requestedPartName] || meta?.parts?.bul;
+    const requestedPartName = String(attack.animationPart || "").trim() || slot.defaultPart;
+    const bulletPart = meta?.parts?.[requestedPartName] || meta?.parts?.[slot.defaultPart];
     if (!bulletPart) return false;
 
-    const normalAnimation = findAnimation(
+    const attackAnimation = findAnimation(
       bulletPart,
       ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]
     );
+    const bodyProfile = bodyReferenceProfile(meta, slot);
     if (
-      !normalAnimation ||
-      !isActorMovementAnimation(meta, bulletPart, normalAnimation, motionType)
+      !attackAnimation ||
+      !isActorMovementAnimation(bodyProfile, bulletPart, attackAnimation, motionType)
     ) {
       return false;
     }
-
-    const normalBottom = stableTerminalBottom(bulletPart, normalAnimation);
-    if (!Number.isFinite(normalBottom)) return false;
 
     const coordinateScale = clamp(
       finiteNumber(projectileData.coordinateScale, DEFAULT_COORDINATE_SCALE) || DEFAULT_COORDINATE_SCALE,
       0.0001,
       1000
     );
+    const travelBottom = motionType === "LINEAR"
+      ? animationGroundBottom(bulletPart, attackAnimation)
+      : stableTerminalBottom(bulletPart, attackAnimation);
+    if (!Number.isFinite(travelBottom)) return false;
 
     projectileData.hitTiming = {
       ...(projectileData.hitTiming || {}),
-      normalHitPointRate: 0,
+      [slot.hitRateKey]: 0,
     };
-    projectileData.normal = {
+
+    const patchedAttack = {
       ...attack,
       end: {
         ...(attack.end || {}),
-        // The viewer subtracts this positive-up native offset from targetBaseY.
-        // Using the stable terminal bottom makes the actor's feet end exactly on
-        // the target ground line while preserving the authored internal motion.
-        y: normalBottom / coordinateScale,
+        y: travelBottom / coordinateScale,
       },
     };
+
+    if (motionType === "LINEAR" && Number.isFinite(bodyProfile?.groundBottom)) {
+      patchedAttack.start = {
+        ...(attack.start || {}),
+        // The viewer resolves database start Y from the body origin using a
+        // positive-up coordinate. Matching the projectile actor's local bottom
+        // to the standing body bottom keeps the entire LINEAR path horizontal.
+        y: (travelBottom - bodyProfile.groundBottom) / coordinateScale,
+      };
+    }
+
+    projectileData[slot.key] = patchedAttack;
 
     const finishAnimation = findAnimation(bulletPart, ["finish", "hit", "end"]);
     const finishBottom = stableTerminalBottom(bulletPart, finishAnimation);
     if (finishAnimation && Number.isFinite(finishBottom)) {
-      shiftAnimationY(finishAnimation, normalBottom - finishBottom);
+      shiftAnimationY(finishAnimation, travelBottom - finishBottom);
     }
 
     return true;
+  }
+
+  function alignAllActorAttacks(meta) {
+    const projectileData = meta?.projectileData;
+    if (!projectileData) return false;
+
+    let changed = false;
+    for (const slot of dynamicAttackSlots(projectileData)) {
+      changed = alignActorAttack(meta, slot) || changed;
+    }
+    return changed;
   }
 
   async function patchAnimationMetadata(response, url) {
@@ -315,7 +422,7 @@
 
     try {
       const meta = await response.clone().json();
-      if (!alignActorBasicAttackEndpoint(meta)) return response;
+      if (!alignAllActorAttacks(meta)) return response;
 
       const headers = new Headers(response.headers);
       headers.set("content-type", "application/json; charset=utf-8");
@@ -325,7 +432,7 @@
         headers,
       });
     } catch (error) {
-      console.warn("Normal attack ground endpoint adjustment failed:", error);
+      console.warn("Actor attack ground-path adjustment failed:", error);
       return response;
     }
   }
