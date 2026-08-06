@@ -1,0 +1,151 @@
+name: Apply projectile anchor fix
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  apply:
+    if: github.event.issue.title == '[internal] Apply projectile vertical anchor fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply general projectile anchor rules
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('assets/js/ranger-animation-viewer.js')
+          text = path.read_text(encoding='utf-8')
+
+          stable_bottom = r'''  function animationStableTerminalBottom(part, animationResult) {
+    const samples = (animationResult?.anim?.frames || [])
+      .map((frame, index) => ({ index, bottom: frameVisibleBottom(part, frame) }))
+      .filter((sample) => Number.isFinite(sample.bottom));
+    if (!samples.length) return NaN;
+
+    // The last visible frames can be displaced particles or fade-out
+    // afterimages. Use the dominant lower-edge cluster in the terminal part
+    // of the authored animation so the stable landing pose defines contact.
+    const lastIndex = samples[samples.length - 1].index;
+    const terminalStart = lastIndex * 0.4;
+    const terminal = samples.filter((sample) => sample.index >= terminalStart);
+    const values = terminal.map((sample) => sample.bottom);
+    const range = Math.max(...values) - Math.min(...values);
+    const tolerance = Math.max(1, Math.min(8, range * 0.03));
+
+    let best = null;
+    for (const pivot of terminal) {
+      const cluster = terminal.filter((sample) => Math.abs(sample.bottom - pivot.bottom) <= tolerance);
+      const latest = Math.max(...cluster.map((sample) => sample.index));
+      if (!best || cluster.length > best.cluster.length ||
+          (cluster.length === best.cluster.length && latest > best.latest)) {
+        best = { cluster, latest };
+      }
+    }
+
+    const clusterValues = (best?.cluster || terminal)
+      .map((sample) => sample.bottom)
+      .sort((a, b) => a - b);
+    const middle = Math.floor(clusterValues.length / 2);
+    return clusterValues.length % 2
+      ? clusterValues[middle]
+      : (clusterValues[middle - 1] + clusterValues[middle]) * 0.5;
+  }
+'''
+
+          text, count = re.subn(
+              r"  function animationFinalVisibleBottom\(part, animationResult\) \{.*?\n  \}\n(?=\n  function namedAnimationDuration)",
+              stable_bottom.rstrip(),
+              text,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
+              raise SystemExit('animationFinalVisibleBottom replacement failed')
+          text = text.replace('animationFinalVisibleBottom(', 'animationStableTerminalBottom(')
+
+          native_start = r'''  function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
+    const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
+    const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
+    const databasePoint = Number.isFinite(rawX) && Number.isFinite(rawY)
+      ? { x: rawX * coordinateScale, y: rawY * coordinateScale, source: "database" }
+      : null;
+
+    // UnitData remains authoritative when it agrees with the SAM resource.
+    // When an evolved resource or skill clip uses a different body layout,
+    // reject an implausible database point and use the SAM launch anchor.
+    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
+    const fallback = authored || animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
+    if (databasePoint && fallback) {
+      const samDatabaseY = -databasePoint.y;
+      const dx = databasePoint.x - fallback.x;
+      const dy = samDatabaseY - fallback.y;
+      const ready = getAnim(bodyPart, clip.ready);
+      const readyFrame = ready?.anim?.frames?.[ready.anim.frames.length - 1] || [];
+      const metrics = frameMetrics(bodyPart, readyFrame);
+      const width = Math.max(1, metrics?.width || positiveNumber(bodyPart?.canvas?.w, 240));
+      const height = Math.max(1, metrics?.height || positiveNumber(bodyPart?.canvas?.h, 240));
+      const maxDistance = Math.max(80, Math.min(180, Math.hypot(width, height) * 0.30));
+      const maxVerticalDistance = Math.max(50, Math.min(110, height * 0.30));
+      if (Math.hypot(dx, dy) > maxDistance || Math.abs(dy) > maxVerticalDistance) {
+        return {
+          x: fallback.x,
+          y: fallback.y,
+          source: authored ? "animation-anchor" : "animation-fallback",
+        };
+      }
+    }
+
+    if (databasePoint) return databasePoint;
+    if (fallback) {
+      return {
+        x: fallback.x,
+        y: fallback.y,
+        source: authored ? "animation-anchor" : "animation-fallback",
+      };
+    }
+    return { x: 0, y: 0, source: "database" };
+  }
+'''
+
+          text, count = re.subn(
+              r"  function nativeStartPoint\(meta, clip, projectileConfig, bodyPart\) \{.*?\n  \}\n(?=\n  function movementDuration)",
+              native_start.rstrip(),
+              text,
+              count=1,
+              flags=re.S,
+          )
+          if count != 1:
+              raise SystemExit('nativeStartPoint replacement failed')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Validate and commit
+        run: |
+          node --check assets/js/ranger-animation-viewer.js
+          grep -q 'animationStableTerminalBottom' assets/js/ranger-animation-viewer.js
+          grep -q 'reject an implausible database point' assets/js/ranger-animation-viewer.js
+          rm .github/workflows/apply-projectile-anchor-on-issue.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- assets/js/ranger-animation-viewer.js .github/workflows/apply-projectile-anchor-on-issue.yml
+          git commit -m 'fix: stabilize projectile vertical anchors'
+          git push origin main
+      - name: Close trigger issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh issue close ${{ github.event.issue.number }} --reason completed
