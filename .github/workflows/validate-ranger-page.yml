@@ -17,9 +17,116 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  integrate-projectile-anchor:
+    if: github.event_name == 'pull_request' && github.head_ref == 'fix/projectile-vertical-anchor-20260806'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply general projectile anchor rules
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('assets/js/ranger-animation-viewer.js')
+          text = path.read_text()
+
+          stable_bottom = r'''  function animationStableTerminalBottom(part, animationResult) {
+    const samples = (animationResult?.anim?.frames || [])
+      .map((frame, index) => ({ index, bottom: frameVisibleBottom(part, frame) }))
+      .filter((sample) => Number.isFinite(sample.bottom));
+    if (!samples.length) return NaN;
+
+    const lastIndex = samples[samples.length - 1].index;
+    const terminalStart = lastIndex * 0.4;
+    const terminal = samples.filter((sample) => sample.index >= terminalStart);
+    const values = terminal.map((sample) => sample.bottom);
+    const range = Math.max(...values) - Math.min(...values);
+    const tolerance = Math.max(1, Math.min(8, range * 0.03));
+
+    let best = null;
+    for (const pivot of terminal) {
+      const cluster = terminal.filter((sample) => Math.abs(sample.bottom - pivot.bottom) <= tolerance);
+      const latest = Math.max(...cluster.map((sample) => sample.index));
+      if (!best || cluster.length > best.cluster.length ||
+          (cluster.length === best.cluster.length && latest > best.latest)) {
+        best = { cluster, latest };
+      }
+    }
+
+    const clusterValues = (best?.cluster || terminal)
+      .map((sample) => sample.bottom)
+      .sort((a, b) => a - b);
+    const middle = Math.floor(clusterValues.length / 2);
+    return clusterValues.length % 2
+      ? clusterValues[middle]
+      : (clusterValues[middle - 1] + clusterValues[middle]) * 0.5;
+  }
+'''
+          text, count = re.subn(
+              r"  function animationFinalVisibleBottom\(part, animationResult\) \{.*?\n  \}\n(?=\n  function namedAnimationDuration)",
+              stable_bottom.rstrip(), text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('animationFinalVisibleBottom replacement failed')
+          text = text.replace('animationFinalVisibleBottom(', 'animationStableTerminalBottom(')
+
+          native_start = r'''  function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
+    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
+    const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
+    const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
+    const databasePoint = Number.isFinite(rawX) && Number.isFinite(rawY)
+      ? { x: rawX * coordinateScale, y: rawY * coordinateScale, source: "database" }
+      : null;
+
+    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
+    const fallback = authored || animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
+    if (databasePoint && fallback) {
+      const samDatabaseY = -databasePoint.y;
+      const dx = databasePoint.x - fallback.x;
+      const dy = samDatabaseY - fallback.y;
+      const canvasWidth = positiveNumber(bodyPart?.canvas?.w, 240);
+      const canvasHeight = positiveNumber(bodyPart?.canvas?.h, 240);
+      const diagonal = Math.hypot(canvasWidth, canvasHeight);
+      const maxDistance = Math.max(60, Math.min(170, diagonal * 0.28));
+      const maxVerticalDistance = Math.max(40, Math.min(105, canvasHeight * 0.24));
+      if (Math.hypot(dx, dy) > maxDistance || Math.abs(dy) > maxVerticalDistance) {
+        return { x: fallback.x, y: fallback.y, source: authored ? "animation-anchor" : "animation-fallback" };
+      }
+    }
+
+    if (databasePoint) return databasePoint;
+    if (fallback) {
+      return { x: fallback.x, y: fallback.y, source: authored ? "animation-anchor" : "animation-fallback" };
+    }
+    return { x: 0, y: 0, source: "database" };
+  }
+'''
+          text, count = re.subn(
+              r"  function nativeStartPoint\(meta, clip, projectileConfig, bodyPart\) \{.*?\n  \}\n(?=\n  function movementDuration)",
+              native_start.rstrip(), text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('nativeStartPoint replacement failed')
+
+          path.write_text(text)
+          PY
+          node --check assets/js/ranger-animation-viewer.js
+      - name: Restore workflows and commit source only
+        run: |
+          git checkout origin/main -- .github/workflows/validate-ranger-page.yml
+          rm -f .github/workflows/apply-projectile-vertical-anchor-fix.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -- assets/js/ranger-animation-viewer.js .github/workflows/validate-ranger-page.yml .github/workflows/apply-projectile-vertical-anchor-fix.yml
+          git commit -m 'fix: stabilize projectile vertical anchors'
+          git push
+
   validate:
     runs-on: ubuntu-latest
     steps:
