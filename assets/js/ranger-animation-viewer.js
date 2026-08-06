@@ -300,14 +300,81 @@
       : (bottoms[middle - 1] + bottoms[middle]) * 0.5;
   }
 
-  function animationFinalVisibleBottom(part, animationResult) {
-    const frames = animationResult?.anim?.frames || [];
-    for (let index = frames.length - 1; index >= 0; index -= 1) {
-      const bottom = frameVisibleBottom(part, frames[index]);
-      if (Number.isFinite(bottom)) return bottom;
+  function animationStableTerminalBottom(part, animationResult) {
+  const samples = (animationResult?.anim?.frames || [])
+    .map((frame, index) => ({
+      index,
+      bottom: frameVisibleBottom(part, frame),
+    }))
+    .filter((sample) => Number.isFinite(sample.bottom));
+
+  if (!samples.length) return NaN;
+
+  /*
+   * finish 動畫最後幾幀有時只有粒子、殘影或淡出物件，
+   * 不能直接把最後一個可見幀當成落地姿勢。
+   *
+   * 因此只檢查動畫終段，找出出現最密集的下緣群組，
+   * 並以該群組的中位數作為穩定落地基準。
+   */
+  const lastIndex = samples[samples.length - 1].index;
+  const terminalStart = lastIndex * 0.4;
+  const terminal = samples.filter(
+    (sample) => sample.index >= terminalStart
+  );
+
+  if (!terminal.length) return samples[samples.length - 1].bottom;
+
+  const values = terminal.map((sample) => sample.bottom);
+  const range = Math.max(...values) - Math.min(...values);
+
+  /*
+   * 容許同一落地姿勢因浮點數、縮放或細小動畫變化，
+   * 產生少量的下緣差距。
+   */
+  const tolerance = Math.max(
+    1,
+    Math.min(8, range * 0.03)
+  );
+
+  let bestCluster = [];
+  let bestLatestIndex = -Infinity;
+
+  for (const pivot of terminal) {
+    const cluster = terminal.filter(
+      (sample) =>
+        Math.abs(sample.bottom - pivot.bottom) <= tolerance
+    );
+
+    const latestIndex = Math.max(
+      ...cluster.map((sample) => sample.index)
+    );
+
+    if (
+      cluster.length > bestCluster.length ||
+      (
+        cluster.length === bestCluster.length &&
+        latestIndex > bestLatestIndex
+      )
+    ) {
+      bestCluster = cluster;
+      bestLatestIndex = latestIndex;
     }
-    return NaN;
   }
+
+  const clusterValues = (bestCluster.length ? bestCluster : terminal)
+    .map((sample) => sample.bottom)
+    .sort((a, b) => a - b);
+
+  const middle = Math.floor(clusterValues.length / 2);
+
+  return clusterValues.length % 2
+    ? clusterValues[middle]
+    : (
+      clusterValues[middle - 1] +
+      clusterValues[middle]
+    ) * 0.5;
+}
 
   function namedAnimationDuration(part, name) {
     const animation = part?.animations?.[name];
@@ -482,28 +549,165 @@
     return clamp(ratio, 0, 1);
   }
 
-  function nativeStartPoint(meta, clip, projectileConfig, bodyPart) {
-    const coordinateScale = positiveNumber(meta?.projectileData?.coordinateScale, NATIVE_PROJECTILE_COORDINATE_SCALE);
-    const rawX = finiteNumber(projectileConfig?.start?.x, NaN);
-    const rawY = finiteNumber(projectileConfig?.start?.y, NaN);
-    if (Number.isFinite(rawX) && Number.isFinite(rawY)) {
+  function nativeStartPoint(
+    meta,
+    clip,
+    projectileConfig,
+    bodyPart
+  ) {
+    const coordinateScale = positiveNumber(
+      meta?.projectileData?.coordinateScale,
+      NATIVE_PROJECTILE_COORDINATE_SCALE
+    );
+
+    const rawX = finiteNumber(
+      projectileConfig?.start?.x,
+      NaN
+    );
+
+    const rawY = finiteNumber(
+      projectileConfig?.start?.y,
+      NaN
+    );
+
+    const databasePoint =
+      Number.isFinite(rawX) &&
+      Number.isFinite(rawY)
+        ? {
+          x: rawX * coordinateScale,
+          y: rawY * coordinateScale,
+          source: "database",
+        }
+        : null;
+
+    /*
+     * SAM 中由 attack_ready → attack 切換時出現的隱藏物件，
+     * 優先視為動畫作者設定的發射錨點。
+     *
+     * 找不到明確標記時，才退回到 attack_ready 最前方的
+     * 可見物件位置。
+     */
+    const authored = animationMarkerMuzzle(
+      bodyPart,
+      clip.ready,
+      clip.trigger,
+      false
+    );
+
+    const fallback =
+      authored ||
+      animationDerivedMuzzle(
+        bodyPart,
+        clip.ready,
+        clip.trigger
+      );
+
+    /*
+     * UnitData 座標在合理範圍內時仍然優先使用。
+     *
+     * 但某些進化資源或技能動畫可能沿用其他 body layout
+     * 的舊座標。當資料庫座標與目前 SAM 發射位置偏差過大時，
+     * 改採目前動畫資源中的發射錨點。
+     *
+     * 此判斷同時套用：
+     * - 普通攻擊
+     * - 技能 1
+     * - 技能 2
+     */
+    if (databasePoint && fallback) {
+      /*
+       * UnitData 的 Y 軸是向上為正；
+       * SAM body-local 座標是向下為正。
+       */
+      const databaseSamX = databasePoint.x;
+      const databaseSamY = -databasePoint.y;
+
+      const dx = databaseSamX - fallback.x;
+      const dy = databaseSamY - fallback.y;
+
+      const readyAnimation = getAnim(
+        bodyPart,
+        clip.ready
+      );
+
+      const readyFrames =
+        readyAnimation?.anim?.frames || [];
+
+      const readyFrame =
+        readyFrames[readyFrames.length - 1] || [];
+
+      const metrics = frameMetrics(
+        bodyPart,
+        readyFrame
+      );
+
+      /*
+       * 優先依角色實際可見尺寸設定容許值；
+       * 無法取得時才使用 SAM canvas 尺寸。
+       */
+      const width = Math.max(
+        1,
+        metrics?.width ||
+          positiveNumber(bodyPart?.canvas?.w, 240)
+      );
+
+      const height = Math.max(
+        1,
+        metrics?.height ||
+          positiveNumber(bodyPart?.canvas?.h, 240)
+      );
+
+      const maxDistance = Math.max(
+        80,
+        Math.min(
+          180,
+          Math.hypot(width, height) * 0.30
+        )
+      );
+
+      const maxVerticalDistance = Math.max(
+        50,
+        Math.min(
+          110,
+          height * 0.30
+        )
+      );
+
+      const distance = Math.hypot(dx, dy);
+
+      if (
+        distance > maxDistance ||
+        Math.abs(dy) > maxVerticalDistance
+      ) {
+        return {
+          x: fallback.x,
+          y: fallback.y,
+          source: authored
+            ? "animation-anchor"
+            : "animation-fallback",
+        };
+      }
+    }
+
+    if (databasePoint) {
+      return databasePoint;
+    }
+
+    if (fallback) {
       return {
-        x: rawX * coordinateScale,
-        y: rawY * coordinateScale,
-        source: "database",
+        x: fallback.x,
+        y: fallback.y,
+        source: authored
+          ? "animation-anchor"
+          : "animation-fallback",
       };
     }
 
-    // SAM-derived points are only used when UnitData does not contain coordinates.
-    const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
-    if (authored) {
-      return { x: authored.x, y: authored.y, source: "animation-anchor" };
-    }
-    const fallback = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
-    if (fallback) {
-      return { x: fallback.x, y: fallback.y, source: "animation-fallback" };
-    }
-    return { x: 0, y: 0, source: "database" };
+    return {
+      x: 0,
+      y: 0,
+      source: "database",
+    };
   }
 
   function movementDuration(distance, moveSpeed) {
@@ -671,7 +875,7 @@
       finishDuration,
       normalGroundOffset: animationGroundOffset(bulletPart, outboundAnimation),
       finishGroundOffset: animationGroundOffset(bulletPart, finishAnimation),
-      finishFinalBottom: animationFinalVisibleBottom(bulletPart, finishAnimation),
+      finishFinalBottom: animationStableTerminalBottom(bulletPart, finishAnimation),
       beamLength,
       beamDuration,
       loopNormal: renderMode === "LEGACY" ? true : projectileConfig?.motion?.loopNormal !== false,
