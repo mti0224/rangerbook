@@ -135,3 +135,4 @@ jobs:
           git add -- assets/js/ranger-animation-viewer.js .github/workflows/apply-projectile-vertical-anchor-fix.yml
           git commit -m 'fix: stabilize projectile vertical anchors'
           git push
+# trigger
