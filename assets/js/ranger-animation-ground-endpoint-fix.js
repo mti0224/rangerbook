@@ -192,7 +192,7 @@
     return animationProfile(bodyPart, bodyAnimation);
   }
 
-  function isActorMovementAnimation(meta, bulletPart, normalAnimation) {
+  function isActorMovementAnimation(meta, bulletPart, normalAnimation, motionType) {
     const bodyProfile = bodyReferenceProfile(meta);
     const projectileProfile = animationProfile(bulletPart, normalAnimation);
     if (!bodyProfile || !projectileProfile || projectileProfile.frameCount < 4) return false;
@@ -200,36 +200,61 @@
 
     const heightRatio = projectileProfile.height / bodyProfile.height;
     const widthRatio = projectileProfile.width / bodyProfile.width;
+    const itemRatio = projectileProfile.visibleItems / Math.max(1, bodyProfile.visibleItems);
+
+    // Reject tiny one-sprite sparks and oversized effects before considering how
+    // the viewer moves the animation. Actor parts stay broadly comparable with
+    // the character body and preserve a meaningful portion of its composition.
     const sizeComparable =
       heightRatio >= 0.45 &&
       heightRatio <= 2.25 &&
       widthRatio >= 0.30 &&
       widthRatio <= 3.50;
-
-    // A character dash/teleport part moves a character-sized visual across its
-    // local animation space. Ordinary punches, slashes and hit flashes stay
-    // close to one target-local point and therefore fail this motion test.
-    const requiredTravel = Math.max(
-      20,
-      bodyProfile.width * 0.18,
-      projectileProfile.width * 0.08
-    );
-    const translated =
-      projectileProfile.horizontalTravel >= requiredTravel ||
-      projectileProfile.horizontalRange >= requiredTravel * 1.35;
-
-    // Reject tiny single-sprite sparks that happen to cover a large bounding box.
     const compositionComparable =
-      projectileProfile.visibleItems >= 2 ||
-      projectileProfile.visibleItems >= bodyProfile.visibleItems * 0.25;
+      projectileProfile.visibleItems >= 2 &&
+      (itemRatio >= 0.25 || projectileProfile.visibleItems >= 4);
+    if (!sizeComparable || !compositionComparable) return false;
 
-    return sizeComparable && translated && compositionComparable;
+    if (motionType === "DIRECT") {
+      // DIRECT dash/teleport parts carry their translation inside the local
+      // animation. Ordinary punches, slashes and hit flashes stay near one
+      // target-local point and therefore fail this movement test.
+      const requiredTravel = Math.max(
+        20,
+        bodyProfile.width * 0.18,
+        projectileProfile.width * 0.08
+      );
+      return (
+        projectileProfile.horizontalTravel >= requiredTravel ||
+        projectileProfile.horizontalRange >= requiredTravel * 1.35
+      );
+    }
+
+    if (motionType !== "LINEAR") return false;
+
+    // Some normal attacks place the complete character in `bul` and let the
+    // viewer perform the world-space LINEAR translation. Their local frames do
+    // not travel horizontally, so identify them by stricter actor-like size and
+    // composition instead of requiring local X movement.
+    const actorSized =
+      heightRatio >= 0.55 &&
+      heightRatio <= 1.95 &&
+      widthRatio >= 0.35 &&
+      widthRatio <= 2.75;
+    const actorComposed =
+      itemRatio >= 0.35 ||
+      projectileProfile.visibleItems >= Math.max(4, bodyProfile.visibleItems * 0.3);
+
+    return actorSized && actorComposed;
   }
 
-  function alignDirectBasicAttackEndpoint(meta) {
+  function alignActorBasicAttackEndpoint(meta) {
     const projectileData = meta?.projectileData;
     const attack = projectileData?.normal;
-    if (!attack || normalizedMotionType(attack) !== "DIRECT") return false;
+    if (!attack) return false;
+
+    const motionType = normalizedMotionType(attack);
+    if (!["DIRECT", "LINEAR"].includes(motionType)) return false;
 
     const requestedPartName = String(attack.animationPart || "").trim() || "bul";
     const bulletPart = meta?.parts?.[requestedPartName] || meta?.parts?.bul;
@@ -239,7 +264,10 @@
       bulletPart,
       ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]
     );
-    if (!normalAnimation || !isActorMovementAnimation(meta, bulletPart, normalAnimation)) {
+    if (
+      !normalAnimation ||
+      !isActorMovementAnimation(meta, bulletPart, normalAnimation, motionType)
+    ) {
       return false;
     }
 
@@ -287,7 +315,7 @@
 
     try {
       const meta = await response.clone().json();
-      if (!alignDirectBasicAttackEndpoint(meta)) return response;
+      if (!alignActorBasicAttackEndpoint(meta)) return response;
 
       const headers = new Headers(response.headers);
       headers.set("content-type", "application/json; charset=utf-8");
