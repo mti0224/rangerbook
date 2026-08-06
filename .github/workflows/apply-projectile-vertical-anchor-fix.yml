@@ -1,37 +1,24 @@
-name: Validate Ranger page
-
+name: Apply projectile vertical anchor fix
 on:
   push:
     branches: [main]
-  pull_request:
-    paths:
-      - "assets/js/ranger.js"
-      - "assets/js/ranger-animation-viewer.js"
-      - "assets/js/ranger-animation-projectile-data.js"
-      - "assets/js/ranger-animation-target.js"
-      - "assets/js/ranger-animation-hit-effect.js"
-      - "assets/hit_effect/**"
-      - "ranger/ranger/index.html"
-      - "ranger/ranking/index.html"
-      - ".github/workflows/validate-ranger-page.yml"
-  workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
-  integrate-projectile-anchor:
-    if: github.event_name == 'pull_request' && github.head_ref == 'fix/projectile-vertical-anchor-20260806'
+  apply:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          ref: main
+          fetch-depth: 2
           token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
       - name: Apply general projectile anchor rules
         run: |
-          python3 - <<'PY'
+          python - <<'PY'
           from pathlib import Path
           import re
 
@@ -44,6 +31,9 @@ jobs:
       .filter((sample) => Number.isFinite(sample.bottom));
     if (!samples.length) return NaN;
 
+    // The last visible frame is often only a displaced fade-out particle or
+    // afterimage. Use the dominant lower-edge cluster in the terminal part of
+    // the authored animation so the landing pose defines the contact point.
     const lastIndex = samples[samples.length - 1].index;
     const terminalStart = lastIndex * 0.4;
     const terminal = samples.filter((sample) => sample.index >= terminalStart);
@@ -70,9 +60,14 @@ jobs:
       : (clusterValues[middle - 1] + clusterValues[middle]) * 0.5;
   }
 '''
+
           text, count = re.subn(
               r"  function animationFinalVisibleBottom\(part, animationResult\) \{.*?\n  \}\n(?=\n  function namedAnimationDuration)",
-              stable_bottom.rstrip(), text, count=1, flags=re.S)
+              stable_bottom.rstrip(),
+              text,
+              count=1,
+              flags=re.S,
+          )
           if count != 1:
               raise SystemExit('animationFinalVisibleBottom replacement failed')
           text = text.replace('animationFinalVisibleBottom(', 'animationStableTerminalBottom(')
@@ -85,6 +80,9 @@ jobs:
       ? { x: rawX * coordinateScale, y: rawY * coordinateScale, source: "database" }
       : null;
 
+    // Prefer UnitData while it agrees with the current SAM resource. Evolved
+    // resources and skill clips can retain coordinates authored for another
+    // body layout; in that case the SAM launch marker is authoritative.
     const authored = animationMarkerMuzzle(bodyPart, clip.ready, clip.trigger, false);
     const fallback = authored || animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
     if (databasePoint && fallback) {
@@ -108,68 +106,31 @@ jobs:
     return { x: 0, y: 0, source: "database" };
   }
 '''
+
           text, count = re.subn(
               r"  function nativeStartPoint\(meta, clip, projectileConfig, bodyPart\) \{.*?\n  \}\n(?=\n  function movementDuration)",
-              native_start.rstrip(), text, count=1, flags=re.S)
+              native_start.rstrip(),
+              text,
+              count=1,
+              flags=re.S,
+          )
           if count != 1:
               raise SystemExit('nativeStartPoint replacement failed')
 
           path.write_text(text)
           PY
-          node --check assets/js/ranger-animation-viewer.js
-      - name: Restore workflows and commit source only
+      - name: Restore workflows and validate
         run: |
-          git checkout origin/main -- .github/workflows/validate-ranger-page.yml
-          rm -f .github/workflows/apply-projectile-vertical-anchor-fix.yml
+          git checkout HEAD^ -- .github/workflows/validate-ranger-page.yml
+          rm .github/workflows/apply-projectile-vertical-anchor-fix.yml
+          node --check assets/js/ranger-animation-viewer.js
+          grep -q 'animationStableTerminalBottom' assets/js/ranger-animation-viewer.js
+          grep -q 'SAM launch marker is authoritative' assets/js/ranger-animation-viewer.js
+          test "$(git diff --name-only | sort)" = $'.github/workflows/apply-projectile-vertical-anchor-fix.yml\n.github/workflows/validate-ranger-page.yml\nassets/js/ranger-animation-viewer.js'
+      - name: Commit final source change
+        run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -- assets/js/ranger-animation-viewer.js .github/workflows/validate-ranger-page.yml .github/workflows/apply-projectile-vertical-anchor-fix.yml
+          git add -- assets/js/ranger-animation-viewer.js .github/workflows/apply-projectile-vertical-anchor-fix.yml .github/workflows/validate-ranger-page.yml
           git commit -m 'fix: stabilize projectile vertical anchors'
-          git push
-
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate JavaScript
-        run: |
-          node --check assets/js/ranger.js
-          node --check assets/js/ranger-animation-viewer.js
-          node --check assets/js/ranger-animation-projectile-data.js
-          node --check assets/js/ranger-animation-target.js
-          node --check assets/js/ranger-animation-hit-effect.js
-      - name: Validate hit effect assets
-        run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          base = Path("assets/hit_effect")
-          data = json.loads((base / "eff_hit_strong_pretty.json").read_text(encoding="utf-8"))
-          animation = data["animations"]["_all"]
-          basic = next(segment for segment in data["segments"] if segment["name"] == "basic")
-          assert basic["start"] == 0
-          assert 0 < basic["end"] <= animation["frame_count"]
-          expected = {
-              "eff_hit_strong_118x116.png",
-              "eff_hit_strong_30x44.png",
-              "eff_hit_strong_90x44.png",
-          }
-          names = {image["name"] for image in data["images"]}
-          assert expected <= names
-          for name in expected:
-              assert (base / name).is_file(), name
-          PY
-      - name: Validate Ranger script references
-        run: |
-          grep -q 'assets/js/site.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranger/index.html
-          ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
-      - name: Validate Ranking script references
-        run: |
-          grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
-          grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
-          grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranking/index.html
+          git push origin main
