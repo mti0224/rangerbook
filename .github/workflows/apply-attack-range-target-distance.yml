@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feat/attack-range-target-distance
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
