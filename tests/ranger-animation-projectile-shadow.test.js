@@ -75,9 +75,9 @@ test("native LINEAR geometry ignores projectileEndX/Y as a generic target offset
   );
 
   assert.equal(result.supported, true);
-  assert.equal(result.geometryModel, "native-v1");
+  assert.equal(result.geometryModel, "native-v2");
   assert.deepEqual(result.rawEndOffset, { x: 25, y: 10 });
-  assert.deepEqual(result.appliedEndOffset, { x: 0, y: 0 });
+  assert.deepEqual(result.appliedOutboundEndOffset, { x: 0, y: 0 });
   assert.deepEqual(
     { x: result.geometry.baseEndX, y: result.geometry.baseEndY },
     { x: 460, y: 200 },
@@ -99,16 +99,16 @@ test("native CURVE geometry also ignores projectileEndX/Y", () => {
 
   assert.equal(result.supported, true);
   assert.equal(result.family, "CURVE");
-  assert.deepEqual(result.appliedEndOffset, { x: 0, y: 0 });
+  assert.deepEqual(result.appliedOutboundEndOffset, { x: 0, y: 0 });
   assert.deepEqual(
     { x: result.geometry.baseEndX, y: result.geometry.baseEndY },
     { x: 460, y: 200 },
   );
 });
 
-test("RETURN keeps the existing end-offset interpretation until its dedicated migration", () => {
+test("native RETURN uses projectileEndX/Y for inbound endpoint, not outbound target", () => {
   const result = shadow.deriveNativeGeometry(
-    meta("RETURN", { end: { x: 50, y: 20 }, secondStart: { x: 20, y: 10 } }),
+    meta("RETURN", { end: { x: 50, y: 20 }, secondStart: { x: 999, y: 999 } }),
     "normal",
     scene(),
     target(),
@@ -117,10 +117,31 @@ test("RETURN keeps the existing end-offset interpretation until its dedicated mi
 
   assert.equal(result.supported, true);
   assert.equal(result.family, "RETURN");
-  assert.deepEqual(result.appliedEndOffset, { x: 25, y: 10 });
+  assert.equal(result.geometryModel, "native-v2");
+  assert.deepEqual(result.appliedOutboundEndOffset, { x: 0, y: 0 });
+  assert.deepEqual(result.appliedReturnEndOffset, { x: 25, y: 10 });
   assert.deepEqual(
     { x: result.geometry.baseEndX, y: result.geometry.baseEndY },
-    { x: 510, y: 180 },
+    { x: 460, y: 200 },
+  );
+  assert.deepEqual(
+    { x: result.geometry.returnEndX, y: result.geometry.returnEndY },
+    { x: 190, y: 160 },
+  );
+});
+
+test("RETURN with zero end offset returns to the original projectile spawn", () => {
+  const result = shadow.deriveNativeGeometry(
+    meta("RETURN", { end: { x: 0, y: 0 }, secondStart: { x: 999, y: 999 } }),
+    "normal",
+    scene(),
+    target(),
+    { engine, adapter },
+  );
+
+  assert.deepEqual(
+    { x: result.geometry.returnEndX, y: result.geometry.returnEndY },
+    { x: result.geometry.startX, y: result.geometry.startY },
   );
 });
 
@@ -140,7 +161,7 @@ test("shadow report validates engine against native geometry and exposes viewer 
 
   assert.equal(report.supported, true);
   assert.equal(report.family, "LINEAR");
-  assert.equal(report.geometryModel, "native-v1");
+  assert.equal(report.geometryModel, "native-v2");
   assert.ok(report.maxPositionDelta < 1e-9);
   assert.equal(report.durationDelta, 0);
   assert.equal(report.withinTolerance, true);
@@ -148,10 +169,10 @@ test("shadow report validates engine against native geometry and exposes viewer 
   assert.ok(report.viewerMigrationDelta.endpointDelta > 0);
   assert.ok(report.viewerMigrationDelta.durationDelta > 0);
   assert.ok(report.impactDelta > 0);
-  assert.deepEqual(report.appliedEndOffset, { x: 0, y: 0 });
+  assert.deepEqual(report.appliedOutboundEndOffset, { x: 0, y: 0 });
 });
 
-test("zero end-offset remains viewer-equivalent after native migration", () => {
+test("zero end-offset remains viewer-equivalent for LINEAR", () => {
   const derived = shadow.deriveViewerGeometry(
     meta("WEAPON"),
     "normal",
@@ -198,10 +219,12 @@ test("shadow report matches CURVE native geometry without inventing impact time"
   assert.equal(report.viewerWithinTolerance, false);
 });
 
-test("RETURN shadow compares outbound and inbound timing", () => {
+test("RETURN shadow exposes outbound and inbound viewer migration", () => {
   const returnMeta = meta("RETURN", {
+    end: { x: 50, y: 20 },
     secondStart: { x: 20, y: 10 },
   });
+  const viewer = shadow.deriveViewerGeometry(returnMeta, "normal", scene(), target(), { engine, adapter });
   const report = shadow.buildShadowReport({
     unitId: "u-return",
     clip: "attack",
@@ -209,7 +232,7 @@ test("RETURN shadow compares outbound and inbound timing", () => {
     meta: returnMeta,
     scene: scene(),
     target: target(),
-    legacyImpactTime: 1.2,
+    legacyImpactTime: 0.3 + viewer.geometry.flightDuration,
   }, { engine, adapter });
 
   assert.equal(report.supported, true);
@@ -218,10 +241,12 @@ test("RETURN shadow compares outbound and inbound timing", () => {
   assert.equal(report.durationDelta, 0);
   assert.equal(report.returnDurationDelta, 0);
   assert.equal(report.withinTolerance, true);
-  assert.equal(report.viewerWithinTolerance, true);
+  assert.equal(report.viewerWithinTolerance, false);
+  assert.ok(report.viewerMigrationDelta.endpointDelta > 0);
+  assert.ok(report.viewerMigrationDelta.returnEndpointDelta > 0);
 });
 
-test("compatibility deriveLegacyGeometry now resolves to native-v1", () => {
+test("compatibility deriveLegacyGeometry now resolves to native-v2", () => {
   const result = shadow.deriveLegacyGeometry(
     meta("WEAPON", { end: { x: 50, y: 20 } }),
     "normal",
@@ -229,8 +254,8 @@ test("compatibility deriveLegacyGeometry now resolves to native-v1", () => {
     target(),
     { engine, adapter },
   );
-  assert.equal(result.geometryModel, "native-v1");
-  assert.deepEqual(result.appliedEndOffset, { x: 0, y: 0 });
+  assert.equal(result.geometryModel, "native-v2");
+  assert.deepEqual(result.appliedOutboundEndOffset, { x: 0, y: 0 });
 });
 
 test("actor-ground heuristic is explicitly excluded from native shadow truth", () => {
