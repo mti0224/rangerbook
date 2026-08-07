@@ -46,6 +46,14 @@
     };
   }
 
+  function pointDistance(first, second) {
+    if (!first || !second) return Infinity;
+    return Math.hypot(
+      finiteNumber(first.x) - finiteNumber(second.x),
+      finiteNumber(first.y) - finiteNumber(second.y),
+    );
+  }
+
   function movementDuration(distance, moveSpeed) {
     const speed = positiveNumber(moveSpeed, 0);
     if (!speed) return 0;
@@ -78,7 +86,7 @@
     };
   }
 
-  function deriveLegacyGeometry(meta, dataKey, scene, target, dependencies = {}) {
+  function deriveGeometry(meta, dataKey, scene, target, dependencies = {}, mode = "native") {
     const projectileEngine = dependencies.engine || engine;
     const projectileAdapter = dependencies.adapter || adapter;
     if (!projectileEngine || !projectileAdapter) {
@@ -138,16 +146,27 @@
       y: bodyOriginY - startLocal.y * sceneScale,
     };
 
-    // This intentionally mirrors the current production viewer. It is a
-    // comparison baseline, not a declaration that projectileEndX/Y are native
-    // outbound offsets for every attack family.
-    const endOffset = {
+    const rawEndOffset = {
       x: finiteNumber(attack?.end?.x, 0) * coordinateScale,
       y: finiteNumber(attack?.end?.y, 0) * coordinateScale,
     };
+
+    /*
+     * Native migration v1:
+     * - LINEAR / CURVE do not use projectileEndX/Y as generic target offsets.
+     * - RETURN still preserves the existing endpoint interpretation here until
+     *   its dedicated two-leg payload migration is landed separately.
+     * - viewer mode intentionally reproduces current production behavior so
+     *   the migration delta remains observable instead of being hidden.
+     */
+    const viewerMode = mode === "viewer";
+    const applyGenericEndOffset = viewerMode || family === "RETURN";
+    const appliedEndOffset = applyGenericEndOffset
+      ? rawEndOffset
+      : { x: 0, y: 0 };
     const baseEnd = {
-      x: targetX + facing * endOffset.x * sceneScale,
-      y: targetBaseY - endOffset.y * sceneScale,
+      x: targetX + facing * appliedEndOffset.x * sceneScale,
+      y: targetBaseY - appliedEndOffset.y * sceneScale,
     };
     const hitPointRate = effectiveHitPointRate(meta, dataKey, family);
     const end = {
@@ -181,6 +200,7 @@
       reason: null,
       family,
       projectile,
+      geometryModel: viewerMode ? "viewer-current" : "native-v1",
       geometry: {
         startX: start.x,
         startY: start.y,
@@ -196,8 +216,46 @@
         returnDuration,
         facing,
       },
+      rawEndOffset,
+      appliedEndOffset,
       hitPointRate,
       coordinateScale,
+    };
+  }
+
+  function deriveViewerGeometry(meta, dataKey, scene, target, dependencies = {}) {
+    return deriveGeometry(meta, dataKey, scene, target, dependencies, "viewer");
+  }
+
+  function deriveNativeGeometry(meta, dataKey, scene, target, dependencies = {}) {
+    return deriveGeometry(meta, dataKey, scene, target, dependencies, "native");
+  }
+
+  // Compatibility entry point used by the Step B3 authority layer. From the
+  // native geometry migration onward it intentionally resolves to native-v1.
+  function deriveLegacyGeometry(meta, dataKey, scene, target, dependencies = {}) {
+    return deriveNativeGeometry(meta, dataKey, scene, target, dependencies);
+  }
+
+  function geometryMigrationDelta(viewer, nativeGeometry) {
+    if (!viewer?.supported || !nativeGeometry?.supported) return null;
+    return {
+      baseEndDelta: pointDistance(
+        { x: viewer.geometry.baseEndX, y: viewer.geometry.baseEndY },
+        { x: nativeGeometry.geometry.baseEndX, y: nativeGeometry.geometry.baseEndY },
+      ),
+      endpointDelta: pointDistance(
+        { x: viewer.geometry.endX, y: viewer.geometry.endY },
+        { x: nativeGeometry.geometry.endX, y: nativeGeometry.geometry.endY },
+      ),
+      durationDelta: Math.abs(
+        finiteNumber(viewer.geometry.flightDuration) -
+        finiteNumber(nativeGeometry.geometry.flightDuration)
+      ),
+      returnDurationDelta: Math.abs(
+        finiteNumber(viewer.geometry.returnDuration) -
+        finiteNumber(nativeGeometry.geometry.returnDuration)
+      ),
     };
   }
 
@@ -205,7 +263,7 @@
     const projectileEngine = dependencies.engine || engine;
     const projectileAdapter = dependencies.adapter || adapter;
     const dataKey = input?.dataKey;
-    const derived = deriveLegacyGeometry(
+    const nativeGeometry = deriveNativeGeometry(
       input?.meta,
       dataKey,
       input?.scene,
@@ -213,27 +271,39 @@
       { engine: projectileEngine, adapter: projectileAdapter },
     );
 
-    if (!derived.supported) {
+    if (!nativeGeometry.supported) {
       return {
         supported: false,
-        reason: derived.reason,
+        reason: nativeGeometry.reason,
         unitId: input?.unitId || "",
         clip: input?.clip || "",
         dataKey: dataKey || "",
-        family: derived.family || null,
+        family: nativeGeometry.family || null,
       };
     }
+
+    const viewerGeometry = deriveViewerGeometry(
+      input?.meta,
+      dataKey,
+      input?.scene,
+      input?.target,
+      { engine: projectileEngine, adapter: projectileAdapter },
+    );
+    const migrationDelta = geometryMigrationDelta(viewerGeometry, nativeGeometry);
 
     const rawLegacyImpactTime = input?.legacyImpactTime;
     const legacyImpactTime = rawLegacyImpactTime === null || rawLegacyImpactTime === undefined
       ? NaN
       : Number(rawLegacyImpactTime);
+    const viewerFlightDuration = viewerGeometry.supported
+      ? viewerGeometry.geometry.flightDuration
+      : nativeGeometry.geometry.flightDuration;
     const spawnTime = Number.isFinite(legacyImpactTime)
-      ? Math.max(0, legacyImpactTime - derived.geometry.flightDuration)
+      ? Math.max(0, legacyImpactTime - viewerFlightDuration)
       : 0;
     const comparison = projectileAdapter.compareMovingSimulation(
-      derived.projectile,
-      derived.geometry,
+      nativeGeometry.projectile,
+      nativeGeometry.geometry,
       {
         engine: projectileEngine,
         sceneScale: positiveNumber(input?.scene?.sceneScale, 1),
@@ -249,18 +319,29 @@
         unitId: input?.unitId || "",
         clip: input?.clip || "",
         dataKey,
-        family: derived.family,
+        family: nativeGeometry.family,
       };
     }
 
     const impactDelta = Number.isFinite(legacyImpactTime)
       ? Math.abs(finiteNumber(comparison.impactTime) - legacyImpactTime)
       : null;
+
+    // withinTolerance now means engine-vs-native-model consistency. Deliberate
+    // viewer migration differences are reported separately and do not block
+    // feature-flagged native authority.
     const withinTolerance =
       comparison.maxPositionDelta <= POSITION_TOLERANCE_PX &&
       comparison.durationDelta <= TIME_TOLERANCE_SECONDS &&
-      comparison.returnDurationDelta <= TIME_TOLERANCE_SECONDS &&
-      (impactDelta === null || impactDelta <= TIME_TOLERANCE_SECONDS);
+      comparison.returnDurationDelta <= TIME_TOLERANCE_SECONDS;
+    const viewerWithinTolerance = Boolean(
+      migrationDelta &&
+      migrationDelta.baseEndDelta <= POSITION_TOLERANCE_PX &&
+      migrationDelta.endpointDelta <= POSITION_TOLERANCE_PX &&
+      migrationDelta.durationDelta <= TIME_TOLERANCE_SECONDS &&
+      migrationDelta.returnDurationDelta <= TIME_TOLERANCE_SECONDS &&
+      (impactDelta === null || impactDelta <= TIME_TOLERANCE_SECONDS)
+    );
 
     return {
       supported: true,
@@ -270,6 +351,7 @@
       dataKey,
       attackType: comparison.attackType,
       family: comparison.family,
+      geometryModel: nativeGeometry.geometryModel,
       legacyImpactTime: Number.isFinite(legacyImpactTime) ? legacyImpactTime : null,
       engineImpactTime: comparison.impactTime,
       impactDelta,
@@ -277,7 +359,13 @@
       durationDelta: comparison.durationDelta,
       returnDurationDelta: comparison.returnDurationDelta,
       withinTolerance,
-      geometry: derived.geometry,
+      viewerWithinTolerance,
+      viewerMigrationDelta: migrationDelta,
+      viewerGeometry: viewerGeometry.supported ? viewerGeometry.geometry : null,
+      nativeGeometry: nativeGeometry.geometry,
+      geometry: nativeGeometry.geometry,
+      rawEndOffset: nativeGeometry.rawEndOffset,
+      appliedEndOffset: nativeGeometry.appliedEndOffset,
       simulationInput: comparison.input,
     };
   }
@@ -340,7 +428,7 @@
         { detail: report },
       ));
       if (report.supported && !report.withinTolerance) {
-        rootObject.console?.warn?.("Projectile engine shadow mismatch", report);
+        rootObject.console?.warn?.("Projectile engine/native geometry mismatch", report);
       }
     }
 
@@ -426,7 +514,10 @@
     POSITION_TOLERANCE_PX,
     TIME_TOLERANCE_SECONDS,
     effectiveHitPointRate,
+    deriveViewerGeometry,
+    deriveNativeGeometry,
     deriveLegacyGeometry,
+    geometryMigrationDelta,
     buildShadowReport,
     install,
   });
