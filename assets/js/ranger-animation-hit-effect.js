@@ -5,6 +5,7 @@
   const HIT_EFFECT_SEGMENT = "basic";
   const HIT_EFFECT_DURATION = 19 / 30;
   const NATIVE_ACTION_FPS = 60;
+  const timing = window.RangerAnimationHitEffectTiming || null;
 
   function sharedBridge(name) {
     if (window[name]?.get && window[name]?.set) return window[name];
@@ -24,6 +25,7 @@
   }
 
   const playbackBridge = sharedBridge("RangerAnimationPlaybackBridge");
+  const simulationBridge = sharedBridge("RangerAnimationSimulationBridge");
   const sceneBridge = sharedBridge("RangerAnimationSceneBridge");
   const targetBridge = sharedBridge("RangerAnimationTargetBridge");
   const sectionStates = new WeakMap();
@@ -202,6 +204,42 @@
     };
   }
 
+  function fallbackImpactSchedule(playbackPlan) {
+    if (
+      playbackPlan?.source !== "viewer" ||
+      playbackPlan?.selectedClip !== "attack" ||
+      !Number.isFinite(Number(playbackPlan?.impactTime))
+    ) return null;
+    return {
+      source: "viewer",
+      startedAt: finiteNumber(playbackPlan.startedAt, 0),
+      cycleDuration: Math.max(0, finiteNumber(playbackPlan.cycleDuration, 0)),
+      impacts: [{ time: Number(playbackPlan.impactTime), projectileIndex: 0 }],
+    };
+  }
+
+  function fallbackActiveImpacts(schedule, elapsed) {
+    if (!schedule) return [];
+    const cycleDuration = Math.max(0, finiteNumber(schedule.cycleDuration, 0));
+    const cycleIndex = cycleDuration > 0 ? Math.floor(elapsed / cycleDuration) : 0;
+    const time = cycleDuration > 0 ? elapsed - cycleIndex * cycleDuration : elapsed;
+    return (schedule.impacts || []).flatMap((impact) => {
+      let impactCycleIndex = cycleIndex;
+      let age = time - impact.time;
+      if (age < 0 && cycleDuration > 0 && elapsed >= cycleDuration) {
+        age += cycleDuration;
+        impactCycleIndex -= 1;
+      }
+      if (age < 0 || age >= HIT_EFFECT_DURATION) return [];
+      return [{
+        ...impact,
+        age,
+        cycleIndex: impactCycleIndex,
+        key: `${schedule.source}:${schedule.startedAt}:${impact.projectileIndex}:${impact.time}:${impactCycleIndex}`,
+      }];
+    });
+  }
+
   async function renderFrame(state) {
     const { canvas, section } = state;
     const baseCanvas = section.querySelector(".ranger-animation-canvas");
@@ -212,42 +250,47 @@
     if (!context) return;
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    const plan = playbackBridge.get(section);
-    if (!plan || plan.source !== "viewer" || !Number.isFinite(plan.impactTime)) {
-      state.activeEffect = null;
+    const playbackPlan = playbackBridge.get(section);
+    const simulationPlan = simulationBridge.get(section);
+    const schedule = timing?.resolveImpactSchedule
+      ? timing.resolveImpactSchedule(playbackPlan, simulationPlan)
+      : fallbackImpactSchedule(playbackPlan);
+    if (!schedule?.startedAt || !schedule.impacts?.length) {
+      state.activeEffects.clear();
       return;
     }
 
     const elapsed = Math.floor(
-      ((performance.now() - plan.startedAt) / 1000) * NATIVE_ACTION_FPS
+      ((performance.now() - schedule.startedAt) / 1000) * NATIVE_ACTION_FPS
     ) / NATIVE_ACTION_FPS;
-    const cycleDuration = Math.max(0, finiteNumber(plan.cycleDuration, 0));
-    const cycleIndex = cycleDuration > 0 ? Math.floor(elapsed / cycleDuration) : 0;
-    const time = cycleDuration > 0 ? elapsed - cycleIndex * cycleDuration : elapsed;
-    let impactCycleIndex = cycleIndex;
-    let age = time - plan.impactTime;
-    if (age < 0 && cycleDuration > 0 && elapsed >= cycleDuration) {
-      age += cycleDuration;
-      impactCycleIndex -= 1;
+    const activeImpacts = timing?.activeImpacts
+      ? timing.activeImpacts(schedule, elapsed, HIT_EFFECT_DURATION)
+      : fallbackActiveImpacts(schedule, elapsed);
+    if (!activeImpacts.length) {
+      state.activeEffects.clear();
+      return;
     }
-    if (age < 0 || age >= HIT_EFFECT_DURATION) return;
 
     const scene = sceneBridge.get(section);
     if (!scene) return;
-    const effectKey = `${plan.startedAt}:${plan.impactTime}:${impactCycleIndex}`;
-    if (!state.activeEffect || state.activeEffect.key !== effectKey) {
-      state.activeEffect = {
-        key: effectKey,
-        ...(await effectAnchor(section, scene)),
-      };
+    const nextEffects = new Map();
+    let sharedAnchor = null;
+    for (const impact of activeImpacts) {
+      let activeEffect = state.activeEffects.get(impact.key);
+      if (!activeEffect) {
+        if (!sharedAnchor) sharedAnchor = await effectAnchor(section, scene);
+        activeEffect = { key: impact.key, ...sharedAnchor };
+      }
+      nextEffects.set(impact.key, activeEffect);
+      await drawEffectFrame(
+        context,
+        impact.age,
+        activeEffect.x,
+        activeEffect.y,
+        activeEffect.scale,
+      );
     }
-    await drawEffectFrame(
-      context,
-      age,
-      state.activeEffect.x,
-      state.activeEffect.y,
-      state.activeEffect.scale,
-    );
+    state.activeEffects = nextEffects;
   }
 
   function startLoop(state) {
@@ -284,17 +327,18 @@
     const state = {
       section,
       canvas,
-      activeEffect: null,
+      activeEffects: new Map(),
       rendering: false,
       rafId: 0,
     };
     sectionStates.set(section, state);
-    section.addEventListener("ranger-animation-playback-plan", () => {
-      state.activeEffect = null;
-    });
-    section.addEventListener("ranger-animation-target-change", () => {
-      state.activeEffect = null;
-    });
+    [
+      "ranger-animation-playback-plan",
+      "ranger-animation-simulation-plan",
+      "ranger-animation-target-change",
+    ].forEach((eventName) => section.addEventListener(eventName, () => {
+      state.activeEffects.clear();
+    }));
     startLoop(state);
   }
 
