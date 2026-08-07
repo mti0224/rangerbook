@@ -84,7 +84,21 @@ test("CURVE adapter reproduces native control point construction", () => {
   assert.equal(curve.control2.y, -60);
 });
 
-test("CURVE shadow is built as CURVE and preserves rotation input", () => {
+test("CURVE shadow matches the legacy cubic path point-for-point", () => {
+  const p = projectile("WEAPONC");
+  const result = adapter.compareMovingSimulation(p, geometry(), {
+    engine,
+    sceneScale: 1.75,
+    samples: 17,
+  });
+
+  assert.equal(result.supported, true);
+  assert.equal(result.family, "CURVE");
+  assert.equal(result.durationDelta, 0);
+  assert.ok(result.maxPositionDelta < 1e-9);
+});
+
+test("CURVE shadow preserves rotation input", () => {
   const p = projectile("ENERGYC", {
     rotationMode: "ANGLE_LERP",
     config: {
@@ -118,6 +132,20 @@ test("RETURN adapter keeps outbound impact separate from inbound cleanup", () =>
     shadow.simulation.positionAt(shadow.simulation.cleanupTime),
     { x: g.returnEndX, y: g.returnEndY },
   );
+});
+
+test("RETURN shadow matches both outbound and inbound legacy paths", () => {
+  const result = adapter.compareMovingSimulation(projectile("RETURN"), geometry(), {
+    engine,
+    sceneScale: 1,
+    samples: 17,
+  });
+
+  assert.equal(result.supported, true);
+  assert.equal(result.family, "RETURN");
+  assert.equal(result.durationDelta, 0);
+  assert.equal(result.returnDurationDelta, 0);
+  assert.ok(result.maxPositionDelta < 1e-9);
 });
 
 test("BEAM shadow keeps impact immediate at spawn", () => {
