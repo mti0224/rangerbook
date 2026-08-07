@@ -6,7 +6,13 @@
   "use strict";
 
   const EPSILON = 1e-9;
-  const MOVING_FAMILIES = new Set(["LINEAR", "CURVE", "RETURN"]);
+  const MOVING_FAMILIES = new Set([
+    "LINEAR",
+    "CURVE",
+    "RETURN",
+    "DOUBLE_LINEAR",
+    "DOUBLE_CURVE",
+  ]);
 
   function finiteNumber(value, fallback = 0) {
     const number = Number(value);
@@ -37,7 +43,9 @@
       return projectileEngine.familyForAttackType(attackType);
     }
     if (["ENERGY", "WEAPON"].includes(attackType)) return "LINEAR";
+    if (attackType === "DOUBLE") return "DOUBLE_LINEAR";
     if (["ENERGYC", "WEAPONC"].includes(attackType)) return "CURVE";
+    if (attackType === "DOUBLEC") return "DOUBLE_CURVE";
     if (attackType === "RETURN") return "RETURN";
     if (attackType === "BEAM") return "BEAM";
     if (["PUNCH", "KICK", "SWING", "STAB", "LASER"].includes(attackType)) return "DIRECT";
@@ -72,6 +80,20 @@
     };
   }
 
+  function movingInput(projectile, geometry, options, family) {
+    const input = {
+      start: point(geometry.startX, geometry.startY),
+      end: point(geometry.endX, geometry.endY),
+      distance: Math.max(0, finiteNumber(geometry.nativeDistance, 0)),
+      moveSpeed: Math.max(0, finiteNumber(projectile.moveSpeed, 0)),
+      ...rotationConfig(projectile),
+    };
+    if (["CURVE", "DOUBLE_CURVE"].includes(family)) {
+      input.curve = nativeCurve(projectile, geometry, options.sceneScale);
+    }
+    return input;
+  }
+
   function createSimulationInput(projectile, geometry, options = {}) {
     if (!projectile || !geometry) {
       return { supported: false, reason: "missing-projectile-or-geometry", input: null };
@@ -82,22 +104,10 @@
     const family = familyForProjectile(projectile, projectileEngine);
     const kind = projectile.isBasicAttack === true ? "normal" : "skill";
     const spawnTime = Math.max(0, finiteNumber(options.spawnTime, 0));
-    const start = point(geometry.startX, geometry.startY);
-    const end = point(geometry.endX, geometry.endY);
-    const distance = Math.max(0, finiteNumber(geometry.nativeDistance, 0));
-    const moveSpeed = Math.max(0, finiteNumber(projectile.moveSpeed, 0));
     const finishDuration = Math.max(0, finiteNumber(projectile.finishDuration, 0));
 
     if (family === "UNKNOWN" || family === "NONE") {
       return { supported: false, reason: `unsupported-family:${family}`, input: null };
-    }
-
-    if (["DOUBLE_LINEAR", "DOUBLE_CURVE"].includes(family)) {
-      return {
-        supported: false,
-        reason: "double-requires-native-second-projectile-geometry",
-        input: null,
-      };
     }
 
     if (family === "DIRECT" || family === "ACTION") {
@@ -125,16 +135,32 @@
       attackType,
       kind,
       spawnTime,
-      start,
-      end,
-      distance,
-      moveSpeed,
       finishDuration,
-      ...rotationConfig(projectile),
+      ...movingInput(projectile, geometry, options, family),
     };
 
-    if (family === "CURVE") {
-      input.curve = nativeCurve(projectile, geometry, options.sceneScale);
+    if (["DOUBLE_LINEAR", "DOUBLE_CURVE"].includes(family)) {
+      const secondGeometry = geometry.second;
+      if (!secondGeometry) {
+        return {
+          supported: false,
+          reason: "double-requires-native-second-projectile-geometry",
+          input: null,
+        };
+      }
+      const rawSecondSpawnTime = secondGeometry.spawnTime ?? options.secondSpawnTime;
+      const secondSpawnTime = Number(rawSecondSpawnTime);
+      if (!Number.isFinite(secondSpawnTime) || secondSpawnTime < spawnTime) {
+        return {
+          supported: false,
+          reason: "double-requires-second-spawn-time",
+          input: null,
+        };
+      }
+      input.second = {
+        spawnTime: secondSpawnTime,
+        ...movingInput(projectile, secondGeometry, options, family),
+      };
     }
 
     if (family === "RETURN") {
@@ -218,6 +244,28 @@
     };
   }
 
+  function compareOneMovingProjectile(projectile, simulatedProjectile, geometry, family, options, samples) {
+    let maxPositionDelta = 0;
+    const curveFamily = ["CURVE", "DOUBLE_CURVE"].includes(family);
+    for (let index = 0; index < samples; index += 1) {
+      const progress = index / (samples - 1);
+      const time = simulatedProjectile.spawnTime + simulatedProjectile.outboundDuration * progress;
+      const expected = curveFamily
+        ? legacyCurvePosition(projectile, geometry, options.sceneScale, progress)
+        : legacyLinearPosition(geometry, progress);
+      maxPositionDelta = Math.max(
+        maxPositionDelta,
+        distance(simulatedProjectile.positionAt(time), expected),
+      );
+    }
+    return {
+      maxPositionDelta,
+      durationDelta: Math.abs(
+        finiteNumber(simulatedProjectile.outboundDuration) - finiteNumber(geometry?.flightDuration)
+      ),
+    };
+  }
+
   function compareMovingSimulation(projectile, geometry, options = {}) {
     const shadow = buildShadowSimulation(projectile, geometry, options);
     if (!shadow.supported || !shadow.simulation) {
@@ -226,6 +274,7 @@
         reason: shadow.reason,
         maxPositionDelta: null,
         durationDelta: null,
+        secondDurationDelta: null,
         returnDurationDelta: null,
       };
     }
@@ -234,19 +283,42 @@
     const family = simulation.family;
     const samples = Math.max(2, Math.trunc(finiteNumber(options.samples, 9)));
     let maxPositionDelta = 0;
+    let durationDelta = 0;
+    let secondDurationDelta = 0;
 
     if (["LINEAR", "CURVE", "RETURN"].includes(family)) {
-      for (let index = 0; index < samples; index += 1) {
-        const progress = index / (samples - 1);
-        const time = simulation.spawnTime + simulation.outboundDuration * progress;
-        const legacyPosition = family === "CURVE"
-          ? legacyCurvePosition(projectile, geometry, options.sceneScale, progress)
-          : legacyLinearPosition(geometry, progress);
-        maxPositionDelta = Math.max(
-          maxPositionDelta,
-          distance(simulation.positionAt(time), legacyPosition),
-        );
-      }
+      const result = compareOneMovingProjectile(
+        projectile,
+        simulation.projectiles[0],
+        geometry,
+        family,
+        options,
+        samples,
+      );
+      maxPositionDelta = result.maxPositionDelta;
+      durationDelta = result.durationDelta;
+    }
+
+    if (["DOUBLE_LINEAR", "DOUBLE_CURVE"].includes(family)) {
+      const firstResult = compareOneMovingProjectile(
+        projectile,
+        simulation.projectiles[0],
+        geometry,
+        family,
+        options,
+        samples,
+      );
+      const secondResult = compareOneMovingProjectile(
+        projectile,
+        simulation.projectiles[1],
+        geometry.second,
+        family,
+        options,
+        samples,
+      );
+      maxPositionDelta = Math.max(firstResult.maxPositionDelta, secondResult.maxPositionDelta);
+      durationDelta = firstResult.durationDelta;
+      secondDurationDelta = secondResult.durationDelta;
     }
 
     if (family === "RETURN") {
@@ -266,13 +338,13 @@
       family,
       attackType: simulation.sourceAttackType,
       maxPositionDelta,
-      durationDelta: Math.abs(
-        finiteNumber(simulation.outboundDuration) - finiteNumber(geometry?.flightDuration)
-      ),
+      durationDelta,
+      secondDurationDelta,
       returnDurationDelta: family === "RETURN"
         ? Math.abs(finiteNumber(simulation.returnDuration) - finiteNumber(geometry?.returnDuration))
         : 0,
       impactTime: simulation.impactTime,
+      secondImpactTime: simulation.projectiles[1]?.impactTime ?? null,
       cleanupTime: simulation.cleanupTime,
       input: shadow.input,
       simulation,
