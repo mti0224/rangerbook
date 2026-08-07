@@ -17,6 +17,10 @@
   background: var(--card-bg, rgba(255, 255, 255, 0.04));
 }
 
+.ranger-animation-player {
+  position: relative;
+}
+
 .ranger-animation-canvas {
   display: block;
   width: 100%;
@@ -28,6 +32,16 @@
   background:
     linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(0,0,0,0.04)),
     repeating-linear-gradient(45deg, rgba(120,120,120,0.08), rgba(120,120,120,0.08) 8px, transparent 8px, transparent 16px);
+}
+
+.ranger-animation-engine-projectile-canvas {
+  position: absolute !important;
+  inset: 14px auto auto 14px !important;
+  width: calc(100% - 28px) !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  pointer-events: none;
+  z-index: 3;
 }
 
 .ranger-animation-canvas.dragging {
