@@ -18,6 +18,7 @@ function enginePlan(overrides = {}) {
   return {
     source: "engine",
     authoritative: true,
+    family: "DOUBLE_LINEAR",
     selectedClip: "attack",
     startedAt: 1000,
     cycleDuration: 2,
@@ -71,4 +72,39 @@ test("impact effect wraps correctly across playback cycles", () => {
   assert.equal(active.length, 1);
   assert.equal(active[0].cycleIndex, 0);
   assert.ok(Math.abs(active[0].age - 0.2) < 1e-9);
+});
+
+test("DOUBLE engine timing requires live DOUBLE renderer authority", () => {
+  const plan = enginePlan();
+  const active = timing.effectiveSimulationPlan(
+    plan,
+    { active: true, family: "LINEAR" },
+    { active: true, family: "DOUBLE_LINEAR" },
+  );
+  assert.equal(active.authoritative, true);
+
+  const failedClosed = timing.effectiveSimulationPlan(
+    plan,
+    { active: true, family: "LINEAR" },
+    { active: false, family: "DOUBLE_LINEAR", reason: "double-runtime-error" },
+  );
+  assert.equal(failedClosed.authoritative, false);
+  assert.equal(failedClosed.authorityReason, "renderer-authority-inactive");
+});
+
+test("standard engine timing requires matching live standard authority family", () => {
+  const plan = enginePlan({ family: "CURVE", impactEvents: [{ type: "projectile-impact", time: 0.7, projectileIndex: 0 }] });
+  const active = timing.effectiveSimulationPlan(
+    plan,
+    { active: true, family: "CURVE" },
+    { active: true, family: "DOUBLE_CURVE" },
+  );
+  assert.equal(active.authoritative, true);
+
+  const staleFamily = timing.effectiveSimulationPlan(
+    plan,
+    { active: true, family: "LINEAR" },
+    { active: true, family: "DOUBLE_CURVE" },
+  );
+  assert.equal(staleFamily.authoritative, false);
 });
