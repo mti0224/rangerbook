@@ -150,23 +150,23 @@
       x: finiteNumber(attack?.end?.x, 0) * coordinateScale,
       y: finiteNumber(attack?.end?.y, 0) * coordinateScale,
     };
+    const viewerMode = mode === "viewer";
 
     /*
-     * Native migration v1:
-     * - LINEAR / CURVE do not use projectileEndX/Y as generic target offsets.
-     * - RETURN still preserves the existing endpoint interpretation here until
-     *   its dedicated two-leg payload migration is landed separately.
-     * - viewer mode intentionally reproduces current production behavior so
-     *   the migration delta remains observable instead of being hidden.
+     * Native migration v2:
+     * - LINEAR / CURVE / RETURN outbound travel resolves against the target
+     *   without treating projectileEndX/Y as generic target offsets.
+     * - RETURN consumes projectileEndX/Y only for the inbound endpoint:
+     *   returnEnd = originalSpawn + 0.5 * EndOffset (facing applied to X).
+     * - projectileSecondStartX/Y belongs to the DOUBLE family and is retained
+     *   only by viewer-current geometry so legacy behavior remains measurable.
      */
-    const viewerMode = mode === "viewer";
-    const applyGenericEndOffset = viewerMode || family === "RETURN";
-    const appliedEndOffset = applyGenericEndOffset
+    const appliedOutboundEndOffset = viewerMode
       ? rawEndOffset
       : { x: 0, y: 0 };
     const baseEnd = {
-      x: targetX + facing * appliedEndOffset.x * sceneScale,
-      y: targetBaseY - appliedEndOffset.y * sceneScale,
+      x: targetX + facing * appliedOutboundEndOffset.x * sceneScale,
+      y: targetBaseY - appliedOutboundEndOffset.y * sceneScale,
     };
     const hitPointRate = effectiveHitPointRate(meta, dataKey, family);
     const end = {
@@ -185,10 +185,17 @@
       x: rawSecondStart.x * coordinateScale,
       y: rawSecondStart.y * coordinateScale,
     };
-    const returnEnd = {
+    const viewerReturnEnd = {
       x: bodyOriginX + facing * secondStart.x * sceneScale,
       y: bodyOriginY - secondStart.y * sceneScale,
     };
+    const nativeReturnEnd = family === "RETURN"
+      ? {
+        x: start.x + facing * rawEndOffset.x * sceneScale,
+        y: start.y - rawEndOffset.y * sceneScale,
+      }
+      : viewerReturnEnd;
+    const returnEnd = viewerMode ? viewerReturnEnd : nativeReturnEnd;
     const returnNativeDistance = Math.hypot(
       returnEnd.x - end.x,
       returnEnd.y - end.y,
@@ -200,7 +207,7 @@
       reason: null,
       family,
       projectile,
-      geometryModel: viewerMode ? "viewer-current" : "native-v1",
+      geometryModel: viewerMode ? "viewer-current" : "native-v2",
       geometry: {
         startX: start.x,
         startY: start.y,
@@ -217,7 +224,11 @@
         facing,
       },
       rawEndOffset,
-      appliedEndOffset,
+      appliedEndOffset: appliedOutboundEndOffset,
+      appliedOutboundEndOffset,
+      appliedReturnEndOffset: !viewerMode && family === "RETURN"
+        ? rawEndOffset
+        : { x: 0, y: 0 },
       hitPointRate,
       coordinateScale,
     };
@@ -232,7 +243,7 @@
   }
 
   // Compatibility entry point used by the Step B3 authority layer. From the
-  // native geometry migration onward it intentionally resolves to native-v1.
+  // native geometry migration onward it intentionally resolves to native-v2.
   function deriveLegacyGeometry(meta, dataKey, scene, target, dependencies = {}) {
     return deriveNativeGeometry(meta, dataKey, scene, target, dependencies);
   }
@@ -247,6 +258,10 @@
       endpointDelta: pointDistance(
         { x: viewer.geometry.endX, y: viewer.geometry.endY },
         { x: nativeGeometry.geometry.endX, y: nativeGeometry.geometry.endY },
+      ),
+      returnEndpointDelta: pointDistance(
+        { x: viewer.geometry.returnEndX, y: viewer.geometry.returnEndY },
+        { x: nativeGeometry.geometry.returnEndX, y: nativeGeometry.geometry.returnEndY },
       ),
       durationDelta: Math.abs(
         finiteNumber(viewer.geometry.flightDuration) -
@@ -327,7 +342,7 @@
       ? Math.abs(finiteNumber(comparison.impactTime) - legacyImpactTime)
       : null;
 
-    // withinTolerance now means engine-vs-native-model consistency. Deliberate
+    // withinTolerance means engine-vs-native-model consistency. Deliberate
     // viewer migration differences are reported separately and do not block
     // feature-flagged native authority.
     const withinTolerance =
@@ -338,6 +353,7 @@
       migrationDelta &&
       migrationDelta.baseEndDelta <= POSITION_TOLERANCE_PX &&
       migrationDelta.endpointDelta <= POSITION_TOLERANCE_PX &&
+      migrationDelta.returnEndpointDelta <= POSITION_TOLERANCE_PX &&
       migrationDelta.durationDelta <= TIME_TOLERANCE_SECONDS &&
       migrationDelta.returnDurationDelta <= TIME_TOLERANCE_SECONDS &&
       (impactDelta === null || impactDelta <= TIME_TOLERANCE_SECONDS)
@@ -366,6 +382,8 @@
       geometry: nativeGeometry.geometry,
       rawEndOffset: nativeGeometry.rawEndOffset,
       appliedEndOffset: nativeGeometry.appliedEndOffset,
+      appliedOutboundEndOffset: nativeGeometry.appliedOutboundEndOffset,
+      appliedReturnEndOffset: nativeGeometry.appliedReturnEndOffset,
       simulationInput: comparison.input,
     };
   }
