@@ -14,11 +14,15 @@ on:
       - "assets/js/ranger-animation-projectile-double-shadow.js"
       - "assets/js/ranger-animation-projectile-authority.js"
       - "assets/js/ranger-animation-projectile-double-authority.js"
+      - "assets/js/ranger-animation-simulation-bridge.js"
+      - "assets/js/ranger-animation-hit-effect-timing.js"
       - "assets/js/ranger-animation-debug-overlay.js"
       - "assets/js/ranger-animation-target.js"
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
       - "tests/ranger-animation-projectile-*.test.js"
+      - "tests/ranger-animation-simulation-bridge.test.js"
+      - "tests/ranger-animation-hit-effect-timing.test.js"
       - "ranger/ranger/index.html"
       - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
@@ -43,12 +47,15 @@ jobs:
           node --check assets/js/ranger-animation-projectile-double-shadow.js
           node --check assets/js/ranger-animation-projectile-authority.js
           node --check assets/js/ranger-animation-projectile-double-authority.js
+          node --check assets/js/ranger-animation-simulation-bridge.js
+          node --check assets/js/ranger-animation-hit-effect-timing.js
           node --check assets/js/ranger-animation-debug-overlay.js
           node --check assets/js/ranger-animation-target.js
           node --check assets/js/ranger-animation-hit-effect.js
       - name: Validate projectile engine regressions
         run: |
           node --test tests/ranger-animation-projectile-*.test.js
+          node --test tests/ranger-animation-simulation-bridge.test.js tests/ranger-animation-hit-effect-timing.test.js
       - name: Validate hit effect assets
         run: |
           python3 - <<'PY'
@@ -81,6 +88,8 @@ jobs:
           grep -q 'assets/js/ranger-animation-projectile-double-shadow.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-authority.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-double-authority.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-simulation-bridge.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-hit-effect-timing.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-debug-overlay.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
@@ -94,6 +103,8 @@ jobs:
           grep -q 'assets/js/ranger-animation-projectile-double-shadow.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-authority.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-double-authority.js' ranger/ranking/index.html
+          grep -q 'assets/js/ranger-animation-simulation-bridge.js' ranger/ranking/index.html
+          grep -q 'assets/js/ranger-animation-hit-effect-timing.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-debug-overlay.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
