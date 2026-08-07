@@ -1,0 +1,136 @@
+name: Apply native curve projectile fix
+
+on:
+  push:
+    branches:
+      - fix/native-curve-projectile-geometry
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/native-curve-projectile-geometry
+          fetch-depth: 0
+
+      - name: Verify source baseline
+        run: |
+          test "$(git hash-object assets/js/ranger-animation-viewer.js)" = "986ab0a9f344be33fec58b046f62a8673022a20a"
+          test "$(git hash-object assets/js/ranger-animation-hit-effect.js)" = "88c04533b5e8f9546d866b76c94bc0cbee841d2c"
+
+      - name: Apply native projectile math
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          viewer_path = Path("assets/js/ranger-animation-viewer.js")
+          s = viewer_path.read_text()
+
+          replacements = [
+              (
+                  '''  function effectiveHitPointRate(meta, clip, motionType) {\n    const raw = finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey], NaN);\n    if (!Number.isFinite(raw)) return defaultHitPointRate(motionType);\n\n    // UnitData contains both ratio-form values (0, 0.3, 0.5, 1) and\n    // percentage-form values (20, 30, 50, 100). They describe the target's\n    // vertical hit point, measured upward from the target base.\n    const ratio = raw > 1 ? raw / 100 : raw;\n    return clamp(ratio, 0, 1);\n  }''',
+                  '''  function effectiveHitPointRate(meta, clip, motionType) {\n    const raw = finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey], NaN);\n    const fallback = defaultHitPointRate(motionType);\n    if (!Number.isFinite(raw)) return fallback;\n\n    // libgame.so treats values above 10 as an unset/sentinel value for native\n    // moving projectiles instead of percentage-form data. Straight/RETURN\n    // projectiles fall back to 0.25; CURVE falls back to 0.\n    if (raw > 10 && ["LINEAR", "RETURN", "CURVE"].includes(motionType)) {\n      return fallback;\n    }\n    return raw;\n  }''',
+              ),
+              (
+                  '''  function movementDuration(distance, moveSpeed) {\n    const speed = positiveNumber(moveSpeed, 0);\n    if (!speed) return 0;\n    return clamp(distance / (speed * NATIVE_ACTION_FPS), MIN_FLIGHT_DURATION, MAX_FLIGHT_DURATION);\n  }''',
+                  '''  function movementDuration(distance, moveSpeed) {\n    const speed = positiveNumber(moveSpeed, 0);\n    if (!speed) return 0;\n    return Math.max(0, finiteNumber(distance, 0)) / (speed * NATIVE_ACTION_FPS);\n  }''',
+              ),
+              (
+                  '''  function resolveOutboundEnd(projectile, bodyPart, layout, sceneScale) {\n    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;\n    const targetHitHeight = targetHeight * finiteNumber(projectile.hitPointRate, 0);\n    return {\n      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,\n      // The native endpoint is based on the target hit point. endY is an\n      // additional positive-up offset, not an offset from the launch line.\n      y: layout.targetBaseY - (targetHitHeight + projectile.endOffset.y) * sceneScale,\n    };\n  }''',
+                  '''  function resolveOutboundBaseEnd(projectile, layout, sceneScale) {\n    return {\n      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,\n      y: layout.targetBaseY - projectile.endOffset.y * sceneScale,\n    };\n  }\n\n  function resolveOutboundEnd(projectile, bodyPart, layout, sceneScale) {\n    const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);\n    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;\n    const targetHitHeight = targetHeight * finiteNumber(projectile.hitPointRate, 0);\n    return {\n      x: baseEnd.x,\n      y: baseEnd.y - targetHitHeight * sceneScale,\n    };\n  }''',
+              ),
+              (
+                  '''    const start = resolveStartScreen(projectile, layout, sceneScale);\n    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);\n    const nativeDistance = Math.hypot(end.x - start.x, end.y - start.y) / Math.max(0.0001, sceneScale);\n    const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);''',
+                  '''    const start = resolveStartScreen(projectile, layout, sceneScale);\n    const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);\n    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);\n    // Native duration is based on the displacement before hitPointRate is\n    // applied to the target height. libgame.so then reuses that duration for\n    // the final endpoint and, for CURVE, for CCBezierBy + CCRotateTo.\n    const nativeDistance = Math.hypot(baseEnd.x - start.x, baseEnd.y - start.y) / Math.max(0.0001, sceneScale);\n    const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);''',
+              ),
+              (
+                  '''  function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {\n    const start = resolveStartScreen(projectile, layout, sceneScale);\n    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);\n    const endX = end.x;\n    const endY = end.y;\n    const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);\n    const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);\n    const returnEnd = resolveReturnEnd(projectile, layout, sceneScale);\n    const returnNativeDistance = Math.hypot(returnEnd.x - endX, returnEnd.y - endY) / Math.max(0.0001, sceneScale);\n    const returnDuration = movementDuration(returnNativeDistance, projectile.moveSpeed);\n    return {\n      startX: start.x,\n      startY: start.y,\n      endX,\n      endY,\n      nativeDistance,\n      flightDuration,\n      returnEndX: returnEnd.x,\n      returnEndY: returnEnd.y,\n      returnNativeDistance,\n      returnDuration,\n      facing: layout.facing,\n    };\n  }''',
+                  '''  function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {\n    const start = resolveStartScreen(projectile, layout, sceneScale);\n    const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);\n    const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);\n    const endX = end.x;\n    const endY = end.y;\n    const nativeDistance = Math.hypot(baseEnd.x - start.x, baseEnd.y - start.y) / Math.max(0.0001, sceneScale);\n    const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);\n    const returnEnd = resolveReturnEnd(projectile, layout, sceneScale);\n    const returnNativeDistance = Math.hypot(returnEnd.x - endX, returnEnd.y - endY) / Math.max(0.0001, sceneScale);\n    const returnDuration = movementDuration(returnNativeDistance, projectile.moveSpeed);\n    return {\n      startX: start.x,\n      startY: start.y,\n      baseEndX: baseEnd.x,\n      baseEndY: baseEnd.y,\n      endX,\n      endY,\n      nativeDistance,\n      flightDuration,\n      returnEndX: returnEnd.x,\n      returnEndY: returnEnd.y,\n      returnNativeDistance,\n      returnDuration,\n      facing: layout.facing,\n    };\n  }''',
+              ),
+              (
+                  '''      if (projectile.motionType === "CURVE") {\n        const pixelDistance = Math.hypot(geometry.endX - geometry.startX, geometry.endY - geometry.startY);\n        position = cubicBezierPoint(\n          { x: geometry.startX, y: geometry.startY },\n          { x: geometry.startX, y: geometry.startY },\n          {\n            x: (geometry.startX + geometry.endX) * 0.5 + geometry.facing * pixelDistance * 0.4,\n            y: (geometry.startY + geometry.endY) * 0.5 - pixelDistance * 0.4,\n          },\n          { x: geometry.endX, y: geometry.endY },\n          progress,\n        );\n      }''',
+                  '''      if (projectile.motionType === "CURVE") {\n        // Native CCBezierBy config (libgame.so):\n        //   end = E\n        //   control1 = (0, 0)\n        //   control2 = E/2 + (facing * 0.4 * D, +0.4 * D)\n        // where D is the base displacement length measured before target hit\n        // height is added. Canvas Y grows downward, hence the negative Y term.\n        const nativeHandle = geometry.nativeDistance * sceneScale * 0.4;\n        position = cubicBezierPoint(\n          { x: geometry.startX, y: geometry.startY },\n          { x: geometry.startX, y: geometry.startY },\n          {\n            x: (geometry.startX + geometry.endX) * 0.5 + geometry.facing * nativeHandle,\n            y: (geometry.startY + geometry.endY) * 0.5 - nativeHandle,\n          },\n          { x: geometry.endX, y: geometry.endY },\n          progress,\n        );\n      }''',
+              ),
+              (
+                  '''  const MAX_FLIGHT_DURATION = 8;\n''',
+                  '''''',
+              ),
+              (
+                  '''  function renderPanel(unitId, meta) {\n    const attackRange = attackRangeForMeta(meta);\n    return `''',
+                  '''  function renderPanel(unitId, meta) {\n    return `''',
+              ),
+              (
+                  '''          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離依攻擊範圍 ${attackRange} 按比例顯示（384 點在 100% 縮放時為 576 px），目標可移出畫面。</p>\n''',
+                  '''''',
+              ),
+          ]
+
+          for old, new in replacements:
+              count = s.count(old)
+              if count != 1:
+                  raise SystemExit(f"viewer replacement count={count}: {old[:80]!r}")
+              s = s.replace(old, new, 1)
+
+          viewer_path.write_text(s)
+
+          hit_path = Path("assets/js/ranger-animation-hit-effect.js")
+          s = hit_path.read_text()
+          replacements = [
+              (
+                  'const MIN_FLIGHT_DURATION=1/NATIVE_ACTION_FPS;const MAX_FLIGHT_DURATION=8;',
+                  '',
+              ),
+              (
+                  'const RANGER_X_RATIO=0.50;const TARGET_X_RATIO=0.90;const TARGET_DISTANCE_MULTIPLIER=2.25;const GROUND_Y_RATIO=0.80;',
+                  'const RANGER_X_RATIO=0.50;const TARGET_DISTANCE_WIDTH_RATIO=0.90;const DEFAULT_ATTACK_RANGE=384;const GROUND_Y_RATIO=0.80;',
+              ),
+              (
+                  'function effectiveHitPointRate(meta,clip,motionType){const raw=finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey],NaN);if(!Number.isFinite(raw))return defaultHitPointRate(motionType);return clamp(raw>1?raw/100:raw,0,1);}',
+                  'function effectiveHitPointRate(meta,clip,motionType){const raw=finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey],NaN);const fallback=defaultHitPointRate(motionType);if(!Number.isFinite(raw))return fallback;if(raw>10&&["LINEAR","RETURN","CURVE"].includes(motionType))return fallback;return raw;}',
+              ),
+              (
+                  'function movementDuration(distance,moveSpeed){const speed=positiveNumber(moveSpeed,0);if(!speed)return 0;return clamp(distance/(speed*NATIVE_ACTION_FPS),MIN_FLIGHT_DURATION,MAX_FLIGHT_DURATION);}function targetSceneDistance(width,zoom){return width*(TARGET_X_RATIO-RANGER_X_RATIO)*TARGET_DISTANCE_MULTIPLIER*zoom;}',
+                  'function movementDuration(distance,moveSpeed){const speed=positiveNumber(moveSpeed,0);if(!speed)return 0;return Math.max(0,finiteNumber(distance,0))/(speed*NATIVE_ACTION_FPS);}function targetSceneDistance(width,zoom,attackRange){const normalizedAttackRange=positiveNumber(attackRange,DEFAULT_ATTACK_RANGE);return width*TARGET_DISTANCE_WIDTH_RATIO*zoom*(normalizedAttackRange/DEFAULT_ATTACK_RANGE);}',
+              ),
+              (
+                  'function referenceLayout(){const width=640;const height=360;const zoom=1;const baseSceneScale=Math.min(width/1400,height/750)*VIEWER_RESOURCE_SCALE*NORMAL_STAGE_INITIAL_SCALE;const sceneScale=baseSceneScale*zoom;const actorX=width*RANGER_X_RATIO;const actorY=height*GROUND_Y_RATIO;return{actorX,actorY,targetX:actorX+targetSceneDistance(width,zoom),targetBaseY:actorY,bodyOriginX:actorX+BODY_OFFSET_X*sceneScale,bodyOriginY:actorY+BODY_OFFSET_Y*sceneScale,sceneScale,facing:1,};}',
+                  'function referenceLayout(attackRange){const width=640;const height=360;const zoom=1;const baseSceneScale=Math.min(width/1400,height/750)*VIEWER_RESOURCE_SCALE*NORMAL_STAGE_INITIAL_SCALE;const sceneScale=baseSceneScale*zoom;const actorX=width*RANGER_X_RATIO;const actorY=height*GROUND_Y_RATIO;return{actorX,actorY,targetX:actorX+targetSceneDistance(width,zoom,attackRange),targetBaseY:actorY,bodyOriginX:actorX+BODY_OFFSET_X*sceneScale,bodyOriginY:actorY+BODY_OFFSET_Y*sceneScale,sceneScale,facing:1,};}',
+              ),
+              (
+                  'function resolveOutboundEnd(section,projectile,bodyPart,layout,sceneScale){const targetHeight=selectedTargetProfile(section,bodyPart).contentHeight;const targetHitHeight=targetHeight*finiteNumber(projectile.hitPointRate,0);return{x:layout.targetX+layout.facing*projectile.endOffset.x*sceneScale,y:layout.targetBaseY-(targetHitHeight+projectile.endOffset.y)*sceneScale,};}function resolveProjectileGeometry(section,projectile,bodyPart){const layout=referenceLayout();const sceneScale=layout.sceneScale;const start=resolveStartScreen(projectile,layout,sceneScale);const end=resolveOutboundEnd(section,projectile,bodyPart,layout,sceneScale);const nativeDistance=Math.hypot(end.x-start.x,end.y-start.y)/Math.max(0.0001,sceneScale);const flightDuration=movementDuration(nativeDistance,projectile.moveSpeed);const returnEnd=resolveReturnEnd(projectile,layout,sceneScale);const returnNativeDistance=Math.hypot(returnEnd.x-end.x,returnEnd.y-end.y)/Math.max(0.0001,sceneScale);return{flightDuration,returnDuration:movementDuration(returnNativeDistance,projectile.moveSpeed),};}',
+                  'function resolveOutboundBaseEnd(projectile,layout,sceneScale){return{x:layout.targetX+layout.facing*projectile.endOffset.x*sceneScale,y:layout.targetBaseY-projectile.endOffset.y*sceneScale,};}function resolveOutboundEnd(section,projectile,bodyPart,layout,sceneScale){const baseEnd=resolveOutboundBaseEnd(projectile,layout,sceneScale);const targetHeight=selectedTargetProfile(section,bodyPart).contentHeight;const targetHitHeight=targetHeight*finiteNumber(projectile.hitPointRate,0);return{x:baseEnd.x,y:baseEnd.y-targetHitHeight*sceneScale,};}function resolveProjectileGeometry(section,projectile,bodyPart){const layout=referenceLayout(projectile.attackRange);const sceneScale=layout.sceneScale;const start=resolveStartScreen(projectile,layout,sceneScale);const baseEnd=resolveOutboundBaseEnd(projectile,layout,sceneScale);const end=resolveOutboundEnd(section,projectile,bodyPart,layout,sceneScale);const nativeDistance=Math.hypot(baseEnd.x-start.x,baseEnd.y-start.y)/Math.max(0.0001,sceneScale);const flightDuration=movementDuration(nativeDistance,projectile.moveSpeed);const returnEnd=resolveReturnEnd(projectile,layout,sceneScale);const returnNativeDistance=Math.hypot(returnEnd.x-end.x,returnEnd.y-end.y)/Math.max(0.0001,sceneScale);return{flightDuration,returnDuration:movementDuration(returnNativeDistance,projectile.moveSpeed),};}',
+              ),
+              (
+                  'const projectile={partName:bulletPart===meta?.parts?.[requestedPartName]?requestedPartName:clip.bullet,motionType,renderMode,',
+                  'const projectile={partName:bulletPart===meta?.parts?.[requestedPartName]?requestedPartName:clip.bullet,config:projectileConfig,attackRange:positiveNumber(projectileConfig?.attackRange,DEFAULT_ATTACK_RANGE),motionType,renderMode,',
+              ),
+          ]
+          for old, new in replacements:
+              count = s.count(old)
+              if count != 1:
+                  raise SystemExit(f"hit-effect replacement count={count}: {old[:80]!r}")
+              s = s.replace(old, new, 1)
+          hit_path.write_text(s)
+          PY
+
+      - name: Validate patched JavaScript
+        run: |
+          node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-hit-effect.js
+          test "$(git hash-object assets/js/ranger-animation-viewer.js)" = "4c82ca36afae64804875c403d873132230235c2f"
+          test "$(git hash-object assets/js/ranger-animation-hit-effect.js)" = "5ba3cb829f4e236b2bc4b9588ec23ce86730c7dd"
+          grep -q 'geometry.nativeDistance \* sceneScale \* 0.4' assets/js/ranger-animation-viewer.js
+          grep -q 'resolveOutboundBaseEnd' assets/js/ranger-animation-hit-effect.js
+
+      - name: Commit source changes and remove one-time workflow
+        run: |
+          rm .github/workflows/apply-native-curve-projectile-fix.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m 'fix: match native curve projectile geometry'
+          git push origin HEAD:fix/native-curve-projectile-geometry
