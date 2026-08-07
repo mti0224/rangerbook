@@ -13,6 +13,7 @@ on:
       - "assets/js/ranger-animation-projectile-shadow.js"
       - "assets/js/ranger-animation-projectile-double-shadow.js"
       - "assets/js/ranger-animation-projectile-authority.js"
+      - "assets/js/ranger-animation-projectile-double-authority.js"
       - "assets/js/ranger-animation-debug-overlay.js"
       - "assets/js/ranger-animation-target.js"
       - "assets/js/ranger-animation-hit-effect.js"
@@ -41,6 +42,7 @@ jobs:
           node --check assets/js/ranger-animation-projectile-shadow.js
           node --check assets/js/ranger-animation-projectile-double-shadow.js
           node --check assets/js/ranger-animation-projectile-authority.js
+          node --check assets/js/ranger-animation-projectile-double-authority.js
           node --check assets/js/ranger-animation-debug-overlay.js
           node --check assets/js/ranger-animation-target.js
           node --check assets/js/ranger-animation-hit-effect.js
@@ -78,6 +80,7 @@ jobs:
           grep -q 'assets/js/ranger-animation-projectile-shadow.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-double-shadow.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-authority.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-projectile-double-authority.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-debug-overlay.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
@@ -90,6 +93,7 @@ jobs:
           grep -q 'assets/js/ranger-animation-projectile-shadow.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-double-shadow.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-authority.js' ranger/ranking/index.html
+          grep -q 'assets/js/ranger-animation-projectile-double-authority.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-debug-overlay.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
