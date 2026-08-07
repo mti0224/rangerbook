@@ -224,7 +224,10 @@
       };
     }
 
-    const legacyImpactTime = Number(input?.legacyImpactTime);
+    const rawLegacyImpactTime = input?.legacyImpactTime;
+    const legacyImpactTime = rawLegacyImpactTime === null || rawLegacyImpactTime === undefined
+      ? NaN
+      : Number(rawLegacyImpactTime);
     const spawnTime = Number.isFinite(legacyImpactTime)
       ? Math.max(0, legacyImpactTime - derived.geometry.flightDuration)
       : 0;
@@ -337,7 +340,7 @@
         { detail: report },
       ));
       if (report.supported && !report.withinTolerance) {
-        console.warn("Projectile engine shadow mismatch", report);
+        rootObject.console?.warn?.("Projectile engine shadow mismatch", report);
       }
     }
 
