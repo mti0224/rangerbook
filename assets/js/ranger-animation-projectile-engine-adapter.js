@@ -17,6 +17,10 @@
     return { x: finiteNumber(x, 0), y: finiteNumber(y, 0) };
   }
 
+  function clamp01(value) {
+    return Math.min(1, Math.max(0, finiteNumber(value, 0)));
+  }
+
   function attackTypeForProjectile(projectile) {
     const raw = String(
       projectile?.config?.attackType ||
@@ -183,10 +187,34 @@
   }
 
   function legacyLinearPosition(geometry, progress) {
-    const t = Math.min(1, Math.max(0, finiteNumber(progress, 0)));
+    const t = clamp01(progress);
     return {
       x: finiteNumber(geometry?.startX) + (finiteNumber(geometry?.endX) - finiteNumber(geometry?.startX)) * t,
       y: finiteNumber(geometry?.startY) + (finiteNumber(geometry?.endY) - finiteNumber(geometry?.startY)) * t,
+    };
+  }
+
+  function legacyCubicBezierPoint(point0, point1, point2, point3, progress) {
+    const t = clamp01(progress);
+    const u = 1 - t;
+    return {
+      x: u * u * u * point0.x + 3 * u * u * t * point1.x + 3 * u * t * t * point2.x + t * t * t * point3.x,
+      y: u * u * u * point0.y + 3 * u * u * t * point1.y + 3 * u * t * t * point2.y + t * t * t * point3.y,
+    };
+  }
+
+  function legacyCurvePosition(projectile, geometry, sceneScale, progress) {
+    const start = point(geometry?.startX, geometry?.startY);
+    const end = point(geometry?.endX, geometry?.endY);
+    const curve = nativeCurve(projectile, geometry, sceneScale);
+    return legacyCubicBezierPoint(start, curve.control1, curve.control2, end, progress);
+  }
+
+  function legacyReturnPosition(geometry, progress) {
+    const t = clamp01(progress);
+    return {
+      x: finiteNumber(geometry?.endX) + (finiteNumber(geometry?.returnEndX) - finiteNumber(geometry?.endX)) * t,
+      y: finiteNumber(geometry?.endY) + (finiteNumber(geometry?.returnEndY) - finiteNumber(geometry?.endY)) * t,
     };
   }
 
@@ -198,6 +226,7 @@
         reason: shadow.reason,
         maxPositionDelta: null,
         durationDelta: null,
+        returnDurationDelta: null,
       };
     }
 
@@ -206,13 +235,27 @@
     const samples = Math.max(2, Math.trunc(finiteNumber(options.samples, 9)));
     let maxPositionDelta = 0;
 
-    if (family === "LINEAR") {
+    if (["LINEAR", "CURVE", "RETURN"].includes(family)) {
       for (let index = 0; index < samples; index += 1) {
         const progress = index / (samples - 1);
         const time = simulation.spawnTime + simulation.outboundDuration * progress;
+        const legacyPosition = family === "CURVE"
+          ? legacyCurvePosition(projectile, geometry, options.sceneScale, progress)
+          : legacyLinearPosition(geometry, progress);
         maxPositionDelta = Math.max(
           maxPositionDelta,
-          distance(simulation.positionAt(time), legacyLinearPosition(geometry, progress)),
+          distance(simulation.positionAt(time), legacyPosition),
+        );
+      }
+    }
+
+    if (family === "RETURN") {
+      for (let index = 0; index < samples; index += 1) {
+        const progress = index / (samples - 1);
+        const time = simulation.impactTime + simulation.returnDuration * progress;
+        maxPositionDelta = Math.max(
+          maxPositionDelta,
+          distance(simulation.positionAt(time), legacyReturnPosition(geometry, progress)),
         );
       }
     }
@@ -226,6 +269,9 @@
       durationDelta: Math.abs(
         finiteNumber(simulation.outboundDuration) - finiteNumber(geometry?.flightDuration)
       ),
+      returnDurationDelta: family === "RETURN"
+        ? Math.abs(finiteNumber(simulation.returnDuration) - finiteNumber(geometry?.returnDuration))
+        : 0,
       impactTime: simulation.impactTime,
       cleanupTime: simulation.cleanupTime,
       input: shadow.input,
@@ -239,6 +285,9 @@
     nativeCurve,
     createSimulationInput,
     buildShadowSimulation,
+    legacyLinearPosition,
+    legacyCurvePosition,
+    legacyReturnPosition,
     compareMovingSimulation,
   });
 });
