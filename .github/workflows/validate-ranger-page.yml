@@ -9,10 +9,11 @@ on:
       - "assets/js/ranger-animation-viewer.js"
       - "assets/js/ranger-animation-projectile-data.js"
       - "assets/js/ranger-animation-projectile-engine.js"
+      - "assets/js/ranger-animation-projectile-engine-adapter.js"
       - "assets/js/ranger-animation-target.js"
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
-      - "tests/ranger-animation-projectile-engine.test.js"
+      - "tests/ranger-animation-projectile-engine*.test.js"
       - "ranger/ranger/index.html"
       - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
@@ -32,11 +33,12 @@ jobs:
           node --check assets/js/ranger-animation-viewer.js
           node --check assets/js/ranger-animation-projectile-data.js
           node --check assets/js/ranger-animation-projectile-engine.js
+          node --check assets/js/ranger-animation-projectile-engine-adapter.js
           node --check assets/js/ranger-animation-target.js
           node --check assets/js/ranger-animation-hit-effect.js
       - name: Validate projectile engine regressions
         run: |
-          node --test tests/ranger-animation-projectile-engine.test.js
+          node --test tests/ranger-animation-projectile-engine*.test.js
       - name: Validate hit effect assets
         run: |
           python3 - <<'PY'
