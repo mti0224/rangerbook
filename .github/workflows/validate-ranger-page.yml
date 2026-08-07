@@ -8,9 +8,11 @@ on:
       - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
       - "assets/js/ranger-animation-projectile-data.js"
+      - "assets/js/ranger-animation-projectile-engine.js"
       - "assets/js/ranger-animation-target.js"
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
+      - "tests/ranger-animation-projectile-engine.test.js"
       - "ranger/ranger/index.html"
       - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
@@ -29,8 +31,12 @@ jobs:
           node --check assets/js/ranger.js
           node --check assets/js/ranger-animation-viewer.js
           node --check assets/js/ranger-animation-projectile-data.js
+          node --check assets/js/ranger-animation-projectile-engine.js
           node --check assets/js/ranger-animation-target.js
           node --check assets/js/ranger-animation-hit-effect.js
+      - name: Validate projectile engine regressions
+        run: |
+          node --test tests/ranger-animation-projectile-engine.test.js
       - name: Validate hit effect assets
         run: |
           python3 - <<'PY'
@@ -57,12 +63,14 @@ jobs:
         run: |
           grep -q 'assets/js/site.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-projectile-engine.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranger/index.html
           ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
       - name: Validate Ranking script references
         run: |
+          grep -q 'assets/js/ranger-animation-projectile-engine.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-viewer.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-target.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-hit-effect.js' ranger/ranking/index.html
