@@ -45,17 +45,20 @@ test("localStorage can opt into authority without changing default", () => {
   assert.equal(authority.featureFlagEnabled(fakeRoot("", "1")), true);
 });
 
-test("authority requires a supported shadow report within tolerance", () => {
+test("authority requires a supported native report within tolerance", () => {
   assert.equal(authority.shouldTakeAuthority({
     supported: true,
     withinTolerance: true,
     family: "LINEAR",
+    geometryModel: "native-v2",
+    viewerWithinTolerance: false,
   }, true), true);
 
   assert.equal(authority.shouldTakeAuthority({
     supported: true,
     withinTolerance: false,
     family: "LINEAR",
+    geometryModel: "native-v2",
   }, true), false);
 
   assert.equal(authority.shouldTakeAuthority({
@@ -69,6 +72,16 @@ test("authority requires a supported shadow report within tolerance", () => {
     withinTolerance: true,
     family: "CURVE",
   }, false), false);
+});
+
+test("intentional viewer/native migration does not block authority", () => {
+  assert.equal(authority.shouldTakeAuthority({
+    supported: true,
+    withinTolerance: true,
+    viewerWithinTolerance: false,
+    family: "RETURN",
+    geometryModel: "native-v2",
+  }, true), true);
 });
 
 test("spawn time follows virtual clip segment boundary", () => {
