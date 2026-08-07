@@ -91,7 +91,7 @@ test("shadow report matches LINEAR position and duration", () => {
   assert.equal(report.withinTolerance, true);
 });
 
-test("shadow report matches CURVE geometry", () => {
+test("shadow report matches CURVE geometry without inventing impact time", () => {
   const report = shadow.buildShadowReport({
     unitId: "u-curve",
     clip: "skill1",
@@ -105,6 +105,8 @@ test("shadow report matches CURVE geometry", () => {
   assert.equal(report.supported, true);
   assert.equal(report.family, "CURVE");
   assert.ok(report.maxPositionDelta < 1e-9);
+  assert.equal(report.legacyImpactTime, null);
+  assert.equal(report.impactDelta, null);
   assert.equal(report.withinTolerance, true);
 });
 
