@@ -12,7 +12,6 @@
   const NORMAL_STAGE_INITIAL_SCALE = 0.85;
   const VIEWER_RESOURCE_SCALE = 2.28;
   const MIN_FLIGHT_DURATION = 1 / NATIVE_ACTION_FPS;
-  const MAX_FLIGHT_DURATION = 8;
 
   const RANGER_X_RATIO = 0.50;
   const TARGET_DISTANCE_WIDTH_RATIO = 0.90;
@@ -564,13 +563,16 @@
 
   function effectiveHitPointRate(meta, clip, motionType) {
     const raw = finiteNumber(meta?.projectileData?.hitTiming?.[clip.hitRateKey], NaN);
-    if (!Number.isFinite(raw)) return defaultHitPointRate(motionType);
+    const fallback = defaultHitPointRate(motionType);
+    if (!Number.isFinite(raw)) return fallback;
 
-    // UnitData contains both ratio-form values (0, 0.3, 0.5, 1) and
-    // percentage-form values (20, 30, 50, 100). They describe the target's
-    // vertical hit point, measured upward from the target base.
-    const ratio = raw > 1 ? raw / 100 : raw;
-    return clamp(ratio, 0, 1);
+    // libgame.so treats values above 10 as an unset/sentinel value for native
+    // moving projectiles instead of percentage-form data. Straight/RETURN
+    // projectiles fall back to 0.25; CURVE falls back to 0.
+    if (raw > 10 && ["LINEAR", "RETURN", "CURVE"].includes(motionType)) {
+      return fallback;
+    }
+    return raw;
   }
 
   function nativeStartPoint(
@@ -737,7 +739,7 @@
   function movementDuration(distance, moveSpeed) {
     const speed = positiveNumber(moveSpeed, 0);
     if (!speed) return 0;
-    return clamp(distance / (speed * NATIVE_ACTION_FPS), MIN_FLIGHT_DURATION, MAX_FLIGHT_DURATION);
+    return Math.max(0, finiteNumber(distance, 0)) / (speed * NATIVE_ACTION_FPS);
   }
 
   function syntheticTargetContentHeight(bodyPart) {
@@ -802,14 +804,20 @@
     };
   }
 
+  function resolveOutboundBaseEnd(projectile, layout, sceneScale) {
+    return {
+      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
+      y: layout.targetBaseY - projectile.endOffset.y * sceneScale,
+    };
+  }
+
   function resolveOutboundEnd(projectile, bodyPart, layout, sceneScale) {
+    const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);
     const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
     const targetHitHeight = targetHeight * finiteNumber(projectile.hitPointRate, 0);
     return {
-      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
-      // The native endpoint is based on the target hit point. endY is an
-      // additional positive-up offset, not an offset from the launch line.
-      y: layout.targetBaseY - (targetHitHeight + projectile.endOffset.y) * sceneScale,
+      x: baseEnd.x,
+      y: baseEnd.y - targetHitHeight * sceneScale,
     };
   }
 
@@ -817,8 +825,12 @@
     const layout = referenceLayout(projectile.attackRange);
     const sceneScale = layout.sceneScale;
     const start = resolveStartScreen(projectile, layout, sceneScale);
+    const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);
     const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
-    const nativeDistance = Math.hypot(end.x - start.x, end.y - start.y) / Math.max(0.0001, sceneScale);
+    // Native duration is based on the displacement before hitPointRate is
+    // applied to the target height. libgame.so then reuses that duration for
+    // the final endpoint and, for CURVE, for CCBezierBy + CCRotateTo.
+    const nativeDistance = Math.hypot(baseEnd.x - start.x, baseEnd.y - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
 
     if (projectile.renderMode === "RETURN" && flightDuration > 0) {
@@ -969,13 +981,11 @@
   }
 
   function renderPanel(unitId, meta) {
-    const attackRange = attackRangeForMeta(meta);
     return `
       <section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}">
         <h3>角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
-          <p class="ranger-animation-hint">一般關卡場景比例 0.85；角色與目標距離依攻擊範圍 ${attackRange} 按比例顯示（384 點在 100% 縮放時為 576 px），目標可移出畫面。</p>
           <div class="ranger-animation-controls simplified">
             <label><span>動畫</span><select class="ranger-animation-select">${clipOptions(meta)}</select></label>
             <label class="ranger-animation-zoom-label"><span>縮放 <strong class="ranger-animation-zoom-percent">100%</strong></span><input class="ranger-animation-zoom" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
@@ -1098,10 +1108,11 @@
 
   function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
     const start = resolveStartScreen(projectile, layout, sceneScale);
+    const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);
     const end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
     const endX = end.x;
     const endY = end.y;
-    const nativeDistance = Math.hypot(endX - start.x, endY - start.y) / Math.max(0.0001, sceneScale);
+    const nativeDistance = Math.hypot(baseEnd.x - start.x, baseEnd.y - start.y) / Math.max(0.0001, sceneScale);
     const flightDuration = movementDuration(nativeDistance, projectile.moveSpeed);
     const returnEnd = resolveReturnEnd(projectile, layout, sceneScale);
     const returnNativeDistance = Math.hypot(returnEnd.x - endX, returnEnd.y - endY) / Math.max(0.0001, sceneScale);
@@ -1109,6 +1120,8 @@
     return {
       startX: start.x,
       startY: start.y,
+      baseEndX: baseEnd.x,
+      baseEndY: baseEnd.y,
       endX,
       endY,
       nativeDistance,
@@ -1283,13 +1296,19 @@
         y: lerp(geometry.startY, geometry.endY, progress),
       };
       if (projectile.motionType === "CURVE") {
-        const pixelDistance = Math.hypot(geometry.endX - geometry.startX, geometry.endY - geometry.startY);
+        // Native CCBezierBy config (libgame.so):
+        //   end = E
+        //   control1 = (0, 0)
+        //   control2 = E/2 + (facing * 0.4 * D, +0.4 * D)
+        // where D is the base displacement length measured before target hit
+        // height is added. Canvas Y grows downward, hence the negative Y term.
+        const nativeHandle = geometry.nativeDistance * sceneScale * 0.4;
         position = cubicBezierPoint(
           { x: geometry.startX, y: geometry.startY },
           { x: geometry.startX, y: geometry.startY },
           {
-            x: (geometry.startX + geometry.endX) * 0.5 + geometry.facing * pixelDistance * 0.4,
-            y: (geometry.startY + geometry.endY) * 0.5 - pixelDistance * 0.4,
+            x: (geometry.startX + geometry.endX) * 0.5 + geometry.facing * nativeHandle,
+            y: (geometry.startY + geometry.endY) * 0.5 - nativeHandle,
           },
           { x: geometry.endX, y: geometry.endY },
           progress,
