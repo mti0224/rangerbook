@@ -1,13 +1,44 @@
 (function (root, factory) {
   const api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
-  if (root) root.RangerAnimationHitEffectTiming = api;
+  if (root) {
+    root.RangerAnimationHitEffectTiming = api;
+    if (root.document) api.install(root);
+  }
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
+
+  const STANDARD_FAMILIES = new Set(["LINEAR", "CURVE", "RETURN"]);
+  const DOUBLE_FAMILIES = new Set(["DOUBLE_LINEAR", "DOUBLE_CURVE"]);
 
   function finiteNumber(value, fallback = 0) {
     const number = Number(value);
     return Number.isFinite(number) ? number : fallback;
+  }
+
+  function authorityStatusAllowsEngine(simulationPlan, standardStatus, doubleStatus) {
+    if (simulationPlan?.source !== "engine" || simulationPlan?.authoritative !== true) return false;
+    const family = String(simulationPlan?.family || "").toUpperCase();
+    const status = DOUBLE_FAMILIES.has(family)
+      ? doubleStatus
+      : (STANDARD_FAMILIES.has(family) ? standardStatus : null);
+    if (!status || status.active !== true) return false;
+    const statusFamily = String(status.family || "").toUpperCase();
+    return statusFamily === family;
+  }
+
+  function effectiveSimulationPlan(simulationPlan, standardStatus, doubleStatus) {
+    if (simulationPlan?.source !== "engine" || simulationPlan?.authoritative !== true) {
+      return simulationPlan || null;
+    }
+    if (authorityStatusAllowsEngine(simulationPlan, standardStatus, doubleStatus)) {
+      return simulationPlan;
+    }
+    return {
+      ...simulationPlan,
+      authoritative: false,
+      authorityReason: "renderer-authority-inactive",
+    };
   }
 
   function engineImpactEvents(simulationPlan) {
@@ -78,9 +109,37 @@
     return active;
   }
 
+  function install(rootObject) {
+    if (rootObject.__RANGER_ANIMATION_HIT_EFFECT_AUTHORITY_GATE_INSTALLED__) return;
+    rootObject.__RANGER_ANIMATION_HIT_EFFECT_AUTHORITY_GATE_INSTALLED__ = true;
+    const bridge = rootObject.RangerAnimationSimulationBridge;
+    if (!bridge?.get || !bridge?.set || bridge.__liveAuthorityGate) return;
+
+    const rawGet = bridge.get.bind(bridge);
+    const rawSet = bridge.set.bind(bridge);
+    rootObject.RangerAnimationSimulationBridge = {
+      __liveAuthorityGate: true,
+      get(section) {
+        const plan = rawGet(section);
+        if (!section) return plan;
+        const standardStatus = rootObject.RangerAnimationProjectileAuthorityBridge?.get?.(section) || null;
+        const doubleStatus = rootObject.RangerAnimationProjectileDoubleAuthorityBridge?.get?.(section) || null;
+        return effectiveSimulationPlan(plan, standardStatus, doubleStatus);
+      },
+      set(section, value) {
+        return rawSet(section, value);
+      },
+    };
+  }
+
   return Object.freeze({
+    STANDARD_FAMILIES,
+    DOUBLE_FAMILIES,
+    authorityStatusAllowsEngine,
+    effectiveSimulationPlan,
     engineImpactEvents,
     resolveImpactSchedule,
     activeImpacts,
+    install,
   });
 });
