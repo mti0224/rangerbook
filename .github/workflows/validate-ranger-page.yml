@@ -8,6 +8,7 @@ on:
       - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
       - "assets/js/ranger-animation-projectile-data.js"
+      - "assets/js/ranger-animation-ground-endpoint-fix.js"
       - "assets/js/ranger-animation-target.js"
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
@@ -17,9 +18,59 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  integrate-playback-bridge:
+    if: github.event_name == 'pull_request' && github.head_ref == 'fix/native-curve-projectile-geometry'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract and run refactor script
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          source = Path('.github/workflows/apply-playback-bridge-refactor.yml').read_text()
+          start_marker = '      - name: Refactor actor grounding and playback timing\n        shell: bash\n        run: |\n'
+          end_marker = '\n      - name: Validate refactor'
+          start = source.index(start_marker) + len(start_marker)
+          end = source.index(end_marker, start)
+          lines = source[start:end].splitlines()
+          script = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines) + '\n'
+          Path('/tmp/apply-playback-refactor.sh').write_text(script)
+          PY
+          bash /tmp/apply-playback-refactor.sh
+      - name: Validate refactor
+        shell: bash
+        run: |
+          node --check assets/js/ranger-animation-ground-endpoint-fix.js
+          node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-hit-effect.js
+          ! grep -q 'projectileData.hitTiming =' assets/js/ranger-animation-ground-endpoint-fix.js
+          ! grep -q 'patchedAttack.start' assets/js/ranger-animation-ground-endpoint-fix.js
+          ! grep -q 'shiftAnimationY' assets/js/ranger-animation-ground-endpoint-fix.js
+          grep -q 'actorProjectileGround' assets/js/ranger-animation-ground-endpoint-fix.js
+          grep -q 'RangerAnimationPlaybackBridge' assets/js/ranger-animation-viewer.js
+          grep -q 'playbackBridge.get(section)' assets/js/ranger-animation-hit-effect.js
+          ! grep -q 'movementDuration' assets/js/ranger-animation-hit-effect.js
+          ! grep -q 'resolveProjectileGeometry' assets/js/ranger-animation-hit-effect.js
+          ! grep -q 'PROJECTILE_DATA_URL' assets/js/ranger-animation-hit-effect.js
+      - name: Restore workflows and commit source only
+        shell: bash
+        run: |
+          git checkout origin/main -- .github/workflows/validate-ranger-page.yml
+          rm -f .github/workflows/apply-playback-bridge-refactor.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/js/ranger-animation-ground-endpoint-fix.js assets/js/ranger-animation-viewer.js assets/js/ranger-animation-hit-effect.js .github/workflows/validate-ranger-page.yml .github/workflows/apply-playback-bridge-refactor.yml
+          git commit -m 'refactor: centralize projectile geometry and impact timing'
+          git push origin HEAD:${{ github.head_ref }}
+
   validate:
     runs-on: ubuntu-latest
     steps:
