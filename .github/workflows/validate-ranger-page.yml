@@ -7,6 +7,7 @@ on:
     paths:
       - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
+      - "assets/js/ranger-animation-horizontal-projectile-rule.js"
       - "assets/js/ranger-animation-projectile-data.js"
       - "assets/js/ranger-animation-projectile-engine.js"
       - "assets/js/ranger-animation-projectile-engine-adapter.js"
@@ -21,6 +22,7 @@ on:
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
       - "tests/ranger-animation-projectile-*.test.js"
+      - "tests/ranger-animation-horizontal-projectile-rule.test.js"
       - "tests/ranger-animation-simulation-bridge.test.js"
       - "tests/ranger-animation-hit-effect-timing.test.js"
       - "ranger/ranger/index.html"
@@ -40,6 +42,7 @@ jobs:
         run: |
           node --check assets/js/ranger.js
           node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-horizontal-projectile-rule.js
           node --check assets/js/ranger-animation-projectile-data.js
           node --check assets/js/ranger-animation-projectile-engine.js
           node --check assets/js/ranger-animation-projectile-engine-adapter.js
@@ -55,6 +58,7 @@ jobs:
       - name: Validate projectile engine regressions
         run: |
           node --test tests/ranger-animation-projectile-*.test.js
+          node --test tests/ranger-animation-horizontal-projectile-rule.test.js
           node --test tests/ranger-animation-simulation-bridge.test.js tests/ranger-animation-hit-effect-timing.test.js
       - name: Validate hit effect assets
         run: |
@@ -81,6 +85,7 @@ jobs:
       - name: Validate Ranger script references
         run: |
           grep -q 'assets/js/site.js' ranger/ranger/index.html
+          grep -q 'assets/js/ranger-animation-horizontal-projectile-rule.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine-adapter.js' ranger/ranger/index.html
@@ -97,6 +102,7 @@ jobs:
           ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
       - name: Validate Ranking script references
         run: |
+          grep -q 'assets/js/ranger-animation-horizontal-projectile-rule.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine-adapter.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-shadow.js' ranger/ranking/index.html

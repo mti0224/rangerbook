@@ -4,22 +4,29 @@
   const projectileDataUrl = `${siteRoot}res/projectile_data.json`;
   const animationMetaPattern = /\/animation_meta\/([^/?#]+)\.json(?:[?#]|$)/i;
   const NATIVE_PROJECTILE_COORDINATE_SCALE = 0.5;
+  const horizontalRule = window.RangerAnimationHorizontalProjectileRule || null;
   let projectileDataPromise = null;
 
   const clipDefinitions = [
     {
       dataKey: "normal",
+      defaultPart: "bul",
+      hitRateKey: "normalHitPointRate",
       ready: ["attack_ready"],
       trigger: ["attack", "attack_a", "attack_b"],
       validateStart: true,
     },
     {
       dataKey: "skill1",
+      defaultPart: "bul2",
+      hitRateKey: "skill1HitPointRate",
       ready: ["s_attack_ready", "s_action_attack_1"],
       trigger: ["s_attack", "s_attack_a", "s_attack_b", "s_action_attack_2", "s_action_attack_3"],
     },
     {
       dataKey: "skill2",
+      defaultPart: "bul3",
+      hitRateKey: "skill2HitPointRate",
       ready: ["s2_attack_ready"],
       trigger: ["s2_attack", "s2_attack_a", "s2_attack_b", "skill"],
     },
@@ -231,6 +238,49 @@
     };
   }
 
+  function annotateHorizontalZeroHitRate(meta, unitData) {
+    if (!horizontalRule?.buildHorizontalAnnotation) return false;
+    const coordinateScale = Number(meta?.projectileData?.coordinateScale) || NATIVE_PROJECTILE_COORDINATE_SCALE;
+    const hitTiming = meta?.projectileData?.hitTiming || unitData?.hitTiming || null;
+    let changed = false;
+
+    for (const definition of clipDefinitions) {
+      const attack = unitData?.[definition.dataKey];
+      if (!attack) continue;
+
+      const annotation = horizontalRule.buildHorizontalAnnotation({
+        attack,
+        hitTiming,
+        hitRateKey: definition.hitRateKey,
+        coordinateScale,
+      });
+      if (!annotation) continue;
+
+      const requestedPartName = String(attack.animationPart || "").trim() || definition.defaultPart;
+      const resolvedPartName = meta?.parts?.[requestedPartName]
+        ? requestedPartName
+        : (meta?.parts?.[definition.defaultPart] ? definition.defaultPart : "");
+      if (!resolvedPartName) continue;
+
+      if (!meta.actorProjectileGround || typeof meta.actorProjectileGround !== "object") {
+        meta.actorProjectileGround = { schemaVersion: 1, attacks: {} };
+      }
+      if (!meta.actorProjectileGround.attacks || typeof meta.actorProjectileGround.attacks !== "object") {
+        meta.actorProjectileGround.attacks = {};
+      }
+
+      // Preserve stronger authored/actor-ground evidence when it already exists.
+      if (meta.actorProjectileGround.attacks[definition.dataKey]) continue;
+
+      meta.actorProjectileGround.attacks[definition.dataKey] = {
+        partName: resolvedPartName,
+        ...annotation,
+      };
+      changed = true;
+    }
+    return changed;
+  }
+
   async function enrichMetadata(response, url) {
     if (!response.ok || !animationMetaPattern.test(String(url || "")) || /\/index\.json(?:[?#]|$)/i.test(String(url || ""))) {
       return response;
@@ -250,6 +300,7 @@
       clipDefinitions.forEach((definition, index) => {
         injectMarker(bodyPart, definition, unitData[definition.dataKey], 2147483000 + index, unitId);
       });
+      annotateHorizontalZeroHitRate(meta, unitData);
 
       const headers = new Headers(response.headers);
       headers.set("content-type", "application/json; charset=utf-8");
