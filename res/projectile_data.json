@@ -1,19 +1,19 @@
 {
   "schemaVersion": 3,
   "source": "data/raw/unit.json",
-  "unitCount": 3081,
+  "unitCount": 3117,
   "skippedWithoutUnitCode": 0,
   "validation": {
     "motionModelVersion": 1,
     "motionTypeCounts": {
-      "CURVE": 681,
-      "DIRECT": 3351,
-      "LINEAR": 1818,
-      "NONE": 3393
+      "CURVE": 690,
+      "DIRECT": 3400,
+      "LINEAR": 1836,
+      "NONE": 3425
     },
     "enabledMotionCounts": {
-      "CURVE": 664,
-      "LINEAR": 1235
+      "CURVE": 673,
+      "LINEAR": 1250
     },
     "attackTypeCounts": {
       "normal": {
@@ -21,33 +21,33 @@
         "ENERGYC": 8,
         "KICK": 5,
         "NONE": 38,
-        "PUNCH": 1676,
+        "PUNCH": 1698,
         "STAB": 2,
         "SWING": 17,
-        "WEAPON": 857,
-        "WEAPONC": 477
+        "WEAPON": 866,
+        "WEAPONC": 482
       },
       "skill1": {
         "(null)": 469,
         "ACTION": 23,
         "KICK": 3,
         "LASER": 3,
-        "NONE": 913,
-        "PUNCH": 1053,
-        "WEAPON": 501,
-        "WEAPONC": 116
+        "NONE": 921,
+        "PUNCH": 1074,
+        "WEAPON": 504,
+        "WEAPONC": 120
       },
       "skill2": {
-        "(null)": 1236,
+        "(null)": 1258,
         "KICK": 6,
-        "NONE": 737,
-        "PUNCH": 563,
-        "WEAPON": 459,
+        "NONE": 739,
+        "PUNCH": 569,
+        "WEAPON": 465,
         "WEAPONC": 80
       }
     },
     "issues": {
-      "projectileMotionWithoutPositiveSpeed": 600,
+      "projectileMotionWithoutPositiveSpeed": 603,
       "returnWithoutSecondStart": 0,
       "beamWithoutLengthOrDuration": 0,
       "unknownAttackTypes": {}
@@ -256550,6 +256550,1094 @@
         }
       }
     },
+    "u1626e-cony": {
+      "unitCode": "u1626e-cony",
+      "guardianResourceCode": "",
+      "unitName": "CONY",
+      "grade": 8,
+      "resourceCode": "u1626e-cony",
+      "useEnemySideResource": 1,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.38,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.38,
+          "y": 0.69
+        }
+      },
+      "movement": {
+        "movingSpeed": 99
+      },
+      "hitTiming": {
+        "attackDelay": 85,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 270,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1626_cony",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_u321econy"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1627cony",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
+    "u1626h-cony": {
+      "unitCode": "u1626h-cony",
+      "guardianResourceCode": "",
+      "unitName": "CONY",
+      "grade": 8,
+      "resourceCode": "u1626h-cony",
+      "useEnemySideResource": 1,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.38,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.38,
+          "y": 0.69
+        }
+      },
+      "movement": {
+        "movingSpeed": 99
+      },
+      "hitTiming": {
+        "attackDelay": 85,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 270,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1626_cony",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 240,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 10,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_u321econy"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1627cony",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
+    "u1626u-cony": {
+      "unitCode": "u1626u-cony",
+      "guardianResourceCode": "",
+      "unitName": "CONY",
+      "grade": 8,
+      "resourceCode": "u1626u-cony",
+      "useEnemySideResource": 1,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.38,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.38,
+          "y": 0.69
+        }
+      },
+      "movement": {
+        "movingSpeed": 99
+      },
+      "hitTiming": {
+        "attackDelay": 85,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 270,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1626_cony",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "usk1626_cony",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 240,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 10,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_u321econy"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1627cony",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
+    "u1627e-cony": {
+      "unitCode": "u1627e-cony",
+      "guardianResourceCode": "",
+      "unitName": "CONY",
+      "grade": 9,
+      "resourceCode": "u1627e-cony",
+      "useEnemySideResource": 1,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.38,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.38,
+          "y": 0.69
+        }
+      },
+      "movement": {
+        "movingSpeed": 99
+      },
+      "hitTiming": {
+        "attackDelay": 85,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 270,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1626_cony",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 240,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 10,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_u321econy"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1627cony",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1627cony",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
+    "u1628e-boss": {
+      "unitCode": "u1628e-boss",
+      "guardianResourceCode": "",
+      "unitName": "BOSS",
+      "grade": 8,
+      "resourceCode": "u1628e-boss",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.53,
+          "y": 0.08
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.64
+        }
+      },
+      "movement": {
+        "movingSpeed": 90
+      },
+      "hitTiming": {
+        "attackDelay": 75,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 50,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1628_boss",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "violet",
+        "skillEffectColor2": "blue"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_u1103etaiga"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1629boss",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        }
+      }
+    },
+    "u1628h-boss": {
+      "unitCode": "u1628h-boss",
+      "guardianResourceCode": "",
+      "unitName": "BOSS",
+      "grade": 8,
+      "resourceCode": "u1628h-boss",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.53,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.57
+        }
+      },
+      "movement": {
+        "movingSpeed": 90
+      },
+      "hitTiming": {
+        "attackDelay": 75,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 50,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1628_boss",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "violet",
+        "skillEffectColor2": "blue"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_u1103etaiga"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1629boss",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        }
+      }
+    },
+    "u1628u-boss": {
+      "unitCode": "u1628u-boss",
+      "guardianResourceCode": "",
+      "unitName": "BOSS",
+      "grade": 8,
+      "resourceCode": "u1628u-boss",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.53,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.56,
+          "y": 0.63
+        }
+      },
+      "movement": {
+        "movingSpeed": 90
+      },
+      "hitTiming": {
+        "attackDelay": 75,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 50,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1628_boss",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "usk1628_boss",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "violet",
+        "skillEffectColor2": "blue"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_u1103etaiga"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1629boss",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        }
+      }
+    },
+    "u1629e-boss": {
+      "unitCode": "u1629e-boss",
+      "guardianResourceCode": "",
+      "unitName": "BOSS",
+      "grade": 9,
+      "resourceCode": "u1629e-boss",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.52,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.54,
+          "y": 0.6
+        }
+      },
+      "movement": {
+        "movingSpeed": 90
+      },
+      "hitTiming": {
+        "attackDelay": 75,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 50,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1628_boss",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "violet",
+        "skillEffectColor2": "blue"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1629boss",
+          "attack": "",
+          "underAttack": "hit_u1103etaiga"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1629boss",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        }
+      }
+    },
     "u162e-styne": {
       "unitCode": "u162e-styne",
       "guardianResourceCode": "",
@@ -256683,6 +257771,414 @@
           "preparation": "",
           "attack": "",
           "underAttack": ""
+        }
+      }
+    },
+    "u1630e-sally": {
+      "unitCode": "u1630e-sally",
+      "guardianResourceCode": "",
+      "unitName": "SALLY",
+      "grade": 8,
+      "resourceCode": "u1630e-sally",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.48,
+          "y": 0.09
+        },
+        "faceCenter": {
+          "x": 0.51,
+          "y": 0.67
+        }
+      },
+      "movement": {
+        "movingSpeed": 80
+      },
+      "hitTiming": {
+        "attackDelay": 61,
+        "normalHitPointRate": 0.5,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 580,
+        "target": "UNIT",
+        "start": {
+          "x": 108,
+          "y": 75
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": -75,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "attackScope": 150,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1630_sally",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 30
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": false,
+          "rotation": "FIXED",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1630sally",
+          "attack": "",
+          "underAttack": "hit_weap_bomb_fire"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1630sally",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1630sally",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
+    "u1630h-sally": {
+      "unitCode": "u1630h-sally",
+      "guardianResourceCode": "",
+      "unitName": "SALLY",
+      "grade": 8,
+      "resourceCode": "u1630h-sally",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.48,
+          "y": 0.09
+        },
+        "faceCenter": {
+          "x": 0.51,
+          "y": 0.66
+        }
+      },
+      "movement": {
+        "movingSpeed": 80
+      },
+      "hitTiming": {
+        "attackDelay": 61,
+        "normalHitPointRate": 0.5,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 580,
+        "target": "UNIT",
+        "start": {
+          "x": 108,
+          "y": 75
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": -75,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "attackScope": 150,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1630_sally",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 30
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": false,
+          "rotation": "FIXED",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1630sally",
+          "attack": "",
+          "underAttack": "hit_weap_bomb_fire"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1630sally",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1630sally",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
+    "u1631e-sally": {
+      "unitCode": "u1631e-sally",
+      "guardianResourceCode": "",
+      "unitName": "SALLY",
+      "grade": 9,
+      "resourceCode": "u1631e-sally",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.48,
+          "y": 0.09
+        },
+        "faceCenter": {
+          "x": 0.51,
+          "y": 0.64
+        }
+      },
+      "movement": {
+        "movingSpeed": 80
+      },
+      "hitTiming": {
+        "attackDelay": 61,
+        "normalHitPointRate": 0.5,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 580,
+        "target": "UNIT",
+        "start": {
+          "x": 108,
+          "y": 75
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": -75,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "attackScope": 150,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk1630_sally",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 30
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": false,
+          "rotation": "FIXED",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "blue",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u1630sally",
+          "attack": "",
+          "underAttack": "hit_weap_bomb_fire"
+        },
+        "skill1": {
+          "preparation": "skattrd_u1630sally",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u1630sally",
+          "attack": "",
+          "underAttack": "hit_body_punch"
         }
       }
     },
@@ -358686,6 +360182,142 @@
         }
       }
     },
+    "u81031-bacon": {
+      "unitCode": "u81031-bacon",
+      "guardianResourceCode": "",
+      "unitName": "BACON",
+      "grade": 4,
+      "resourceCode": "u81031-bacon",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.57,
+          "y": 0.04
+        },
+        "faceCenter": {
+          "x": 0.42,
+          "y": 0.62
+        }
+      },
+      "movement": {
+        "movingSpeed": 100
+      },
+      "hitTiming": {
+        "attackDelay": 80,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 200,
+        "target": "UNIT",
+        "start": {
+          "x": 96,
+          "y": 15
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 15
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 48,
+        "attackScope": 300,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "sk81031-bacon",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 96,
+          "y": 15
+        },
+        "end": {
+          "x": 0,
+          "y": 15
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 48,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "usk81031-bacon",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_bacon"
+        },
+        "skill1": {
+          "preparation": "skattrd_u81031bacon",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u81031bacon",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        }
+      }
+    },
     "u82-moon": {
       "unitCode": "u82-moon",
       "guardianResourceCode": "",
@@ -417153,6 +418785,3270 @@
           "preparation": "attrd_u92brown",
           "attack": "att_u92brown",
           "underAttack": "hit_weap_bomb_ex"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92001-grey": {
+      "unitCode": "u92001-grey",
+      "guardianResourceCode": "",
+      "unitName": "GREY",
+      "grade": 8,
+      "resourceCode": "u92001-grey",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 105
+      },
+      "hitTiming": {
+        "attackDelay": 26,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 45,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1007",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92002-ro-515": {
+      "unitCode": "u92002-ro-515",
+      "guardianResourceCode": "",
+      "unitName": "RO-515",
+      "grade": 8,
+      "resourceCode": "u92002-ro-515",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 110
+      },
+      "hitTiming": {
+        "attackDelay": 18,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 50,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": null,
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_u91002ro",
+          "underAttack": "hit_weap_dir_sol_mt_can"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92003-bomby": {
+      "unitCode": "u92003-bomby",
+      "guardianResourceCode": "",
+      "unitName": "BOMBY",
+      "grade": 8,
+      "resourceCode": "u92003-bomby",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.45,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 78
+      },
+      "hitTiming": {
+        "attackDelay": 40,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 70,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 150,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1000",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91003bomby",
+          "attack": "",
+          "underAttack": "hit_weap_bomb_ex"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91003bomby",
+          "attack": "",
+          "underAttack": "hit_weap_bomb_ex"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92004-nikita": {
+      "unitCode": "u92004-nikita",
+      "guardianResourceCode": "",
+      "unitName": "NIKITA",
+      "grade": 8,
+      "resourceCode": "u92004-nikita",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 75
+      },
+      "hitTiming": {
+        "attackDelay": 25,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 80,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1010",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_weap_dir_sol_bone"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92005-nut": {
+      "unitCode": "u92005-nut",
+      "guardianResourceCode": "",
+      "unitName": "NUT",
+      "grade": 8,
+      "resourceCode": "u92005-nut",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 110
+      },
+      "hitTiming": {
+        "attackDelay": 35,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 150,
+        "target": "UNIT",
+        "start": {
+          "x": 60,
+          "y": 70
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 10,
+        "attackScope": 0,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1007",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91005nut",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91005nut",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92007-abby": {
+      "unitCode": "u92007-abby",
+      "guardianResourceCode": "",
+      "unitName": "ABBY",
+      "grade": 8,
+      "resourceCode": "u92007-abby",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 100
+      },
+      "hitTiming": {
+        "attackDelay": 27,
+        "normalHitPointRate": 0.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 0.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPONC",
+        "attackRange": 230,
+        "target": "UNIT",
+        "start": {
+          "x": 24,
+          "y": 80
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 15,
+        "attackScope": 150,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1014",
+        "attackType": "WEAPONC",
+        "target": "UNIT",
+        "start": {
+          "x": 24,
+          "y": 80
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 15,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_u91007abby",
+          "underAttack": "hit_weap_dir_sol_rock_st"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91007abby",
+          "attack": "",
+          "underAttack": "hit_weap_dir_sol_rock_st"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92008-colo": {
+      "unitCode": "u92008-colo",
+      "guardianResourceCode": "",
+      "unitName": "COLO",
+      "grade": 8,
+      "resourceCode": "u92008-colo",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.45,
+          "y": 0.55
+        }
+      },
+      "movement": {
+        "movingSpeed": 115
+      },
+      "hitTiming": {
+        "attackDelay": 29,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 125,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1001",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_swish_a",
+          "underAttack": "hit_weap_dir_sol_mt_sw"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92010-cater": {
+      "unitCode": "u92010-cater",
+      "guardianResourceCode": "",
+      "unitName": "CATER",
+      "grade": 8,
+      "resourceCode": "u92010-cater",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.8,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 80
+      },
+      "hitTiming": {
+        "attackDelay": 30,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPONC",
+        "attackRange": 230,
+        "target": "UNIT",
+        "start": {
+          "x": 64,
+          "y": 194
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 15,
+        "attackScope": 0,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1002",
+        "attackType": "WEAPONC",
+        "target": "UNIT",
+        "start": {
+          "x": 46,
+          "y": 184
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 15,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_firework",
+          "attack": "att_who_a",
+          "underAttack": "hit_weap_bomb_ex"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92011-della": {
+      "unitCode": "u92011-della",
+      "guardianResourceCode": "",
+      "unitName": "DELLA",
+      "grade": 8,
+      "resourceCode": "u92011-della",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.8,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 55
+      },
+      "hitTiming": {
+        "attackDelay": 35,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 275,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1000",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_dist_shot_laser_circle_a",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92012-hajard": {
+      "unitCode": "u92012-hajard",
+      "guardianResourceCode": "",
+      "unitName": "HAJARD",
+      "grade": 8,
+      "resourceCode": "u92012-hajard",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.8,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 85
+      },
+      "hitTiming": {
+        "attackDelay": 36,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 0.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPONC",
+        "attackRange": 330,
+        "target": "UNIT",
+        "start": {
+          "x": 56,
+          "y": 128
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": -90,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "attackScope": 0,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1004",
+        "attackType": "WEAPONC",
+        "target": "UNIT",
+        "start": {
+          "x": 66,
+          "y": 134
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": -90,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_weap_dir_sol_mt_sp"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92013-isabel": {
+      "unitCode": "u92013-isabel",
+      "guardianResourceCode": "",
+      "unitName": "ISABEL",
+      "grade": 8,
+      "resourceCode": "u92013-isabel",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.8,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 100
+      },
+      "hitTiming": {
+        "attackDelay": 37,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 70,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 150,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1006",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_weap_dir_liq_blo"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92014-guss": {
+      "unitCode": "u92014-guss",
+      "guardianResourceCode": "",
+      "unitName": "GUSS",
+      "grade": 8,
+      "resourceCode": "u92014-guss",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 115
+      },
+      "hitTiming": {
+        "attackDelay": 40,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 170,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1000",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "attrd_light",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92015-caco": {
+      "unitCode": "u92015-caco",
+      "guardianResourceCode": "",
+      "unitName": "CACO",
+      "grade": 8,
+      "resourceCode": "u92015-caco",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.8,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 90
+      },
+      "hitTiming": {
+        "attackDelay": 27,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 365,
+        "target": "UNIT",
+        "start": {
+          "x": 152,
+          "y": 80
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 27,
+        "attackScope": 0,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1007",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 27,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_swish_a",
+          "underAttack": "hit_weap_dir_sol_mt_sw"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92016-obed": {
+      "unitCode": "u92016-obed",
+      "guardianResourceCode": "",
+      "unitName": "OBED",
+      "grade": 8,
+      "resourceCode": "u92016-obed",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.7,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 83
+      },
+      "hitTiming": {
+        "attackDelay": 35,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 425,
+        "target": "UNIT",
+        "start": {
+          "x": 158,
+          "y": 108
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 10,
+        "attackScope": 150,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1002",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 10,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_weap_bomb_pop"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92018-aron": {
+      "unitCode": "u92018-aron",
+      "guardianResourceCode": "",
+      "unitName": "ARON",
+      "grade": 8,
+      "resourceCode": "u92018-aron",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.9,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 90
+      },
+      "hitTiming": {
+        "attackDelay": 40,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPONC",
+        "attackRange": 320,
+        "target": "UNIT",
+        "start": {
+          "x": 130,
+          "y": 128
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 60
+        },
+        "moveSpeed": 15,
+        "attackScope": 0,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1007",
+        "attackType": "WEAPONC",
+        "target": "UNIT",
+        "start": {
+          "x": 42,
+          "y": 126
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 60
+        },
+        "moveSpeed": 15,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91018aron",
+          "attack": "",
+          "underAttack": "hit_u91018aron"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91018aron",
+          "attack": "",
+          "underAttack": "skhit_u91018aron"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92020-rio": {
+      "unitCode": "u92020-rio",
+      "guardianResourceCode": "",
+      "unitName": "RIO",
+      "grade": 5,
+      "resourceCode": "u92020-rio",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.55,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.6
+        }
+      },
+      "movement": {
+        "movingSpeed": 73
+      },
+      "hitTiming": {
+        "attackDelay": 47,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPONC",
+        "attackRange": 315,
+        "target": "UNIT",
+        "start": {
+          "x": 152,
+          "y": 130
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": -7,
+          "end": 30
+        },
+        "moveSpeed": 20,
+        "attackScope": 0,
+        "motion": {
+          "type": "CURVE",
+          "enabled": true,
+          "rotation": "ANGLE_LERP",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1014",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 60,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_rio",
+          "underAttack": "hit_rio"
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92021-liam": {
+      "unitCode": "u92021-liam",
+      "guardianResourceCode": "",
+      "unitName": "LIAM",
+      "grade": 5,
+      "resourceCode": "u92021-liam",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.5,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.65,
+          "y": 0.65
+        }
+      },
+      "movement": {
+        "movingSpeed": 85
+      },
+      "hitTiming": {
+        "attackDelay": 37,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 120,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1020",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": null,
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91021liam",
+          "attack": "",
+          "underAttack": "hit_liam"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91021liam",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92022-thor": {
+      "unitCode": "u92022-thor",
+      "guardianResourceCode": "",
+      "unitName": "THOR",
+      "grade": 5,
+      "resourceCode": "u92022-thor",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.55,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.55,
+          "y": 0.65
+        }
+      },
+      "movement": {
+        "movingSpeed": 85
+      },
+      "hitTiming": {
+        "attackDelay": 37,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 130,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1001",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": null,
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91022thor",
+          "attack": "",
+          "underAttack": "hit_thor"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91022thor",
+          "attack": "",
+          "underAttack": "hit_thor"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92024-rudy": {
+      "unitCode": "u92024-rudy",
+      "guardianResourceCode": "",
+      "unitName": "RUDY",
+      "grade": 5,
+      "resourceCode": "u92024-rudy",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.6,
+        "shadowCenter": {
+          "x": 0.5,
+          "y": 0.05
+        },
+        "faceCenter": {
+          "x": 0.45,
+          "y": 0.6
+        }
+      },
+      "movement": {
+        "movingSpeed": 85
+      },
+      "hitTiming": {
+        "attackDelay": 46,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 180,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1002",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91024rudy",
+          "attack": "",
+          "underAttack": "hit_rudy"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91024rudy",
+          "attack": "",
+          "underAttack": "hit_rudy"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92025-jerome": {
+      "unitCode": "u92025-jerome",
+      "guardianResourceCode": "",
+      "unitName": "JEROME",
+      "grade": 8,
+      "resourceCode": "u92025-jerome",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.7,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 110
+      },
+      "hitTiming": {
+        "attackDelay": 55,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 140,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1010",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": null,
+        "skillEffectColor2": null
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91025jerome",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91025jerome",
+          "attack": "",
+          "underAttack": "hit_body_punch"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u91025jerome",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        }
+      }
+    },
+    "u92026-eric": {
+      "unitCode": "u92026-eric",
+      "guardianResourceCode": "",
+      "unitName": "ERIC",
+      "grade": 8,
+      "resourceCode": "u92026-eric",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0.4,
+          "y": 0.07
+        },
+        "faceCenter": {
+          "x": 0.4,
+          "y": 0.73
+        }
+      },
+      "movement": {
+        "movingSpeed": 110
+      },
+      "hitTiming": {
+        "attackDelay": 41,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 270,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 60,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1006",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "NONE",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "violet"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91026eric",
+          "attack": "",
+          "underAttack": "skhit_u1103etaiga"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91026eric",
+          "attack": "",
+          "underAttack": "skhit_u1105ezero"
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92027-ruru": {
+      "unitCode": "u92027-ruru",
+      "guardianResourceCode": "",
+      "unitName": "RURU",
+      "grade": 8,
+      "resourceCode": "u92027-ruru",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 1,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "movement": {
+        "movingSpeed": 93
+      },
+      "hitTiming": {
+        "attackDelay": 27,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 265,
+        "target": "UNIT",
+        "start": {
+          "x": 48,
+          "y": 74
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "attackScope": 150,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1004",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 48,
+          "y": 74
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill1": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        },
+        "skill2": {
+          "preparation": "",
+          "attack": "",
+          "underAttack": ""
+        }
+      }
+    },
+    "u92029-croc": {
+      "unitCode": "u92029-croc",
+      "guardianResourceCode": "",
+      "unitName": "CROC",
+      "grade": 5,
+      "resourceCode": "u92029-croc",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.65,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "movement": {
+        "movingSpeed": 66
+      },
+      "hitTiming": {
+        "attackDelay": 53,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "WEAPON",
+        "attackRange": 380,
+        "target": "UNIT",
+        "start": {
+          "x": 36,
+          "y": 200
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 30
+        },
+        "moveSpeed": 20,
+        "attackScope": 0,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1019",
+        "attackType": "WEAPON",
+        "target": "UNIT",
+        "start": {
+          "x": 100,
+          "y": 200
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 20,
+        "motion": {
+          "type": "LINEAR",
+          "enabled": true,
+          "rotation": "FIXED",
+          "loopNormal": true
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "attrd_u91029croc",
+          "attack": "",
+          "underAttack": "hit_croc"
+        },
+        "skill1": {
+          "preparation": "skattrd_u91029croc",
+          "attack": "",
+          "underAttack": "hit_croc"
+        },
+        "skill2": {
+          "preparation": "sk2attrd_u91029croc",
+          "attack": "",
+          "underAttack": "skhit_buff"
+        }
+      }
+    },
+    "u92030-baal": {
+      "unitCode": "u92030-baal",
+      "guardianResourceCode": "",
+      "unitName": "BAAL",
+      "grade": 5,
+      "resourceCode": "u92030-baal",
+      "useEnemySideResource": 0,
+      "render": {
+        "flightYn": 0,
+        "sizeRatio": 0.7,
+        "shadowCenter": {
+          "x": 0,
+          "y": 0
+        },
+        "faceCenter": {
+          "x": 0.4,
+          "y": 0.6
+        }
+      },
+      "movement": {
+        "movingSpeed": 111
+      },
+      "hitTiming": {
+        "attackDelay": 32,
+        "normalHitPointRate": 100.0,
+        "skill1HitPointRate": 100.0,
+        "skill2HitPointRate": 100.0
+      },
+      "bullet": {
+        "length": null,
+        "duration": null
+      },
+      "normal": {
+        "animationPart": "bul",
+        "attackType": "PUNCH",
+        "attackRange": 190,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "secondStart": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 1,
+        "attackScope": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill1": {
+        "animationPart": "bul2",
+        "skillCode": "csk1019",
+        "attackType": "PUNCH",
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "DIRECT",
+          "enabled": false,
+          "rotation": "BODY_ANIMATION",
+          "loopNormal": false
+        }
+      },
+      "skill2": {
+        "animationPart": "bul3",
+        "skillCode": "",
+        "attackType": null,
+        "target": "UNIT",
+        "start": {
+          "x": 0,
+          "y": 0
+        },
+        "end": {
+          "x": 0,
+          "y": 0
+        },
+        "angle": {
+          "start": 0,
+          "end": 0
+        },
+        "moveSpeed": 0,
+        "motion": {
+          "type": "NONE",
+          "enabled": false,
+          "rotation": "NONE",
+          "loopNormal": false
+        }
+      },
+      "effects": {
+        "baseAttackEffectCode": "",
+        "specialAttackEffectCode": "",
+        "skillEffectColor1": "black",
+        "skillEffectColor2": "black"
+      },
+      "sounds": {
+        "normal": {
+          "preparation": "",
+          "attack": "att_who_a",
+          "underAttack": "hit_baal"
         },
         "skill1": {
           "preparation": "",

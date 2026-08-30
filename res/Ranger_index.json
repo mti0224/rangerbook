@@ -11858,11 +11858,88 @@
         "element": "木"
     },
     {
+        "id": "u1626e-cony",
+        "name": "牡羊座兔兔",
+        "star": "8星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1626h-cony",
+        "name": "夕陽牡羊座兔兔",
+        "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1626u-cony",
+        "name": "黎明牡羊座兔兔",
+        "star": "終極進化8星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1627e-cony",
+        "name": "黃金牡羊座兔兔",
+        "star": "9星",
+        "type": "敏捷型",
+        "element": "木"
+    },
+    {
+        "id": "u1628e-boss",
+        "name": "雙子座部長",
+        "star": "8星",
+        "type": "力量型",
+        "element": "木"
+    },
+    {
+        "id": "u1628h-boss",
+        "name": "紅色雙子座部長",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "木"
+    },
+    {
+        "id": "u1628u-boss",
+        "name": "藍色雙子座部長",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "木"
+    },
+    {
+        "id": "u1629e-boss",
+        "name": "王冠雙子座部長",
+        "star": "9星",
+        "type": "力量型",
+        "element": "木"
+    },
+    {
         "id": "u162e-styne",
         "name": "世界冠軍史坦",
         "star": "6星",
         "type": "力量型",
         "element": "無"
+    },
+    {
+        "id": "u1630e-sally",
+        "name": "巨蟹座莎莉",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "光"
+    },
+    {
+        "id": "u1630h-sally",
+        "name": "暗黑巨蟹座莎莉",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "光"
+    },
+    {
+        "id": "u1631e-sally",
+        "name": "太陽巨蟹座莎莉",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "光"
     },
     {
         "id": "u163e-alex",
