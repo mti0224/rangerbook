@@ -27,6 +27,7 @@ jobs:
           import json, re
           from pathlib import Path
 
+          # Re-apply after the scheduled data refresh.
           p = Path('res/Rangers_data.json')
           data = json.loads(p.read_text(encoding='utf-8'))
           changed = []
