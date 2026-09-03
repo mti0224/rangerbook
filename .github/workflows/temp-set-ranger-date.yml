@@ -1,0 +1,61 @@
+name: Temporary set Ranger release dates
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/temp-set-ranger-date.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-ranger-dates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update release dates
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          path = Path('res/Rangers_data.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+          changed = []
+
+          for ranger in data:
+              ranger_id = str(ranger.get('ranger_id', ''))
+              match = re.match(r'^u(\d{4})', ranger_id)
+              if not match:
+                  continue
+              unit_no = int(match.group(1))
+              if 1626 <= unit_no <= 1631 and ranger.get('登場時間') == '未知':
+                  ranger['登場時間'] = '2026/08/31'
+                  changed.append(ranger_id)
+
+          if not changed:
+              raise SystemExit('No matching Rangers with unknown release dates were found.')
+
+          path.write_text(
+              json.dumps(data, ensure_ascii=False, indent=4) + '\n',
+              encoding='utf-8'
+          )
+          print(f'Updated {len(changed)} entries: {", ".join(changed)}')
+          PY
+
+      - name: Commit data update
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add res/Rangers_data.json
+          git diff --cached --quiet && exit 0
+          git commit -m "fix(data): set 2026-08-31 release date for new Rangers"
+          git push
