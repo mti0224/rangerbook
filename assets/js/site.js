@@ -217,7 +217,7 @@
           <a href="${rootPrefix}pvp/">PvP</a>
           <a href="${rootPrefix}guildwar/">公會</a>
           <a href="${rootPrefix}gear/">裝備</a>
-          <a href="${rootPrefix}hs/">困難關卡</a>
+          <a href="${rootPrefix}mainStage/">主要關卡</a>
           <a href="${rootPrefix}endless/">無限之塔</a>
           <a href="${rootPrefix}eventStageEnemy/">活動關卡</a>
           <a href="${rootPrefix}adventEnemy/">降臨關卡</a>
