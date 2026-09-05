@@ -190,11 +190,13 @@ html[data-theme="dark"] .extreme-gimmick-panel {
   color: var(--text) !important;
 }
 
-html[data-theme="dark"] .hs-production-line-panel .hs-condition-section + .hs-condition-section::before,
+html[data-theme="dark"] .hs-production-line-panel .hs-condition-section + .hs-condition-section::before {
+  background: var(--line) !important;
+}
+
 html[data-theme="dark"] .extreme-gimmick-group + .extreme-gimmick-group,
 html[data-theme="dark"] .extreme-gimmick-item + .extreme-gimmick-item {
   border-color: var(--line) !important;
-  background-color: var(--line);
 }
 
 html[data-theme="dark"] .hs-condition-title,
