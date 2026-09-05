@@ -33,6 +33,7 @@
     { key: "avg", label: "平均" }
   ];
   const LINE_COLORS = ["#2563eb", "#16a34a", "#9333ea", "#f97316", "#dc2626", "#0f172a"];
+  const DARK_LINE_COLORS = ["#60a5fa", "#4ade80", "#c084fc", "#fb923c", "#f87171", "#e2e8f0"];
 
   const els = {
     included: document.getElementById("statsIncludedCount"),
@@ -310,6 +311,13 @@
     return { ctx, width, height };
   }
 
+  function themeValue(name, fallback) {
+    const bodyValue = getComputedStyle(document.body).getPropertyValue(name).trim();
+    if (bodyValue) return bodyValue;
+    const rootValue = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return rootValue || fallback;
+  }
+
   function drawTrendChart() {
     if (!els.trendCanvas || !els.trendPanel?.open) return;
     const points = trendData();
@@ -325,6 +333,12 @@
     if (!valid.length) return;
 
     const { ctx, width, height } = setupCanvas(els.trendCanvas);
+    const isDark = document.documentElement.dataset.theme === "dark";
+    const lineColors = isDark ? DARK_LINE_COLORS : LINE_COLORS;
+    const panelColor = themeValue("--panel", isDark ? "#172033" : "#ffffff");
+    const gridColor = themeValue("--line", isDark ? "#334155" : "#e5e7eb");
+    const labelColor = themeValue("--muted", isDark ? "#a8b3c7" : "#64748b");
+    const axisColor = isDark ? "#64748b" : "#94a3b8";
     const pad = { top: 26, right: 26, bottom: 54, left: 82 };
     const plotW = width - pad.left - pad.right;
     const plotH = height - pad.top - pad.bottom;
@@ -343,12 +357,12 @@
     const y = (value) => pad.top + plotH - ((value - min) / (max - min)) * plotH;
 
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--panel") || "#fff";
+    ctx.fillStyle = panelColor;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.strokeStyle = "#e5e7eb";
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = labelColor;
     ctx.font = "12px system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
     for (let i = 0; i <= 4; i++) {
       const yy = pad.top + (plotH * i) / 4;
@@ -360,7 +374,7 @@
       ctx.fillText(formatNumber(value), 10, yy + 4);
     }
 
-    ctx.strokeStyle = "#94a3b8";
+    ctx.strokeStyle = axisColor;
     ctx.beginPath();
     ctx.moveTo(pad.left, pad.top);
     ctx.lineTo(pad.left, pad.top + plotH);
@@ -368,7 +382,7 @@
     ctx.stroke();
 
     const labelStep = Math.max(1, Math.ceil(points.length / 8));
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = labelColor;
     points.forEach((point, index) => {
       if (index % labelStep !== 0 && index !== points.length - 1) return;
       ctx.save();
@@ -380,8 +394,8 @@
     });
 
     LINE_DEFS.forEach((line, lineIndex) => {
-      ctx.strokeStyle = LINE_COLORS[lineIndex];
-      ctx.fillStyle = LINE_COLORS[lineIndex];
+      ctx.strokeStyle = lineColors[lineIndex];
+      ctx.fillStyle = lineColors[lineIndex];
       ctx.lineWidth = line.key === "avg" ? 3 : 2;
       ctx.beginPath();
       let started = false;
@@ -407,7 +421,7 @@
       });
     });
 
-    els.trendLegend.innerHTML = LINE_DEFS.map((line, index) => `<span><i style="background:${LINE_COLORS[index]}"></i>${html(line.label)}</span>`).join("");
+    els.trendLegend.innerHTML = LINE_DEFS.map((line, index) => `<span><i style="background:${lineColors[index]}"></i>${html(line.label)}</span>`).join("");
   }
 
   function setActiveType(type) {
@@ -472,6 +486,13 @@
   els.trendPanel?.addEventListener("toggle", () => drawTrendChart());
   els.trendSelect?.addEventListener("change", () => drawTrendChart());
   window.addEventListener("resize", () => drawTrendChart());
+
+  const themeObserver = new MutationObserver((mutations) => {
+    if (mutations.some((mutation) => mutation.type === "attributes" && mutation.attributeName === "data-theme")) {
+      requestAnimationFrame(drawTrendChart);
+    }
+  });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
   init();
 })();

@@ -330,11 +330,17 @@ html[data-theme="dark"] .stats-back-link {
   color: var(--primary-dark) !important;
 }
 
-html[data-theme="dark"] .stats-type-button:hover,
-html[data-theme="dark"] .stats-type-button.active {
-  background: #e8eefc !important;
-  color: #312e81 !important;
-  border-color: #bfdbfe !important;
+html[data-theme="dark"] .stats-type-button:hover {
+  background: #1e3a5f !important;
+  color: #dbeafe !important;
+  border-color: #315a88 !important;
+}
+
+html[data-theme="dark"] .stats-type-button.active,
+html[data-theme="dark"] .stats-type-button.active:hover {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #60a5fa !important;
 }
 
 html[data-theme="dark"] .stats-table th,
