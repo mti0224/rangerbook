@@ -132,7 +132,7 @@
       ['thunderstorm', /thunderstorm|雷暴|雷雨|雷電|閃電/i],
       ['tower', /tower|哨兵|塔城/i],
       ['beast', /beast|野獸|猛獸/i],
-      ['superguard', /superguard|超級防禦|超級防護|護盾|防護罩/i]
+      ['superguard', /superguard|超級無敵|超級防護|護盾|防護罩/i]
     ];
     const hit = candidates.find(([, pattern]) => pattern.test(value));
     return hit ? `active_${hit[0]}.png` : '';
