@@ -71,7 +71,7 @@
       async function rewriteEnemyResponse(response) {
         if (!response || !response.ok) return response;
         try {
-          const raw = await response.json();
+          const raw = await response.clone().json();
           const data = Array.isArray(raw) ? raw.map(mergeAwakenAbilities) : raw;
           const headers = new Headers(response.headers);
           headers.set('content-type', 'application/json; charset=utf-8');
