@@ -11,7 +11,6 @@
       var root = hasRepoPrefix ? '/rangerbook/' : '/';
       var isGearDetail = /^(?:\/rangerbook)?\/gear\/[^/]+\/?$/.test(path);
       var isEndlessStage = /^(?:\/rangerbook)?\/endless\/stage\/end\d+\/?$/i.test(path);
-      var isHsStage = /^(?:\/rangerbook)?\/hs\/stage\/hs\d+\/?$/i.test(path);
       var hardMatch = path.match(/^(?:\/rangerbook)?\/mainstage\/hard\/stage\/hs(\d+)\/?$/i);
       var extremeMatch = path.match(/^(?:\/rangerbook)?\/mainstage\/extreme\/stage\/es(\d+)\/?$/i);
 
@@ -30,11 +29,9 @@
         ? 'mainstage-hard-stage'
         : extremeMatch
           ? 'mainstage-extreme-stage'
-          : isHsStage
-            ? 'hs-stage'
-            : isEndlessStage
-              ? 'endless-stage'
-              : 'unknown';
+          : isEndlessStage
+            ? 'endless-stage'
+            : 'unknown';
 
       ['style.css','ranger.css','ranger-ability-effect-merge.css','hsEnemy.css','card-tag-colors.css','endless.css','hs-stage.css'].forEach(function (file) {
         document.write('<link rel="stylesheet" href="' + root + 'assets/css/' + file + '">');
@@ -108,7 +105,7 @@
       var unknownRoute = document.getElementById('unknownRoute');
 
       if (kind === 'endless-stage') endlessRoute.hidden = false;
-      else if (kind === 'hs-stage' || kind === 'mainstage-hard-stage' || kind === 'mainstage-extreme-stage') hsRoute.hidden = false;
+      else if (kind === 'mainstage-hard-stage' || kind === 'mainstage-extreme-stage') hsRoute.hidden = false;
       else unknownRoute.hidden = false;
 
       if (kind === 'mainstage-extreme-stage') {
@@ -121,16 +118,12 @@
       if (hsBackLink) {
         hsBackLink.href = kind === 'mainstage-extreme-stage'
           ? root + 'mainstage/extreme/stage/'
-          : kind === 'mainstage-hard-stage'
-            ? root + 'mainstage/hard/stage/'
-            : root + 'hs/stage/';
+          : root + 'mainstage/hard/stage/';
       }
 
       document.write('<script src="' + root + 'assets/js/site.js"><\/script>');
       if (kind === 'endless-stage') {
         document.write('<script src="' + root + 'assets/js/endless-stage.js"><\/script>');
-      } else if (kind === 'hs-stage') {
-        document.write('<script src="' + root + 'assets/js/hs-stage.js"><\/script>');
       } else if (kind === 'mainstage-hard-stage' || kind === 'mainstage-extreme-stage') {
         document.write('<script src="' + root + 'assets/js/mainstage-stage-adapter.js"><\/script>');
         document.write('<script src="' + root + 'assets/js/hs-stage.js"><\/script>');
