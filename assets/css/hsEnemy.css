@@ -129,6 +129,57 @@
   margin-top: 0.55rem;
 }
 
+#enemyModalContent .detail-section > .ranger-skill-card,
+#hsEnemyLineModalContent .detail-section > .ranger-skill-card {
+  margin-bottom: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#enemyModalContent .detail-section > h3 + .ranger-skill-card,
+#hsEnemyLineModalContent .detail-section > h3 + .ranger-skill-card {
+  border-radius: 1rem 1rem 0 0;
+}
+
+#enemyModalContent .detail-section > .ranger-skill-card + .ranger-skill-card,
+#hsEnemyLineModalContent .detail-section > .ranger-skill-card + .ranger-skill-card {
+  border-top: 0;
+}
+
+#enemyModalContent .detail-section > .ranger-skill-card:last-child,
+#hsEnemyLineModalContent .detail-section > .ranger-skill-card:last-child {
+  border-radius: 0 0 1rem 1rem;
+}
+
+#enemyModalContent .detail-section > h3 + .ranger-skill-card:last-child,
+#hsEnemyLineModalContent .detail-section > h3 + .ranger-skill-card:last-child {
+  border-radius: 1rem;
+}
+
+#enemyModalContent .ranger-ability-list,
+#hsEnemyLineModalContent .ranger-ability-list {
+  display: block;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #fbfdff;
+  overflow: hidden;
+}
+
+#enemyModalContent .ranger-ability-list > .ranger-ability-card,
+#hsEnemyLineModalContent .ranger-ability-list > .ranger-ability-card {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#enemyModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card,
+#hsEnemyLineModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card {
+  border-top: 1px solid var(--line);
+}
+
 html[data-theme="dark"] .enemy-skill-effect-table,
 html[data-theme="dark"] .ability-effect-table,
 html[data-theme="dark"] .enemy-skill-meta-table,
@@ -157,5 +208,11 @@ html[data-theme="dark"] .enemy-skill-meta-table td,
 html[data-theme="dark"] .skill-meta-table td {
   background: var(--panel) !important;
   color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html[data-theme="dark"] #enemyModalContent .ranger-ability-list,
+html[data-theme="dark"] #hsEnemyLineModalContent .ranger-ability-list {
+  background: var(--panel) !important;
   border-color: var(--line) !important;
 }
