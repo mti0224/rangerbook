@@ -53,7 +53,7 @@
   async function rewriteExtremeEnemyResponse(response) {
     if (!response || !response.ok) return response;
     try {
-      const raw = await response.json();
+      const raw = await response.clone().json();
       const data = Array.isArray(raw) ? raw.map(mergeAwakenAbilities) : raw;
       const headers = new Headers(response.headers);
       headers.set('content-type', 'application/json; charset=utf-8');
@@ -117,11 +117,11 @@
   }
 
   function elementSuffix(value) {
-    if (/火屬性|火系|\bfire\b|_fire(?:_|\b)/i.test(value)) return 'fire';
-    if (/水屬性|水系|\bwater\b|_water(?:_|\b)/i.test(value)) return 'water';
-    if (/木屬性|木系|\btree\b|_tree(?:_|\b)/i.test(value)) return 'tree';
-    if (/光屬性|光系|\blight\b|_light(?:_|\b)/i.test(value)) return 'light';
-    if (/暗屬性|暗系|\bdark\b|_dark(?:_|\b)/i.test(value)) return 'dark';
+    if (/火(?:屬性|系|弱化|強化)|\bfire\b|_fire(?:_|\b)/i.test(value)) return 'fire';
+    if (/水(?:屬性|系|弱化|強化)|\bwater\b|_water(?:_|\b)/i.test(value)) return 'water';
+    if (/木(?:屬性|系|弱化|強化)|\btree\b|_tree(?:_|\b)/i.test(value)) return 'tree';
+    if (/光(?:屬性|系|弱化|強化)|\blight\b|_light(?:_|\b)/i.test(value)) return 'light';
+    if (/暗(?:屬性|系|弱化|強化)|\bdark\b|_dark(?:_|\b)/i.test(value)) return 'dark';
     return '';
   }
 
@@ -228,6 +228,23 @@
     return Object.entries(extremeStageData).find(([key]) => Number(String(key).match(/\d+/)?.[0] || 0) === stageNo)?.[1] || null;
   }
 
+  function groupProductionLines() {
+    const container = document.getElementById('hsStageConditions');
+    if (!container || container.querySelector(':scope > .hs-production-line-panel')) return;
+
+    const sections = [...container.querySelectorAll(':scope > .hs-condition-section')];
+    if (!sections.length) return;
+
+    const productionTitle = [...container.querySelectorAll(':scope > .endless-detail-section-title')]
+      .find((node) => node.textContent.trim() === '敵人生產線');
+    if (!productionTitle) return;
+
+    const panel = document.createElement('div');
+    panel.className = 'hs-production-line-panel';
+    productionTitle.insertAdjacentElement('afterend', panel);
+    sections.forEach((section) => panel.appendChild(section));
+  }
+
   function patchExtremeGimmicks() {
     if (mode !== 'extreme') return;
     const stageDetail = document.getElementById('hsStageDetail');
@@ -259,6 +276,8 @@
 
     const backLink = document.getElementById('hsStageBackLink') || document.querySelector('#hsStageDetail .endless-back-link');
     if (backLink) backLink.href = `${ROOT}mainstage/${mode}/stage/`;
+
+    groupProductionLines();
 
     if (mode === 'extreme') {
       const title = document.getElementById('hsStageTitle');
