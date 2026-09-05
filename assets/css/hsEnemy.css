@@ -131,6 +131,7 @@
 
 #enemyModalContent .detail-section > .ranger-skill-card,
 #hsEnemyLineModalContent .detail-section > .ranger-skill-card {
+  position: relative;
   margin-bottom: 0;
   border-radius: 0;
   box-shadow: none;
@@ -144,6 +145,17 @@
 #enemyModalContent .detail-section > .ranger-skill-card + .ranger-skill-card,
 #hsEnemyLineModalContent .detail-section > .ranger-skill-card + .ranger-skill-card {
   border-top: 0;
+}
+
+#enemyModalContent .detail-section > .ranger-skill-card + .ranger-skill-card::before,
+#hsEnemyLineModalContent .detail-section > .ranger-skill-card + .ranger-skill-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0.9rem;
+  right: 0.9rem;
+  height: 1px;
+  background: var(--line);
 }
 
 #enemyModalContent .detail-section > .ranger-skill-card:last-child,
@@ -168,6 +180,7 @@
 
 #enemyModalContent .ranger-ability-list > .ranger-ability-card,
 #hsEnemyLineModalContent .ranger-ability-list > .ranger-ability-card {
+  position: relative;
   margin: 0;
   border: 0;
   border-radius: 0;
@@ -177,7 +190,18 @@
 
 #enemyModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card,
 #hsEnemyLineModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card {
-  border-top: 1px solid var(--line);
+  border-top: 0;
+}
+
+#enemyModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card::before,
+#hsEnemyLineModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0.9rem;
+  right: 0.9rem;
+  height: 1px;
+  background: var(--line);
 }
 
 html[data-theme="dark"] .enemy-skill-effect-table,
@@ -215,4 +239,14 @@ html[data-theme="dark"] #enemyModalContent .ranger-ability-list,
 html[data-theme="dark"] #hsEnemyLineModalContent .ranger-ability-list {
   background: var(--panel) !important;
   border-color: var(--line) !important;
+}
+
+@media (max-width: 620px) {
+  #enemyModalContent .detail-section > .ranger-skill-card + .ranger-skill-card::before,
+  #hsEnemyLineModalContent .detail-section > .ranger-skill-card + .ranger-skill-card::before,
+  #enemyModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card::before,
+  #hsEnemyLineModalContent .ranger-ability-list > .ranger-ability-card + .ranger-ability-card::before {
+    left: 0.8rem;
+    right: 0.8rem;
+  }
 }
