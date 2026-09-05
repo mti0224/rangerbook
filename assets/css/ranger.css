@@ -510,3 +510,9 @@ strong.talent-title-with-icon {
     min-width: 560px;
   }
 }
+
+#rangerModalContent .detail-section > h3,
+#gearModalContent .detail-section > h3 {
+  font-size: 1.3rem;
+  font-weight: 900;
+}
