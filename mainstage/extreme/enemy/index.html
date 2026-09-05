@@ -44,17 +44,59 @@
 
   <script src="../../../assets/js/site.js"></script>
   <script>
-    window.__originalFetchForMainstageExtremeEnemy = window.fetch.bind(window);
-    window.fetch = function (resource, options) {
-      var url = String(resource);
-      if (url.includes('../res/hsEnemy_data.json')) {
-        return window.__originalFetchForMainstageExtremeEnemy('../../../res/extremeEnemy_data.json', options);
+    (() => {
+      const originalFetch = window.fetch.bind(window);
+
+      function hasUsableAbility(value) {
+        if (Array.isArray(value)) return value.some(hasUsableAbility);
+        if (value && typeof value === 'object') return true;
+        const text = String(value || '').trim();
+        return Boolean(text && text !== '無' && text !== '(無)');
       }
-      if (url.includes('../res/%E8%83%BD%E5%8A%9B.json')) {
-        return window.__originalFetchForMainstageExtremeEnemy('../../../res/%E8%83%BD%E5%8A%9B.json', options);
+
+      function mergeAwakenAbilities(enemy) {
+        if (!enemy || typeof enemy !== 'object') return enemy;
+        const awaken = Array.isArray(enemy['覺醒能力']) ? enemy['覺醒能力'].filter(hasUsableAbility) : [];
+        if (!awaken.length) return enemy;
+
+        const merged = [];
+        const third = enemy['能力3'];
+        if (Array.isArray(third)) merged.push(...third.filter(hasUsableAbility));
+        else if (hasUsableAbility(third)) merged.push(third);
+        merged.push(...awaken);
+
+        return { ...enemy, '能力3': merged };
       }
-      return window.__originalFetchForMainstageExtremeEnemy(resource, options);
-    };
+
+      async function rewriteEnemyResponse(response) {
+        if (!response || !response.ok) return response;
+        try {
+          const raw = await response.json();
+          const data = Array.isArray(raw) ? raw.map(mergeAwakenAbilities) : raw;
+          const headers = new Headers(response.headers);
+          headers.set('content-type', 'application/json; charset=utf-8');
+          return new Response(JSON.stringify(data), {
+            status: response.status,
+            statusText: response.statusText,
+            headers
+          });
+        } catch (error) {
+          console.warn('極限敵人覺醒能力轉換失敗：', error);
+          return response;
+        }
+      }
+
+      window.fetch = function (resource, options) {
+        const url = String(resource);
+        if (url.includes('../res/hsEnemy_data.json')) {
+          return originalFetch('../../../res/extremeEnemy_data.json', options).then(rewriteEnemyResponse);
+        }
+        if (url.includes('../res/%E8%83%BD%E5%8A%9B.json')) {
+          return originalFetch('../../../res/%E8%83%BD%E5%8A%9B.json', options);
+        }
+        return originalFetch(resource, options);
+      };
+    })();
   </script>
   <script src="../../../assets/js/hsEnemy.js"></script>
   <script src="../../../assets/js/hsEnemy-skill-meta-table.js"></script>
