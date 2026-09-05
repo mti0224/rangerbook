@@ -4,37 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>主要關卡｜LINE Rangers Database</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/home.css">
-  <link rel="stylesheet" href="../assets/css/endless.css">
+  <script>
+    (function () {
+      var root = window.location.pathname.indexOf('/rangerbook/') === 0 ? '/rangerbook/' : '/';
+      window.location.replace(root + 'mainstage/' + window.location.search + window.location.hash);
+    })();
+  </script>
 </head>
 <body>
-  <div id="site-header"></div>
-
-  <main class="page home-page">
-    <section class="page-title">
-      <p class="eyebrow">LINE Rangers Database</p>
-      <h1>主要關卡</h1>
-      <p>選擇要查詢的主要關卡模式。</p>
-    </section>
-
-    <section class="endless-entry-grid" aria-label="主要關卡模式入口">
-      <a class="endless-entry-card" href="../hs/">
-        <div>
-          <h2>困難模式</h2>
-          <p>查看困難模式的敵人與關卡資料。</p>
-        </div>
-      </a>
-
-      <a class="endless-entry-card" href="../extreme/">
-        <div>
-          <h2>極限模式</h2>
-          <p>查看極限模式的敵人與關卡資料。</p>
-        </div>
-      </a>
-    </section>
-  </main>
-
-  <script src="../assets/js/site.js"></script>
+  <p><a href="/mainstage/">前往主要關卡</a></p>
 </body>
 </html>
