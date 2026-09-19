@@ -121,7 +121,7 @@ Rangerbook 的 `ability`、`gear` 等完整資料可繼續存在公開的 `res/*
 
 ## 最大管理者：玩家隊伍查詢
 
-玩家索引與最新查詢結果只保留在 EC2 私有路徑，不能放到公開的 `/var/www/rangerbook-pvp`：
+玩家索引與最新查詢結果只保留在 EC2 私有路徑，不能放到公開的 `/var/www/rangerbook-pvp`。玩家索引由公會戰資料涵蓋「傳奇～黃金」所有段位；公會排名公開資料仍只維持網站實際顯示的段位：
 
 ```text
 /home/ubuntu/rangerbook-data/player_index.json
@@ -136,6 +136,8 @@ POST /super-admin/player-team-query
 ```
 
 兩個端點都由 `require_super_admin` 驗證。搜尋只讀取玩家索引；只有 POST 查詢指定 UID 時才會呼叫 LINE Rangers `/player/units/team/equip/uid/{UID}`，並將最新結果覆蓋寫入 `player_lookup_cache.json`。
+
+前端入口：`/pvp/search/`。只有 `super_admin` 在 PvP 中繼頁面會看到「查詢玩家隊伍」入口；直接存取頁面時也會再次檢查權限。
 
 Auth v1.2.0 會使用既有 Guild War collector 作為遊戲 API core，預設路徑為：
 
