@@ -465,6 +465,12 @@
       selection.hidden = true;
       result.hidden = true;
     }
+    closeSuggestions();
+    if (!input.value.trim()) {
+      searchItems = [];
+      setStatus();
+      return;
+    }
     queueSearch();
   });
 
