@@ -1,0 +1,189 @@
+.pvp-search-page {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
+}
+
+.pvp-search-card {
+  position: relative;
+  z-index: 5;
+  margin-top: 1rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.pvp-search-field {
+  position: relative;
+  display: grid;
+  gap: .4rem;
+}
+
+.pvp-search-field > span,
+.pvp-search-team-picker > span {
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.pvp-search-input,
+.pvp-search-team-picker select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  padding: .78rem .9rem;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.pvp-search-input:focus,
+.pvp-search-team-picker select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.pvp-search-suggestions {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + .35rem);
+  left: 0;
+  right: 0;
+  max-height: min(22rem, 55vh);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: .8rem;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.pvp-search-suggestion {
+  display: grid;
+  gap: .18rem;
+  width: 100%;
+  padding: .72rem .9rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pvp-search-suggestion:last-child {
+  border-bottom: 0;
+}
+
+.pvp-search-suggestion:hover,
+.pvp-search-suggestion:focus-visible,
+.pvp-search-suggestion.is-active {
+  background: var(--soft);
+  outline: none;
+}
+
+.pvp-search-suggestion strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pvp-search-suggestion small {
+  color: var(--muted);
+  font-size: .76rem;
+}
+
+.pvp-search-empty {
+  padding: .9rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.pvp-search-status {
+  min-height: 1.35rem;
+  margin-top: .7rem;
+  color: var(--muted);
+  font-size: .84rem;
+  font-weight: 700;
+}
+
+.pvp-search-status.error {
+  color: #cf222e;
+}
+
+.pvp-search-status.success {
+  color: #1a7f37;
+}
+
+.pvp-search-selection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem);
+  gap: 1rem;
+  align-items: end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.pvp-search-player {
+  min-width: 0;
+}
+
+.pvp-search-player strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 1.05rem;
+}
+
+.pvp-search-player small {
+  display: block;
+  margin-top: .2rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.pvp-search-team-picker {
+  display: grid;
+  gap: .4rem;
+}
+
+.pvp-search-result {
+  margin-top: 1rem;
+}
+
+.pvp-search-result .pvp-player-team-layout {
+  padding-top: 0;
+}
+
+.pvp-search-result .pvp-player-team-pane,
+.pvp-search-result .pvp-player-unit-detail {
+  background: var(--panel);
+}
+
+.pvp-search-loading {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+  color: var(--muted);
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .pvp-search-selection {
+    grid-template-columns: 1fr;
+  }
+}
+
+html[data-theme="dark"] .pvp-search-status.success {
+  color: #86efac;
+}
+
+html[data-theme="dark"] .pvp-search-status.error {
+  color: #fca5a5;
+}
