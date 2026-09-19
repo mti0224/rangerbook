@@ -3,6 +3,7 @@
   const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const RANGER_DATA_URL = "../../res/Rangers_data.json";
+  const GEAR_DATA_URL = "../../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
   const ABILITY_DATA_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const EFFECT_DICT_URL = "../../res/effect_dict.json";
   const REFRESH_MS = 5 * 60 * 1000;
@@ -11,6 +12,7 @@
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
+  const STAR_LAYER = (level, star) => `../../assets/star_layer/com_level${level}_star${String(star).padStart(2, "0")}.png`;
   const NONE_CODE = "__NONE__";
   const TEAM_OPTIONS = [
     ["pvpteam", "PvP 防守隊伍"],
@@ -40,6 +42,8 @@
   let supportDataPromise = null;
   let gearNameByCode = {};
   let rangerNameByCode = {};
+  let rangerStarByCode = {};
+  let gearStarByCode = {};
   let abilityMap = {};
   let effectMap = {};
   const effectTimers = new WeakMap();
@@ -163,6 +167,32 @@
     return rangerNameByCode[code] || code || "未知角色";
   }
 
+  function starNumber(value) {
+    const match = String(value ?? "").match(/\d+/);
+    const star = match ? Number(match[0]) : 0;
+    return Number.isInteger(star) && star >= 1 && star <= 9 ? star : 0;
+  }
+
+  function rangerStarLayer(value) {
+    const raw = String(value ?? "");
+    const star = starNumber(raw);
+    if (!star) return "";
+    if (star === 8 && /超進化|超進|ultra/i.test(raw)) return STAR_LAYER("04", star);
+    if (star >= 6 && star <= 8 && /終極|究極|究進|ultimate|hyper/i.test(raw)) return STAR_LAYER("02", star);
+    return STAR_LAYER("01", star);
+  }
+
+  function normalStarLayer(value) {
+    const star = starNumber(value);
+    return star ? STAR_LAYER("01", star) : "";
+  }
+
+  function unitTalentCorner(unit) {
+    const grade = Number(unit?.talentGrade);
+    if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return "";
+    return `<img class="pvp-player-unit-talent-corner" src="${TALENT_ICON(grade)}" alt="" title="才能解放階段 ${grade}" aria-hidden="true" decoding="async" onerror="this.remove();">`;
+  }
+
   function unitLevel(unit) {
     const value = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel]
       .find((item) => item !== undefined && item !== null && item !== "");
@@ -182,6 +212,23 @@
     if (!value) return NONE_CODE;
     if (typeof value === "string") return value || NONE_CODE;
     return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
+  }
+
+  function teamStarImage(src, className) {
+    return src
+      ? `<img class="${className}" src="${src}" alt="" aria-hidden="true" decoding="async" onerror="this.remove();">`
+      : `<span class="${className}-space" aria-hidden="true"></span>`;
+  }
+
+  function teamEquipmentSlot(unit, slot) {
+    const code = equipmentCode(unit, slot);
+    const isNone = !code || code === NONE_CODE;
+    const name = isNone ? "未裝備" : (gearNameByCode[code] || code);
+    const starSrc = isNone ? "" : normalStarLayer(gearStarByCode[code]);
+    const icon = isNone
+      ? `<span class="pvp-player-unit-equipment-image pvp-player-unit-equipment-empty" aria-hidden="true">—</span>`
+      : `<img class="pvp-player-unit-equipment-image" src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
+    return `<span class="pvp-player-unit-equipment-slot" title="${escapeHtml(SLOT_LABELS[slot])}：${escapeHtml(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
   }
 
   function advancedEffectName(unit, slot) {
@@ -296,7 +343,13 @@
     }
     target.innerHTML = units.map((unit, index) => {
       const code = String(unit.unitCode || "");
-      return `<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();"><span class="pvp-player-unit-name">${escapeHtml(rangerName(code))}</span></button>`;
+      const rangerStar = rangerStarLayer(rangerStarByCode[code]);
+      return `<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
+        <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${unitTalentCorner(unit)}</span>
+        ${teamStarImage(rangerStar, "pvp-player-unit-star")}
+        <span class="pvp-player-unit-equipment-row">${teamEquipmentSlot(unit, "WEAPON")}${teamEquipmentSlot(unit, "ARMOR")}${teamEquipmentSlot(unit, "ACC")}</span>
+        <span class="pvp-player-unit-name">${escapeHtml(rangerName(code))}</span>
+      </button>`;
     }).join("");
     renderUnitDetail(null);
   }
@@ -360,13 +413,20 @@
       }),
       fetch(ID_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
       fetch(RANGER_DATA_URL).then((res) => res.ok ? res.json() : []).catch(() => ([])),
+      fetch(GEAR_DATA_URL).then((res) => res.ok ? res.json() : []).catch(() => ([])),
       fetch(ABILITY_DATA_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
       fetch(EFFECT_DICT_URL).then((res) => res.ok ? res.json() : {}).catch(() => ({})),
-    ]).then(([teamPayload, idDict, rangerRows, abilityRows, effectRows]) => {
+    ]).then(([teamPayload, idDict, rangerRows, gearRows, abilityRows, effectRows]) => {
       playerTeamPayload = teamPayload && typeof teamPayload === "object" ? teamPayload : {};
       gearNameByCode = Object.fromEntries(Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)]));
       rangerNameByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
         .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
+        .filter(([code]) => code));
+      rangerStarByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
+        .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger星數"] || "")])
+        .filter(([code]) => code));
+      gearStarByCode = Object.fromEntries((Array.isArray(gearRows) ? gearRows : [])
+        .map((row) => [String(row?.id || row?.gear_id || row?.code || ""), String(row?.["裝備星級"] || row?.["星數"] || row?.star || "")])
         .filter(([code]) => code));
       abilityMap = abilityRows && typeof abilityRows === "object" ? abilityRows : {};
       effectMap = parseEffectMap(effectRows);
