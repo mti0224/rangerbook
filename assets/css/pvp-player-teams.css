@@ -88,7 +88,7 @@
 .pvp-player-team-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  grid-auto-rows: 13.7rem;
+  grid-auto-rows: 11.9rem;
   align-items: stretch;
   align-content: start;
   gap: 0.7rem;
@@ -97,12 +97,12 @@
 .pvp-player-unit-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: 6rem 0.75rem 3.35rem 1.1rem;
+  grid-template-rows: 6rem 3.45rem 1.1rem;
   align-content: start;
   gap: 0.35rem;
   justify-items: center;
   width: 100%;
-  height: 13.7rem;
+  height: 11.9rem;
   min-width: 0;
   box-sizing: border-box;
   padding: 0.7rem 0.45rem;
@@ -140,13 +140,15 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   height: min(100%, 6rem);
   aspect-ratio: 1;
   justify-self: center;
+  overflow: hidden;
+  border-radius: 0.8rem;
 }
 
 .pvp-player-unit-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  border-radius: 0.8rem;
+  border-radius: inherit;
   background: var(--soft);
 }
 
@@ -168,58 +170,57 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   width: 1.55rem;
   height: 1.55rem;
   object-fit: contain;
-  z-index: 1;
+  z-index: 2;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
   pointer-events: none;
 }
 
 .pvp-player-unit-star,
 .pvp-player-unit-star-space {
-  grid-column: 1;
-  grid-row: 2;
+  position: absolute;
+  left: 16%;
+  right: 16%;
+  bottom: 0.12rem;
   display: block;
-  height: 0.75rem;
-  align-self: center;
-  justify-self: center;
+  width: 68%;
+  height: 0.78rem;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .pvp-player-unit-star {
-  width: auto;
-  max-width: 68%;
   object-fit: contain;
-}
-
-.pvp-player-unit-star-space {
-  width: 68%;
 }
 
 .pvp-player-unit-equipment-row {
   grid-column: 1;
-  grid-row: 3;
+  grid-row: 2;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: start;
+  align-items: center;
   gap: 0.28rem;
   width: min(100%, 6.8rem);
   min-width: 0;
+  height: 3.45rem;
 }
 
 .pvp-player-unit-equipment-slot {
-  display: grid;
-  grid-template-rows: 2.55rem 0.55rem;
-  align-items: center;
-  justify-items: center;
-  gap: 0.18rem;
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 3.1rem;
   min-width: 0;
+  overflow: hidden;
+  border-radius: 0.45rem;
 }
 
 .pvp-player-unit-equipment-image {
   display: block;
   width: 100%;
-  height: 2.55rem;
+  height: 100%;
   min-width: 0;
   object-fit: contain;
-  border-radius: 0.45rem;
+  border-radius: inherit;
   background: var(--soft);
 }
 
@@ -233,9 +234,15 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
 
 .pvp-player-unit-equipment-star,
 .pvp-player-unit-equipment-star-space {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.08rem;
   display: block;
   width: 100%;
-  height: 0.55rem;
+  height: 0.58rem;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .pvp-player-unit-equipment-star {
@@ -245,7 +252,7 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
 .pvp-player-unit-name,
 .guildwar-unit-name-line {
   grid-column: 1;
-  grid-row: 4;
+  grid-row: 3;
 }
 
 .guildwar-unit-name-line {
