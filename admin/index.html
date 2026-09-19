@@ -6,7 +6,8 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20260919-1">
+  <link rel="stylesheet" href="../assets/css/pvp-player-teams.css?v=20260919-4">
 </head>
 <body>
   <div id="site-header"></div>
@@ -127,6 +128,35 @@
           </section>
         </div>
       </section>
+
+      <section id="superAdminPlayerQueryPanel" class="admin-card admin-player-query-card" hidden>
+        <div class="admin-player-query-head">
+          <div>
+            <p class="eyebrow">Super Admin</p>
+            <h2>玩家隊伍查詢</h2>
+            <p class="admin-muted">以公會戰收集到的玩家名稱搜尋；只有選定玩家並按下「查詢隊伍」後，後端才會使用 UID 向遊戲 API 讀取最新隊伍資料。</p>
+          </div>
+        </div>
+
+        <form id="adminPlayerSearchForm" class="admin-player-search-form" autocomplete="off">
+          <label>
+            <span>玩家名稱</span>
+            <input id="adminPlayerSearchInput" type="search" placeholder="輸入完整或部分名稱" maxlength="80" required>
+          </label>
+          <button id="adminPlayerSearchButton" type="submit">搜尋玩家</button>
+        </form>
+
+        <div id="adminPlayerSearchMessage" class="admin-message" role="status" aria-live="polite"></div>
+        <div id="adminPlayerSearchResults" class="admin-player-search-results"></div>
+
+        <section id="adminPlayerTeamResult" class="admin-player-team-result" hidden>
+          <header class="admin-player-team-result-head">
+            <h2 id="adminPlayerTeamTitle">-</h2>
+            <p id="adminPlayerTeamMeta"></p>
+          </header>
+          <div id="adminPlayerTeams" class="admin-player-teams"></div>
+        </section>
+      </section>
     </div>
   </main>
 
@@ -134,5 +164,6 @@
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-page.js"></script>
   <script src="../assets/js/admin-password.js?v=20260724-1"></script>
+  <script src="../assets/js/admin-player-query.js?v=20260919-1"></script>
 </body>
 </html>
