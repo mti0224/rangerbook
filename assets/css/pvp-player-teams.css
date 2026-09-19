@@ -22,7 +22,7 @@
 }
 
 .pvp-player-team-modal-panel {
-  width: min(980px, calc(100vw - 2rem));
+  width: min(1180px, calc(100vw - 2rem));
 }
 
 .pvp-player-team-header {
@@ -88,7 +88,7 @@
 .pvp-player-team-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  grid-auto-rows: 9.1rem;
+  grid-auto-rows: 13.7rem;
   align-items: stretch;
   align-content: start;
   gap: 0.7rem;
@@ -97,12 +97,12 @@
 .pvp-player-unit-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: 6rem 1.1rem;
+  grid-template-rows: 6rem 0.75rem 3.35rem 1.1rem;
   align-content: start;
-  gap: 0.45rem;
+  gap: 0.35rem;
   justify-items: center;
   width: 100%;
-  height: 9.1rem;
+  height: 13.7rem;
   min-width: 0;
   box-sizing: border-box;
   padding: 0.7rem 0.45rem;
@@ -131,8 +131,6 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   outline-offset: 2px;
 }
 
-/* Every ranger uses the exact same fixed image box, regardless of whether a
-   talent badge exists. This keeps PvP and Guild War cards identical in size. */
 .pvp-player-unit-image-wrap {
   position: relative;
   grid-column: 1;
@@ -152,8 +150,7 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   background: var(--soft);
 }
 
-/* Fallback before the JS normalizes the DOM: a bare image must still use the
-   same 6rem square as wrapped images, so non-talent rangers never appear larger. */
+/* Fallback for cards created before the layout enhancer wraps the ranger image. */
 .pvp-player-unit-button > .pvp-player-unit-image {
   grid-column: 1;
   grid-row: 1;
@@ -165,8 +162,9 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
 
 .pvp-player-unit-talent-corner {
   position: absolute;
+  top: 0.18rem;
   right: 0.18rem;
-  bottom: 0.18rem;
+  bottom: auto;
   width: 1.55rem;
   height: 1.55rem;
   object-fit: contain;
@@ -175,10 +173,79 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   pointer-events: none;
 }
 
+.pvp-player-unit-star,
+.pvp-player-unit-star-space {
+  grid-column: 1;
+  grid-row: 2;
+  display: block;
+  height: 0.75rem;
+  align-self: center;
+  justify-self: center;
+}
+
+.pvp-player-unit-star {
+  width: auto;
+  max-width: 68%;
+  object-fit: contain;
+}
+
+.pvp-player-unit-star-space {
+  width: 68%;
+}
+
+.pvp-player-unit-equipment-row {
+  grid-column: 1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 0.28rem;
+  width: min(100%, 6.8rem);
+  min-width: 0;
+}
+
+.pvp-player-unit-equipment-slot {
+  display: grid;
+  grid-template-rows: 2.55rem 0.55rem;
+  align-items: center;
+  justify-items: center;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.pvp-player-unit-equipment-image {
+  display: block;
+  width: 100%;
+  height: 2.55rem;
+  min-width: 0;
+  object-fit: contain;
+  border-radius: 0.45rem;
+  background: var(--soft);
+}
+
+.pvp-player-unit-equipment-empty {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.pvp-player-unit-equipment-star,
+.pvp-player-unit-equipment-star-space {
+  display: block;
+  width: 100%;
+  height: 0.55rem;
+}
+
+.pvp-player-unit-equipment-star {
+  object-fit: contain;
+}
+
 .pvp-player-unit-name,
 .guildwar-unit-name-line {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 4;
 }
 
 .guildwar-unit-name-line {
