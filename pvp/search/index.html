@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>查詢玩家隊伍｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/pvp-player-teams.css?v=20260919-4">
+  <link rel="stylesheet" href="../../assets/css/pvp-player-search.css?v=20260919-1">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main id="pvpPlayerSearchPage" class="pvp-search-page" hidden>
+    <section class="page-title">
+      <p class="eyebrow">Super Admin</p>
+      <h1>查詢玩家隊伍</h1>
+      <p>以玩家名稱搜尋，選取玩家後即時讀取目前隊伍。</p>
+    </section>
+
+    <section class="pvp-search-card">
+      <label class="pvp-search-field" for="pvpPlayerSearchInput">
+        <span>玩家名稱</span>
+        <input
+          id="pvpPlayerSearchInput"
+          class="pvp-search-input"
+          type="search"
+          placeholder="輸入完整或部分名稱"
+          autocomplete="off"
+          maxlength="80"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded="false"
+          aria-controls="pvpPlayerSearchSuggestions"
+        >
+        <div
+          id="pvpPlayerSearchSuggestions"
+          class="pvp-search-suggestions"
+          role="listbox"
+          hidden
+        ></div>
+      </label>
+
+      <div id="pvpPlayerSearchStatus" class="pvp-search-status" role="status" aria-live="polite"></div>
+
+      <div id="pvpPlayerSearchSelection" class="pvp-search-selection" hidden>
+        <div class="pvp-search-player">
+          <strong id="pvpPlayerSearchSelectedName">-</strong>
+          <small id="pvpPlayerSearchSelectedMeta"></small>
+        </div>
+
+        <label class="pvp-search-team-picker">
+          <span>預查看的隊伍</span>
+          <select id="pvpPlayerSearchTeamSelect">
+            <option value="pvpteam" selected>PvP 防守隊伍</option>
+            <option value="team1">隊伍 1</option>
+            <option value="team2">隊伍 2</option>
+            <option value="team3">隊伍 3</option>
+            <option value="team4">隊伍 4</option>
+            <option value="team5">隊伍 5</option>
+            <option value="guildwar">公會戰進攻隊伍</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section id="pvpPlayerSearchResult" class="pvp-search-result" hidden>
+      <div class="pvp-player-team-layout">
+        <section class="pvp-player-team-pane">
+          <h3 id="pvpPlayerSearchTeamTitle">PvP 防守隊伍</h3>
+          <div id="pvpPlayerSearchTeamGrid" class="pvp-player-team-grid"></div>
+        </section>
+
+        <aside class="pvp-player-unit-detail">
+          <h3>角色詳細資料</h3>
+          <div id="pvpPlayerSearchUnitDetail"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="../../assets/js/site.js"></script>
+  <script src="../../assets/js/admin-auth.js"></script>
+  <script src="../../assets/js/pvp-player-search.js?v=20260919-1"></script>
+</body>
+</html>
