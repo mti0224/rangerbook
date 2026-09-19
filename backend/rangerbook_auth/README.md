@@ -117,3 +117,36 @@ GET /admin/access-check
 Rangerbook 的 `ability`、`gear` 等完整資料可繼續存在公開的 `res/*.json`。目前 admin 權限的目的，是控制網站介面是否顯示特定隱藏、測試或未公開項目，而不是把這些 JSON 當成真正的秘密資料。
 
 真正需要保護且只存在後端的內容包含：帳號、密碼雜湊、session、角色權限、管理員申請與審核操作。未來若新增修改資料、刪除資料、上傳檔案或其他管理寫入功能，相關 API 必須繼續由後端 `admin` / `super_admin` 權限保護。
+
+
+## 最大管理者：玩家隊伍查詢
+
+玩家索引與最新查詢結果只保留在 EC2 私有路徑，不能放到公開的 `/var/www/rangerbook-pvp`：
+
+```text
+/home/ubuntu/rangerbook-data/player_index.json
+/home/ubuntu/rangerbook-auth/player_lookup_cache.json
+```
+
+API：
+
+```text
+GET  /super-admin/player-search?q={name}&limit=30
+POST /super-admin/player-team-query
+```
+
+兩個端點都由 `require_super_admin` 驗證。搜尋只讀取玩家索引；只有 POST 查詢指定 UID 時才會呼叫 LINE Rangers `/player/units/team/equip/uid/{UID}`，並將最新結果覆蓋寫入 `player_lookup_cache.json`。
+
+Auth v1.2.0 會使用既有 Guild War collector 作為遊戲 API core，預設路徑為：
+
+```text
+/home/ubuntu/rangerbook-scripts/collect_guildwar_usage.py
+```
+
+可選環境變數：
+
+```text
+RANGERBOOK_GUILDWAR_CORE=/home/ubuntu/rangerbook-scripts/collect_guildwar_usage.py
+RANGERBOOK_PLAYER_INDEX=/home/ubuntu/rangerbook-data/player_index.json
+RANGERBOOK_PLAYER_QUERY_CACHE=/home/ubuntu/rangerbook-auth/player_lookup_cache.json
+```
