@@ -201,17 +201,17 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   gap: 0.28rem;
   width: min(100%, 6.8rem);
   min-width: 0;
-  height: 3.45rem;
 }
 
 .pvp-player-unit-equipment-slot {
   position: relative;
   display: block;
   width: 100%;
-  height: 3.1rem;
+  aspect-ratio: 1 / 1;
   min-width: 0;
   overflow: hidden;
-  border-radius: 0.45rem;
+  border-radius: 0.55rem;
+  background: var(--soft);
 }
 
 .pvp-player-unit-equipment-image {
@@ -221,15 +221,19 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   min-width: 0;
   object-fit: contain;
   border-radius: inherit;
-  background: var(--soft);
+  background: transparent;
 }
 
 .pvp-player-unit-equipment-empty {
   display: grid;
   place-items: center;
+  width: 100%;
+  height: 100%;
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 850;
+  border-radius: inherit;
+  background: transparent;
 }
 
 .pvp-player-unit-equipment-star,
