@@ -345,8 +345,7 @@
       const code = String(unit.unitCode || "");
       const rangerStar = rangerStarLayer(rangerStarByCode[code]);
       return `<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
-        <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${unitTalentCorner(unit)}</span>
-        ${teamStarImage(rangerStar, "pvp-player-unit-star")}
+        <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${unitTalentCorner(unit)}${teamStarImage(rangerStar, "pvp-player-unit-star")}</span>
         <span class="pvp-player-unit-equipment-row">${teamEquipmentSlot(unit, "WEAPON")}${teamEquipmentSlot(unit, "ARMOR")}${teamEquipmentSlot(unit, "ACC")}</span>
         <span class="pvp-player-unit-name">${escapeHtml(rangerName(code))}</span>
       </button>`;
