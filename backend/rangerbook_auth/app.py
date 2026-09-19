@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import re
 import secrets
@@ -16,6 +17,8 @@ from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+
+from player_query import query_player_teams, search_players
 
 APP_ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("RANGERBOOK_AUTH_DB", APP_ROOT / "rangerbook_auth.db")).resolve()
@@ -40,7 +43,7 @@ PASSWORD_HASHER = PasswordHasher(
     salt_len=16,
 )
 
-app = FastAPI(title="Rangerbook Auth API", version="1.1.0")
+app = FastAPI(title="Rangerbook Auth API", version="1.2.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=sorted(ALLOWED_ORIGINS),
@@ -57,6 +60,10 @@ class Credentials(BaseModel):
 
 class RoleUpdate(BaseModel):
     role: Literal["user", "admin"]
+
+
+class PlayerTeamQuery(BaseModel):
+    uid: str = Field(min_length=1, max_length=128)
 
 
 class UserRecord(dict):
@@ -506,6 +513,39 @@ def delete_user(
 @app.get("/admin/access-check")
 def admin_access_check(user: sqlite3.Row = Depends(require_admin)) -> dict[str, Any]:
     return {"ok": True, "role": user["role"], "account": user["account"]}
+
+
+@app.get("/super-admin/player-search")
+def super_admin_player_search(
+    q: str,
+    limit: int = 30,
+    _: sqlite3.Row = Depends(require_super_admin),
+) -> dict[str, Any]:
+    try:
+        return search_players(q, limit)
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
+    except (ValueError, OSError, json.JSONDecodeError) as error:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(error)) from error
+
+
+@app.post("/super-admin/player-team-query")
+def super_admin_player_team_query(
+    payload: PlayerTeamQuery,
+    request: Request,
+    _: sqlite3.Row = Depends(require_super_admin),
+) -> dict[str, Any]:
+    require_trusted_origin(request)
+    try:
+        return query_player_teams(payload.uid)
+    except KeyError as error:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(error).strip("'")) from error
+    except ValueError as error:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
+    except Exception as error:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"玩家資料查詢失敗：{error}") from error
 
 
 def bootstrap_super_admin(account: str, password: str) -> dict[str, Any]:
