@@ -6,6 +6,7 @@
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_data_DIAMOND.json",
   };
   const RANGERS_URL = "../../res/Rangers_data.json";
+  const GEAR_DATA_URL = "../../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const ABILITY_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const EFFECT_DICT_URL = "../../res/effect_dict.json";
@@ -13,6 +14,7 @@
   const GEAR_ICON = (id) => `https://rangers.lerico.net/res/gear_icon/${encodeURIComponent(id)}_icon.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
   const TALENT_ICON = (grade) => `../../assets/tlt_icon/tlt${encodeURIComponent(grade)}.png`;
+  const STAR_LAYER = (level, star) => `../../assets/star_layer/com_level${level}_star${String(star).padStart(2, "0")}.png`;
   const NONE_CODE = "__NONE__";
   const EFFECT_VISIBLE_MS = 5000;
   const SLOT_LABELS = { WEAPON: "武器", ARMOR: "防具", ACC: "飾品" };
@@ -38,7 +40,9 @@
 
   let guilds = [];
   let rangerNames = {};
+  let rangerStars = {};
   let gearNames = {};
+  let gearStars = {};
   let abilityMap = {};
   let effectMap = {};
   let openGuildRank = 0;
@@ -153,10 +157,30 @@
     return value === undefined ? "-" : num(value);
   }
 
+  function starNumber(value) {
+    const match = String(value ?? "").match(/\d+/);
+    const star = match ? Number(match[0]) : 0;
+    return Number.isInteger(star) && star >= 1 && star <= 9 ? star : 0;
+  }
+
+  function rangerStarLayer(value) {
+    const raw = String(value ?? "");
+    const star = starNumber(raw);
+    if (!star) return "";
+    if (star === 8 && /超進化|超進|ultra/i.test(raw)) return STAR_LAYER("04", star);
+    if (star >= 6 && star <= 8 && /終極|究極|究進|ultimate|hyper/i.test(raw)) return STAR_LAYER("02", star);
+    return STAR_LAYER("01", star);
+  }
+
+  function normalStarLayer(value) {
+    const star = starNumber(value);
+    return star ? STAR_LAYER("01", star) : "";
+  }
+
   function unitTalentIcon(unit) {
     const grade = Number(unit?.talentGrade);
     if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return "";
-    return `<img class="guildwar-unit-talent-icon" src="${TALENT_ICON(grade)}" alt="" aria-hidden="true" decoding="async" onerror="this.remove();">`;
+    return `<img class="pvp-player-unit-talent-corner" src="${TALENT_ICON(grade)}" alt="" title="才能解放階段 ${grade}" aria-hidden="true" decoding="async" onerror="this.remove();">`;
   }
 
   function equipmentObject(unit, slot) {
@@ -172,6 +196,23 @@
     if (!value) return NONE_CODE;
     if (typeof value === "string") return value || NONE_CODE;
     return String(value.equipItemCode || value.itemCode || value.code || NONE_CODE);
+  }
+
+  function teamStarImage(src, className) {
+    return src
+      ? `<img class="${className}" src="${src}" alt="" aria-hidden="true" decoding="async" onerror="this.remove();">`
+      : `<span class="${className}-space" aria-hidden="true"></span>`;
+  }
+
+  function teamEquipmentSlot(unit, slot) {
+    const code = equipmentCode(unit, slot);
+    const isNone = !code || code === NONE_CODE;
+    const name = isNone ? "未裝備" : (gearNames[code] || code);
+    const starSrc = isNone ? "" : normalStarLayer(gearStars[code]);
+    const icon = isNone
+      ? `<span class="pvp-player-unit-equipment-image pvp-player-unit-equipment-empty" aria-hidden="true">—</span>`
+      : `<img class="pvp-player-unit-equipment-image" src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
+    return `<span class="pvp-player-unit-equipment-slot" title="${esc(SLOT_LABELS[slot])}：${esc(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
   }
 
   function effectName(code) {
@@ -307,7 +348,13 @@
           <h3>隊伍角色</h3>
           <div id="guildwarPlayerTeamGrid" class="pvp-player-team-grid">${currentUnits.map((unit, unitIndex) => {
             const code = String(unit.unitCode || "");
-            return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();"><span class="guildwar-unit-name-line">${unitTalentIcon(unit)}<span class="pvp-player-unit-name">${esc(rangerName(code))}</span></span></button>`;
+            const rangerStar = rangerStarLayer(rangerStars[code]);
+            return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}">
+              <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${unitTalentIcon(unit)}</span>
+              ${teamStarImage(rangerStar, "pvp-player-unit-star")}
+              <span class="pvp-player-unit-equipment-row">${teamEquipmentSlot(unit, "WEAPON")}${teamEquipmentSlot(unit, "ARMOR")}${teamEquipmentSlot(unit, "ACC")}</span>
+              <span class="pvp-player-unit-name">${esc(rangerName(code))}</span>
+            </button>`;
           }).join("")}</div>
         </section>
         <aside class="pvp-player-unit-detail"><h3>角色詳細資料</h3><div id="guildwarPlayerUnitDetail"></div></aside>
@@ -372,6 +419,7 @@
         requests.push(
           optional(RANGERS_URL, []),
           optional(ID_DICT_URL, {}),
+          optional(GEAR_DATA_URL, []),
           optional(ABILITY_URL, {}),
           optional(EFFECT_DICT_URL, {}),
         );
@@ -383,13 +431,20 @@
       guilds = Array.isArray(data.guilds) ? data.guilds : [];
       if (ADMIN_MODE) {
         rangerNames = {};
+        rangerStars = {};
         (Array.isArray(results[1]) ? results[1] : []).forEach((row) => {
           const code = String(row.ranger_id || "");
-          if (code) rangerNames[code] = String(row["Ranger名稱"] || code);
+          if (code) {
+            rangerNames[code] = String(row["Ranger名稱"] || code);
+            rangerStars[code] = String(row["Ranger星數"] || "");
+          }
         });
         gearNames = Object.fromEntries(Object.entries(results[2] || {}).map(([name, code]) => [String(code), String(name)]));
-        abilityMap = results[3] && typeof results[3] === "object" ? results[3] : {};
-        effectMap = parseEffectMap(results[4]);
+        gearStars = Object.fromEntries((Array.isArray(results[3]) ? results[3] : [])
+          .map((row) => [String(row?.id || row?.gear_id || row?.code || ""), String(row?.["裝備星級"] || row?.["星數"] || row?.star || "")])
+          .filter(([code]) => code));
+        abilityMap = results[4] && typeof results[4] === "object" ? results[4] : {};
+        effectMap = parseEffectMap(results[5]);
       }
       if (els.updated) els.updated.textContent = date(data.metadata?.generatedAtUtc);
       status();
