@@ -97,7 +97,7 @@
 .pvp-player-unit-button {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: 6rem 3.45rem 1.1rem;
+  grid-template-rows: 6rem 2.7rem 1.1rem;
   align-content: start;
   gap: 0.35rem;
   justify-items: center;
@@ -257,6 +257,7 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
 .guildwar-unit-name-line {
   grid-column: 1;
   grid-row: 3;
+  align-self: center;
 }
 
 .guildwar-unit-name-line {
