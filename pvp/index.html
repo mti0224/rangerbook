@@ -41,9 +41,30 @@
           <p>以每日使用次數折線圖比較傳奇段位角色的變化。</p>
         </div>
       </a>
+
+      <a id="pvpPlayerSearchEntry" class="ranger-hub-card" href="./search/" hidden>
+        <div>
+          <h2>查詢玩家隊伍</h2>
+          <p>依玩家名稱搜尋並即時查看隊伍配置。</p>
+        </div>
+      </a>
     </section>
   </main>
 
   <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/admin-auth.js"></script>
+  <script>
+    (() => {
+      const auth = window.RangerbookAuth;
+      const entry = document.getElementById("pvpPlayerSearchEntry");
+      if (!auth || !entry) return;
+      auth.ready().then(() => {
+        entry.hidden = !auth.isSuperAdmin();
+      });
+      window.addEventListener("rangerbook:auth-changed", () => {
+        entry.hidden = !auth.isSuperAdmin();
+      });
+    })();
+  </script>
 </body>
 </html>
