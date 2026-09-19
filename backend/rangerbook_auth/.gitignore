@@ -5,3 +5,4 @@ __pycache__/
 rangerbook_auth.db
 rangerbook_auth.db-shm
 rangerbook_auth.db-wal
+player_lookup_cache.json
