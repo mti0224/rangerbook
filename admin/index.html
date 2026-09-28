@@ -6,7 +6,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20260919-1">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20260928-1">
 </head>
 <body>
   <div id="site-header"></div>
@@ -81,6 +81,21 @@
         <div id="adminSessionMessage" class="admin-message" role="status" aria-live="polite"></div>
       </section>
 
+      <section id="adminResourceUpdatesCard" class="admin-card" hidden>
+        <div class="admin-session-head">
+          <div>
+            <p class="eyebrow">Resource Monitor</p>
+            <h2>遊戲更新檔案</h2>
+            <p class="admin-muted">沿用既有每 10 分鐘官方 manifest 檢查；不下載 ZIP／OGG 等資源本體，只保存本次有變動的路徑。DB／NDB 也會一併列入。</p>
+          </div>
+          <div class="admin-actions">
+            <button id="adminResourceUpdatesRefreshBtn" class="secondary" type="button">重新整理</button>
+          </div>
+        </div>
+        <div id="adminResourceUpdatesSummary" class="admin-update-summary">載入中…</div>
+        <div id="adminResourceUpdatesList" class="admin-update-list"></div>
+      </section>
+
       <section id="adminPasswordCard" class="admin-card" hidden>
         <h2>變更自己的密碼</h2>
         <p class="admin-muted">所有管理員階級都可以隨時變更自己的登入密碼。更新成功後，其他裝置上的登入狀態會立即失效。</p>
@@ -133,7 +148,7 @@
 
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/admin-auth.js"></script>
-  <script src="../assets/js/admin-page.js"></script>
+  <script src="../assets/js/admin-page.js?v=20260928-1"></script>
   <script src="../assets/js/admin-password.js?v=20260724-1"></script>
 </body>
 </html>
