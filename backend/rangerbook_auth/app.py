@@ -34,6 +34,13 @@ ALLOWED_ORIGINS = {
     if origin.strip()
 }
 
+RESOURCE_UPDATES_INDEX = Path(
+    os.getenv(
+        "RANGERBOOK_RESOURCE_UPDATES_INDEX",
+        "/home/ubuntu/rangerbook-cache/resource-updates/index.json",
+    )
+).resolve()
+
 ACCOUNT_RE = re.compile(r"^[A-Za-z0-9_.-]{3,32}$")
 PASSWORD_HASHER = PasswordHasher(
     time_cost=3,
@@ -507,6 +514,52 @@ def delete_user(
     return {
         "ok": True,
         "deleted": {"id": target["id"], "account": target["account"]},
+    }
+
+
+@app.get("/admin/resource-updates")
+def list_resource_updates(
+    limit: int = 30,
+    _: sqlite3.Row = Depends(require_admin),
+) -> dict[str, Any]:
+    safe_limit = max(1, min(int(limit), 100))
+
+    if not RESOURCE_UPDATES_INDEX.is_file():
+        return {
+            "schemaVersion": 1,
+            "lastCheckedAt": None,
+            "resourceTimestamp": None,
+            "latestCount": 0,
+            "totalRecordedBatches": 0,
+            "items": [],
+        }
+
+    try:
+        payload = json.loads(RESOURCE_UPDATES_INDEX.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"無法讀取資源更新紀錄：{error}",
+        ) from error
+
+    if not isinstance(payload, dict):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="資源更新紀錄格式錯誤。",
+        )
+
+    batches = payload.get("batches", [])
+    if not isinstance(batches, list):
+        batches = []
+    batches = [item for item in batches if isinstance(item, dict)]
+
+    return {
+        "schemaVersion": payload.get("schemaVersion", 1),
+        "lastCheckedAt": payload.get("lastCheckedAt"),
+        "resourceTimestamp": payload.get("resourceTimestamp"),
+        "latestCount": int(payload.get("latestCount") or 0),
+        "totalRecordedBatches": int(payload.get("totalRecordedBatches") or len(batches)),
+        "items": batches[:safe_limit],
     }
 
 

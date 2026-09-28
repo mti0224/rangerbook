@@ -21,6 +21,10 @@
   const applicationsList = $("adminApplicationsList");
   const usersList = $("adminUsersList");
   const refreshBtn = $("adminRefreshBtn");
+  const resourceUpdatesCard = $("adminResourceUpdatesCard");
+  const resourceUpdatesSummary = $("adminResourceUpdatesSummary");
+  const resourceUpdatesList = $("adminResourceUpdatesList");
+  const resourceUpdatesRefreshBtn = $("adminResourceUpdatesRefreshBtn");
 
   const ROLE_LABELS = {
     super_admin: "最大管理者",
@@ -68,6 +72,7 @@
     authCard.hidden = Boolean(user.logged_in);
     sessionCard.hidden = !user.logged_in;
     superAdminPanel.hidden = !auth.isSuperAdmin();
+    if (resourceUpdatesCard) resourceUpdatesCard.hidden = !auth.isAdmin();
 
     if (!user.logged_in) return;
 
@@ -85,6 +90,70 @@
       setMessage(sessionMessage, "你的管理員申請已被拒絕，目前維持非管理員權限。", "error");
     } else {
       setMessage(sessionMessage);
+    }
+  }
+
+  function renderResourceUpdates(payload) {
+    const batches = Array.isArray(payload?.items) ? payload.items : [];
+    const lastChecked = formatDate(payload?.lastCheckedAt);
+    const resourceTimestamp = payload?.resourceTimestamp || "-";
+    const totalRecorded = Number(payload?.totalRecordedBatches || batches.length || 0);
+
+    if (resourceUpdatesSummary) {
+      resourceUpdatesSummary.innerHTML = `
+        <span><strong>最近檢查</strong>：${escapeHtml(lastChecked)}</span>
+        <span><strong>Resource Timestamp</strong>：${escapeHtml(resourceTimestamp)}</span>
+        <span><strong>已記錄批次</strong>：${escapeHtml(totalRecorded)}</span>
+      `;
+    }
+
+    if (!resourceUpdatesList) return;
+    if (!batches.length) {
+      resourceUpdatesList.innerHTML = '<div class="admin-empty">目前尚未偵測到新的資源變動。</div>';
+      return;
+    }
+
+    resourceUpdatesList.innerHTML = batches.map((batch) => {
+      const items = Array.isArray(batch?.items) ? batch.items : [];
+      const paths = items.map((item) => String(item?.path || "")).filter(Boolean);
+      const count = Number(batch?.count ?? paths.length);
+      const dbCount = Number(batch?.dbCount || 0);
+      const deletedCount = Number(batch?.deletedCount || 0);
+      const detectedAt = formatDate(batch?.detectedAt);
+      const meta = [
+        `${count} 個檔案`,
+        dbCount ? `DB/NDB ${dbCount}` : "",
+        deletedCount ? `刪除 ${deletedCount}` : ""
+      ].filter(Boolean).join(" · ");
+
+      return `
+        <details class="admin-update-batch">
+          <summary>
+            <span class="admin-update-batch-title">
+              <strong>${escapeHtml(detectedAt)}</strong>
+              <small>${escapeHtml(meta)}</small>
+            </span>
+            <span class="admin-update-batch-ts">TS ${escapeHtml(batch?.resourceTimestamp || "-")}</span>
+          </summary>
+          <pre class="admin-update-paths">${escapeHtml(paths.join("\n"))}</pre>
+        </details>
+      `;
+    }).join("");
+  }
+
+  async function loadResourceUpdates() {
+    if (!auth.isAdmin() || !resourceUpdatesCard) return;
+    if (resourceUpdatesSummary) resourceUpdatesSummary.textContent = "載入中…";
+    if (resourceUpdatesList) resourceUpdatesList.innerHTML = '<div class="admin-empty">載入中…</div>';
+
+    try {
+      const payload = await auth.api("/admin/resource-updates?limit=40");
+      renderResourceUpdates(payload || {});
+    } catch (error) {
+      if (resourceUpdatesSummary) resourceUpdatesSummary.textContent = "無法讀取資源更新紀錄。";
+      if (resourceUpdatesList) {
+        resourceUpdatesList.innerHTML = `<div class="admin-empty">${escapeHtml(error.message)}</div>`;
+      }
     }
   }
 
@@ -239,6 +308,7 @@
       const user = await auth.login(account, password);
       $("adminLoginPassword").value = "";
       renderUserState(user);
+      if (auth.isAdmin()) await loadResourceUpdates();
       if (auth.isSuperAdmin()) await loadSuperAdminData();
     } catch (error) {
       setMessage(authMessage, error.message, "error");
@@ -275,6 +345,7 @@
   });
 
   refreshBtn?.addEventListener("click", loadSuperAdminData);
+  resourceUpdatesRefreshBtn?.addEventListener("click", loadResourceUpdates);
 
   applicationsList?.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
@@ -294,6 +365,7 @@
 
   auth.ready().then(async (user) => {
     renderUserState(user);
+    if (auth.isAdmin()) await loadResourceUpdates();
     if (auth.isSuperAdmin()) await loadSuperAdminData();
   });
 })();
