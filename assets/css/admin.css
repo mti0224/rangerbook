@@ -414,3 +414,103 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
     justify-content: flex-end;
   }
 }
+
+
+.admin-update-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.admin-update-summary strong {
+  color: var(--text);
+}
+
+.admin-update-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-update-batch {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel) 92%, var(--bg));
+  overflow: hidden;
+}
+
+.admin-update-batch summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.admin-update-batch summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-update-batch summary::after {
+  content: "展開";
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.admin-update-batch[open] summary::after {
+  content: "收合";
+}
+
+.admin-update-batch-title {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.admin-update-batch-title small {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.admin-update-batch-ts {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.admin-update-paths {
+  margin: 0;
+  padding: 16px;
+  max-height: 420px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: 0.82rem/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  white-space: pre;
+  tab-size: 2;
+}
+
+@media (max-width: 640px) {
+  .admin-update-batch summary {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .admin-update-batch-ts {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .admin-update-batch summary::after {
+    margin-left: auto;
+  }
+}
