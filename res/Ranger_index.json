@@ -11942,11 +11942,144 @@
         "element": "光"
     },
     {
+        "id": "u1632e-le",
+        "name": "魯路修",
+        "star": "8星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1632h-le",
+        "name": "盤面上的支配者 魯路修",
+        "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1632u-le",
+        "name": "黑之反叛者 魯路修",
+        "star": "終極進化8星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1633e-le",
+        "name": "ZERO 魯路修",
+        "star": "9星",
+        "type": "敏捷型",
+        "element": "水"
+    },
+    {
+        "id": "u1634e-su",
+        "name": "樞木朱雀",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1634h-su",
+        "name": "不列顛尼亞的騎士 樞木朱雀",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1634u-su",
+        "name": "白之騎士 樞木朱雀",
+        "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1635e-su",
+        "name": "圓桌騎士 樞木朱雀",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1636e-cc",
+        "name": "C‧C‧",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
+        "id": "u1636h-cc",
+        "name": "CODE持有者 C‧C‧",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
+        "id": "u1636u-cc",
+        "name": "不老不死的魔女 C‧C‧",
+        "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
+        "id": "u1637e-cc",
+        "name": "ZERO的共犯 C‧C‧",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "水"
+    },
+    {
+        "id": "u1638e-ka",
+        "name": "紅月卡蓮",
+        "star": "8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1638h-ka",
+        "name": "黑色騎士團 紅月卡蓮",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1638u-ka",
+        "name": "紅之夜叉 紅月卡蓮",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1639e-ka",
+        "name": "ZERO親衛隊隊長 紅月卡蓮",
+        "star": "9星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
         "id": "u163e-alex",
         "name": "全壘打王艾力克斯",
         "star": "5星",
         "type": "力量型",
         "element": "無"
+    },
+    {
+        "id": "u1640e-xi",
+        "name": "黎 星刻",
+        "star": "8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1640h-xi",
+        "name": "天子的守護者 黎 星刻",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1640u-xi",
+        "name": "中華聯邦的武官 黎 星刻",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "火"
     },
     {
         "id": "u164e-alex",
