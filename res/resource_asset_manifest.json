@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-09-30T04:02:28Z",
+  "resourceTimestamp": "1790738789000",
+  "targets": [
+    {
+      "path": "/ability_icon/hd_ability_icon_20260928143720847.zip",
+      "resourceId": "ability_icon",
+      "resourceType": "zip",
+      "signature": "cd427bf59eadc5f3769b294b4454b602",
+      "size": 571815,
+      "deleted": false,
+      "destinationDir": "ability_icon"
+    },
+    {
+      "path": "/gear_icon/hd_gear_icon_20260928074955354.zip",
+      "resourceId": "gear_icon",
+      "resourceType": "zip",
+      "signature": "0eeb32745dde45db3cb536cba4199d21",
+      "size": 5718183,
+      "deleted": false,
+      "destinationDir": "gear_icon"
+    },
+    {
+      "path": "/skill_icon/hd_skill_icon_20260928150240783.zip",
+      "resourceId": "skill_icon",
+      "resourceType": "zip",
+      "signature": "a7ef3c40392b827e8bfae74fad049b9f",
+      "size": 7097146,
+      "deleted": false,
+      "destinationDir": "skill_icon"
+    },
+    {
+      "path": "/u1632e-le/hd_u1632e-le_20260923142025819.zip",
+      "resourceId": "u1632e-le",
+      "resourceType": "zip",
+      "signature": "e66dad83126fcdf185206495da5e6666",
+      "size": 180342,
+      "deleted": false,
+      "destinationDir": "u1632e-le"
+    },
+    {
+      "path": "/u1632h-le/hd_u1632h-le_20260923142026453.zip",
+      "resourceId": "u1632h-le",
+      "resourceType": "zip",
+      "signature": "df9d8bfbd6261020ad9d2aeaa71cdf7d",
+      "size": 304573,
+      "deleted": false,
+      "destinationDir": "u1632h-le"
+    },
+    {
+      "path": "/u1632u-le/hd_u1632u-le_20260923142027052.zip",
+      "resourceId": "u1632u-le",
+      "resourceType": "zip",
+      "signature": "98a6a156ac56a4396c58449f0ee6ff97",
+      "size": 303667,
+      "deleted": false,
+      "destinationDir": "u1632u-le"
+    },
+    {
+      "path": "/u1633e-le/hd_u1633e-le_20260923142027670.zip",
+      "resourceId": "u1633e-le",
+      "resourceType": "zip",
+      "signature": "8e3f0253bbd38d1176f298097e7958a7",
+      "size": 314271,
+      "deleted": false,
+      "destinationDir": "u1633e-le"
+    },
+    {
+      "path": "/u1634e-su/hd_u1634e-su_20260923142028233.zip",
+      "resourceId": "u1634e-su",
+      "resourceType": "zip",
+      "signature": "fb7907b8e13ffed50515faa4932c34bf",
+      "size": 129935,
+      "deleted": false,
+      "destinationDir": "u1634e-su"
+    },
+    {
+      "path": "/u1634h-su/hd_u1634h-su_20260923142028858.zip",
+      "resourceId": "u1634h-su",
+      "resourceType": "zip",
+      "signature": "3cf48eeaebdd37665e040160e69eaa48",
+      "size": 335300,
+      "deleted": false,
+      "destinationDir": "u1634h-su"
+    },
+    {
+      "path": "/u1634u-su/hd_u1634u-su_20260923142029442.zip",
+      "resourceId": "u1634u-su",
+      "resourceType": "zip",
+      "signature": "2dab000ad82fc106ed92fba89cd0b065",
+      "size": 341511,
+      "deleted": false,
+      "destinationDir": "u1634u-su"
+    },
+    {
+      "path": "/u1635e-su/hd_u1635e-su_20260923142030085.zip",
+      "resourceId": "u1635e-su",
+      "resourceType": "zip",
+      "signature": "7d8df9f7e3e5beec323c0fa5542b4f26",
+      "size": 339040,
+      "deleted": false,
+      "destinationDir": "u1635e-su"
+    },
+    {
+      "path": "/u1636e-cc/hd_u1636e-cc_20260923142030659.zip",
+      "resourceId": "u1636e-cc",
+      "resourceType": "zip",
+      "signature": "505136b64502887ec8ddda48fc63af43",
+      "size": 234801,
+      "deleted": false,
+      "destinationDir": "u1636e-cc"
+    },
+    {
+      "path": "/u1636h-cc/hd_u1636h-cc_20260923142031340.zip",
+      "resourceId": "u1636h-cc",
+      "resourceType": "zip",
+      "signature": "c5eee5ad69a69ed55cffcb10978e5840",
+      "size": 265826,
+      "deleted": false,
+      "destinationDir": "u1636h-cc"
+    },
+    {
+      "path": "/u1636u-cc/hd_u1636u-cc_20260923142032051.zip",
+      "resourceId": "u1636u-cc",
+      "resourceType": "zip",
+      "signature": "18b38c48f50cd7621b319ea5c7d4a891",
+      "size": 265545,
+      "deleted": false,
+      "destinationDir": "u1636u-cc"
+    },
+    {
+      "path": "/u1637e-cc/hd_u1637e-cc_20260923142032768.zip",
+      "resourceId": "u1637e-cc",
+      "resourceType": "zip",
+      "signature": "1b93e5d940c911d236f767fce1658aa8",
+      "size": 269082,
+      "deleted": false,
+      "destinationDir": "u1637e-cc"
+    },
+    {
+      "path": "/u1638e-ka/hd_u1638e-ka_20260923142033440.zip",
+      "resourceId": "u1638e-ka",
+      "resourceType": "zip",
+      "signature": "ce5771b172b7d4152657bf76afef8bde",
+      "size": 112603,
+      "deleted": false,
+      "destinationDir": "u1638e-ka"
+    },
+    {
+      "path": "/u1638h-ka/hd_u1638h-ka_20260923142034083.zip",
+      "resourceId": "u1638h-ka",
+      "resourceType": "zip",
+      "signature": "9d068c75a05d18cfb8b4d9772b1cbb45",
+      "size": 537617,
+      "deleted": false,
+      "destinationDir": "u1638h-ka"
+    },
+    {
+      "path": "/u1638u-ka/hd_u1638u-ka_20260923142034983.zip",
+      "resourceId": "u1638u-ka",
+      "resourceType": "zip",
+      "signature": "40043c8b6e8ab37b7844456ccc219e83",
+      "size": 533132,
+      "deleted": false,
+      "destinationDir": "u1638u-ka"
+    },
+    {
+      "path": "/u1639e-ka/hd_u1639e-ka_20260923142035761.zip",
+      "resourceId": "u1639e-ka",
+      "resourceType": "zip",
+      "signature": "136fed5762e50942e344014fc0becee9",
+      "size": 535126,
+      "deleted": false,
+      "destinationDir": "u1639e-ka"
+    },
+    {
+      "path": "/u1640e-xi/hd_u1640e-xi_20260923142036513.zip",
+      "resourceId": "u1640e-xi",
+      "resourceType": "zip",
+      "signature": "566ff237c49997cf9a08bab4259f87c8",
+      "size": 390032,
+      "deleted": false,
+      "destinationDir": "u1640e-xi"
+    },
+    {
+      "path": "/u1640h-xi/hd_u1640h-xi_20260923142037195.zip",
+      "resourceId": "u1640h-xi",
+      "resourceType": "zip",
+      "signature": "3d322128dd6464bae5f49244aff6d037",
+      "size": 731378,
+      "deleted": false,
+      "destinationDir": "u1640h-xi"
+    },
+    {
+      "path": "/u1640u-xi/hd_u1640u-xi_20260923142037914.zip",
+      "resourceId": "u1640u-xi",
+      "resourceType": "zip",
+      "signature": "bf24608a16ca014674fd29c2b6387a6f",
+      "size": 735618,
+      "deleted": false,
+      "destinationDir": "u1640u-xi"
+    }
+  ]
+}
