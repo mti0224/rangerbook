@@ -126,7 +126,7 @@
     if (tierDataCache.has(code)) return tierDataCache.get(code);
     const url = COMPACT_URLS[code];
     if (!url) return {};
-    const promise = fetch(`${url}?t=${Date.now()}`, { cache: "no-store" })
+    const promise = fetch(`${url}`)
       .then((response) => response.ok ? response.json() : {})
       .catch(() => ({}));
     tierDataCache.set(code, promise);
@@ -413,7 +413,7 @@
   async function load() {
     status("公會排名資料載入中…");
     try {
-      const requests = [fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" })];
+      const requests = [fetch(`${DATA_URL}`)];
       if (ADMIN_MODE) {
         requests.push(
           optional(RANGERS_URL, []),
