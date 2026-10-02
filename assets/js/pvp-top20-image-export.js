@@ -134,7 +134,7 @@
     button.textContent = "產生圖片中…";
 
     try {
-      const response = await fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" });
+      const response = await fetch(`${DATA_URL}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       const rangers = (Array.isArray(data.rangers) ? [...data.rangers] : [])
