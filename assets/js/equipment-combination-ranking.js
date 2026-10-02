@@ -65,7 +65,7 @@
       }
       return;
     }
-    try { const res = await fetch(`${currentDataUrl()}?t=${Date.now()}`, { cache: "no-store" }); acceptData(res.ok ? await res.json() : {}); } catch { acceptData({}); }
+    try { const res = await fetch(`${currentDataUrl()}`); acceptData(res.ok ? await res.json() : {}); } catch { acceptData({}); }
   }
 
   modalContent.addEventListener("click", (event) => { const button = event.target.closest("[data-combo-page]"); if (!button || button.disabled) return; const next = Number(button.dataset.comboPage); if (!Number.isFinite(next)) return; currentPage = next; refreshSection(); });

@@ -48,7 +48,7 @@
   }
 
   async function fetchJson(url) {
-    const response = await fetch(`${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`, { cache: "no-store" });
+    const response = await fetch(`${url}${url.includes("?") ? "&" : "?"}t=${Date.now()}`);
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
     return response.json();
   }

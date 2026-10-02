@@ -11,7 +11,7 @@
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_usage_index_DIAMOND.json",
   };
   const TIER_LABELS = { LEGEND: "傳奇", LEGEND_20: "傳奇（1～20名）", MASTER: "大師", DIAMOND: "鑽石" };
-  const RANGERS_URL = "../../res/Rangers_data.json";
+  const RANGERS_URL = "../../res/Ranger_index.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const ABILITY_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const PAGE_SIZE = 5;
@@ -202,7 +202,7 @@
 
   function closeModal(){if(!els.modal||els.modal.hidden)return;els.modal.hidden=true;document.body.classList.remove("modal-open");}
   async function optional(url){try{const r=await fetch(url);return r.ok?await r.json():{};}catch{return {};}}
-  async function loadSupport(){if(supportLoaded)return;const [rangers,ids,abilities]=await Promise.all([optional(RANGERS_URL),optional(ID_DICT_URL),optional(ABILITY_URL)]);rangerMap={};(Array.isArray(rangers)?rangers:[]).forEach(r=>{const id=String(r.ranger_id||"");if(id)rangerMap[id]={name:String(r["Ranger名稱"]||id),star:String(r["Ranger星數"]||""),type:String(r["類型"]||""),element:String(r["屬性"]||"")}});gearNames=Object.fromEntries(Object.entries(ids||{}).map(([name,code])=>[String(code),String(name)]));abilityMap=abilities||{};supportLoaded=true;}
+  async function loadSupport(){if(supportLoaded)return;const [rangers,ids,abilities]=await Promise.all([optional(RANGERS_URL),optional(ID_DICT_URL),optional(ABILITY_URL)]);rangerMap={};(Array.isArray(rangers)?rangers:[]).forEach(r=>{const id=String(r.id||r.ranger_id||"");if(id)rangerMap[id]={name:String(r.name||r["Ranger名稱"]||id),star:String(r.star||r["Ranger星數"]||""),type:String(r.type||r["類型"]||""),element:String(r.element||r["屬性"]||"")}});gearNames=Object.fromEntries(Object.entries(ids||{}).map(([name,code])=>[String(code),String(name)]));abilityMap=abilities||{};supportLoaded=true;}
 
   async function load(){
     const tier=currentTier(), label=TIER_LABELS[tier]||tier;

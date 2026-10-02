@@ -358,7 +358,7 @@
     setStatus("角色使用率資料載入中…");
     try {
       const [response, idDict, abilities] = await Promise.all([
-        fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" }),
+        fetch(`${DATA_URL}`),
         optionalJson(ID_DICT_URL),
         optionalJson(ABILITY_DATA_URL),
       ]);

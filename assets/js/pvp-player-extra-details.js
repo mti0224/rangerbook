@@ -24,7 +24,7 @@
       return Promise.resolve(window.__RANGERBOOK_PVP_TEAM_PAYLOAD__);
     }
     if (dataPromise) return dataPromise;
-    dataPromise = fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" })
+    dataPromise = fetch(`${PLAYER_TEAMS_URL}`)
       .then((res) => {
         if (!res.ok) throw new Error(`player_teams HTTP ${res.status}`);
         return res.json();
@@ -90,7 +90,7 @@
     if (guildDataPromises.has(code)) return guildDataPromises.get(code);
     const url = GUILDWAR_DATA_URLS[code];
     if (!url) return Promise.resolve({});
-    const promise = fetch(`${url}?t=${Date.now()}`, { cache: "no-store" })
+    const promise = fetch(`${url}`)
       .then((res) => res.ok ? res.json() : {})
       .catch(() => ({}));
     guildDataPromises.set(code, promise);

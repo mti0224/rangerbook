@@ -2,7 +2,7 @@
   const DATA_URL = "https://pvp-data.warmycat.com/leaderboard.json";
   const PLAYER_TEAMS_URL = "https://pvp-data.warmycat.com/player_teams.json";
   const ID_DICT_URL = "../../res/id_dict.json";
-  const RANGER_DATA_URL = "../../res/Rangers_data.json";
+  const RANGER_DATA_URL = "../../res/Ranger_index.json";
   const GEAR_DATA_URL = "../../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
   const ABILITY_DATA_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const EFFECT_DICT_URL = "../../res/effect_dict.json";
@@ -406,7 +406,7 @@
   function loadSupportData() {
     if (supportDataPromise) return supportDataPromise;
     supportDataPromise = Promise.all([
-      fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" }).then((res) => {
+      fetch(`${PLAYER_TEAMS_URL}`).then((res) => {
         if (!res.ok) throw new Error(`player_teams HTTP ${res.status}`);
         return res.json();
       }),
@@ -419,10 +419,10 @@
       playerTeamPayload = teamPayload && typeof teamPayload === "object" ? teamPayload : {};
       gearNameByCode = Object.fromEntries(Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)]));
       rangerNameByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
-        .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
+        .map((row) => [String(row?.id || row?.ranger_id || ""), String(row?.name || row?.["Ranger名稱"] || row?.id || row?.ranger_id || "")])
         .filter(([code]) => code));
       rangerStarByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
-        .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger星數"] || "")])
+        .map((row) => [String(row?.id || row?.ranger_id || ""), String(row?.star || row?.["Ranger星數"] || "")])
         .filter(([code]) => code));
       gearStarByCode = Object.fromEntries((Array.isArray(gearRows) ? gearRows : [])
         .map((row) => [String(row?.id || row?.gear_id || row?.code || ""), String(row?.["裝備星級"] || row?.["星數"] || row?.star || "")])
@@ -471,12 +471,9 @@
   }
 
   async function load() {
-    setStatus("排行榜與隊伍資料載入中…");
+    setStatus("排行榜資料載入中…");
     try {
-      const [response] = await Promise.all([
-        fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" }),
-        loadSupportData(),
-      ]);
+      const response = await fetch(`${DATA_URL}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       players = Array.isArray(data.players) ? data.players : [];
@@ -485,7 +482,7 @@
       setStatus();
     } catch (error) {
       console.error("PvP leaderboard load failed", error);
-      setStatus("排行榜或隊伍資料尚未產生，或目前無法載入。", true);
+      setStatus("排行榜資料尚未產生，或目前無法載入。", true);
       if (elements.body) elements.body.innerHTML = "";
     }
   }
