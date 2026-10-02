@@ -17,6 +17,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,6 +25,8 @@ from typing import Any
 
 DEFAULT_OUTPUT_DIR = Path("/home/ubuntu/rangerbook-cache/resource-updates")
 MAX_INDEX_BATCHES = 200
+ICON_RESOURCE_DIRS = {"ability_icon", "gear_icon", "skill_icon"}
+UNIT_RESOURCE_RE = re.compile(r"^u[0-9][A-Za-z0-9_-]*$")
 
 
 def utc_now() -> datetime:
@@ -109,6 +112,91 @@ def normalize_item(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def asset_sync_destination(item: dict[str, Any]) -> str | None:
+    path = str(item.get("path") or "").strip()
+    if not path or path.startswith(("http://", "https://", "[resourceId:")):
+        return None
+
+    normalized = path.lstrip("/")
+    parts = normalized.split("/")
+    if len(parts) < 2:
+        return None
+
+    top = parts[0]
+    filename = parts[-1]
+    if not filename.lower().endswith(".zip"):
+        return None
+
+    if top in ICON_RESOURCE_DIRS:
+        return top if filename.startswith(f"hd_{top}_") else None
+
+    if UNIT_RESOURCE_RE.fullmatch(top):
+        return top if filename.startswith(f"hd_{top}_") else None
+
+    return None
+
+
+def update_asset_manifest(
+    output_path: Path,
+    items: list[dict[str, Any]],
+    resource_timestamp: str,
+    now: datetime,
+) -> int:
+    existing = load_json(output_path, {})
+    if not isinstance(existing, dict):
+        existing = {}
+
+    previous_targets = existing.get("targets", [])
+    targets_by_dir: dict[str, dict[str, Any]] = {}
+    if isinstance(previous_targets, list):
+        for target in previous_targets:
+            if not isinstance(target, dict):
+                continue
+            destination = str(target.get("destinationDir") or "").strip()
+            if destination:
+                targets_by_dir[destination] = dict(target)
+
+    changed = 0
+    for item in items:
+        destination = asset_sync_destination(item)
+        if not destination:
+            continue
+
+        if item.get("deleted"):
+            if destination in targets_by_dir:
+                targets_by_dir.pop(destination, None)
+                changed += 1
+            continue
+
+        target = {
+            "path": item.get("path"),
+            "resourceId": item.get("resourceId"),
+            "resourceType": item.get("resourceType"),
+            "signature": item.get("signature"),
+            "size": item.get("size"),
+            "deleted": False,
+            "destinationDir": destination,
+        }
+        if targets_by_dir.get(destination) != target:
+            targets_by_dir[destination] = target
+            changed += 1
+
+    if not changed and output_path.is_file():
+        return 0
+
+    payload = {
+        "schemaVersion": 1,
+        "updatedAt": utc_iso(now),
+        "resourceTimestamp": resource_timestamp or None,
+        "targets": [
+            targets_by_dir[key]
+            for key in sorted(targets_by_dir)
+        ],
+    }
+    atomic_write_json(output_path, payload)
+    return changed
+
+
 def rows_digest(items: list[dict[str, Any]], resource_timestamp: str) -> str:
     canonical = json.dumps(
         {"resourceTimestamp": resource_timestamp, "items": items},
@@ -126,6 +214,12 @@ def main() -> int:
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--resource-state", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--asset-manifest-output",
+        type=Path,
+        default=None,
+        help="Persistent whitelist manifest for rangerbook_res unit/icon synchronization.",
+    )
     args = parser.parse_args()
 
     now = utc_now()
@@ -160,6 +254,19 @@ def main() -> int:
         or resource_state.get("resourceTimestamp")
         or ""
     ).strip()
+
+    if args.asset_manifest_output is not None:
+        asset_changes = update_asset_manifest(
+            args.asset_manifest_output,
+            items,
+            resource_timestamp,
+            now,
+        )
+        if asset_changes:
+            print(
+                f"[RESOURCE ASSET] updated {asset_changes} sync target(s) "
+                f"-> {args.asset_manifest_output}"
+            )
 
     state = load_json(recorder_state_path, {})
     if not isinstance(state, dict):
