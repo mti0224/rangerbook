@@ -406,7 +406,7 @@
   function loadSupportData() {
     if (supportDataPromise) return supportDataPromise;
     supportDataPromise = Promise.all([
-      fetch(`${PLAYER_TEAMS_URL}?t=${Date.now()}`, { cache: "no-store" }).then((res) => {
+      fetch(`${PLAYER_TEAMS_URL}`).then((res) => {
         if (!res.ok) throw new Error(`player_teams HTTP ${res.status}`);
         return res.json();
       }),
@@ -474,7 +474,7 @@
     setStatus("排行榜與隊伍資料載入中…");
     try {
       const [response] = await Promise.all([
-        fetch(`${DATA_URL}?t=${Date.now()}`, { cache: "no-store" }),
+        fetch(`${DATA_URL}`),
         loadSupportData(),
       ]);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
