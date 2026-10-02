@@ -94,7 +94,7 @@
     for (const url of RANGER_CATALOG_URLS) {
       try {
         const separator = url.includes("?") ? "&" : "?";
-        const response = await nativeFetch(`${url}${separator}t=${Date.now()}`, { cache: "no-store" });
+        const response = await nativeFetch(`${url}${separator}t=${Date.now()}`);
         if (!response.ok) continue;
         const catalog = buildCatalog(await response.json());
         if (catalog.size) return catalog;
