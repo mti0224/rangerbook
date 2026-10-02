@@ -5,7 +5,7 @@
     MASTER: "https://pvp-data.warmycat.com/guildwar_data_MASTER.json",
     DIAMOND: "https://pvp-data.warmycat.com/guildwar_data_DIAMOND.json",
   };
-  const RANGERS_URL = "../../res/Rangers_data.json";
+  const RANGERS_URL = "../../res/Ranger_index.json";
   const GEAR_DATA_URL = "../../res/%E8%A3%9D%E5%82%99%E8%B3%87%E6%96%99%E5%BA%AB.json";
   const ID_DICT_URL = "../../res/id_dict.json";
   const ABILITY_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
@@ -432,10 +432,10 @@
         rangerNames = {};
         rangerStars = {};
         (Array.isArray(results[1]) ? results[1] : []).forEach((row) => {
-          const code = String(row.ranger_id || "");
+          const code = String(row.id || row.ranger_id || "");
           if (code) {
-            rangerNames[code] = String(row["Ranger名稱"] || code);
-            rangerStars[code] = String(row["Ranger星數"] || "");
+            rangerNames[code] = String(row.name || row["Ranger名稱"] || code);
+            rangerStars[code] = String(row.star || row["Ranger星數"] || "");
           }
         });
         gearNames = Object.fromEntries(Object.entries(results[2] || {}).map(([name, code]) => [String(code), String(name)]));
