@@ -405,7 +405,7 @@ html[data-theme="dark"] body.gt-app :is(.ranger-skill-card,.ranger-ability-card,
 html[data-theme="dark"] body.gt-app :is(.ranger-card:hover,.gear-card:hover,.ability-card:hover) { background: var(--gt-row-hover) !important; }
 html[data-theme="dark"] body.gt-app :is(table td) { background: var(--panel) !important; color: var(--text) !important; }
 html[data-theme="dark"] body.gt-app :is(table thead th) { background: var(--gt-inset) !important; color: var(--muted) !important; }
-html[data-theme="dark"] body.gt-app :is(button:hover) { background: var(--primary) !important; color: #052b28 !important; }
+/* Do not apply an accent fill to every hovered button: several buttons are full-width ranger cells. */
 html[data-theme="dark"] body.gt-app :is(.gt-sidebar-nav a:hover,.gt-sidebar-nav a[aria-current="page"]) { color: var(--primary-dark); }
 html[data-theme="dark"] body.gt-app .admin-user-actions :is(.danger,.warning,.reject):hover { color: #fff !important; }
 
@@ -495,3 +495,157 @@ body.gt-app :is(.pvp-history-chart-panel,.stats-trend-panel,.labyrinth-stage-inf
 body.gt-app .pvp-history-chart-panel canvas { max-width: 100%; }
 @media (max-width: 1120px) { body.gt-app :is(.pvp-search-page,.pvp-history-page) { width:min(1180px,calc(100% - 2rem)); } }
 @media (max-width: 620px) { body.gt-app :is(.pvp-data-meta,.stats-summary) { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Game-Tech detail polish (2026-10-10): retain legacy functionality and category meaning. */
+
+/* The compare picker should occupy no height if search is empty or results are cleared. */
+body.gt-app .compare-suggestions:empty,
+body.gt-app .compare-suggestions[hidden] { display: none !important; padding: 0; border: 0; }
+body.gt-app .compare-suggestions:not([hidden]):not(:empty) {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+body.gt-app .compare-suggestion { background: transparent !important; color: var(--text) !important; }
+body.gt-app .compare-suggestion:is(:hover,:focus-visible) { background: var(--soft) !important; color: var(--text) !important; }
+
+/* Buttons: quiet dark-mode feedback instead of site-wide bright green or legacy bright blue. */
+html[data-theme="dark"] body.gt-app .site-settings-toggle:hover,
+html[data-theme="dark"] body.gt-app .site-settings-toggle:focus-visible,
+html[data-theme="dark"] body.gt-app .theme-toggle-row:hover,
+html[data-theme="dark"] body.gt-app .theme-toggle-row:focus-visible,
+html[data-theme="dark"] body.gt-app .site-menu-toggle:hover {
+  background: #213a43 !important;
+  color: var(--text) !important;
+  border-color: #35525b !important;
+}
+html[data-theme="dark"] body.gt-app .theme-toggle-pill { background: #253e48; }
+html[data-theme="dark"] body.gt-app .theme-toggle-row[aria-pressed="true"] .theme-toggle-pill { background: #21675f; }
+html[data-theme="dark"] body.gt-app .theme-toggle-pill::after { background: #edf6f5; }
+html[data-theme="dark"] body.gt-app :is(.ranking-metric-button,.stats-type-button,.pagination-actions button,.pagination-page):hover:not(:disabled) {
+  background: #263e49 !important; color: #d8e9e9 !important; border-color: #385962 !important;
+}
+html[data-theme="dark"] body.gt-app :is(.ranking-metric-button,.stats-type-button).active,
+html[data-theme="dark"] body.gt-app :is(.ranking-metric-button,.stats-type-button).active:hover,
+html[data-theme="dark"] body.gt-app .pagination-page.active {
+  background: #194c4c !important; color: #bce9e3 !important; border-color: #33736f !important;
+}
+
+/* PvP usage ranger names are links disguised as buttons. Never paint a bright button rectangle. */
+body.gt-app .pvp-usage-stable-table .pvp-ranger-trigger,
+html[data-theme="dark"] body.gt-app .pvp-usage-stable-table .pvp-ranger-trigger:is(:hover,:focus,:focus-visible,:active) {
+  border: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+html[data-theme="dark"] body.gt-app .pvp-usage-stable-table tbody tr:hover > td {
+  background: #1b323b !important;
+  color: var(--text) !important;
+}
+html[data-theme="dark"] body.gt-app .pvp-usage-stable-table .pvp-ranger-trigger .pvp-ranger-name { color: var(--text) !important; }
+
+/* All nested table variants inherit the same readable dark surface without losing highlighting. */
+body.gt-app :is(.compare-section > h3,.stats-section > h2,.ranking-section > h2,.compare-skill-subhead th,.compare-skill-subhead td,.stats-metric-row,.stats-table thead th,.stats-table tbody th,.endless-stage-table thead th,.enemy-skill-effect-table thead th,.enemy-skill-meta-table thead th,.ability-effect-table thead th,.ability-detail-effect-table thead th) {
+  border-color: var(--line) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.compare-section > h3,.stats-section > h2,.compare-skill-subhead th,.compare-skill-subhead td) {
+  background: #203844 !important; color: #dce9ed !important;
+}
+html[data-theme="dark"] body.gt-app :is(
+  .compare-table thead th,.compare-table tbody th,
+  .stats-table thead th,.stats-table tbody th,
+  .endless-stage-table thead th,.endless-stage-table tbody th,
+  .enemy-skill-effect-table thead th,.enemy-skill-effect-table tbody th,
+  .enemy-skill-meta-table thead th,.enemy-skill-meta-table tbody th,
+  .skill-effect-table thead th,.skill-meta-table thead th,
+  .ability-effect-table thead th,.ability-detail-effect-table thead th,
+  .gear-effect-table thead th,
+  .talent-main-table thead th,.talent-main-effect-table thead th
+) { background: #203540 !important; color: #c4d7de !important; border-color: var(--line) !important; }
+html[data-theme="dark"] body.gt-app :is(
+  .compare-table td,.stats-table td,
+  .endless-stage-table td,.enemy-skill-effect-table td,.enemy-skill-meta-table td,
+  .skill-effect-table td,.skill-meta-table td,.ability-effect-table td,
+  .ability-detail-effect-table td,.gear-effect-table td,.talent-main-table td,
+  .talent-main-effect-table td,.talent-boost-table td
+) { background: var(--panel) !important; color: var(--text) !important; border-color: var(--line) !important; }
+html[data-theme="dark"] body.gt-app .compare-table :is(td,th).compare-better { background: #382c20 !important; color: #f0d49c !important; }
+body.gt-app :is(.compare-table-wrap,.stats-table-wrap,.endless-table-wrap,.table-scroll,.ability-detail-table-scroll) {
+  border-color: var(--line) !important;
+  scrollbar-color: var(--line) transparent;
+}
+html[data-theme="dark"] body.gt-app :is(.stats-table,.compare-table,.endless-stage-table,.enemy-skill-effect-table,.enemy-skill-meta-table,.skill-effect-table,.skill-meta-table,.ability-effect-table,.ability-detail-effect-table,.talent-main-table,.talent-main-effect-table,.talent-boost-table,.gear-effect-table) {
+  background: var(--panel) !important; border-color: var(--line) !important;
+}
+
+/* Rounded category boxes and inner cards must use the same background to avoid white wedges. */
+body.gt-app :is(.ranger-category-box,.ranger-ability-list,.ranger-talent-list) {
+  background: var(--gt-inset) !important;
+  border-color: var(--line) !important;
+}
+body.gt-app .ranger-category-box { overflow: hidden; }
+body.gt-app .ranger-category-box > :is(.ranger-skill-card,.ranger-ability-card,.ranger-talent-card) {
+  background: transparent !important; border: 0 !important;
+  border-radius: 0 !important; box-shadow: none !important; margin: 0;
+}
+html[data-theme="dark"] body.gt-app :is(.ability-effect,.talent-effect,.ranger-category-box .ability-effect,.ranger-category-box .talent-effect) {
+  background: #203640 !important; border-color: var(--line) !important; color: var(--text) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.ranger-skill-card,.ranger-ability-card,.ranger-talent-card) {
+  border-color: var(--line) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.ranger-detail-head,.ranger-icon-title,.ranger-detail-image-wrap) {
+  border-color: var(--line) !important;
+}
+
+/* Keep all ability tag dimensions identical but preserve classification hues. */
+body.gt-app .ability-card .ability-title-row > .tag,
+body.gt-app #abilityModal .tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 25px;
+  padding: 3px 9px;
+  border: 1px solid transparent;
+  border-radius: 5px !important;
+  font-size: .73rem;
+  font-weight: 750;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+body.gt-app .ability-card .ability-title-row > .tag:not([class*="tag-"]),
+body.gt-app #abilityModal .tag:not([class*="tag-"]) { background: var(--soft); color: var(--primary-dark); border-color: var(--line); }
+html[data-theme="dark"] body.gt-app :is(.ability-card,#abilityModal) .tag-wake { background:#443a22 !important; color:#f4d68a !important; border-color:#6a5935 !important; }
+html[data-theme="dark"] body.gt-app :is(.ability-card,#abilityModal) .tag-enemy { background:#47292c !important; color:#f5b9bb !important; border-color:#704247 !important; }
+html[data-theme="dark"] body.gt-app :is(.ability-card,#abilityModal) .tag-maze { background:#383047 !important; color:#dbc5f7 !important; border-color:#584a6c !important; }
+html[data-theme="dark"] body.gt-app :is(.ability-card,#abilityModal) .tag-team { background:#1a414b !important; color:#aee2ed !important; border-color:#37616b !important; }
+
+/* Reset button: subdued secondary action, never a bright filled pill. */
+body.gt-app #resetBtn { background: var(--soft) !important; border:1px solid var(--line) !important; color:var(--primary-dark) !important; border-radius:7px; }
+html[data-theme="dark"] body.gt-app #resetBtn:is(:hover,:focus-visible) {
+  background:#263f47 !important; color:#d2e4e5 !important; border-color:#426068 !important;
+}
+
+/* Stage production-line "查看" buttons, shared by hard/extreme/endless/labyrinth. */
+body.gt-app :is(.endless-detail-btn,.hs-detail-btn,.labyrinth-detail-btn) {
+  background:var(--soft) !important;
+  color:var(--primary-dark) !important;
+  border:1px solid var(--line) !important;
+  border-radius:6px;
+  box-shadow:none;
+}
+html[data-theme="dark"] body.gt-app :is(.endless-detail-btn,.hs-detail-btn,.labyrinth-detail-btn) {
+  background:#1c4141 !important; color:#b1dcd8 !important; border-color:#32645e !important;
+}
+html[data-theme="dark"] body.gt-app :is(.endless-detail-btn,.hs-detail-btn,.labyrinth-detail-btn):is(:hover,:focus-visible) {
+  background:#275450 !important; color:#e0f4f1 !important; border-color:#44746f !important;
+}
+
+/* Opt-in dark surfaces for any grouped enemy details; no white slivers at corners. */
+html[data-theme="dark"] body.gt-app #enemyModalContent .ranger-ability-list,
+html[data-theme="dark"] body.gt-app #hsEnemyLineModalContent .ranger-ability-list {
+  background: var(--gt-inset) !important;
+}

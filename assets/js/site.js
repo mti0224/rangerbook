@@ -290,7 +290,7 @@
   loadStylesheet("header-responsive.css", "20260429c");
   loadStylesheet("mobile-interaction-fix.css", "20260430c");
   loadStylesheet("theme-toggle.css", "20260525a");
-  loadStylesheet("game-tech.css", "20261010a");
+  loadStylesheet("game-tech.css", "20261010b");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">

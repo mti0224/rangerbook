@@ -489,13 +489,28 @@
     const input = side === "left" ? els.leftInput : els.rightInput;
     const container = side === "left" ? els.leftSuggestions : els.rightSuggestions;
     if (!input || !container) return;
+    // Do not render an empty dropdown before the player starts typing.
+    const requestedQuery = input.value.trim();
+    if (!requestedQuery) {
+      container.replaceChildren();
+      container.hidden = true;
+      return;
+    }
     const loaded = await loadIndex();
+    // An asynchronous index response must not reopen a cleared search.
+    if (!input.value.trim()) {
+      container.replaceChildren();
+      container.hidden = true;
+      return;
+    }
     if (!loaded) {
-      container.innerHTML = `<div class="compare-empty">角色索引載入失敗。</div>`;
+      container.innerHTML = '<div class="compare-empty">角色索引載入失敗。</div>';
+      container.hidden = false;
       return;
     }
     const rows = filterRows(input.value);
     container.innerHTML = rows.length ? rows.map((item) => suggestionItem(item, side)).join("") : "";
+    container.hidden = !rows.length;
   }
 
   async function chooseRanger(side, id) {
@@ -514,6 +529,7 @@
     const suggestions = side === "left" ? els.leftSuggestions : els.rightSuggestions;
     input.value = getName(ranger);
     suggestions.innerHTML = "";
+    suggestions.hidden = true;
     renderResult();
     await ensureCompareAnimationMeta();
     renderResult();

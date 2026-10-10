@@ -315,7 +315,8 @@
     const metric = METRICS[state.metric] || METRICS.totalAttack;
     state.filtered = buildFilteredRows();
     els.metricButtons.forEach((button) => button.classList.toggle("active", button.dataset.metric === state.metric));
-    els.title.textContent = `${metric.label}排名`;
+    // The active ranking type is already displayed in the metric tabs.
+    if (els.title) els.title.textContent = `${metric.label}排名`;
     applyPagination(resetPage);
   }
   async function openRanger(id) {
