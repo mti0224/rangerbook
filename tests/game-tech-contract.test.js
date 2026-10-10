@@ -16,10 +16,10 @@ test("shared shell preserves light/dark choice and public nav", () => {
   assert.match(theme,/max-width: 1120px/);
 });
 test("home tool cards retain left-image/right-text structure and original image assets",()=>{
-  assert.match(home,/class="home-tool-image-wrap"/);
-  assert.match(home,/class="home-tool-content"/);
-  assert.match(home,/assets\/main_icon\/pvpicon\.png/);
-  assert.match(home,/rangerbook_res\/main\/u1134e-brown/);
+  assert.match(homepage,/class="home-tool-image-wrap"/);
+  assert.match(homepage,/class="home-tool-content"/);
+  assert.match(homepage,/assets\/main_icon\/pvpicon\.png/);
+  assert.match(homepage,/rangerbook_res\/main\/u1134e-brown/);
   assert.match(theme,/\.home-tool-card\s*\{[\s\S]*grid-template-columns:/);
 });
 test("ranger and equipment retain modal-to-detail links",()=>{
