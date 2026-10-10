@@ -41,7 +41,8 @@ async function recordOne(browser, pathname, mode, viewport) {
     }
   });
   try {
-    const url = base + "/" + (pathname === "index.html" ? "" : pathname);
+    const targetPath = pathname === "index.html" ? "" : pathname.endsWith("/index.html") ? pathname.slice(0, -"index.html".length) : pathname;
+    const url = base + "/" + targetPath;
     await page.addInitScript(theme => {
       try { localStorage.setItem("rangerbook-theme", theme); } catch (_) {}
     }, mode);
@@ -89,10 +90,32 @@ async function recordOne(browser, pathname, mode, viewport) {
     });
     const screenshot = path.join(output, "screenshots", id + "__" + mode + "__" + viewport.key + ".png");
     await page.screenshot({ path:screenshot, fullPage:false, animations:"disabled", timeout: 16000 });
-    const rec = {page:pathname,mode,viewport:viewport.key,...details,errors,screenshot:path.relative(output,screenshot)};
+    const extras = [];
+    // Representative open-state screenshots (not just the initial unclicked page).
+    const safeSnapshot = async (trigger, expected, postfix) => {
+      try {
+        const item = page.locator(trigger).first();
+        await item.waitFor({state:"visible",timeout:3200});
+        await item.click({timeout:3500});
+        if(expected) await page.locator(expected).first().waitFor({state:"visible",timeout:4200});
+        await page.waitForTimeout(200);
+        const name = id+"__"+mode+"__"+viewport.key+"__"+postfix+".png";
+        await page.screenshot({path:path.join(output,"screenshots",name),fullPage:false,animations:"disabled",timeout:9000});
+        extras.push("screenshots/"+name);
+      } catch(e) { /* availability can depend on authenticated or live data */ }
+    };
+    if (pathname==="index.html") await safeSnapshot(".site-settings-toggle",".site-settings-menu","settings-open");
+    if (mode==="dark" && viewport.key==="desktop") {
+      if (pathname==="ranger/ranger/index.html") await safeSnapshot(".ranger-card","#rangerModal:not([hidden])","ranger-modal");
+      if (pathname==="gear/index.html") await safeSnapshot(".gear-card","#gearModal:not([hidden])","gear-modal");
+      if (pathname==="ability/index.html") await safeSnapshot(".ability-card","#abilityModal:not([hidden])","ability-modal");
+      if (pathname==="pvp/usage/index.html") await safeSnapshot(".pvp-ranger-trigger",".pvp-usage-modal:not([hidden])","pvp-modal");
+    }
+    const rec = {page:pathname,mode,viewport:viewport.key,...details,errors,screenshot:path.relative(output,screenshot),extraScreenshots:extras};
     all.push(rec);
-    if (details.theme !== mode) logIssue({ page:pathname,mode,viewport:viewport.key,type:"wrong-theme" });
-    if (!details.headerLoaded || !details.styleLoaded) logIssue({page:pathname,mode,viewport:viewport.key,type:"stylesheet-or-header-missing"});
+    const protectedRoute = ["guildwar/usage/index.html","pvp/search/index.html"].includes(pathname);
+    if (details.theme !== mode && !protectedRoute) logIssue({ page:pathname,mode,viewport:viewport.key,type:"wrong-theme" });
+    if ((!details.headerLoaded || !details.styleLoaded) && !protectedRoute) logIssue({page:pathname,mode,viewport:viewport.key,type:"stylesheet-or-header-missing"});
     if (details.documentWidth > details.width + 8) logIssue({page:pathname,mode,viewport:viewport.key,type:"horizontal-overflow",size:details.documentWidth-details.width});
     if (mode === "dark") for(const item of details.lightControls) logIssue({page:pathname,mode,viewport:viewport.key,type:"bright-control",...item});
     for(const item of details.emptyDropdowns) logIssue({page:pathname,mode,viewport:viewport.key,type:"empty-visible-dropdown",...item});

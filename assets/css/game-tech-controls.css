@@ -237,3 +237,23 @@ body.gt-app .admin-tabs button:not(.active):hover { background: var(--gt-control
 @media (prefers-reduced-motion: reduce) {
   body.gt-app :is(button,select,.theme-toggle-row,.pvp-player-unit-button) { transition: none !important; }
 }
+
+
+/* Second pass: active segmented buttons and pagination must override older !important rules. */
+body.gt-app .pagination-bar button:not(.active):not(:disabled),
+body.gt-app .pagination-actions button:not(.active):not(:disabled) {
+  background: var(--gt-control-bg) !important;
+  color: var(--gt-control-text) !important;
+  border: 1px solid var(--gt-control-border) !important;
+}
+html[data-theme="dark"] body.gt-app .gear-mode-switch button.active,
+html[data-theme="dark"] body.gt-app .gear-mode-switch button.active:hover,
+html[data-theme="dark"] body.gt-app .admin-tabs button.active {
+  background: var(--gt-control-selected) !important;
+  color: var(--gt-control-text) !important;
+  border-color: var(--gt-control-border) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.pagination-actions button,.pagination-bar button):hover:not(:disabled) {
+  background: var(--gt-control-hover) !important;
+  color: var(--gt-control-text) !important;
+}
