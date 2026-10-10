@@ -29,11 +29,17 @@
   <link rel="stylesheet" href="../assets/css/ranger-advanced-filters.css">
   <link rel="stylesheet" href="../assets/css/ranger-animation-viewer.css">
   <link rel="stylesheet" href="../assets/css/ranger-grouped-detail-items.css">
-  <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
-  <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
-  <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
-  <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261010b">
-  <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
+  <script>
+    // Resolve canonical CSS paths before the speculative preloader reads links.
+    // The detail route sets a dynamic <base>; relative links can be prefetched
+    // from an incorrect directory before that <base> becomes active.
+    (function () {
+      var root = window.location.pathname.indexOf("/rangerbook/") === 0 ? "/rangerbook/" : "/";
+      ["header-responsive.css?v=20260429c","mobile-interaction-fix.css?v=20260430c","theme-toggle.css?v=20260525a","game-tech.css?v=20261010b","game-tech-controls.css?v=20261010a"].forEach(function (file) {
+        document.write('<link rel="stylesheet" href="' + root + "assets/css/" + file + '">');
+      });
+    })();
+  </script>
 </head>
 <body class="gt-app">
   <div id="site-header"></div>
