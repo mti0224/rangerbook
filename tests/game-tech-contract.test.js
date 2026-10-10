@@ -148,7 +148,9 @@ test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",
       assert.match(html,/document\.write\('<link rel="stylesheet"/);
       assert.ok(html.includes("game-tech-controls.css?v=20261010a"));
     }else{
-      assert.match(html,/<link rel="stylesheet" href="[^"]+game-tech-controls\.css\?v=20261010a">/,route);
+      const controlsVersion = route==="pvp/usage-history/index.html" ? "20261010b" : "20261010a";
+      assert.ok(html.includes('game-tech-controls.css?v='+controlsVersion),route+" controls cache version");
+      assert.match(html,/<link rel="stylesheet" href="[^"]+game-tech-controls\.css\?v=20261010[ab]">/,route);
       assert.ok(html.indexOf('game-tech-controls.css') < html.indexOf('</head>'),route);
     }
   }
