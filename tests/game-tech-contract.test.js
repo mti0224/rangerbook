@@ -138,7 +138,7 @@ test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",
   assert.equal(pages.length,40);
   for(const route of pages){
     const html=read(route);
-    assert.match(html,/<body class="gt-app">/,route);
+    assert.match(html,/<body\b[^>]*\bclass="[^"]*\bgt-app\b[^"]*"[^>]*>/,route);
     assert.match(html,/document\.documentElement\.dataset\.theme = theme === "dark"/,route);
     assert.ok(html.indexOf('document.documentElement.dataset.theme') < html.indexOf('style.css'),route+" theme must predate CSS");
     for(const file of ["header-responsive.css","mobile-interaction-fix.css","theme-toggle.css","game-tech.css","game-tech-controls.css"]){
