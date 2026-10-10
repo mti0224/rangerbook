@@ -355,7 +355,7 @@
   gtLogo.alt = "";
   const gtBrandTitle = document.createElement("span");
   const gtBrandName = document.createElement("strong");
-  gtBrandName.textContent = "RANGERBOOK";
+  gtBrandName.textContent = "DATABASE";
   const gtBrandDescription = document.createElement("small");
   gtBrandDescription.textContent = "LINE Rangers 資料站";
   gtBrandTitle.append(gtBrandName, gtBrandDescription);
