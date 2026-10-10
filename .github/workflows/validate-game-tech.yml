@@ -1,0 +1,26 @@
+name: Validate Game-Tech UI contracts
+on:
+  pull_request:
+    paths:
+      - "assets/css/game-tech.css"
+      - "assets/js/site.js"
+      - "index.html"
+      - "tests/game-tech-contract.test.js"
+      - ".github/workflows/validate-game-tech.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check shared JavaScript syntax
+        run: node --check assets/js/site.js
+      - name: Verify theme, routes, modal and permissions contracts
+        run: node --test tests/game-tech-contract.test.js

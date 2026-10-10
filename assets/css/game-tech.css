@@ -1,0 +1,497 @@
+/*
+ * RANGERBOOK / GAME-TECH
+ * Presentation-only design layer. No authentication, endpoints, data or game rules.
+ * Loaded after the legacy styles via site.js; keep existing selectors and IDs intact.
+ */
+:root {
+  --bg: #f2f6f6;
+  --panel: #ffffff;
+  --text: #192d35;
+  --muted: #60747e;
+  --line: #d9e3e5;
+  --primary: #078d81;
+  --primary-dark: #006e66;
+  --soft: #e5f2ef;
+  --shadow: 0 5px 21px rgba(12, 34, 44, .045);
+  --radius: 11px;
+  --gt-sidebar-width: 236px;
+  --gt-canvas: #edf2f3;
+  --gt-inset: #f5f8f8;
+  --gt-row-hover: #e9f6f3;
+  --gt-accent-ink: #076d63;
+  --gt-header: #ffffff;
+  --gt-brand: #173139;
+}
+html[data-theme="dark"] body.gt-app {
+  --bg: #0c151c;
+  --panel: #14222c;
+  --text: #e6eff1;
+  --muted: #a0b4bd;
+  --line: #2b404b;
+  --primary: #47cbbb;
+  --primary-dark: #76e3d5;
+  --soft: #153c3d;
+  --shadow: 0 7px 27px rgba(0,0,0,.17);
+  --radius: 11px;
+  --gt-canvas: #101d26;
+  --gt-inset: #1b2d38;
+  --gt-row-hover: #1d3941;
+  --gt-accent-ink: #83eee0;
+  --gt-header: #11202a;
+  --gt-brand: #edf6f7;
+}
+html[data-theme="dark"] { color-scheme: dark; }
+html[data-theme="light"] { color-scheme: light; }
+body.gt-app {
+  background: var(--bg);
+  color: var(--text);
+  margin-left: var(--gt-sidebar-width);
+  padding-top: var(--header-height);
+  letter-spacing: .005em;
+  line-height: 1.65;
+  transition: background .16s ease, color .16s ease;
+}
+body.gt-app :focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+body.gt-app [hidden] { display: none !important; }
+body.gt-app a { text-underline-offset: 3px; }
+body.gt-app :is(button, input, select, textarea) { font: inherit; }
+body.gt-app button { border-radius: 8px; }
+body.gt-app :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  background: var(--gt-inset) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+  border-radius: 7px !important;
+  box-shadow: none;
+}
+body.gt-app :is(input, select, textarea)::placeholder { color: var(--muted); opacity: .8; }
+body.gt-app :is(input[type=checkbox], input[type=radio]) { accent-color: var(--primary); }
+body.gt-app :is(button, select, input, textarea):disabled { cursor: not-allowed; opacity: .54; }
+body.gt-app .page {
+  width: min(1320px, calc(100% - 4.75rem));
+  padding: 2.4rem 0 5rem;
+}
+body.gt-app .admin-page {
+  width: min(1370px, calc(100% - 4.75rem));
+  padding: 2.4rem 0 5rem;
+  margin: 0 auto;
+}
+body.gt-app .admin-shell { width: min(1180px,100%); }
+body.gt-app :is(h1,h2,h3,h4) { letter-spacing: -.025em; }
+body.gt-app h1 { font-size: clamp(1.9rem, 3vw, 2.85rem); line-height: 1.25; }
+body.gt-app h2 { line-height: 1.35; }
+body.gt-app .eyebrow {
+  color: var(--primary-dark);
+  font-size: .73rem;
+  font-weight: 780;
+  letter-spacing: .095em;
+}
+
+/* Fixed desktop navigation. The original .site-nav stays intact for mobile. */
+body.gt-app .gt-sidebar {
+  position: fixed;
+  z-index: 1002;
+  inset: 0 auto 0 0;
+  width: var(--gt-sidebar-width);
+  display: flex;
+  flex-direction: column;
+  background: var(--gt-header);
+  border-right: 1px solid var(--line);
+  padding: 1.35rem .8rem .85rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+body.gt-app .gt-brand {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .3rem .55rem 1.6rem;
+  color: var(--gt-brand);
+}
+body.gt-app .gt-brand img { width: 39px; height: 39px; object-fit: contain; }
+body.gt-app .gt-brand strong { display: block; font-size: 1rem; line-height: 1.3; letter-spacing: -.025em; }
+body.gt-app .gt-brand small { display: block; color: var(--muted); font-size: .66rem; white-space: nowrap; }
+body.gt-app .gt-sidebar-label {
+  padding: .35rem .8rem .7rem;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: .69rem;
+  letter-spacing: .1em;
+}
+body.gt-app .gt-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: .17rem;
+}
+body.gt-app .gt-sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .75rem .85rem;
+  border-radius: 7px;
+  color: var(--muted);
+  font-weight: 680;
+  font-size: .86rem;
+  transition: background .16s, color .16s;
+}
+body.gt-app .gt-sidebar-nav a::before {
+  content: "◇";
+  display: inline-block;
+  width: 1.1rem;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 400;
+}
+body.gt-app .gt-sidebar-nav a[aria-current="page"],
+body.gt-app .gt-sidebar-nav a:hover {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+body.gt-app .gt-sidebar-nav a[aria-current="page"] { box-shadow: inset 2px 0 var(--primary); }
+body.gt-app .gt-sidebar-nav a[aria-current="page"]::before { color: var(--primary); }
+body.gt-app .gt-sidebar-bottom {
+  border-top: 1px solid var(--line);
+  padding: 1.2rem .8rem .5rem;
+  color: var(--muted);
+  font-size: .68rem;
+  margin-top: auto;
+}
+body.gt-app .site-header {
+  left: var(--gt-sidebar-width);
+  right: 0;
+  min-height: var(--header-height);
+  background: var(--gt-header) !important;
+  border-color: var(--line) !important;
+  backdrop-filter: none;
+}
+body.gt-app .site-header .header-inner {
+  max-width: none;
+  padding: .72rem 2.4rem;
+  min-height: var(--header-height);
+}
+body.gt-app .site-home-link {
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 700;
+}
+body.gt-app .site-header .site-nav { display: none !important; }
+body.gt-app .site-header .site-menu-toggle { display: none !important; }
+body.gt-app .site-settings-toggle {
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--text);
+}
+body.gt-app .site-settings-menu {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel) !important;
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+body.gt-app .theme-toggle-row { background: transparent; color: var(--text); }
+body.gt-app .theme-toggle-row:hover { background: var(--soft); color: var(--primary-dark); }
+
+/* Editorial headings instead of large gradient marketing panels. */
+body.gt-app .hero,
+body.gt-app .page-title {
+  background: var(--panel) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px;
+  padding: clamp(1.6rem, 3vw, 2.65rem);
+  box-shadow: none;
+}
+body.gt-app .page-title { border-left: 3px solid var(--primary) !important; }
+body.gt-app .page-title h1 { margin-bottom: .6rem; }
+body.gt-app .page-title p, body.gt-app .hero-text { color: var(--muted); }
+
+/* Homepage: image MUST remain flush to the left side of every tool card. */
+body.gt-app .home-page .hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 245px;
+  background: var(--panel) !important;
+}
+body.gt-app .home-page .hero h1 { font-size: clamp(1.9rem,3.2vw,3.1rem); }
+body.gt-app .home-page .hero .hero-text { max-width: min(650px,76%); }
+body.gt-app .gt-home-characters {
+  position: absolute;
+  right: 3.1rem;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  transform: translateY(-50%);
+}
+body.gt-app .gt-home-characters img {
+  display: block;
+  width: clamp(65px, 6.6vw, 105px);
+  height: clamp(65px, 6.6vw, 105px);
+  padding: .4rem;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--gt-inset);
+}
+body.gt-app .gt-home-characters img:nth-child(2) { transform: translateY(-12px); }
+body.gt-app .home-tool-grid { gap: 1rem; grid-template-columns: repeat(2,minmax(0,1fr)); }
+body.gt-app .home-tool-card {
+  grid-template-columns: minmax(115px, 32%) minmax(0,1fr);
+  min-height: 142px;
+  border-radius: 11px;
+  box-shadow: none;
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+}
+body.gt-app .home-tool-card:hover { border-color: var(--primary) !important; box-shadow: var(--shadow); transform: translateY(-1px); }
+body.gt-app .home-tool-image-wrap {
+  min-height: 142px;
+  background: var(--gt-inset);
+  border-right: 1px solid var(--line);
+}
+body.gt-app .home-tool-image { object-fit: cover; width:100%; height:100%; }
+body.gt-app .home-tool-content { padding: 1.15rem 1.45rem; }
+body.gt-app .home-tool-content h2 {
+  color: var(--text) !important;
+  font-size: clamp(1.1rem, 1.65vw, 1.55rem);
+  font-weight: 820;
+  letter-spacing: -.035em;
+}
+body.gt-app .home-tool-content p {
+  color: var(--muted) !important;
+  font-size: .88rem;
+  font-weight: 520;
+  line-height: 1.65;
+}
+body.gt-app .home-update-card {
+  border-radius: 11px;
+  border-color: var(--line);
+  background: var(--panel) !important;
+  box-shadow: none;
+  padding: 1.45rem 1.65rem;
+}
+body.gt-app :is(.home-update-heading h2, .home-update-date) { color: var(--text) !important; }
+body.gt-app .home-update-list, body.gt-app .home-update-list li::before { color: var(--muted) !important; }
+body.gt-app .home-update-more { color: var(--primary-dark); }
+
+/* Entrypoint submenus: cards retain the existing href, hidden flags and click behavior. */
+body.gt-app :is(.ranger-hub-grid,.labyrinth-entry-grid,.entry-grid) {
+  gap: .85rem;
+}
+body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card,.tool-card) {
+  border: 1px solid var(--line) !important;
+  border-radius: 10px;
+  background: var(--panel) !important;
+  color: var(--text);
+  box-shadow: none;
+  padding: 1.35rem;
+  transition: border-color .16s, background .16s, transform .16s;
+}
+body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card,.tool-card):hover {
+  background: var(--gt-row-hover) !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-1px);
+}
+body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card) h2 { font-size: 1.15rem; color: var(--text); }
+body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card) p { color: var(--muted); }
+
+/* Dense data UIs: preserve semantic IDs, JS-managed subtrees, sorting and filters. */
+body.gt-app :is(.controls,.ranger-controls,.gear-controls,.pvp-data-controls,.pvp-history-controls,.compare-controls,.pvp-search-card,.guild-ranking-controls,.guild-usage-controls,.labyrinth-difficulty-controls,.stats-summary,.admin-card,.update-log-card,.labyrinth-tutorial-card) {
+  border: 1px solid var(--line) !important;
+  background: var(--panel) !important;
+  border-radius: 10px;
+  box-shadow: none;
+}
+body.gt-app :is(.controls,.pvp-data-controls,.pvp-history-controls,.compare-controls) { padding: 1.05rem; }
+body.gt-app :is(.ranger-card,.gear-card,.ability-card,.labyrinth-artifact-card,.enemy-card,.pvp-meta-item,.pvp-data-meta,.pvp-data-panel,.pvp-history-chart-panel,.compare-section,.compare-selected-card,.ranger-stat,.ranger-skill-card,.ranger-ability-card,.ranger-talent-card,.gear-filter-panel,.detail-panel,.effect-card,.labyrinth-stage-card,.extreme-gimmick-panel,.hs-production-line-panel,.endless-stage-card,.guildwar-card) {
+  border-color: var(--line) !important;
+  background: var(--panel) !important;
+  color: var(--text);
+  border-radius: 9px;
+  box-shadow: none;
+}
+body.gt-app :is(.ranger-card,.gear-card,.ability-card,.labyrinth-artifact-card,.enemy-card):hover {
+  background: var(--gt-row-hover) !important;
+  border-color: var(--primary) !important;
+}
+body.gt-app :is(.ranger-card,.gear-card,.ability-card,.enemy-card,.labyrinth-stage-card) { transition: border-color .16s, background .16s; }
+body.gt-app :is(.ranger-thumb-wrap,.gear-thumb-wrap,.ability-icon-wrap,.ranger-detail-image-wrap,.compare-selected-image,.gear-detail-image-wrap,.extreme-gimmick-icon-wrap) {
+  border-radius: 8px;
+  background: var(--gt-inset) !important;
+  border-color: var(--line);
+}
+body.gt-app :is(.ranger-thumb,.ranger-detail-image,.gear-detail-image,.ability-icon,.small-icon) { object-fit: contain; }
+body.gt-app :is(.ranger-tags span,.ranger-mini-stats span,.gear-mini-stats span,.mini-meta span) {
+  border-radius: 5px;
+}
+body.gt-app :is(.ranger-stat,.ranger-skill-card,.ranger-ability-card,.ranger-talent-card,.gear-filter-panel) { background: var(--gt-inset) !important; }
+body.gt-app :is(.gear-mode-switch,.gear-mode-switch button,.stats-type-button) { border-color: var(--line); }
+body.gt-app :is(.ranger-detail-link,.gear-detail-link,.endless-back-link,.ranger-detail-back-link,.gear-detail-back-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 6px;
+  border: 1px solid var(--primary);
+  background: var(--soft);
+  color: var(--primary-dark);
+  padding: .45rem .8rem;
+  font-size: .85rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+body.gt-app :is(.ranger-detail-link,.gear-detail-link):hover { background: var(--gt-row-hover); }
+body.gt-app .modal-backdrop { background: rgba(5,14,22,.78) !important; backdrop-filter: blur(3px); }
+body.gt-app .modal-panel {
+  border: 1px solid var(--line) !important;
+  border-radius: 13px;
+  background: var(--panel) !important;
+  box-shadow: 0 22px 70px rgba(0,0,0,.24);
+}
+body.gt-app .modal-close { border-radius: 7px; color: var(--text); background: var(--soft) !important; }
+
+/* Tables, game stats, guild rankings, stage lines and history charts. */
+body.gt-app :is(.pvp-table,.compare-table,.ranger-ranking-table,.gear-effect-table,.skill-effect-table,.skill-meta-table,.talent-main-table,.talent-main-effect-table,.talent-boost-table,.labyrinth-score-table,.endless-table,.ability-detail-effect-table,table) {
+  border-color: var(--line) !important;
+}
+body.gt-app :is(table th, table td) { border-color: var(--line) !important; }
+body.gt-app :is(table thead th,.pvp-table thead th,.compare-table th,.labyrinth-score-table thead th) {
+  color: var(--muted) !important;
+  background: var(--gt-inset) !important;
+  font-weight: 760;
+}
+body.gt-app :is(.pvp-table tbody tr,.ranger-ranking-table tbody tr,.guildwar-ranking-table tbody tr):hover { background: var(--gt-row-hover); }
+body.gt-app :is(.pvp-table td,.pvp-table th) { padding: .82rem 1.05rem; }
+body.gt-app :is(.pvp-data-meta,.stats-summary) { gap: .85rem; padding: 1rem; }
+body.gt-app :is(.pvp-meta-item,.stats-summary > div) { background: var(--gt-inset) !important; border-radius: 7px; }
+body.gt-app :is(.pvp-meta-item strong,.stats-summary strong) { color: var(--text); }
+body.gt-app :is(.pvp-history-chart-panel,.pvp-data-panel) { background: var(--panel) !important; }
+body.gt-app :is(.pvp-history-chart-head,.pvp-data-status,.pvp-history-status) { color: var(--muted); }
+body.gt-app .compare-better { border-left: 3px solid #d99b30; }
+html[data-theme="dark"] body.gt-app .compare-better { color: #ffe0a3 !important; background: #332b1b !important; }
+
+/* Special stage and labyrinth content should remain data-oriented. */
+body.gt-app :is(.hs-condition-title,.extreme-gimmick-group-head h3,.ranger-icon-title h4,.effect-card h4) { color: var(--text); }
+body.gt-app :is(.labyrinth-score-table thead th,.extreme-gimmick-timing span,.gear-filter-panel,.labyrinth-tutorial-card) { border-color: var(--line) !important; }
+body.gt-app :is(.labyrinth-tutorial-text,.update-log-card ul,.update-log-card h2) { color: var(--text) !important; }
+body.gt-app .update-log-card { padding: 1.3rem 1.5rem; }
+body.gt-app .update-log-card li::before { color: var(--primary); }
+
+/* Admin design is presentation-only; never add/duplicate protected controls. */
+body.gt-app .admin-page { background: transparent; }
+body.gt-app .admin-card { padding: clamp(1rem,2.2vw,1.8rem); }
+body.gt-app .admin-tabs { border-bottom: 1px solid var(--line); padding-bottom: .7rem; }
+body.gt-app .admin-user-row { background: var(--gt-inset) !important; border-color: var(--line) !important; border-radius: 8px; }
+body.gt-app :is(.admin-actions .primary,.admin-user-actions .approve,.admin-tabs button.active) {
+  background: var(--primary) !important;
+  color: #042820 !important;
+}
+body.gt-app :is(.admin-overflow-menu,.admin-user-controls,.admin-update-batch) { border-color: var(--line); }
+body.gt-app .admin-overflow-menu { background: var(--panel) !important; }
+body.gt-app :is(.admin-user-actions .danger,.admin-user-actions .reject) { color: #fff; background: #b33647; }
+body.gt-app .admin-warning { border-color: var(--line); }
+
+/* Dark-mode legacy selectors contain !important declarations; this overrides
+   backgrounds/foregrounds only, never type/element/rarity tags. */
+html[data-theme="dark"] body.gt-app :is(.page-title,.hero,.controls,.ranger-card,.gear-card,.ability-card,.pvp-data-panel,.pvp-data-meta,.pvp-data-controls,.pvp-meta-item,.ranger-stat,.ranger-skill-card,.ranger-ability-card,.ranger-talent-card,.gear-filter-panel,.modal-panel,.admin-card,.home-tool-card,.home-update-card,.ranger-hub-card,.compare-section,.update-log-card,.labyrinth-stage-card,.labyrinth-tutorial-card,.pvp-history-chart-panel,.guildwar-card) {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.site-header,.gt-sidebar,.site-settings-menu) { background: var(--gt-header) !important; }
+html[data-theme="dark"] body.gt-app :is(.ranger-skill-card,.ranger-ability-card,.ranger-talent-card,.ranger-stat,.gear-filter-panel,.pvp-meta-item) { background: var(--gt-inset) !important; }
+html[data-theme="dark"] body.gt-app :is(.ranger-card:hover,.gear-card:hover,.ability-card:hover) { background: var(--gt-row-hover) !important; }
+html[data-theme="dark"] body.gt-app :is(table td) { background: var(--panel) !important; color: var(--text) !important; }
+html[data-theme="dark"] body.gt-app :is(table thead th) { background: var(--gt-inset) !important; color: var(--muted) !important; }
+html[data-theme="dark"] body.gt-app :is(button:hover) { background: var(--primary) !important; color: #052b28 !important; }
+html[data-theme="dark"] body.gt-app :is(.gt-sidebar-nav a:hover,.gt-sidebar-nav a[aria-current="page"]) { color: var(--primary-dark); }
+html[data-theme="dark"] body.gt-app .admin-user-actions :is(.danger,.warning,.reject):hover { color: #fff !important; }
+
+/* The CSS cannot grant roles. Protected content keeps its existing [hidden] state. */
+body.gt-app [hidden], body.gt-app .admin-only-entry[hidden] { display: none !important; }
+
+/* Existing mobile dropdown and settings must stay usable and above content. */
+@media(max-width: 1120px) {
+  body.gt-app { margin-left: 0; }
+  body.gt-app .gt-sidebar { display: none; }
+  body.gt-app .site-header { left: 0; }
+  body.gt-app .site-header .site-nav { display: none !important; }
+  body.gt-app .site-header.nav-collapsed.menu-open .site-nav,
+  body.gt-app .site-header.menu-open .site-nav {
+    display: flex !important;
+    background: var(--panel) !important;
+    border-color: var(--line) !important;
+    box-shadow: var(--shadow);
+    max-height: calc(100vh - var(--header-height) - .5rem);
+    overflow-y: auto;
+    z-index: 35;
+  }
+  body.gt-app .site-header .site-menu-toggle { display: inline-flex !important; }
+  body.gt-app .site-header .header-inner { padding-inline: 1.3rem; }
+  body.gt-app .page, body.gt-app .admin-page { width: min(1180px, calc(100% - 2rem)); }
+  body.gt-app .home-tool-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  body.gt-app .home-page .hero .hero-text { max-width: 75%; }
+}
+@media(max-width: 760px) {
+  body.gt-app .site-header.nav-collapsed .site-nav,
+  body.gt-app .site-header .site-nav { display: none !important; }
+  body.gt-app .site-header.nav-collapsed.menu-open .site-nav,
+  body.gt-app .site-header.menu-open .site-nav { display: flex !important; }
+  body.gt-app .home-tool-grid, body.gt-app .ranger-hub-grid { grid-template-columns: 1fr; }
+  body.gt-app .gt-home-characters img { width: 62px; height: 62px; }
+  body.gt-app .home-page .hero .hero-text { max-width: 100%; }
+  body.gt-app .gt-home-characters { display: none; }
+  body.gt-app .page { padding: 1.3rem 0 3.5rem; }
+  body.gt-app :is(.controls,.pvp-data-controls) { gap: .75rem; }
+  body.gt-app .admin-page { padding-top: 1.4rem; }
+}
+@media(max-width: 620px) {
+  body.gt-app .home-tool-card { grid-template-columns: 112px minmax(0,1fr); min-height: 119px; border-radius: 10px; }
+  body.gt-app .home-tool-image-wrap { min-height: 119px; }
+  body.gt-app .home-tool-content { padding: .95rem 1rem; }
+  body.gt-app .home-tool-content h2 { font-size: 1.15rem; }
+  body.gt-app .home-tool-content p { font-size: .8rem; }
+  body.gt-app .modal-panel { border-radius: 12px 12px 7px 7px; max-height: calc(100vh - var(--header-height) - 1rem); }
+  body.gt-app .page-title { padding: 1.25rem; }
+}
+@media(prefers-reduced-motion: reduce) {
+  body.gt-app *, body.gt-app *::before, body.gt-app *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* Tablet hamburger menu uses the pre-existing nav content and click handlers. */
+@media (min-width: 761px) and (max-width: 1120px) {
+  body.gt-app .site-header .site-nav {
+    position: absolute;
+    top: calc(100% + .45rem);
+    right: 1rem;
+    z-index: 40;
+    width: min(255px, calc(100vw - 2rem));
+    flex-direction: column;
+    gap: .2rem;
+    padding: .6rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  body.gt-app .site-header .site-nav a {
+    width: 100%;
+    border-radius: 6px;
+    padding: .55rem .8rem;
+    color: var(--text);
+  }
+}
+body.gt-app :is(.pvp-usage-modal-panel,.pvp-player-team-modal-panel,.guild-member-modal-panel,.guild-usage-modal-panel,.pvp-player-detail-panel) {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  border-radius: 11px;
+}
+body.gt-app :is(.pvp-usage-modal,.pvp-player-team-modal,.guild-member-modal,.guild-usage-modal)[hidden] { display:none !important; }
+body.gt-app :is(.pvp-history-chart-panel,.stats-trend-panel,.labyrinth-stage-info-card,.hs-production-line-panel) {
+  border-color: var(--line) !important;
+  border-radius: 10px;
+}
+body.gt-app .pvp-history-chart-panel canvas { max-width: 100%; }
+@media (max-width: 1120px) { body.gt-app :is(.pvp-search-page,.pvp-history-page) { width:min(1180px,calc(100% - 2rem)); } }
+@media (max-width: 620px) { body.gt-app :is(.pvp-data-meta,.stats-summary) { grid-template-columns:repeat(2,minmax(0,1fr)); } }

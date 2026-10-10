@@ -290,6 +290,7 @@
   loadStylesheet("header-responsive.css", "20260429c");
   loadStylesheet("mobile-interaction-fix.css", "20260430c");
   loadStylesheet("theme-toggle.css", "20260525a");
+  loadStylesheet("game-tech.css", "20261010a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
@@ -339,6 +340,46 @@
   const settings = mount.querySelector(".site-settings");
   const settingsToggle = mount.querySelector(".site-settings-toggle");
   const themeToggle = mount.querySelector(".theme-toggle-row");
+
+  // Presentation shell only: clone public links, do not touch authentication.
+  // In particular never add /admin/ or /pvp/search/ to the public nav.
+  const gtSidebar = document.createElement("aside");
+  gtSidebar.className = "gt-sidebar";
+  gtSidebar.setAttribute("aria-label", "資料站功能導覽");
+  const gtBrand = document.createElement("a");
+  gtBrand.className = "gt-brand";
+  gtBrand.href = rootPrefix;
+  const gtLogo = document.createElement("img");
+  gtLogo.src = rootPrefix + "assets/main_icon/icon.png";
+  gtLogo.alt = "";
+  const gtBrandTitle = document.createElement("span");
+  const gtBrandName = document.createElement("strong");
+  gtBrandName.textContent = "RANGERBOOK";
+  const gtBrandDescription = document.createElement("small");
+  gtBrandDescription.textContent = "LINE Rangers 資料站";
+  gtBrandTitle.append(gtBrandName, gtBrandDescription);
+  gtBrand.append(gtLogo, gtBrandTitle);
+  const gtLabel = document.createElement("div");
+  gtLabel.className = "gt-sidebar-label";
+  gtLabel.textContent = "資料查詢";
+  const gtNav = nav.cloneNode(true);
+  gtNav.className = "gt-sidebar-nav";
+  gtNav.setAttribute("aria-label", "資料站主要連結");
+  const gtPath = window.location.pathname.replace(/\/index\.html$/, "/");
+  gtNav.querySelectorAll("a").forEach((a) => {
+    const target = new URL(a.href, window.location.href).pathname;
+    const targetPath = target.endsWith("/") ? target : target + "/";
+    const isCurrent = targetPath === rootPrefix
+      ? gtPath === rootPrefix
+      : gtPath.startsWith(targetPath);
+    if (isCurrent) a.setAttribute("aria-current", "page");
+  });
+  const gtFoot = document.createElement("div");
+  gtFoot.className = "gt-sidebar-bottom";
+  gtFoot.textContent = "GAME DATA / RANGERBOOK";
+  gtSidebar.append(gtBrand, gtLabel, gtNav, gtFoot);
+  mount.appendChild(gtSidebar);
+  document.body.classList.add("gt-app");
 
   function setOpen(open) {
     header.classList.toggle("menu-open", open);
