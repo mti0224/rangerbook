@@ -8,6 +8,7 @@ on:
       - "**/*.html"
       - "tests/game-tech-contract.test.js"
       - "tests/first-paint.cjs"
+      - "tests/pvp-history-chip-colors.cjs"
       - "tests/sitewide-visual-audit.cjs"
       - ".github/workflows/audit-game-tech-visuals.yml"
   workflow_dispatch:
@@ -41,6 +42,8 @@ jobs:
         run: node tests/sitewide-visual-audit.cjs
         env:
           AUDIT_BASE_URL: http://127.0.0.1:4173
+      - name: Check PvP chip series colors in light and dark modes
+        run: node tests/pvp-history-chip-colors.cjs
       - name: Confirm no legacy first paint while site.js is delayed
         run: node tests/first-paint.cjs
       - name: Check admin tab layout with mocked permissions

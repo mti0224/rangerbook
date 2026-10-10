@@ -161,8 +161,10 @@ body.gt-app :is(.stats-trend-panel summary,.admin-update-batch summary):hover {
 body.gt-app .ranger-level-control { background: var(--panel) !important; border-color: var(--line) !important; }
 body.gt-app .ranger-level-range { accent-color: var(--primary); }
 
-/* PvP controls, selected ranger details, chips and chart labels. */
-body.gt-app :is(.pvp-history-chip,.pvp-history-chart-panel,.pvp-player-team-modal-panel,
+/* PvP controls, selected ranger details, chips and chart labels.
+   Do not include .pvp-history-chip here: its inline 5px left border
+   intentionally matches the corresponding chart series color. */
+body.gt-app :is(.pvp-history-chart-panel,.pvp-player-team-modal-panel,
   .pvp-search-result,.pvp-search-suggestions,.pvp-player-unit-button) {
   border-color: var(--line) !important;
 }

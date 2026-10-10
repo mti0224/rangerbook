@@ -148,8 +148,20 @@ test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",
       assert.match(html,/document\.write\('<link rel="stylesheet"/);
       assert.ok(html.includes("game-tech-controls.css?v=20261010a"));
     }else{
-      assert.match(html,/<link rel="stylesheet" href="[^"]+game-tech-controls\.css\?v=20261010a">/,route);
+      const controlsVersion = route==="pvp/usage-history/index.html" ? "20261010b" : "20261010a";
+      assert.ok(html.includes('game-tech-controls.css?v='+controlsVersion),route+" controls cache version");
+      assert.match(html,/<link rel="stylesheet" href="[^"]+game-tech-controls\.css\?v=20261010[ab]">/,route);
       assert.ok(html.indexOf('game-tech-controls.css') < html.indexOf('</head>'),route);
     }
   }
+});
+
+test("PvP usage-history keeps series-colored chip left borders",()=>{
+  const controls=read("assets/css/game-tech-controls.css");
+  const page=read("pvp/usage-history/index.html");
+  const renderer=read("assets/js/pvp-usage-history.js");
+  assert.match(renderer,/style="border-left:5px solid \$\{SERIES_COLORS\[index\]\}"/);
+  assert.match(page,/game-tech-controls\.css\?v=20261010b/);
+  assert.doesNotMatch(controls,/:is\(\.pvp-history-chip,[\s\S]{0,200}border-color:\s*var\(--line\)\s*!important/);
+  assert.match(controls,/\.pvp-history-chip button:hover/);
 });
