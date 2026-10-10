@@ -28,3 +28,21 @@
 同步失敗時原有 JSON 仍保留，但管理員頁面的 updatedAt 會顯示最後成功更新時間。使用 journalctl -u rangerbook-traffic.service 檢查失敗，必要時設定 CloudWatch 告警。
 
 資料為 GA4 聚合統計，更新約每小時一次；不是「此刻在線人數」。未配置時 API 回 status=unconfigured，前端不顯示假數字。
+
+## 已確認正式 EC2 及 GA4 Property
+
+- EC2: `i-05cb332634cb5d0a9`，AWS Sydney（ap-southeast-2）；此主機同時承載 Rangerbook Auth 和扭蛋機器人。
+- 已在 **EC2 私有 .env** 寫入用戶提供的 GA4 Property ID `540346392`，並保留現有其他設定與檔案權限。此設定不等於已授權 Google API。
+- AWS 執行個體 IAM Role：`arn:aws:iam::010421869571:role/EC2-SSM-Role`。
+- 2026-10-10 檢查時 EC2 未有 Google ADC 設定、服務帳號檔案或 `google-analytics-data`，也未部署流量 API。請不要啟動新 Timer，直到完成 Google 授權並驗證首次同步。
+
+## 建立無私鑰的 GA4 認證（需在 Google Cloud / GA4 完成）
+
+1. 登入管理這個 GA4 Property 的 Google Cloud 專案，開啟 **Google Analytics Data API**。
+2. 建立一個 Google Cloud 服務帳號（例如 `rangerbook-ga4-reader`），記下其 **service account email**；不需要下載 JSON 私鑰。
+3. 在 **Google Analytics → 管理 → 資源存取權管理**，把該服務帳號 email 加入 Property `540346392`，授予 **Viewer** 唯讀權限。單純有 Google Cloud IAM 權限不足以讀取 GA4 Property。
+4. 在 Google Cloud 的 **Workload Identity Federation** 建立 AWS provider，對應 AWS Account `010421869571`。限制 principal 只允許本主機採用的 `EC2-SSM-Role`，避免讓此帳戶所有 IAM principal 都能取得 Google 身分。
+5. 將 provider 的 federation principal 授予上述服務帳號 **Workload Identity User**。在具備 Google Cloud 管理權限的環境，透過 `gcloud iam workload-identity-pools create-cred-config` 產生 AWS external-account credential config。檔案不含私鑰，但仍只存放在 EC2 私有目錄。
+6. EC2 私有 `.env` 補入 `GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/rangerbook-auth/google-wif-credential-config.json`。確定認證配置的檔案權限僅執行使用者可讀，接著再依上方部署步驟安裝套件、手動驗證同步，最後開啟 Timer。
+
+目前 ChatGPT 可操作的 AWS/GitHub 權限 **不能代替 Google Cloud / GA4 的資源管理員授權**；Google 步驟需要擁有該 GA4 資源權限的帳號執行。
