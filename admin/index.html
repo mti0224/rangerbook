@@ -6,7 +6,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20260928-1">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261010a">
 </head>
 <body>
   <div id="site-header"></div>
@@ -81,21 +81,13 @@
         <div id="adminSessionMessage" class="admin-message" role="status" aria-live="polite"></div>
       </section>
 
-      <section id="adminResourceUpdatesCard" class="admin-card" hidden>
-        <div class="admin-session-head">
-          <div>
-            <p class="eyebrow">Resource Monitor</p>
-            <h2>遊戲更新檔案</h2>
-                      </div>
-          <div class="admin-actions">
-            <button id="adminResourceUpdatesRefreshBtn" class="secondary" type="button">重新整理</button>
-          </div>
+      <div id="adminWorkspace" class="admin-card admin-workspace" hidden>
+        <div id="adminWorkspaceTabs" class="admin-workspace-tabs" role="tablist" aria-label="管理員功能分頁">
+          <button id="adminPasswordTab" type="button" role="tab" data-admin-section="password" aria-controls="adminPasswordCard" aria-selected="true" tabindex="0">更改密碼</button>
+          <button id="adminResourcesTab" type="button" role="tab" data-admin-section="resources" aria-controls="adminResourceUpdatesCard" aria-selected="false" tabindex="-1">數據更新追蹤</button>
+          <button id="adminAccountsTab" type="button" role="tab" data-admin-section="accounts" aria-controls="superAdminPanel" aria-selected="false" tabindex="-1" hidden>帳號管理</button>
         </div>
-        <div id="adminResourceUpdatesSummary" class="admin-update-summary">載入中…</div>
-        <div id="adminResourceUpdatesList" class="admin-update-list"></div>
-      </section>
-
-      <section id="adminPasswordCard" class="admin-card" hidden>
+      <section id="adminPasswordCard" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminPasswordTab" tabindex="0" hidden>
         <h2>變更自己的密碼</h2>
         <p class="admin-muted">所有管理員階級都可以隨時變更自己的登入密碼。更新成功後，其他裝置上的登入狀態會立即失效。</p>
         <form id="adminPasswordForm" class="admin-form" autocomplete="on">
@@ -118,11 +110,27 @@
         <div id="adminPasswordMessage" class="admin-message" role="status" aria-live="polite"></div>
       </section>
 
-      <section id="superAdminPanel" class="admin-card" hidden>
+
+      <section id="adminResourceUpdatesCard" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminResourcesTab" tabindex="0" hidden>
+        <div class="admin-session-head">
+          <div>
+            <p class="eyebrow">Resource Monitor</p>
+            <h2>遊戲更新檔案</h2>
+                      </div>
+          <div class="admin-actions">
+            <button id="adminResourceUpdatesRefreshBtn" class="secondary" type="button">重新整理</button>
+          </div>
+        </div>
+        <div id="adminResourceUpdatesSummary" class="admin-update-summary">載入中…</div>
+        <div id="adminResourceUpdatesList" class="admin-update-list"></div>
+      </section>
+
+
+      <section id="superAdminPanel" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminAccountsTab" tabindex="0" hidden>
         <div class="admin-session-head">
           <div>
             <p class="eyebrow">Super Admin</p>
-            <h2>最大管理者面板</h2>
+            <h2>帳號管理</h2>
             <p class="admin-muted">核准或拒絕管理員申請，並可管理帳號權限、重置密碼與刪除帳號。最大管理者帳號本身只能由伺服器端管理。</p>
           </div>
           <div class="admin-actions">
@@ -142,12 +150,14 @@
         </div>
       </section>
 
+      </div>
+
     </div>
   </main>
 
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/admin-auth.js"></script>
-  <script src="../assets/js/admin-page.js?v=20260928-1"></script>
-  <script src="../assets/js/admin-password.js?v=20260724-1"></script>
+  <script src="../assets/js/admin-page.js?v=20261010a"></script>
+  <script src="../assets/js/admin-password.js?v=20261010a"></script>
 </body>
 </html>

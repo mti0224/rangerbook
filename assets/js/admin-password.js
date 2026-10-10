@@ -13,8 +13,9 @@
 
   function updateVisibility(user = auth.getUser()) {
     const visible = Boolean(user?.logged_in && auth.isAdmin());
-    card.hidden = !visible;
+    // When authorized, visibility is controlled by the selected workspace tab.
     if (!visible) {
+      card.hidden = true;
       form.reset();
       setMessage();
     }

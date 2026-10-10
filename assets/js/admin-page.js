@@ -6,6 +6,15 @@
   const authCard = $("adminAuthCard");
   const sessionCard = $("adminSessionCard");
   const superAdminPanel = $("superAdminPanel");
+  const workspace = $("adminWorkspace");
+  const workspaceTabs = $("adminWorkspaceTabs");
+  const passwordCard = $("adminPasswordCard");
+  const workspacePanels = {
+    password: { button: $("adminPasswordTab"), panel: passwordCard },
+    resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
+    accounts: { button: $("adminAccountsTab"), panel: superAdminPanel }
+  };
+  let activeWorkspaceSection = "password";
   const loginPanel = $("adminLoginPanel");
   const registerPanel = $("adminRegisterPanel");
   const loginTab = $("adminLoginTab");
@@ -68,11 +77,47 @@
     return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString("zh-Hant", { hour12: false });
   }
 
+  // Changing tabs affects visibility, not RangerbookAuth / AWS permissions.
+  function allowedWorkspaceSections() {
+    return {
+      password: auth.isAdmin(),
+      resources: auth.isAdmin(),
+      accounts: auth.isSuperAdmin()
+    };
+  }
+
+  function renderWorkspaceTabs() {
+    const allowed = allowedWorkspaceSections();
+    const hasAccess = auth.isAdmin();
+    if (workspace) workspace.hidden = !hasAccess;
+    if (!allowed[activeWorkspaceSection]) activeWorkspaceSection = "password";
+
+    Object.entries(workspacePanels).forEach(([key, { button, panel }]) => {
+      const accessible = Boolean(allowed[key]);
+      const selected = hasAccess && accessible && activeWorkspaceSection === key;
+      if (button) {
+        button.hidden = !accessible;
+        button.setAttribute("aria-selected", selected ? "true" : "false");
+        button.tabIndex = selected ? 0 : -1;
+      }
+      if (panel) panel.hidden = !selected;
+    });
+  }
+
+  function selectWorkspaceSection(section, focus = false) {
+    if (!Object.prototype.hasOwnProperty.call(workspacePanels, section)) return;
+    if (!allowedWorkspaceSections()[section]) return;
+    activeWorkspaceSection = section;
+    renderWorkspaceTabs();
+    if (focus) workspacePanels[section].button?.focus();
+  }
+
   function renderUserState(user) {
     authCard.hidden = Boolean(user.logged_in);
     sessionCard.hidden = !user.logged_in;
     superAdminPanel.hidden = !auth.isSuperAdmin();
     if (resourceUpdatesCard) resourceUpdatesCard.hidden = !auth.isAdmin();
+    renderWorkspaceTabs();
 
     if (!user.logged_in) return;
 
@@ -295,6 +340,27 @@
     }
   }
 
+  workspaceTabs?.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-admin-section]");
+    if (!button || !workspaceTabs.contains(button)) return;
+    selectWorkspaceSection(button.dataset.adminSection);
+  });
+
+  workspaceTabs?.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const available = Object.values(workspacePanels).map(item => item.button)
+      .filter(button => button && !button.hidden);
+    if (!available.length) return;
+    const currentIndex = available.indexOf(document.activeElement);
+    let nextIndex = currentIndex >= 0 ? currentIndex : 0;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = available.length - 1;
+    if (event.key === "ArrowRight") nextIndex = (nextIndex + 1) % available.length;
+    if (event.key === "ArrowLeft") nextIndex = (nextIndex - 1 + available.length) % available.length;
+    event.preventDefault();
+    selectWorkspaceSection(available[nextIndex].dataset.adminSection, true);
+  });
+
   loginTab?.addEventListener("click", () => showAuthPanel("login"));
   registerTab?.addEventListener("click", () => showAuthPanel("register"));
 
@@ -361,6 +427,10 @@
     document.querySelectorAll(".admin-overflow[open]").forEach((details) => {
       if (!details.contains(event.target)) details.removeAttribute("open");
     });
+  });
+
+  window.addEventListener("rangerbook:auth-changed", (event) => {
+    if (event.detail) renderUserState(event.detail);
   });
 
   auth.ready().then(async (user) => {
