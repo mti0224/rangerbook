@@ -100,3 +100,20 @@ test("previously unresolved ability style reference is now provided",()=>{
  assert.match(page,/ranger-ability-effect-merge\.css/);
  assert.match(read("assets/css/ranger-ability-effect-merge.css"),/\.ability-effect-table/);
 });
+
+test("admin workspace displays a single role-gated tab panel",()=>{
+  const html=read("admin/index.html"),js=read("assets/js/admin-page.js");
+  const password=read("assets/js/admin-password.js"),css=read("assets/css/admin.css");
+  assert.match(html,/id="adminWorkspaceTabs"/);
+  for(const id of ["adminPasswordTab","adminResourcesTab","adminAccountsTab"])assert.match(html,new RegExp('id="'+id+'"'));
+  assert.match(html,/id="adminAccountsTab"[^>]*hidden/);
+  assert.match(html,/id="adminCurrentAccount"/);
+  assert.match(html,/id="superAdminPanel"[^>]*role="tabpanel"/);
+  assert.match(js,/accounts: auth.isSuperAdmin\(\)/);
+  assert.match(js,/resources: auth.isAdmin\(\)/);
+  assert.match(js,/superAdminPanel.hidden = !auth.isSuperAdmin\(\)/);
+  assert.match(js,/panel.hidden = !selected/);
+  assert.match(js,/button.hidden = !accessible/);
+  assert.doesNotMatch(password,/card.hidden = !visible/);
+  assert.match(css,/\.admin-workspace-tabs/);
+});
