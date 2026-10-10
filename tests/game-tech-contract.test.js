@@ -117,3 +117,38 @@ test("admin workspace displays a single role-gated tab panel",()=>{
   assert.doesNotMatch(password,/card.hidden = !visible/);
   assert.match(css,/\.admin-workspace-tabs/);
 });
+
+test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",()=>{
+  const pages=[
+    "404.html","index.html","ability/index.html","about/index.html","admin/index.html",
+    "adventEnemy/index.html","endless/enemy/index.html","endless/index.html",
+    "endless/stage/index.html","eventStageEnemy/index.html","gear/index.html",
+    "guildwar/index.html","guildwar/ranking/index.html","guildwar/usage/index.html",
+    "hsEnemy/index.html","infEnemy/index.html","labyrinth/artifact/index.html",
+    "labyrinth/enemy/index.html","labyrinth/index.html",
+    "labyrinth/stage/how_to_find_stage/index.html","labyrinth/stage/index.html",
+    "mainstage/extreme/enemy/index.html","mainstage/extreme/index.html",
+    "mainstage/extreme/stage/index.html","mainstage/hard/enemy/index.html",
+    "mainstage/hard/index.html","mainstage/hard/stage/index.html","mainstage/index.html",
+    "pvp/index.html","pvp/leaderboard/index.html","pvp/search/index.html",
+    "pvp/usage-history/index.html","pvp/usage/index.html","ranger/compare/index.html",
+    "ranger/index.html","ranger/ranger/index.html","ranger/ranking/index.html",
+    "ranger/stats/index.html","ranger/stats/marks/index.html","update/index.html"
+  ];
+  assert.equal(pages.length,40);
+  for(const route of pages){
+    const html=read(route);
+    assert.match(html,/<body class="gt-app">/,route);
+    assert.match(html,/document\.documentElement\.dataset\.theme = theme === "dark"/,route);
+    assert.ok(html.indexOf('document.documentElement.dataset.theme') < html.indexOf('style.css'),route+" theme must predate CSS");
+    for(const file of ["header-responsive.css","mobile-interaction-fix.css","theme-toggle.css","game-tech.css","game-tech-controls.css"]){
+      assert.ok(html.includes(file),route+" missing "+file);
+    }
+    if(route!=="404.html"){
+      assert.match(html,/<link rel="stylesheet" href="[^"]+game-tech-controls\.css\?v=20261010a">/,route);
+      assert.ok(html.indexOf('game-tech-controls.css') < html.indexOf('</head>'),route);
+    }else{
+      assert.match(html,/document\.write\('<link rel="stylesheet"/);
+    }
+  }
+});

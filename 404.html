@@ -2,6 +2,15 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Match the stored theme before any page is rendered.
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LINE Rangers Database</title>
   <script>
@@ -33,13 +42,13 @@
             ? 'endless-stage'
             : 'unknown';
 
-      ['style.css','ranger.css','ranger-ability-effect-merge.css','hsEnemy.css','card-tag-colors.css','endless.css','hs-stage.css'].forEach(function (file) {
+      ['style.css','ranger.css','ranger-ability-effect-merge.css','hsEnemy.css','card-tag-colors.css','endless.css','hs-stage.css','header-responsive.css?v=20260429c','mobile-interaction-fix.css?v=20260430c','theme-toggle.css?v=20260525a','game-tech.css?v=20261010b','game-tech-controls.css?v=20261010a'].forEach(function (file) {
         document.write('<link rel="stylesheet" href="' + root + 'assets/css/' + file + '">');
       });
     })();
   </script>
 </head>
-<body>
+<body class="gt-app">
   <div id="site-header"></div>
 
   <main id="endlessRoute" class="page ranger-page" hidden>
