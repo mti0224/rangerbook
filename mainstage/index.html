@@ -2,13 +2,27 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Apply the saved theme before any stylesheet can paint the page.
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>主要關卡｜LINE Rangers Database</title>
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="../assets/css/home.css">
   <link rel="stylesheet" href="../assets/css/endless.css">
+  <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
+  <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
+  <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
+  <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261010b">
+  <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
 </head>
-<body>
+<body class="gt-app">
   <div id="site-header"></div>
 
   <main class="page home-page">
