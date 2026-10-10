@@ -84,6 +84,7 @@ async function recordOne(browser, pathname, mode, viewport) {
         lightControls: whiteish,
         emptyDropdowns: dropdowns,
         styleLoaded: [...document.styleSheets].some(s => s.href?.includes("game-tech-controls.css")),
+        loadedCssFilenames: [...document.styleSheets].filter(s => !!s.href).map(s => s.href.split("/").pop().split("?")[0]),
         headerLoaded: !!document.querySelector(".site-header"),
         darkBackground: props(body).backgroundColor
       };
@@ -111,7 +112,11 @@ async function recordOne(browser, pathname, mode, viewport) {
       if (pathname==="ability/index.html") await safeSnapshot(".ability-card","#abilityModal:not([hidden])","ability-modal");
       if (pathname==="pvp/usage/index.html") await safeSnapshot(".pvp-ranger-trigger",".pvp-usage-modal:not([hidden])","pvp-modal");
     }
-    const rec = {page:pathname,mode,viewport:viewport.key,...details,errors,screenshot:path.relative(output,screenshot),extraScreenshots:extras};
+    // Chromium may speculatively request a nested relative stylesheet before an inline <base> is parsed.
+    // If the same CSS filename is loaded successfully, this 404 is a duplicate prefetch, not a broken style.
+    const duplicatePrefetch404s = errors.filter(e => e.startsWith("stylesheet HTTP 404 ") && details.loadedCssFilenames.includes(e.split(" ").pop()));
+    const actualErrors = errors.filter(e => !duplicatePrefetch404s.includes(e));
+    const rec = {page:pathname,mode,viewport:viewport.key,...details,errors:actualErrors,duplicatePrefetch404s,screenshot:path.relative(output,screenshot),extraScreenshots:extras};
     all.push(rec);
     const protectedRoute = ["guildwar/usage/index.html","pvp/search/index.html"].includes(pathname);
     if (details.theme !== mode && !protectedRoute) logIssue({ page:pathname,mode,viewport:viewport.key,type:"wrong-theme" });
@@ -119,7 +124,7 @@ async function recordOne(browser, pathname, mode, viewport) {
     if (details.documentWidth > details.width + 8) logIssue({page:pathname,mode,viewport:viewport.key,type:"horizontal-overflow",size:details.documentWidth-details.width});
     if (mode === "dark") for(const item of details.lightControls) logIssue({page:pathname,mode,viewport:viewport.key,type:"bright-control",...item});
     for(const item of details.emptyDropdowns) logIssue({page:pathname,mode,viewport:viewport.key,type:"empty-visible-dropdown",...item});
-    for(const err of errors) logIssue({page:pathname,mode,viewport:viewport.key,type:"browser-error",description:err});
+    for(const err of actualErrors) logIssue({page:pathname,mode,viewport:viewport.key,type:"browser-error",description:err});
   } catch (err) {
     const failure = {page:pathname,mode,viewport:viewport.key,error:String(err).slice(0,450)};
     failures.push(failure);
@@ -144,6 +149,7 @@ async function recordOne(browser, pathname, mode, viewport) {
   const summary = {
     pages:pages.length,scenarios:queue.length,successful:all.length,
     failures:failures.length,issueCount:issues.length,
+    duplicatePrefetch404s:all.reduce((sum,r)=>sum+(r.duplicatePrefetch404s?.length||0),0),
     issueTypes:issues.reduce((acc,item)=>{acc[item.type]=(acc[item.type]||0)+1;return acc;},{}),
     generatedAt:new Date().toISOString()
   };
