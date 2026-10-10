@@ -5,6 +5,9 @@ on:
     paths:
       - "assets/css/**"
       - "assets/js/site.js"
+      - "**/*.html"
+      - "tests/game-tech-contract.test.js"
+      - "tests/first-paint.cjs"
       - "tests/sitewide-visual-audit.cjs"
       - ".github/workflows/audit-game-tech-visuals.yml"
   workflow_dispatch:
@@ -38,6 +41,8 @@ jobs:
         run: node tests/sitewide-visual-audit.cjs
         env:
           AUDIT_BASE_URL: http://127.0.0.1:4173
+      - name: Confirm no legacy first paint while site.js is delayed
+        run: node tests/first-paint.cjs
       - name: Check admin tab layout with mocked permissions
         run: node tests/admin-workspace-ui.cjs
       - name: Save screenshots and issue report

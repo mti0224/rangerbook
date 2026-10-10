@@ -2,6 +2,15 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Apply the saved theme before any stylesheet can paint the page.
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>
     (function () {
@@ -20,8 +29,19 @@
   <link rel="stylesheet" href="../assets/css/ranger-advanced-filters.css">
   <link rel="stylesheet" href="../assets/css/ranger-animation-viewer.css">
   <link rel="stylesheet" href="../assets/css/ranger-grouped-detail-items.css">
+  <script>
+    // Resolve canonical CSS paths before the speculative preloader reads links.
+    // The detail route sets a dynamic <base>; relative links can be prefetched
+    // from an incorrect directory before that <base> becomes active.
+    (function () {
+      var root = window.location.pathname.indexOf("/rangerbook/") === 0 ? "/rangerbook/" : "/";
+      ["header-responsive.css?v=20260429c","mobile-interaction-fix.css?v=20260430c","theme-toggle.css?v=20260525a","game-tech.css?v=20261010b","game-tech-controls.css?v=20261010a"].forEach(function (file) {
+        document.write('<link rel="stylesheet" href="' + root + "assets/css/" + file + '">');
+      });
+    })();
+  </script>
 </head>
-<body>
+<body class="gt-app">
   <div id="site-header"></div>
 
   <main class="page ranger-page">
