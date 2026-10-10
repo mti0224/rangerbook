@@ -81,3 +81,22 @@ test("dark interactions are scoped to components rather than every button",()=>{
   assert.match(css,/\.ranger-category-box/);
   assert.match(css,/#resetBtn/);
 });
+
+test("site-wide control layer loads after Game-Tech and preserves thematic reset",()=>{
+ const shell=read("assets/js/site.js"),theme=read("assets/css/theme-toggle.css");
+ const ctrl=read("assets/css/game-tech-controls.css");
+ assert.match(shell,/loadStylesheet\("game-tech-controls\.css", "20261010a"\)/);
+ assert.ok(shell.indexOf('game-tech.css", "20261010b"') < shell.indexOf('game-tech-controls.css", "20261010a"'));
+ assert.doesNotMatch(theme,/html\[data-theme="dark"\] button:hover\s*\{/);
+ assert.match(ctrl,/\.gear-mode-switch button\.active/);
+ assert.match(ctrl,/\.pvp-player-unit-button/);
+ assert.match(ctrl,/\.stats-trend-panel summary/);
+ assert.match(ctrl,/\.admin-overflow-menu button/);
+ assert.match(ctrl,/\.pvp-history-chip/);
+ assert.match(ctrl,/\.labyrinth-stage-card/);
+});
+test("previously unresolved ability style reference is now provided",()=>{
+ const page=read("ability/index.html");
+ assert.match(page,/ranger-ability-effect-merge\.css/);
+ assert.match(read("assets/css/ranger-ability-effect-merge.css"),/\.ability-effect-table/);
+});

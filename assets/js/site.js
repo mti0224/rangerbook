@@ -291,6 +291,7 @@
   loadStylesheet("mobile-interaction-fix.css", "20260430c");
   loadStylesheet("theme-toggle.css", "20260525a");
   loadStylesheet("game-tech.css", "20261010b");
+  loadStylesheet("game-tech-controls.css", "20261010a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">

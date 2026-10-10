@@ -307,14 +307,16 @@ html[data-theme="dark"] #resetBtn {
   border-color: #315a88 !important;
 }
 
+/* Only navigation and pagination controls receive this hover treatment.
+   Never apply a bright fill to arbitrary buttons or ranger rows. */
 html[data-theme="dark"] .pagination-page.active,
-html[data-theme="dark"] .pagination-actions button:hover,
-html[data-theme="dark"] .pagination-page:hover,
+html[data-theme="dark"] .pagination-actions button:hover:not(:disabled),
+html[data-theme="dark"] .pagination-page:hover:not(:disabled),
 html[data-theme="dark"] .site-menu-toggle:hover,
-html[data-theme="dark"] .site-settings-toggle:hover,
-html[data-theme="dark"] button:hover {
-  background: #2563eb !important;
-  color: #ffffff !important;
+html[data-theme="dark"] .site-settings-toggle:hover {
+  background: #294852 !important;
+  color: #e3f0f0 !important;
+  border-color: #3a6269 !important;
 }
 
 html[data-theme="dark"] button:disabled,
