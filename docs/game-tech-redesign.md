@@ -1,7 +1,7 @@
 # Rangerbook Game-Tech redesign — review notes
 
 ## Scope
-This PR applies a shared presentation layer to **all 39 regular HTML pages** through the existing \`assets/js/site.js\` entrypoint. \`404.html\` remains unchanged on purpose: it also hosts legacy deep-link fallback content for stage pages, so its routing must not be altered casually.
+This PR applies a shared presentation layer to **all 40 HTML routes** through the existing \`assets/js/site.js\` entrypoint. \`404.html\` remains unchanged on purpose: it also hosts legacy deep-link fallback content for stage pages, so its routing must not be altered casually.
 
 ### Shared experience
 - Game-Tech colors, spacing, page headings, menus, cards, filters, tables, PvP and guild panels, chart containers, stage information, modals and the administrator dashboard.

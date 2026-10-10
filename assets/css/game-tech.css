@@ -459,3 +459,39 @@ body.gt-app [hidden], body.gt-app .admin-only-entry[hidden] { display: none !imp
 @media(prefers-reduced-motion: reduce) {
   body.gt-app *, body.gt-app *::before, body.gt-app *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Tablet hamburger menu uses the pre-existing nav content and click handlers. */
+@media (min-width: 761px) and (max-width: 1120px) {
+  body.gt-app .site-header .site-nav {
+    position: absolute;
+    top: calc(100% + .45rem);
+    right: 1rem;
+    z-index: 40;
+    width: min(255px, calc(100vw - 2rem));
+    flex-direction: column;
+    gap: .2rem;
+    padding: .6rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  body.gt-app .site-header .site-nav a {
+    width: 100%;
+    border-radius: 6px;
+    padding: .55rem .8rem;
+    color: var(--text);
+  }
+}
+body.gt-app :is(.pvp-usage-modal-panel,.pvp-player-team-modal-panel,.guild-member-modal-panel,.guild-usage-modal-panel,.pvp-player-detail-panel) {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  border-radius: 11px;
+}
+body.gt-app :is(.pvp-usage-modal,.pvp-player-team-modal,.guild-member-modal,.guild-usage-modal)[hidden] { display:none !important; }
+body.gt-app :is(.pvp-history-chart-panel,.stats-trend-panel,.labyrinth-stage-info-card,.hs-production-line-panel) {
+  border-color: var(--line) !important;
+  border-radius: 10px;
+}
+body.gt-app .pvp-history-chart-panel canvas { max-width: 100%; }
+@media (max-width: 1120px) { body.gt-app :is(.pvp-search-page,.pvp-history-page) { width:min(1180px,calc(100% - 2rem)); } }
+@media (max-width: 620px) { body.gt-app :is(.pvp-data-meta,.stats-summary) { grid-template-columns:repeat(2,minmax(0,1fr)); } }
