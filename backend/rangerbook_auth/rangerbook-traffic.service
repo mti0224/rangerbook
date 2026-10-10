@@ -1,0 +1,15 @@
+[Unit]
+Description=Rangerbook GA4 traffic cache refresh
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/rangerbook-auth
+EnvironmentFile=/home/ubuntu/rangerbook-auth/.env
+ExecStart=/home/ubuntu/rangerbook-auth/venv/bin/python /home/ubuntu/rangerbook-auth/traffic_collector.py
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/home/ubuntu/rangerbook-auth
