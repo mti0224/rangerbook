@@ -36,6 +36,27 @@
 - AWS 執行個體 IAM Role：`arn:aws:iam::010421869571:role/EC2-SSM-Role`。
 - 2026-10-10 檢查時 EC2 未有 Google ADC 設定、服務帳號檔案或 `google-analytics-data`，也未部署流量 API。請不要啟動新 Timer，直到完成 Google 授權並驗證首次同步。
 
+## Google Cloud 專案與身分資料（已確認）
+
+- Google Cloud Project ID：`rangerbook-ga4-reader`（**不是** Project Number；IAM principal 必須使用專案數字編號）
+- Google 服務帳號：`rangerbook-ga4-reader@rangerbook-ga4-reader.iam.gserviceaccount.com`
+- GA4 資源 ID：`540346392`
+- AWS 帳戶：`010421869571`，IAM Role：`EC2-SSM-Role`
+- AWS EC2：`i-05cb332634cb5d0a9`，使用 **IMDSv2 required**
+- Google Workload Identity Pool ID（建議值）：`rangerbook-ec2`
+- AWS provider ID（建議值）：`aws-rangerbook`
+
+### 一次性 Google Cloud Shell 初始化
+
+1. 開啟 [Google Cloud Shell](https://console.cloud.google.com/?project=rangerbook-ga4-reader)，選擇 `rangerbook-ga4-reader` 專案，確認登入帳戶有啟用 API、管理 WIF Pool、修改服務帳號 IAM Policy 的權限。
+2. 使用 GitHub PR #120 的 `backend/rangerbook_auth/setup_google_wif.sh`，**先閱讀程式碼**，再在 Cloud Shell 執行。此程式只會修改 Google Cloud 專案，不會在 EC2 安裝或啟動任何服務。
+3. 指令會自動查詢數字型 Project Number、開啟所需 API、建立 `rangerbook-ec2/aws-rangerbook`、將 AWS 身分限制到**這台 EC2**，並賦予服務帳號 `Workload Identity User`。如果 Pool 已存在會停止，避免不小心信任權限未知的設定。
+4. 產生 `rangerbook-ga4-aws-wif.json`：這是供 AWS ADC 使用的 **不含私鑰** 的 External Account Config；使用 `--enable-imdsv2`，符合 EC2 的實際設定。
+5. 到 **Google Analytics → 管理 → 資源存取權管理**，把該服務帳號 Email 加到 GA4 資源 `540346392`，角色設為 Viewer。Google Cloud IAM 的 `Workload Identity User` **不能取代** GA4 資源 Viewer。
+6. 完成後告知此程式輸出的 `GOOGLE_PROJECT_NUMBER` 與 `GOOGLE_WIF_SETUP=SUCCESS`，不需要提供任何私鑰。後續即可在 AWS 上生成並部署對應的 External Account Config，安裝同步程式後使用實際資料驗證。
+
+注意：使用此 EC2 的 `EC2-SSM-Role` 同時為其他任務提供身分。因此 AWS provider 的 attribute condition 與 service-account IAM principal 都限制到 `i-05cb332634cb5d0a9`，而非讓整個 AWS 帳戶或所有使用該 Role 的實例取得授權。
+
 ## 建立無私鑰的 GA4 認證（需在 Google Cloud / GA4 完成）
 
 1. 登入管理這個 GA4 Property 的 Google Cloud 專案，開啟 **Google Analytics Data API**。
