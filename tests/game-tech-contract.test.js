@@ -144,11 +144,12 @@ test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",
     for(const file of ["header-responsive.css","mobile-interaction-fix.css","theme-toggle.css","game-tech.css","game-tech-controls.css"]){
       assert.ok(html.includes(file),route+" missing "+file);
     }
-    if(route!=="404.html"){
+    if(route==="404.html" || route==="ranger/ranger/index.html"){
+      assert.match(html,/document\.write\('<link rel="stylesheet"/);
+      assert.ok(html.includes("game-tech-controls.css?v=20261010a"));
+    }else{
       assert.match(html,/<link rel="stylesheet" href="[^"]+game-tech-controls\.css\?v=20261010a">/,route);
       assert.ok(html.indexOf('game-tech-controls.css') < html.indexOf('</head>'),route);
-    }else{
-      assert.match(html,/document\.write\('<link rel="stylesheet"/);
     }
   }
 });
