@@ -67,3 +67,32 @@
 6. EC2 私有 `.env` 補入 `GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/rangerbook-auth/google-wif-credential-config.json`。確定認證配置的檔案權限僅執行使用者可讀，接著再依上方部署步驟安裝套件、手動驗證同步，最後開啟 Timer。
 
 目前 ChatGPT 可操作的 AWS/GitHub 權限 **不能代替 Google Cloud / GA4 的資源管理員授權**；Google 步驟需要擁有該 GA4 資源權限的帳號執行。
+
+## 2026-10-11 Google Cloud Shell 實測：已建立 Pool/Provider，SA IAM 拒絕
+
+使用者以 `timochien@gmail.com` 執行時，成功建立 `rangerbook-ec2` Pool 和 `aws-rangerbook` Provider，**但** `gcloud iam service-accounts add-iam-policy-binding` 回報 `iam.serviceAccounts.setIamPolicy PERMISSION_DENIED`。GA4 Property `540346392` 已在使用者提供的畫面確認服務帳號擁有 Viewer 權限。Google Cloud 數字型 Project Number **`60763946234`**。
+
+此時**不需要刪除重建已成功的 Pool/Provider**。建議由有管理權限的 Google Cloud 管理員執行最小權限的單一授權：
+
+```bash
+gcloud iam service-accounts add-iam-policy-binding \
+  rangerbook-ga4-reader@rangerbook-ga4-reader.iam.gserviceaccount.com \
+  --project=rangerbook-ga4-reader \
+  --role=roles/iam.workloadIdentityUser \
+  --member="principalSet://iam.googleapis.com/projects/60763946234/locations/global/workloadIdentityPools/rangerbook-ec2/attribute.aws_ec2_instance/i-05cb332634cb5d0a9"
+```
+
+若需要讓 `timochien@gmail.com` 自己執行，請由有權的管理員在**該服務帳號本身**授予其 `roles/iam.serviceAccountAdmin`（或含 `iam.serviceAccounts.setIamPolicy` 的自訂權限）。此權限很高；**優先由現有管理員直接執行上述單一綁定，避免額外授權給日常帳號**。
+
+上述授權成功後，Cloud Shell 可生成無私鑰的 AWS external-account config：
+
+```bash
+gcloud iam workload-identity-pools create-cred-config \
+ "projects/60763946234/locations/global/workloadIdentityPools/rangerbook-ec2/providers/aws-rangerbook" \
+ --service-account="rangerbook-ga4-reader@rangerbook-ga4-reader.iam.gserviceaccount.com" \
+ --aws --enable-imdsv2 --output-file="$HOME/rangerbook-ga4-aws-wif.json"
+```
+
+`setup_google_wif.sh` 已支援部分成功後安全續跑：會檢查已存在 Pool/Provider 的 account、Role、instance condition 與 mapping，而不再因「已存在」中斷。**但若自己仍沒有服務帳號 IAM 修改權限，重跑仍會在授權那步被拒絕**。
+
+最後須在 **實際 EC2** 裝設並驗證 external-account config，確認 GA4 Data API 可回覆實際數據後，才啟用每小時 Timer。不要在 GitHub 上傳任何 Google Cloud 私鑰或認證檔。
