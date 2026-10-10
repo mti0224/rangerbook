@@ -165,3 +165,19 @@ test("PvP usage-history keeps series-colored chip left borders",()=>{
   assert.doesNotMatch(controls,/:is\(\.pvp-history-chip,[\s\S]{0,200}border-color:\s*var\(--line\)\s*!important/);
   assert.match(controls,/\.pvp-history-chip button:hover/);
 });
+
+test("site traffic is a super-admin-only dashboard backed by private cache",()=>{
+ const html=read("admin/index.html");
+ const js=read("assets/js/admin-page.js");
+ const api=read("backend/rangerbook_auth/app.py");
+ const collector=read("backend/rangerbook_auth/traffic_collector.py");
+ assert.match(html,/id="adminTrafficTab"[^>]*hidden/);
+ assert.match(html,/id="adminTrafficPanel"[^>]*hidden/);
+ assert.match(js,/traffic: auth.isSuperAdmin\(\)/);
+ assert.match(js,/auth\.api\("\/super-admin\/traffic\?days="/);
+ assert.match(api,/@app.get\("\/super-admin\/traffic"\)/);
+ assert.match(api,/Depends\(require_super_admin\)/);
+ assert.match(api,/TRAFFIC_CACHE_DIR/);
+ assert.match(collector,/BetaAnalyticsDataClient/);
+ assert.match(collector,/os\.replace\(/);
+});
