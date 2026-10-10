@@ -181,3 +181,16 @@ test("site traffic is a super-admin-only dashboard backed by private cache",()=>
  assert.match(collector,/BetaAnalyticsDataClient/);
  assert.match(collector,/os\.replace\(/);
 });
+
+test("GA4 Workload Identity Federation is scoped to the single EC2 and keyless",()=>{
+ const script=read("backend/rangerbook_auth/setup_google_wif.sh");
+ const guide=read("backend/rangerbook_auth/TRAFFIC_DEPLOY.md");
+ assert.match(script,/PROJECT_ID="rangerbook-ga4-reader"/);
+ assert.match(script,/SERVICE_ACCOUNT="rangerbook-ga4-reader@rangerbook-ga4-reader\.iam\.gserviceaccount\.com"/);
+ assert.match(script,/AWS_ACCOUNT="010421869571"/);
+ assert.match(script,/EC2_INSTANCE="i-05cb332634cb5d0a9"/);
+ assert.match(script,/attribute\.aws_ec2_instance/);
+ assert.match(script,/--enable-imdsv2/);
+ assert.doesNotMatch(script,/--key-file\s|service-accounts keys create/);
+ assert.match(guide,/540346392/);
+});
