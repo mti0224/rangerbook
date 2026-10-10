@@ -17,14 +17,42 @@ test -n "$PROJECT_NUMBER"
 gcloud iam service-accounts describe "$SERVICE_ACCOUNT" --project="$PROJECT_ID" >/dev/null
 echo "Project number: $PROJECT_NUMBER"
 gcloud services enable iam.googleapis.com iamcredentials.googleapis.com sts.googleapis.com cloudresourcemanager.googleapis.com analyticsdata.googleapis.com --project="$PROJECT_ID"
-# Never reuse an existing pool with unverified trust controls.
-if gcloud iam workload-identity-pools describe "$POOL_ID" --project="$PROJECT_ID" --location=global >/dev/null 2>&1; then
-  echo "Pool already exists: inspect access policy and provider before proceeding." >&2
-  exit 2
+# Safe resume after a partial setup: inspect and verify existing resources.
+POOL_JSON="$(gcloud iam workload-identity-pools describe "$POOL_ID" --project="$PROJECT_ID" --location=global --format=json 2>/dev/null || true)"
+if [ -n "$POOL_JSON" ]; then
+  printf '%s' "$POOL_JSON" | python3 -c 'import json,sys; p=json.load(sys.stdin); assert p.get("state")=="ACTIVE", "WIF pool is not active"'
+  echo "Reusing verified existing Workload Identity Pool: $POOL_ID"
+else
+  gcloud iam workload-identity-pools create "$POOL_ID" --project="$PROJECT_ID" --location=global --display-name="Rangerbook EC2"
 fi
-gcloud iam workload-identity-pools create "$POOL_ID" --project="$PROJECT_ID" --location=global --display-name="Rangerbook EC2"
-gcloud iam workload-identity-pools providers create-aws "$PROVIDER_ID" --project="$PROJECT_ID" --location=global --workload-identity-pool="$POOL_ID" --account-id="$AWS_ACCOUNT" --attribute-mapping="google.subject=assertion.arn,attribute.account=assertion.account,attribute.aws_role=assertion.arn.extract('assumed-role/{role_name}/'),attribute.aws_ec2_instance=assertion.arn.extract('assumed-role/{role_and_session}').extract('/{session}')" --attribute-condition="attribute.account == '${AWS_ACCOUNT}' && attribute.aws_role == '${AWS_ROLE}' && attribute.aws_ec2_instance == '${EC2_INSTANCE}'" --display-name="Rangerbook AWS EC2 only"
-gcloud iam service-accounts add-iam-policy-binding "$SERVICE_ACCOUNT" --project="$PROJECT_ID" --role=roles/iam.workloadIdentityUser --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/attribute.aws_ec2_instance/${EC2_INSTANCE}"
+
+PROVIDER_JSON="$(gcloud iam workload-identity-pools providers describe "$PROVIDER_ID" --project="$PROJECT_ID" --location=global --workload-identity-pool="$POOL_ID" --format=json 2>/dev/null || true)"
+if [ -n "$PROVIDER_JSON" ]; then
+  printf '%s' "$PROVIDER_JSON" | python3 -c '
+import json,sys
+p=json.load(sys.stdin)
+account,role,instance=sys.argv[1:]
+mapping=p.get("attributeMapping",{})
+condition=p.get("attributeCondition","")
+assert p.get("state")=="ACTIVE", "Existing WIF provider is not active"
+assert str(p.get("aws",{}).get("accountId"))==account, "Existing AWS account differs"
+assert mapping.get("google.subject")=="assertion.arn", "Existing subject mapping differs"
+assert mapping.get("attribute.account")=="assertion.account", "Existing account mapping differs"
+assert mapping.get("attribute.aws_role", "").startswith("assertion.arn.extract("), "Missing AWS role mapping"
+assert mapping.get("attribute.aws_ec2_instance","").startswith("assertion.arn.extract("), "Missing EC2 instance mapping"
+for key,value in (("attribute.account",account),("attribute.aws_role",role),("attribute.aws_ec2_instance",instance)):
+    assert key+" == "+chr(39)+value+chr(39) in condition, "Existing provider condition differs: "+key
+print("Existing provider verified: AWS account, role, instance and mapping")
+' "$AWS_ACCOUNT" "$AWS_ROLE" "$EC2_INSTANCE"
+else
+  gcloud iam workload-identity-pools providers create-aws "$PROVIDER_ID" --project="$PROJECT_ID" --location=global --workload-identity-pool="$POOL_ID" --account-id="$AWS_ACCOUNT" --attribute-mapping="google.subject=assertion.arn,attribute.account=assertion.account,attribute.aws_role=assertion.arn.extract('assumed-role/{role_name}/'),attribute.aws_ec2_instance=assertion.arn.extract('assumed-role/{role_and_session}').extract('/{session}')" --attribute-condition="attribute.account == '$AWS_ACCOUNT' && attribute.aws_role == '$AWS_ROLE' && attribute.aws_ec2_instance == '$EC2_INSTANCE'" --display-name="Rangerbook AWS EC2 only"
+fi
+
+if ! gcloud iam service-accounts add-iam-policy-binding "$SERVICE_ACCOUNT" --project="$PROJECT_ID" --role=roles/iam.workloadIdentityUser --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/$POOL_ID/attribute.aws_ec2_instance/$EC2_INSTANCE"; then
+  echo "Missing iam.serviceAccounts.setIamPolicy. Ask an authorized administrator to grant Service Account Admin on the target service account." >&2
+  echo "Pool and provider remain intact; rerun this script after permissions are fixed." >&2
+  exit 3
+fi
 # EC2 instance metadata requires IMDSv2; this config has no private key.
 gcloud iam workload-identity-pools create-cred-config "projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}" --service-account="$SERVICE_ACCOUNT" --aws --enable-imdsv2 --output-file="$CONFIG_FILE"
 echo "GOOGLE_WIF_SETUP=SUCCESS"
