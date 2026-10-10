@@ -1,0 +1,259 @@
+/*
+ * Rangerbook Game-Tech / control and menu visual audit 2026-10-10
+ * This layer follows legacy CSS and game-tech.css. Pure presentation:
+ * don't alter data markers, visibility permissions or button semantics.
+ */
+body.gt-app {
+  --gt-control-bg: #e6f2f0;
+  --gt-control-hover: #d7eae6;
+  --gt-control-selected: #c9e9e3;
+  --gt-control-border: #b4d6d2;
+  --gt-control-text: #0c6660;
+  --gt-control-subtle: #f0f6f6;
+  --gt-table-heading: #e8f0f0;
+}
+html[data-theme="dark"] body.gt-app {
+  --gt-control-bg: #203b44;
+  --gt-control-hover: #2b4952;
+  --gt-control-selected: #22504d;
+  --gt-control-border: #3b5e65;
+  --gt-control-text: #c4eae7;
+  --gt-control-subtle: #192e38;
+  --gt-table-heading: #203943;
+}
+
+/* Shared filter bars and floating panels. */
+body.gt-app :is(
+  .ranger-controls,.gear-controls,.ranking-controls,.compare-controls,.stats-trend-panel,
+  .pvp-data-controls,.pvp-history-controls,.pvp-search-card,.pvp-search-selection,
+  .guild-ranking-controls,.guild-usage-controls,.labyrinth-difficulty-controls,
+  .admin-card,.gear-filter-panel,.ranger-controls .advanced-filters
+) {
+  border-color: var(--line) !important;
+  color: var(--text);
+}
+body.gt-app :is(.pvp-history-controls,.ranking-controls,.stats-trend-panel,.ranger-controls .advanced-filters) {
+  background: var(--panel) !important;
+  border-radius: 10px;
+  box-shadow: none;
+}
+body.gt-app :is(
+  .pvp-history-controls input,.pvp-history-controls select,
+  .pvp-search-input,.pvp-search-team-picker select,.pvp-player-team-toolbar select,
+  .gear-level-select,.labyrinth-difficulty-controls select,
+  .admin-role-control select,.stats-trend-controls select
+) {
+  background: var(--gt-inset) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 7px !important;
+  box-shadow: none;
+  accent-color: var(--primary);
+}
+
+/* All standard secondary and filter-reset actions use one compact geometry. */
+body.gt-app :is(
+  #rangerResetBtn,#gearResetBtn,#enemyResetBtn,#artifactResetBtn,#resetBtn,
+  #pvpHistoryAdd,.advanced-toggle-btn,.gear-advanced-toggle-btn,
+  .pvp-admin-export-button,.pvp-option-pagination button,
+  .ranger-animation-controls button,.pvp-history-controls > button,
+  .guildwar-team-back,.endless-stage-nav-link,.labyrinth-stage-help-link
+) {
+  background: var(--gt-control-bg) !important;
+  border: 1px solid var(--gt-control-border) !important;
+  color: var(--gt-control-text) !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+  text-decoration: none;
+}
+body.gt-app :is(
+  #rangerResetBtn,#gearResetBtn,#enemyResetBtn,#artifactResetBtn,#resetBtn,
+  #pvpHistoryAdd,.advanced-toggle-btn,.gear-advanced-toggle-btn,
+  .pvp-admin-export-button,.pvp-option-pagination button,
+  .ranger-animation-controls button,.pvp-history-controls > button,
+  .guildwar-team-back,.endless-stage-nav-link,.labyrinth-stage-help-link
+):hover:not(:disabled) {
+  background: var(--gt-control-hover) !important;
+  border-color: var(--gt-control-border) !important;
+  color: var(--gt-control-text) !important;
+}
+body.gt-app :is(button,select):disabled { opacity: .56; cursor: not-allowed; }
+body.gt-app :is(button,select):focus-visible,
+body.gt-app :is(details > summary):focus-visible {
+  outline: 2px solid var(--primary) !important; outline-offset: 2px;
+}
+
+/* Nested menus, suggestion rows and click targets must not become primary-color pills. */
+body.gt-app :is(.pvp-search-suggestions,.compare-suggestions,.site-settings-menu,.admin-overflow-menu) {
+  background: var(--panel) !important;
+  border-color: var(--line) !important;
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+body.gt-app :is(.pvp-search-suggestion,.compare-suggestion,.admin-overflow-menu button) {
+  border-radius: 6px;
+  background: transparent !important;
+  color: var(--text) !important;
+}
+body.gt-app :is(.pvp-search-suggestion,.compare-suggestion,.admin-overflow-menu button):is(:hover,:focus-visible) {
+  background: var(--gt-control-hover) !important;
+  color: var(--text) !important;
+}
+body.gt-app :is(.pvp-search-suggestions,.compare-suggestions)[hidden],
+body.gt-app .pvp-search-suggestions:empty,
+body.gt-app .compare-suggestions:empty { display: none !important; }
+body.gt-app :is(.site-settings-toggle,.site-menu-toggle,.modal-close,.pvp-usage-modal-close) {
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+  border-radius: 7px !important;
+  background: var(--gt-control-subtle) !important;
+  box-shadow: none;
+}
+body.gt-app :is(.site-settings-toggle,.site-menu-toggle,.modal-close,.pvp-usage-modal-close):hover {
+  background: var(--gt-control-hover) !important;
+  color: var(--text) !important;
+}
+body.gt-app .theme-toggle-row:is(:hover,:focus-visible) {
+  background: var(--gt-control-hover) !important; color: var(--text) !important;
+}
+
+/* Tabs and segmented options: selected state is darker and consistent in both modes. */
+body.gt-app :is(.gear-mode-switch,.ranking-metric-tabs,.stats-type-tabs,.gear-max-toggle) {
+  border-color: var(--line) !important;
+}
+body.gt-app .gear-mode-switch { background: var(--gt-control-subtle) !important; }
+body.gt-app :is(.gear-mode-switch button,.ranking-metric-button,.stats-type-button,.pagination-page,
+  .pagination-bar button,.pvp-option-pagination button) {
+  color: var(--gt-control-text) !important;
+  border-color: var(--gt-control-border) !important;
+}
+body.gt-app :is(.gear-mode-switch button,.ranking-metric-button,.stats-type-button,.pagination-page,
+  .pagination-bar button):hover:not(:disabled) {
+  background: var(--gt-control-hover) !important;
+  color: var(--gt-control-text) !important;
+}
+body.gt-app :is(.gear-mode-switch button.active,.ranking-metric-button.active,.stats-type-button.active,
+  .pagination-page.active) {
+  background: var(--gt-control-selected) !important;
+  color: var(--gt-control-text) !important;
+  border-color: var(--gt-control-border) !important;
+}
+body.gt-app :is(.gear-mode-switch button.active,.ranking-metric-button.active,.stats-type-button.active,
+  .pagination-page.active):hover {
+  background: var(--gt-control-selected) !important;
+}
+body.gt-app :is(.ranking-card-meta span,.ranger-mini-stats span,.gear-mini-stats span) {
+  border-radius: 5px;
+}
+body.gt-app :is(.ranger-controls label,.gear-controls label,.ranking-controls label,.pvp-history-controls label) {
+  color: var(--muted);
+}
+
+/* Ranger chart accordion, animation and level selectors. */
+body.gt-app :is(.stats-trend-panel summary,.admin-update-batch summary) {
+  background: var(--gt-table-heading) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+body.gt-app :is(.stats-trend-panel summary,.admin-update-batch summary):hover {
+  background: var(--gt-control-hover) !important;
+}
+body.gt-app .ranger-level-control { background: var(--panel) !important; border-color: var(--line) !important; }
+body.gt-app .ranger-level-range { accent-color: var(--primary); }
+
+/* PvP controls, selected ranger details, chips and chart labels. */
+body.gt-app :is(.pvp-history-chip,.pvp-history-chart-panel,.pvp-player-team-modal-panel,
+  .pvp-search-result,.pvp-search-suggestions,.pvp-player-unit-button) {
+  border-color: var(--line) !important;
+}
+body.gt-app :is(.pvp-history-chip,.pvp-history-chart-panel,.pvp-search-result) {
+  background: var(--panel) !important; color: var(--text) !important;
+}
+body.gt-app .pvp-history-chip button,
+body.gt-app .pvp-usage-stable-table .pvp-ranger-trigger {
+  background: transparent !important; color: inherit !important; box-shadow: none !important;
+}
+body.gt-app .pvp-history-chip button:hover { background: var(--gt-control-hover) !important; }
+body.gt-app .pvp-player-unit-button { background: var(--panel) !important; color: var(--text) !important; }
+body.gt-app .pvp-player-unit-button:is(:hover,.is-selected,.is-selected:hover) {
+  background: var(--gt-control-selected) !important;
+  color: var(--text) !important;
+  border-color: var(--gt-control-border) !important;
+}
+
+/* Unified stage/list cards. Preserve emblem artwork and semantic buff/debuff tags. */
+body.gt-app :is(.endless-stage-card,.endless-entry-card,.labyrinth-stage-card,
+  .labyrinth-entry-card,.labyrinth-artifact-card,.extreme-gimmick-timing span) {
+  border-color: var(--line) !important;
+}
+body.gt-app :is(.endless-stage-card,.endless-entry-card,.labyrinth-stage-card,
+  .labyrinth-entry-card):hover {
+  background: var(--gt-row-hover) !important;
+  border-color: var(--gt-control-border) !important;
+}
+body.gt-app :is(.endless-stage-table th,.labyrinth-score-table thead th,
+  .compare-table th,.stats-table th,.skill-effect-table thead th,.ability-effect-table thead th,
+  .gear-effect-table thead th,.enemy-skill-effect-table thead th) {
+  background: var(--gt-table-heading) !important;
+  color: var(--muted) !important;
+  border-color: var(--line) !important;
+}
+body.gt-app :is(.endless-line-stat,.extreme-gimmick-timing span) {
+  background: var(--gt-control-subtle) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.ranger-category-box,.ranger-ability-list,.ranger-talent-list,
+  .endless-table-wrap,.labyrinth-score-table,.enemy-skill-effect-table,
+  .enemy-skill-meta-table,.ability-effect-table,.skill-effect-table,.skill-meta-table) {
+  background: var(--gt-inset) !important;
+  border-color: var(--line) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.ability-effect,.talent-effect) {
+  background: var(--gt-control-subtle) !important;
+  border-color: var(--line) !important;
+}
+
+/* Admin: consistent visual controls without changing authentication, role gates or visibility. */
+body.gt-app :is(.admin-tabs button,.admin-actions button,.admin-overflow-trigger) { border-radius: 7px; }
+body.gt-app .admin-role-control select {
+  background: var(--gt-inset) !important; color: var(--text) !important;
+  border-color: var(--line) !important; border-radius: 7px !important;
+}
+body.gt-app .admin-overflow-menu { border-radius: 9px; }
+body.gt-app .admin-update-batch { border-color: var(--line) !important; }
+body.gt-app .admin-update-batch summary { cursor: pointer; }
+body.gt-app .admin-tabs button:not(.active) {
+  background: var(--gt-control-bg) !important; color: var(--gt-control-text) !important;
+}
+body.gt-app .admin-tabs button:not(.active):hover { background: var(--gt-control-hover) !important; }
+
+/* Keep semantic colors for health, elements, warnings, rank and enemy classifications.
+   No universal button:hover or generic .tag rules should override those meanings. */
+@media(max-width: 760px) {
+  body.gt-app :is(.ranger-controls,.gear-controls,.pvp-history-controls) { gap: .75rem; }
+  body.gt-app :is(.pvp-history-controls > button,.advanced-toggle-btn,.gear-advanced-toggle-btn) {
+    min-height: 42px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.gt-app :is(button,select,.theme-toggle-row,.pvp-player-unit-button) { transition: none !important; }
+}
+
+
+/* Second pass: active segmented buttons and pagination must override older !important rules. */
+body.gt-app .pagination-bar button:not(.active):not(:disabled),
+body.gt-app .pagination-actions button:not(.active):not(:disabled) {
+  background: var(--gt-control-bg) !important;
+  color: var(--gt-control-text) !important;
+  border: 1px solid var(--gt-control-border) !important;
+}
+html[data-theme="dark"] body.gt-app .gear-mode-switch button.active,
+html[data-theme="dark"] body.gt-app .gear-mode-switch button.active:hover,
+html[data-theme="dark"] body.gt-app .admin-tabs button.active {
+  background: var(--gt-control-selected) !important;
+  color: var(--gt-control-text) !important;
+  border-color: var(--gt-control-border) !important;
+}
+html[data-theme="dark"] body.gt-app :is(.pagination-actions button,.pagination-bar button):hover:not(:disabled) {
+  background: var(--gt-control-hover) !important;
+  color: var(--gt-control-text) !important;
+}
