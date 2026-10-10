@@ -10,7 +10,7 @@ const homepage = read("index.html");
 test("shared shell preserves light/dark choice and public nav", () => {
   assert.match(shell,/const THEME_KEY = "rangerbook-theme"/);
   assert.match(shell,/document\.documentElement\.dataset\.theme = theme/);
-  assert.match(shell,/loadStylesheet\("game-tech\.css", "20261010a"\)/);
+  assert.match(shell,/loadStylesheet\("game-tech\.css", "20261010b"\)/);
   assert.match(shell,/nav\.cloneNode\(true\)/);
   assert.match(theme,/html\[data-theme="dark"\] body\.gt-app/);
   assert.match(theme,/max-width: 1120px/);
@@ -55,4 +55,29 @@ test("all 40 HTML entrypoints continue to load shared site.js",()=>{
   ];
   assert.equal(paths.length,40);
   paths.forEach((file)=>assert.match(read(file),/assets\/js\/site\.js/,file));
+});
+
+test("compare suggestions are hidden until typed and hidden again when cleared",()=>{
+  const compare = read("assets/js/ranger-compare.js");
+  const page = read("ranger/compare/index.html");
+  assert.match(compare,/if \(!requestedQuery\)/);
+  assert.match(compare,/container\.hidden = !rows\.length/);
+  assert.equal((page.match(/class="compare-suggestions" hidden/g)||[]).length,2);
+});
+test("ranking header removed without removing metric selection or pagination",()=>{
+  const page=read("ranger/ranking/index.html");
+  const rank=read("assets/js/ranger-ranking.js");
+  assert.doesNotMatch(page,/id="rankingTitle"/);
+  assert.match(page,/class="ranking-metric-tabs"/);
+  assert.match(page,/id="rankingPaginationBar"/);
+  assert.match(rank,/if \(els\.title\) els\.title\.textContent/);
+});
+test("dark interactions are scoped to components rather than every button",()=>{
+  const css=read("assets/css/game-tech.css");
+  assert.doesNotMatch(css,/body\.gt-app :is\(button:hover\)/);
+  assert.match(css,/\.pvp-usage-stable-table \.pvp-ranger-trigger/);
+  assert.match(css,/\.theme-toggle-row:hover/);
+  assert.match(css,/\.endless-detail-btn/);
+  assert.match(css,/\.ranger-category-box/);
+  assert.match(css,/#resetBtn/);
 });
