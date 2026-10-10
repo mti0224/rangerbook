@@ -153,3 +153,13 @@ test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",
     }
   }
 });
+
+test("PvP usage-history keeps series-colored chip left borders",()=>{
+  const controls=read("assets/css/game-tech-controls.css");
+  const page=read("pvp/usage-history/index.html");
+  const renderer=read("assets/js/pvp-usage-history.js");
+  assert.match(renderer,/style="border-left:5px solid \$\{SERIES_COLORS\[index\]\}"/);
+  assert.match(page,/game-tech-controls\.css\?v=20261010b/);
+  assert.doesNotMatch(controls,/:is\(\.pvp-history-chip,[\s\S]{0,200}border-color:\s*var\(--line\)\s*!important/);
+  assert.match(controls,/\.pvp-history-chip button:hover/);
+});
