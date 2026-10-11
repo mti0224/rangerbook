@@ -1,5 +1,17 @@
 # Rangerbook 網站流量系統
 
+## 正式後端部署結果（2026-10-11，已驗證）
+
+- **GA4 API 讀取已成功**：EC2 透過 IMDSv2 + Workload Identity Federation 取得短效 Google 權杖，並對 GA4 Property `540346392` 發出實際報表查詢，收到 HTTP 200。
+- EC2 `i-05cb332634cb5d0a9` 已安裝 `google-auth`、`google-analytics-data` 與 `traffic_collector.py`。Google 認證設定是私有的 **External Account Config（無私鑰）**，檔案權限僅執行使用者可讀。
+- 第一次及 systemd 手動同步成功，產出 **7／30／90 天**有效的真實快取；快取資料在 `/home/ubuntu/rangerbook-auth/traffic-cache`，非 GitHub Pages 公開目錄，檔案模式 `0600`。
+- 已更新既有 `rangerbook-auth` FastAPI 與 `/super-admin/traffic` 端點，先備份再重啟，健康檢查正常。
+- 正式 HTTPS 的 `/health` 為 **200**，`/super-admin/traffic?days=30` 未登入為 **401**，一般 admin 的 `require_super_admin` 依賴拒絕為 **403**；授權處理函式讀取真實快取通過（但尚未以真實最高管理員 Session 測試完整 HTTP 200 路徑）。
+- `rangerbook-traffic.timer` 已啟用，每小時定時刷新。檢查於 2026-10-11 02:29 UTC 時，下一次觸發排定為 **03:28:12 UTC**，Timer 與同步 Service 均正常。
+- 在既有 EC2 上執行、不額外新增主機；已保留 `/home/ubuntu/rangerbook-auth/ga4-rollback-20261011` 的 FastAPI 和 requirements 備份。
+- **尚未合併 PR #120、尚未將新的管理員網站流量分頁發布至 GitHub Pages**；需先完成程式碼檢查，並由使用者明確確認合併。
+- 下方尚有建立授權時的歷史操作紀錄，含當時曾出現的權限錯誤；目前均已完成授權，**不需重跑 Google Cloud WIF 建立步驟**。
+
 ## 狀態
 
 本套件包含最高管理員「網站流量」分頁、受 Session 權限保護的 FastAPI 唯讀端點、GA4 資料同步程式、每小時同步的 systemd timer。部署前需確認 **執行 rangerbook-auth 的正確 EC2** 與 Google Analytics 權限。不得部署至不相關的 Discord bot EC2。
