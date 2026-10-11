@@ -35,9 +35,9 @@ test("role gates are still owned by existing auth code",()=>{
   assert.match(read("assets/js/pvp-player-search.js"),/!auth\.isSuperAdmin\(\)/);
   assert.match(theme,/\.admin-only-entry\[hidden\]/);
 });
-test("all 40 HTML entrypoints continue to load shared site.js",()=>{
+test("all 41 HTML entrypoints continue to load shared site.js",()=>{
   const paths=[
-    "404.html","index.html","ability/index.html","about/index.html","admin/index.html",
+    "404.html","index.html","ability/index.html","about/index.html","sponsor/index.html","admin/index.html",
     "adventEnemy/index.html","endless/enemy/index.html","endless/index.html",
     "endless/stage/index.html","eventStageEnemy/index.html","gear/index.html",
     "guildwar/index.html","guildwar/ranking/index.html","guildwar/usage/index.html",
@@ -53,7 +53,7 @@ test("all 40 HTML entrypoints continue to load shared site.js",()=>{
     "ranger/ranking/index.html","ranger/stats/index.html",
     "ranger/stats/marks/index.html","update/index.html"
   ];
-  assert.equal(paths.length,40);
+  assert.equal(paths.length,41);
   paths.forEach((file)=>assert.match(read(file),/assets\/js\/site\.js/,file));
 });
 
@@ -120,7 +120,7 @@ test("admin workspace displays a single role-gated tab panel",()=>{
 
 test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",()=>{
   const pages=[
-    "404.html","index.html","ability/index.html","about/index.html","admin/index.html",
+    "404.html","index.html","ability/index.html","about/index.html","sponsor/index.html","admin/index.html",
     "adventEnemy/index.html","endless/enemy/index.html","endless/index.html",
     "endless/stage/index.html","eventStageEnemy/index.html","gear/index.html",
     "guildwar/index.html","guildwar/ranking/index.html","guildwar/usage/index.html",
@@ -135,7 +135,7 @@ test("all routes bootstrap theme and blocking Game-Tech CSS before first paint",
     "ranger/index.html","ranger/ranger/index.html","ranger/ranking/index.html",
     "ranger/stats/index.html","ranger/stats/marks/index.html","update/index.html"
   ];
-  assert.equal(pages.length,40);
+  assert.equal(pages.length,41);
   for(const route of pages){
     const html=read(route);
     assert.match(html,/<body\b[^>]*\bclass="[^"]*\bgt-app\b[^"]*"[^>]*>/,route);
@@ -215,4 +215,45 @@ test("GA4 traffic charts have no CDN dependencies and preserve role-protected da
   assert.doesNotMatch(html,/chart\.js|cdn\.jsdelivr\.net/i);
   assert.match(css,/scrollbar-gutter:\s*stable/);
   assert.match(css,/\.traffic-toolbar\s*\{[^}]*display:\s*flex/);
+});
+
+
+test("About and Sponsor copy, payment and contributor links match approved content",()=>{
+  const about=read("about/index.html");
+  const sponsor=read("sponsor/index.html");
+  for(const phrase of [
+    "LINE Rangers 資料站是整合及分析遊戲資料的網站",
+    "Ranger、裝備、能力的完整數據",
+    "各式關卡敵人生產線及機關數據",
+    "當前PvP環境的角色使用率及其細項分析",
+    "關於作者：蚯蚓貓",
+    "Discord: warmycat",
+    "Gmail: warmycat123@gmail.com",
+    "LINE: tykjh6706",
+    "Instagram: warmycatyt",
+    "FAILdows", "NAViK3069", "nekotan",
+    "Kirai, 無尾熊, 培根蛋餅, 余東東, 貓神, 小惡魔, 昕冰樂, 艾茵, 喬",
+    "前端使用Github Page，UI由ChatGPT生成",
+    "後端使用Amazon Web Service"
+  ])assert.ok(about.includes(phrase),"Missing about content: "+phrase);
+  assert.match(about,/<a href="https:\/\/rangers\.lerico\.net\/"[^>]*>LINE Ranger手冊<\/a>/);
+  assert.match(about,/<a href="https:\/\/line-ranger-kiwi\.vercel\.app\/"[^>]*>LINE Rangers Kiwi<\/a>/);
+  assert.match(sponsor,/這個網站不會放送任何廣告/);
+  assert.match(sponsor,/支持本站維護與資料整理/);
+  assert.match(sponsor,/<a href="https:\/\/payment\.ecpay\.com\.tw\/QuickCollect\/PayData\?Fd%2bEMYTkwnRiExHKdQxQGH9fNPwDXXGr5xI6v5pYOuo%3d"[^>]*>贊助蚯蚓貓<\/a>/);
+  assert.doesNotMatch(about,/https:\/\/p\.ecpay\.com\.tw\/CF7F86A/);
+});
+
+test("shared navigation links Sponsor after About and gates admin footer by AWS session",()=>{
+  const shell=read("assets/js/site.js");
+  const aboutPos=shell.indexOf('href="\${rootPrefix}about/"');
+  const sponsorPos=shell.indexOf('href="\${rootPrefix}sponsor/"');
+  assert.ok(aboutPos>0 && sponsorPos>aboutPos);
+  assert.match(shell,/gtAdminLink\.href = rootPrefix \+ "admin\/"/);
+  assert.match(shell,/gtAdminLink\.hidden = true/);
+  assert.match(shell,/user\?\.logged_in/);
+  assert.match(shell,/user\.role === "admin" \|\| user\.role === "super_admin"/);
+  assert.match(shell,/credentials: "include"/);
+  assert.match(shell,/rangerbook:auth-changed/);
+  assert.match(shell,/gtFoot\.className = "gt-sidebar-bottom gt-sidebar-nav"/);
 });
