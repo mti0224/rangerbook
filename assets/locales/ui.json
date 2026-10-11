@@ -690,7 +690,21 @@
     "speed.normal": "普通",
     "speed.fast": "快",
     "speed.veryFast": "非常快",
-    "grade.star": "星"
+    "grade.star": "星",
+    "gimmick.title": "機關",
+    "gimmick.passive": "被動機關",
+    "gimmick.active": "主動機關",
+    "gimmick.firstActivation": "首次發動：",
+    "gimmick.cooldown": "冷卻時間：",
+    "stage.floorType": "樓層類型",
+    "stage.timeLimit": "時間限制",
+    "stage.rescueCount": "拯救數量",
+    "stage.cageHp": "牢籠體力",
+    "stage.enemy": "敵人",
+    "stage.firstSpawn": "初登場時間",
+    "stage.respawnInterval": "再生產間距",
+    "stage.maxCount": "數量上限",
+    "stage.details": "詳細資訊"
   },
   "en": {
     "nav.home": "Home",
@@ -1383,6 +1397,20 @@
     "speed.normal": "Normal",
     "speed.fast": "Fast",
     "speed.veryFast": "Very Fast",
-    "grade.star": "Stars"
+    "grade.star": "Stars",
+    "gimmick.title": "Obstacles",
+    "gimmick.passive": "Passive Obstacles",
+    "gimmick.active": "Active Obstacles",
+    "gimmick.firstActivation": "First Activation: ",
+    "gimmick.cooldown": "Cooldown: ",
+    "stage.floorType": "Floor Type",
+    "stage.timeLimit": "Time Limit",
+    "stage.rescueCount": "Rescue Count",
+    "stage.cageHp": "Cage HP",
+    "stage.enemy": "Enemy",
+    "stage.firstSpawn": "First Spawn",
+    "stage.respawnInterval": "Respawn Interval",
+    "stage.maxCount": "Maximum Count",
+    "stage.details": "Details"
   }
 }

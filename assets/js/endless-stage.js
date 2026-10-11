@@ -239,7 +239,7 @@
   function renderGimmickTable(stage) {
     if (!stage.gimmicks?.length) return "";
     return `
-      ${renderSectionTitle("機關")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("機關") || "機關")}
       <div class="endless-table-wrap endless-gimmick-table-wrap">
         <table class="endless-stage-table endless-gimmick-table">
           <tbody>
@@ -250,7 +250,7 @@
                     ${gimmick.icon ? `<img src="${GIMMICK_ICON(gimmick.icon)}" alt="" loading="lazy" onerror="this.closest('.endless-gimmick-icon').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
                   </div>
                 </td>
-                <td>${formatValue(gimmick.description)}</td>
+                <td>${formatValue(window.RangerbookI18n?.uiText(gimmick.description) || gimmick.description)}</td>
               </tr>
             `).join("")}
           </tbody>
