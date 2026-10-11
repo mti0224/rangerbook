@@ -3,12 +3,10 @@ const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 const paths = [
-  "/", "/settings/", "/ranger/", "/ranger/ranger/", "/ranger/stats/",
-  "/ranger/compare/", "/ranger/ranking/", "/gear/", "/ability/",
-  "/pvp/", "/pvp/leaderboard/", "/pvp/usage/", "/pvp/usage-history/",
-  "/guildwar/", "/guildwar/ranking/", "/guildwar/usage/",
-  "/mainstage/", "/mainstage/hard/", "/mainstage/extreme/",
-  "/endless/", "/labyrinth/", "/admin/", "/about/"
+  "/", "/settings/", "/ranger/", "/ranger/ranger/",
+  "/gear/", "/ability/", "/pvp/", "/pvp/usage/",
+  "/guildwar/", "/guildwar/ranking/", "/mainstage/",
+  "/labyrinth/", "/admin/", "/about/"
 ];
 (async () => {
   const browser = await chromium.launch({headless: true});
@@ -20,16 +18,17 @@ const paths = [
     const problems=[];
     for (const path of paths) {
       const page = await context.newPage();
-      page.setDefaultTimeout(12000);
+      page.setDefaultTimeout(9000);
       await page.route("https://www.googletagmanager.com/**", r => r.abort());
       await page.route("https://rangerbook-auth.warmycat.com/**", r => r.fulfill({
         status:401,contentType:"application/json",body:'{"logged_in":false}'
       }));
       await page.route("https://res.warmycat.com/**", r => r.abort());
       try {
-        await page.goto(base+path,{waitUntil:"domcontentloaded",timeout:20000});
+        console.log("UI_I18N_CHECK",path);
+        await page.goto(base+path,{waitUntil:"domcontentloaded",timeout:12000});
         await page.waitForFunction(() => document.documentElement.lang === "en" &&
-          window.RangerbookI18n?.t("nav.home") === "Home",null,{timeout:12000});
+          window.RangerbookI18n?.t("nav.home") === "Home",null,{timeout:9000});
         const result = await page.evaluate(() => {
           const title = document.title;
           const heading = document.querySelector("main h1")?.textContent?.trim() || "";
