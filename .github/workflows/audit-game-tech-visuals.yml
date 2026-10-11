@@ -8,6 +8,7 @@ on:
       - "assets/js/admin-page.js"
       - "assets/js/admin-traffic-charts.js"
       - "tests/admin-traffic-ui.cjs"
+      - "tests/site-sidebar-ui.cjs"
       - "**/*.html"
       - "tests/game-tech-contract.test.js"
       - "tests/first-paint.cjs"
@@ -58,6 +59,8 @@ jobs:
         run: node tests/admin-workspace-ui.cjs
       - name: Check traffic dashboard charts (dark/light, mobile/desktop, 7/30/90)
         run: node tests/admin-traffic-ui.cjs
+      - name: Verify Sponsor navigation and admin sidebar visibility by role
+        run: node tests/site-sidebar-ui.cjs
       - name: Save screenshots and issue report
         if: always()
         uses: actions/upload-artifact@v4
