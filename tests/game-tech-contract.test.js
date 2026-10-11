@@ -166,22 +166,23 @@ test("PvP usage-history keeps series-colored chip left borders",()=>{
   assert.match(controls,/\.pvp-history-chip button:hover/);
 });
 
-test("site traffic is a super-admin-only dashboard backed by private cache",()=>{
- const html=read("admin/index.html");
- const js=read("assets/js/admin-page.js");
+test("site traffic is admin-accessible with private backend cache",()=>{
+ const html=read("admin/index.html"),js=read("assets/js/admin-page.js");
  const api=read("backend/rangerbook_auth/app.py");
  const collector=read("backend/rangerbook_auth/traffic_collector.py");
  assert.match(html,/id="adminTrafficTab"[^>]*hidden/);
  assert.match(html,/id="adminTrafficPanel"[^>]*hidden/);
- assert.match(js,/traffic: auth.isSuperAdmin\(\)/);
- assert.match(js,/auth\.api\("\/super-admin\/traffic\?days="/);
- assert.match(api,/@app.get\("\/super-admin\/traffic"\)/);
- assert.match(api,/Depends\(require_super_admin\)/);
+ assert.ok(js.includes("traffic: auth.isAdmin()"));
+ assert.ok(js.includes("auth.api(\"/admin/traffic?days=\""));
+ assert.ok(api.includes('@app.get("/admin/traffic")'));
+ assert.ok(api.includes('@app.get("/super-admin/traffic", include_in_schema=False)'));
+ assert.match(api,/def traffic_report\([\s\S]{0,160}Depends\(require_admin\)/);
  assert.match(api,/TRAFFIC_CACHE_DIR/);
  assert.match(collector,/BetaAnalyticsDataClient/);
  assert.match(collector,/os\.replace\(/);
+ assert.ok(!html.includes("僅限最大管理者查看"));
+ assert.ok(!html.includes("尚未設定時不顯示虛構數據"));
 });
-
 test("GA4 Workload Identity Federation is scoped to the single EC2 and keyless",()=>{
  const script=read("backend/rangerbook_auth/setup_google_wif.sh");
  const guide=read("backend/rangerbook_auth/TRAFFIC_DEPLOY.md");
@@ -204,14 +205,20 @@ test("GA4 traffic charts have no CDN dependencies and preserve role-protected da
   assert.match(html,/id="trafficDaily" class="traffic-chart-scroll"/);
   assert.match(html,/id="trafficPages" class="traffic-scroll-list"/);
   assert.match(html,/id="trafficSources" class="traffic-source-chart"/);
-  assert.match(html,/admin-traffic-charts\.js\?v=20261011a/);
+  assert.match(html,/admin-traffic-charts\.js\?v=20261011c/);
   assert.match(js,/RangerbookTrafficCharts\.renderDaily/);
   assert.match(js,/RangerbookTrafficCharts\.renderSources/);
-  assert.match(js,/auth\.isSuperAdmin\(\)/);
+  assert.ok(js.includes("traffic: auth.isAdmin()"));
+  assert.ok(js.includes('timeZone: "Asia/Taipei"'));
   assert.match(charts,/document\.createElementNS/);
   assert.match(charts,/aria-label/);
   assert.match(charts,/traffic-pie-slice/);
   assert.match(charts,/traffic-chart-point/);
+  assert.match(charts,/traffic-line-tooltip/);
+  assert.match(charts,/pointermove/);
+  assert.match(charts,/traffic-chart-crosshair/);
+  assert.ok(charts.includes('marker.addEventListener("focus"'));
+  assert.match(css,/\.traffic-line-tooltip\s*\{/);
   assert.doesNotMatch(html,/chart\.js|cdn\.jsdelivr\.net/i);
   assert.match(css,/scrollbar-gutter:\s*stable/);
   assert.match(css,/\.traffic-toolbar\s*\{[^}]*display:\s*flex/);
