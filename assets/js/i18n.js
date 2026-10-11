@@ -9,8 +9,67 @@
   try { saved = localStorage.getItem(storageKey); } catch (_) {}
   let locale = supported.includes(saved) ? saved : "zh-Hant";
   let dictionary = {};
+  let englishByChinese = new Map();
   const gameData = {};
   const gamePromises = {};
+  const uiPatterns = [
+    [/^第\s*(\d+)\s*\/\s*(\d+)\s*頁，顯示第\s*(\d+)[–-](\d+)\s*筆，共\s*(\d+)\s*筆$/, m => "Page " + m[1] + " / " + m[2] + ", showing " + m[3] + "–" + m[4] + " of " + m[5]],
+    [/^第\s*(\d+)\s*關$/, m => "Stage " + m[1]],
+    [/^第\s*(\d+)\s*層$/, m => "Floor " + m[1]],
+    [/^技能\s*(\d+)$/, m => "Skill " + m[1]],
+    [/^效果\s*(\d+)$/, m => "Effect " + m[1]],
+    [/^隊伍\s*(\d+)$/, m => "Team " + m[1]],
+    [/^(\d+)\s*名玩家$/, m => m[1] + " players"],
+    [/^(\d+)\s*次出場$/, m => m[1] + " appearances"],
+    [/^困難關卡第\s*(\d+)\s*關$/, m => "Hard Stage " + m[1]],
+    [/^迷宮關卡\s*(\d+[-－]\d+)$/, m => "Labyrinth Stage " + m[1]]
+  ];
+  const uiAttrNames = ["placeholder", "title", "aria-label", "alt"];
+  function uiText(original) {
+    if (locale !== "en" || typeof original !== "string") return original;
+    const cleaned = original.replace(/\s+/g, " ").trim();
+    if (!cleaned) return original;
+    const direct = englishByChinese.get(cleaned);
+    if (direct) return direct;
+    for (const [pattern, build] of uiPatterns) {
+      const match = cleaned.match(pattern);
+      if (match) return build(match);
+    }
+    return original;
+  }
+  function eligible(element) {
+    return Boolean(element) && !element.closest("script,style,noscript,textarea,code,pre,[contenteditable],[data-i18n-ignore]");
+  }
+  function translateTextNode(node) {
+    if (!eligible(node.parentElement) || node.parentElement.hasAttribute("data-i18n")) return;
+    const original = node.nodeValue;
+    const trimmed = original.trim();
+    if (!trimmed) return;
+    const translated = uiText(trimmed);
+    if (translated === trimmed) return;
+    const at = original.indexOf(trimmed);
+    node.nodeValue = original.slice(0, at) + translated + original.slice(at + trimmed.length);
+  }
+  function autoTranslate(rootNode) {
+    if (locale !== "en") return;
+    const elements = [];
+    if (rootNode.nodeType === 1) elements.push(rootNode);
+    rootNode.querySelectorAll?.("*").forEach(el => elements.push(el));
+    for (const el of elements) {
+      if (!eligible(el)) continue;
+      for (const name of uiAttrNames) {
+        if ((name === "placeholder" && el.hasAttribute("data-i18n-placeholder")) ||
+            (name === "aria-label" && el.hasAttribute("data-i18n-aria-label"))) continue;
+        const value = el.getAttribute(name);
+        if (!value) continue;
+        const translated = uiText(value);
+        if (translated !== value) el.setAttribute(name, translated);
+      }
+    }
+    const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) translateTextNode(node);
+  }
   const reverseCache = {};
   function json(url) {
     return fetch(url).then(r => {
@@ -33,13 +92,28 @@
       const inputKey = node.getAttribute("data-i18n-placeholder");
       if (inputKey && dictionary[inputKey] !== undefined) node.setAttribute("placeholder",dictionary[inputKey]);
     }
+    autoTranslate(rootNode);
     document.documentElement.lang = locale;
   }
   async function loadUi(selected) {
-    const load = l => json(root + "assets/locales/" + encodeURIComponent(l) + ".json").catch(() => ({}));
-    const [base, language] = await Promise.all([load("zh-Hant"), load(selected)]);
+    try {
+      const all = await json(root + "assets/locales/ui.json");
+      if (selected !== locale) return;
+      const baseline = all["zh-Hant"] || {};
+      dictionary = Object.assign({}, baseline, all[selected] || {});
+      englishByChinese = new Map();
+      if (selected === "en") {
+        for (const [key, original] of Object.entries(baseline)) {
+          const translated = all.en?.[key];
+          if (typeof original !== "string" || !translated || translated === original) continue;
+          const normalized = original.replace(/\s+/g, " ").trim();
+          if (normalized && !englishByChinese.has(normalized)) englishByChinese.set(normalized, translated);
+        }
+      }
+    } catch (error) {
+      console.error("Rangerbook UI catalog unavailable", error);
+    }
     if (selected !== locale) return;
-    dictionary = Object.assign({}, base, language);
     translate(document);
     window.dispatchEvent(new CustomEvent("rangerbook:locale-ready", {detail:{locale}}));
   }
@@ -91,7 +165,7 @@
   }
   const api = {
     supported, setLocale, get locale() { return locale; },
-    translate, t(key, fallback = "") { return dictionary[key] || fallback || key; },
+    translate, uiText, t(key, fallback = "") { return dictionary[key] || fallback || key; },
     readyGame, lookup, matchOfficial,
     custom(key, original) {
       return gameData[locale]?.custom?.[key] || original;
@@ -102,10 +176,30 @@
   window.RangerbookI18n = api;
   api.ready = loadUi(locale);
   document.addEventListener("DOMContentLoaded", () => translate(document));
-  const observer = new MutationObserver(mutations => {
-    for (const entry of mutations) for (const node of entry.addedNodes) {
+  const pending = new Set();
+  let scheduled = false;
+  function flush() {
+    scheduled = false;
+    const batch = Array.from(pending);
+    pending.clear();
+    for (const node of batch) {
+      if (!node.isConnected) continue;
       if (node.nodeType === 1) translate(node);
+      else if (node.nodeType === 3 && locale === "en") translateTextNode(node);
+    }
+  }
+  const observer = new MutationObserver(mutations => {
+    for (const record of mutations) {
+      if (record.type === "characterData") {
+        pending.add(record.target);
+      } else for (const node of record.addedNodes) {
+        if (node.nodeType === 1 || node.nodeType === 3) pending.add(node);
+      }
+    }
+    if (pending.size && !scheduled) {
+      scheduled = true;
+      queueMicrotask(flush);
     }
   });
-  observer.observe(document.documentElement, {subtree:true,childList:true});
+  observer.observe(document.documentElement, {subtree:true,childList:true,characterData:true});
 })();
