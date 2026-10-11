@@ -9,6 +9,7 @@ on:
       - "assets/js/admin-traffic-charts.js"
       - "tests/admin-traffic-ui.cjs"
       - "tests/site-sidebar-ui.cjs"
+      - "tests/settings-ui.cjs"
       - "tests/sidebar-drawer-ui.cjs"
       - "**/*.html"
       - "tests/game-tech-contract.test.js"
@@ -64,6 +65,8 @@ jobs:
         run: node tests/site-sidebar-ui.cjs
       - name: Test left-sliding sidebar on phone, tablet and desktop
         run: node tests/sidebar-drawer-ui.cjs
+      - name: Verify settings page light/dark and Traditional Chinese/English controls
+        run: node tests/settings-ui.cjs
       - name: Save screenshots and issue report
         if: always()
         uses: actions/upload-artifact@v4
