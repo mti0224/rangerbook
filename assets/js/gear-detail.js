@@ -35,6 +35,10 @@
     return scalarText(item?.id || item?.gear_id || item?.code || item?.ranger_id || item?.unitCode);
   }
 
+  const gt = (key, original) => window.RangerbookI18n?.t(key, original) || original;
+  const localText = value => window.RangerbookI18n?.uiText(String(value ?? "")) || String(value ?? "");
+  const localGearName = gear => window.RangerbookI18n?.lookup("EQUIP", getId(gear) + "_nm", getGearName(gear)) || getGearName(gear);
+  const localRangerName = ranger => window.RangerbookI18n?.unitName(getId(ranger), scalarText(ranger?.["Ranger名稱"] || ranger?.name || getId(ranger))) || scalarText(ranger?.["Ranger名稱"] || ranger?.name || getId(ranger));
   function getGearName(gear) {
     return scalarText(gear?.["裝備名稱"] || gear?.name || getId(gear));
   }
@@ -112,7 +116,7 @@
   }
 
   function heading(id, section, level, hasData = true) {
-    return `<h3 class="gear-section-heading"><span>${escapeHtml(section)}</span>${hasData ? levelSelect(id, section, level) : ""}</h3>`;
+    return `<h3 class="gear-section-heading"><span>${escapeHtml(section === "基本效果" ? gt("gear.normalOptions",section) : section === "高級效果" ? gt("gear.highLevelOptions",section) : section)}</span>${hasData ? levelSelect(id, section, level) : ""}</h3>`;
   }
 
   function effectTable(rows, className = "") {
@@ -175,13 +179,13 @@
     }
 
     const conditionHtml = condition
-      ? `<p class="gear-condition"><span class="gear-condition-label">觸發條件：</span><span>${escapeHtml(condition)}</span></p><div class="gear-advanced-divider" aria-hidden="true"></div>`
+      ? `<p class="gear-condition"><span class="gear-condition-label" data-i18n="gear.condition">觸發條件：</span><span>${escapeHtml(localText(condition))}</span></p><div class="gear-advanced-divider" aria-hidden="true"></div>`
       : "";
     const defaultHtml = defaultRows.length
       ? `<div class="talent-section gear-advanced-default-section"><h4>預設效果</h4>${effectTable(defaultRows)}</div>`
       : "";
     const switchableHtml = switchableRows.length
-      ? `${defaultRows.length ? '<div class="gear-advanced-divider" aria-hidden="true"></div>' : ""}<details class="gear-advanced-switchable-details"><summary class="gear-advanced-switchable-summary">可切換效果</summary><div class="talent-section gear-advanced-switchable-section">${effectTable(switchableRows)}</div></details>`
+      ? `${defaultRows.length ? '<div class="gear-advanced-divider" aria-hidden="true"></div>' : ""}<details class="gear-advanced-switchable-details"><summary class="gear-advanced-switchable-summary" data-i18n="gear.switchOptions">可切換效果</summary><div class="talent-section gear-advanced-switchable-section">${effectTable(switchableRows)}</div></details>`
       : "";
 
     return `<section class="detail-section" data-gear-section="高級效果">${heading(id, "高級效果", level)}<div class="ranger-talent-list gear-advanced-detail"><article class="ranger-talent-card gear-advanced-card">${conditionHtml}${defaultHtml}${switchableHtml}</article></div></section>`;
@@ -257,13 +261,13 @@
   }
 
   function filterOptions(label, values) {
-    return `<option value="">${escapeHtml(label)}：全部</option>${unique(values).map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("")}`;
+    return `<option value="">${escapeHtml(localText(label))}: ${escapeHtml(gt("ui.all","全部"))}</option>${unique(values).map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(localText(value))}</option>`).join("")}`;
   }
 
   function rangerCard(ranger) {
     const id = getId(ranger);
     if (!id) return "";
-    const name = scalarText(ranger?.["Ranger名稱"] || ranger?.name || id) || id;
+    const name = localRangerName(ranger) || id;
     const star = rangerValue(ranger, ["星數", "Ranger星數", "star"]);
     const type = rangerValue(ranger, ["類型", "type"]);
     const element = rangerValue(ranger, ["屬性", "attribute", "element"]);
@@ -275,7 +279,7 @@
     const stars = matches.map((ranger) => rangerValue(ranger, ["星數", "Ranger星數", "star"]));
     const types = matches.map((ranger) => rangerValue(ranger, ["類型", "type"]));
     const elements = matches.map((ranger) => rangerValue(ranger, ["屬性", "attribute", "element"]));
-    return `<details class="gear-skillplus-ranger-details"><summary class="gear-skillplus-ranger-summary">具有此技能效果的角色（${matches.length}）</summary><div class="gear-skillplus-ranger-filters"><select aria-label="篩選星數">${filterOptions("星數", stars)}</select><select aria-label="篩選類型">${filterOptions("類型", types)}</select><select aria-label="篩選屬性">${filterOptions("屬性", elements)}</select></div>${matches.length ? `<div class="gear-skillplus-ranger-grid">${matches.map(rangerCard).join("")}</div>` : '<div class="empty-state small gear-skillplus-ranger-empty">沒有符合的角色資料。</div>'}<div class="empty-state small gear-skillplus-ranger-filter-empty" hidden>沒有符合篩選條件的角色。</div></details>`;
+    return `<details class="gear-skillplus-ranger-details"><summary class="gear-skillplus-ranger-summary">${escapeHtml(gt("gear.skillRangers","具有此技能效果的角色"))} (${matches.length})</summary><div class="gear-skillplus-ranger-filters"><select aria-label="篩選星數">${filterOptions("星數", stars)}</select><select aria-label="篩選類型">${filterOptions("類型", types)}</select><select aria-label="篩選屬性">${filterOptions("屬性", elements)}</select></div>${matches.length ? `<div class="gear-skillplus-ranger-grid">${matches.map(rangerCard).join("")}</div>` : '<div class="empty-state small gear-skillplus-ranger-empty">沒有符合的角色資料。</div>'}<div class="empty-state small gear-skillplus-ranger-filter-empty" hidden>沒有符合篩選條件的角色。</div></details>`;
   }
 
   function renderSkillSection(gear, id, rangers) {
@@ -336,11 +340,11 @@
     }
 
     const basicHtml = basics.length
-      ? `<div class="talent-section gear-specplus-section"><h5>基本效果</h5><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-basic-table"><thead><tr><th data-i18n="table.effect">效果</th><th data-i18n="table.value">數值</th></tr></thead><tbody>${basics.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div></div>`
+      ? `<div class="talent-section gear-specplus-section"><h5 data-i18n="gear.basicOptions">基本效果</h5><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-basic-table"><thead><tr><th data-i18n="table.effect">效果</th><th data-i18n="table.value">數值</th></tr></thead><tbody>${basics.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div></div>`
       : "";
     const conditionValues = conditions.length ? conditions : ["無特定條件"];
     const specialHtml = hasSpecial
-      ? `<div class="talent-section gear-specplus-section gear-specplus-special-section"><h5>特殊效果</h5>${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table gear-specplus-condition-table"><thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.condition">條件</th></tr></thead><tbody>${conditionValues.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditionValues.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}<td>${escapeHtml(condition)}</td></tr>`).join("")}</tbody></table></div>${triggers.length ? `<div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-effect-table"><thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.effect">效果</th><th data-i18n="table.coefficient">係數</th><th data-i18n="table.duration">時間</th></tr></thead><tbody>${triggers.map((row) => `<tr><td>${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody></table></div>` : ""}</div>`
+      ? `<div class="talent-section gear-specplus-section gear-specplus-special-section"><h5 data-i18n="gear.specialOptions">特殊效果</h5>${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table gear-specplus-condition-table"><thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.condition">條件</th></tr></thead><tbody>${conditionValues.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditionValues.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}<td>${escapeHtml(condition)}</td></tr>`).join("")}</tbody></table></div>${triggers.length ? `<div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-effect-table"><thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.effect">效果</th><th data-i18n="table.coefficient">係數</th><th data-i18n="table.duration">時間</th></tr></thead><tbody>${triggers.map((row) => `<tr><td>${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody></table></div>` : ""}</div>`
       : "";
 
     return `<section class="detail-section" data-gear-section="Spec+">${heading(id, "Spec+", level)}<div class="ranger-talent-list gear-specplus-detail"><article class="ranger-talent-card gear-specplus-card"><h4 class="talent-title-with-icon"><span>${escapeHtml(name)}</span></h4>${basicHtml}${specialHtml}</article></div></section>`;
@@ -360,8 +364,8 @@
 
   function similarCard(gear) {
     const id = getId(gear);
-    const name = getGearName(gear);
-    const tags = [getGearStar(gear) ? `${getGearStar(gear)}星` : "", getGearTypeLabel(gear)].filter(Boolean).join("／");
+    const name = localGearName(gear);
+    const tags = [getGearStar(gear) ? `${getGearStar(gear)}星` : "", localText(getGearTypeLabel(gear))].filter(Boolean).join(" / ");
     return `<a class="gear-similar-card" href="${ROOT}gear/${encodeURIComponent(id)}" title="${escapeHtml(name)}" data-gear-id="${escapeHtml(id)}"><img src="${GEAR_ICON(id)}" alt="${escapeHtml(name)}" loading="lazy"><span class="gear-similar-name">${escapeHtml(name)}</span><span class="gear-similar-tags">${escapeHtml(tags)}</span></a>`;
   }
 
@@ -372,12 +376,12 @@
       .filter((candidate) => !isPublicGear || isPublicGear(candidate))
       .filter((candidate) => currentType && normalize(getGearTypeValue(candidate)) === currentType && sameBasicEffects(candidate, gear))
       .sort((a, b) => (Number(getGearStar(b)) - Number(getGearStar(a))) || getGearName(a).localeCompare(getGearName(b), "zh-Hant", { numeric: true }));
-    return `<section class="detail-section gear-similar-section" data-gear-section="相似的裝備"><h3>相似的裝備</h3>${matches.length ? `<div class="ranger-talent-list"><article class="ranger-talent-card"><div class="gear-similar-list">${matches.map(similarCard).join("")}</div></article></div>` : '<div class="empty-state small">沒有相似的裝備。</div>'}</section>`;
+    return `<section class="detail-section gear-similar-section" data-gear-section="相似的裝備"><h3 data-i18n="gear.similar">相似的裝備</h3>${matches.length ? `<div class="ranger-talent-list"><article class="ranger-talent-card"><div class="gear-similar-list">${matches.map(similarCard).join("")}</div></article></div>` : '<div class="empty-state small">沒有相似的裝備。</div>'}</section>`;
   }
 
   function renderHead(gear, id) {
-    const tags = [getGearStar(gear) ? `${getGearStar(gear)}星` : "", getGearTypeLabel(gear)].filter(Boolean);
-    return `<div class="ranger-detail-head gear-detail-head"><div class="ranger-detail-image-wrap gear-detail-image-wrap"><img class="ranger-detail-image gear-detail-image" src="${GEAR_ICON(id)}" alt="${escapeHtml(getGearName(gear))}"></div><div><h2 id="gearModalTitle">${escapeHtml(getGearName(gear))}</h2><div class="ranger-tags detail-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div></div></div>`;
+    const tags = [getGearStar(gear) ? `${getGearStar(gear)}星` : "", localText(getGearTypeLabel(gear))].filter(Boolean);
+    return `<div class="ranger-detail-head gear-detail-head"><div class="ranger-detail-image-wrap gear-detail-image-wrap"><img class="ranger-detail-image gear-detail-image" src="${GEAR_ICON(id)}" alt="${escapeHtml(localGearName(gear))}"></div><div><h2 id="gearModalTitle">${escapeHtml(localGearName(gear))}</h2><div class="ranger-tags detail-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div></div></div>`;
   }
 
   async function loadRangers() {

@@ -144,7 +144,7 @@
 
     if (!rows.length) return "";
     return `
-      ${renderSectionTitle("關卡資訊")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("關卡資訊") || "關卡資訊")}
       <div class="endless-table-wrap endless-stage-info-wrap labyrinth-stage-info-wrap">
         <table class="endless-stage-table endless-stage-info-table labyrinth-stage-info-table">
           <tbody>
@@ -212,7 +212,7 @@
     stageContent.innerHTML = `
       ${renderStageInfoTable(stage, difficultyName, detail)}
 
-      ${renderSectionTitle("敵人生產線")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("敵人生產線") || "敵人生產線")}
       ${lineGroups.length ? lineGroups.map(([groupName, rows]) => `
         <section class="hs-condition-section labyrinth-line-section">
           <h3 class="hs-condition-title"><span class="hs-condition-label">${escapeHtml(groupName)}</span></h3>
@@ -357,7 +357,7 @@
         <div class="ranger-detail-image-wrap">${id ? `<img class="ranger-detail-image" src="${ENEMY_IMAGE(id)}" alt="" onerror="this.closest('.ranger-detail-image-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}</div>
         <div><h2 id="labyrinthEnemyLineModalTitle">${escapeHtml(id || "未知敵人")}</h2><div class="ranger-tags detail-tags">${[enemy["Ranger星數"], enemy["類型"], enemy["屬性"]].filter(Boolean).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div></div>
       </div>
-      <section class="detail-section"><h3>生產線資訊</h3><div class="ranger-stat-grid">
+      <section class="detail-section"><h3 data-i18n="stage.production">生產線資訊</h3><div class="ranger-stat-grid">
         ${renderStat("難度", difficulty)}${renderStat("條件", groupName)}${renderStat("初登場時間", row["初登場時間"])}${renderStat("再生產間距", row["再生產間距"])}${renderStat("生產上限", row["生產上限"] || row["數量上限"])}
       </div></section>
       <section class="detail-section"><h3>敵人詳細資訊</h3><div class="ranger-stat-grid">

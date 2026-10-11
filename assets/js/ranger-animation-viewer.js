@@ -1023,7 +1023,7 @@ function estimateProjectileLifetime(projectile, bodyPart) {
   }
 
   function clipOptions(meta) {
-    return availableClips(meta).map(({ clip }) => `<option value="${escapeHtml(clip.key)}">${escapeHtml(clip.label)}</option>`).join("");
+    return availableClips(meta).map(({ clip }) => `<option value="${escapeHtml(clip.key)}">${escapeHtml(window.RangerbookI18n?.uiText(clip.label) || clip.label)}</option>`).join("");
   }
 
   function defaultClipKey(meta) {
@@ -1034,7 +1034,7 @@ function estimateProjectileLifetime(projectile, bodyPart) {
   function renderPanel(unitId, meta) {
     return `
       <section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}">
-        <h3>角色動畫</h3>
+        <h3 data-i18n="animation.title">角色動畫</h3>
         <div class="ranger-animation-player">
           <canvas class="ranger-animation-canvas" width="640" height="360" aria-label="角色動畫預覽"></canvas>
           <div class="ranger-animation-controls simplified">

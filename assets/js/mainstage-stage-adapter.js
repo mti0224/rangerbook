@@ -171,8 +171,8 @@
           ${icon ? `<img class="extreme-gimmick-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">` : '<span class="extreme-gimmick-icon-fallback">機關</span>'}
         </div>
         <div class="extreme-gimmick-copy">
-          <h4>${escapeHtml(name)}</h4>
-          ${description ? `<p>${escapeHtml(description)}</p>` : ''}
+          <h4>${escapeHtml(window.RangerbookI18n?.uiText(name) || name)}</h4>
+          ${description ? `<p>${escapeHtml(window.RangerbookI18n?.uiText(description) || description)}</p>` : ''}
         </div>
       </article>
     `;
@@ -182,7 +182,7 @@
     return `
       <div class="extreme-gimmick-group ${active ? 'is-active' : 'is-passive'}">
         <div class="extreme-gimmick-group-head">
-          <h3>${escapeHtml(title)}</h3>
+          <h3>${escapeHtml(window.RangerbookI18n?.uiText(title) || title)}</h3>
           ${detail || ''}
         </div>
         <div class="extreme-gimmick-list">
@@ -198,13 +198,13 @@
     if (!passive.length && !active.length) return '';
 
     const timing = [];
-    if (stage?.['主動機關首次發動']) timing.push(`<span>首次發動：${escapeHtml(stage['主動機關首次發動'])}</span>`);
-    if (stage?.['主動機關冷卻時間']) timing.push(`<span>冷卻時間：${escapeHtml(stage['主動機關冷卻時間'])}</span>`);
+    if (stage?.['主動機關首次發動']) timing.push(`<span><span data-i18n="gimmick.firstActivation">首次發動：</span>${escapeHtml(stage['主動機關首次發動'])}</span>`);
+    if (stage?.['主動機關冷卻時間']) timing.push(`<span><span data-i18n="gimmick.cooldown">冷卻時間：</span>${escapeHtml(stage['主動機關冷卻時間'])}</span>`);
     const activeMeta = timing.length ? `<div class="extreme-gimmick-timing">${timing.join('')}</div>` : '';
 
     return `
       <section id="extremeGimmickBlock" class="extreme-gimmick-section" data-stage-no="${stageNo}">
-        <h2 class="endless-detail-section-title">機關</h2>
+        <h2 class="endless-detail-section-title" data-i18n="gimmick.title">機關</h2>
         <div class="extreme-gimmick-panel">
           ${renderGimmickGroup('被動機關', passive, false, '')}
           ${renderGimmickGroup('主動機關', active, true, activeMeta)}

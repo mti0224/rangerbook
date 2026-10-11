@@ -220,7 +220,7 @@
     const visibleRows = infoRows.filter(([, value]) => hasValue(value));
     if (!visibleRows.length) return "";
     return `
-      ${renderSectionTitle("關卡資訊")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("關卡資訊") || "關卡資訊")}
       <div class="endless-table-wrap endless-stage-info-wrap">
         <table class="endless-stage-table endless-stage-info-table">
           <tbody>
@@ -239,7 +239,7 @@
   function renderGimmickTable(stage) {
     if (!stage.gimmicks?.length) return "";
     return `
-      ${renderSectionTitle("機關")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("機關") || "機關")}
       <div class="endless-table-wrap endless-gimmick-table-wrap">
         <table class="endless-stage-table endless-gimmick-table">
           <tbody>
@@ -250,7 +250,7 @@
                     ${gimmick.icon ? `<img src="${GIMMICK_ICON(gimmick.icon)}" alt="" loading="lazy" onerror="this.closest('.endless-gimmick-icon').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
                   </div>
                 </td>
-                <td>${formatValue(gimmick.description)}</td>
+                <td>${formatValue(window.RangerbookI18n?.uiText(gimmick.description) || gimmick.description)}</td>
               </tr>
             `).join("")}
           </tbody>
@@ -261,7 +261,7 @@
 
   function renderEnemyLineTable(stage) {
     return `
-      ${renderSectionTitle("敵人生產線")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("敵人生產線") || "敵人生產線")}
       <div class="endless-table-wrap">
         <table class="endless-stage-table">
           <thead>
@@ -464,7 +464,7 @@
         </div>
       </div>
       <section class="detail-section">
-        <h3>生產線資訊</h3>
+        <h3 data-i18n="stage.production">生產線資訊</h3>
         <div class="ranger-stat-grid">
           ${renderStat("初登場時間", row["初登場時間"])}
           ${renderStat("再生產間距", row["再生產間距"])}

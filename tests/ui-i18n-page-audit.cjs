@@ -6,7 +6,7 @@ const paths = [
   "/", "/settings/", "/ranger/", "/ranger/ranger/",
   "/gear/", "/ability/", "/pvp/", "/pvp/leaderboard/", "/pvp/usage/",
   "/guildwar/", "/guildwar/ranking/", "/mainstage/",
-  "/labyrinth/", "/admin/", "/about/"
+  "/labyrinth/", "/labyrinth/artifact/", "/hsEnemy/", "/admin/", "/about/"
 ];
 (async () => {
   const browser = await chromium.launch({headless: true});
@@ -74,6 +74,33 @@ const paths = [
           const labels = await page.locator("#detail-i18n-regression th, #detail-i18n-regression .ranger-stat span").allTextContents();
           assert.deepEqual(labels, ["Skill Effect", "Multiplier", "Duration", "Range", "Mineral Cost", "Splash Range"]);
           assert.equal(await page.locator("#detail-i18n-regression strong").getAttribute("data-raw-stat"),"生產礦物費用");
+        }
+
+        if (path === "/labyrinth/artifact/") {
+          await page.waitForFunction(() => {
+            const translation = window.RangerbookI18n?.uiText("古代王劍");
+            return translation === "Ancient King's Sword";
+          }, null, {timeout:10000});
+          assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText("Ranger的攻擊力提升10.0%")), "Rangers' ATK +10.0%");
+          assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText("敏捷型")), "Agility");
+        }
+        if (path === "/") {
+          const node = await page.evaluate(() => {
+            const root = document.createElement("div");
+            root.id = "audit-game-specific-terms";
+            root.innerHTML = [
+              '<span>超進化8星</span>',
+              '<span>終極進化9星</span>',
+              '<span>15點/秒</span>',
+              '<span>1.5秒/下</span>',
+              '<span>排名第 12 名 · 31 / 50 名成員</span>'
+            ].join("");
+            document.body.appendChild(root);
+            return root.id;
+          });
+          await page.waitForFunction(() => document.querySelector("#audit-game-specific-terms span")?.textContent === "Hyper 8 Stars");
+          const labels = await page.locator("#audit-game-specific-terms span").allTextContents();
+          assert.deepEqual(labels, ["Hyper 8 Stars", "Ultra 9 Stars", "15 pt/sec", "1.5 sec/attack", "Rank #12 · 31 / 50 members"]);
         }
         if(path==="/settings/"){
           assert.equal(await page.locator('input[name="language"]:checked').inputValue(),"en");

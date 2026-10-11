@@ -322,8 +322,8 @@
               ${[enemy["Ranger星數"], enemy["類型"], enemy["屬性"]].filter(Boolean).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
             </div>
             <div class="ranger-mini-stats">
-              <span>攻擊力 ${formatNumber(getAttackValue(enemy))}</span>
-              <span>體力 ${formatNumber(enemy["體力"])}</span>
+              <span><span data-i18n="stats.attack">攻擊力</span> ${formatNumber(getAttackValue(enemy))}</span>
+              <span><span data-i18n="stats.hp">體力</span> ${formatNumber(enemy["體力"])}</span>
             </div>
           </div>
         </button>
@@ -398,7 +398,7 @@
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
           <div>
             <h4>技能 ${index + 1}</h4>
-            <p>發動率：${escapeHtml(skill["發動機率"] || "-")}・技能冷卻時間：${escapeHtml(skill["技能冷卻時間"] || "-")}・觸發基準：${escapeHtml(skill["觸發基準"] || "-")}</p>
+            <p><span data-i18n="table.activationRate">發動率</span>: ${escapeHtml(skill["發動機率"] || "-")} · <span data-i18n="table.skillCooldown">技能冷卻時間</span>: ${escapeHtml(skill["技能冷卻時間"] || "-")} · <span data-i18n="table.triggerTarget">觸發基準</span>: ${escapeHtml(skill["觸發基準"] || "-")}</p>
           </div>
         </div>
         ${renderSkillTable(skill)}
