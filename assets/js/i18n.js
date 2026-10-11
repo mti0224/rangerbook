@@ -10,9 +10,69 @@
   let locale = supported.includes(saved) ? saved : "zh-Hant";
   let dictionary = {};
   let englishByChinese = new Map();
+  let gameTermsByChinese = new Map();
+  let officialByChinese = new Map();
+  let parameterTerms = [];
+  const normalize = value => String(value || "").replace(/\s+/g, " ").trim();
+  function compileTermTemplate(source, english) {
+    if (!/%(?:d[12]?|s|n|N)/.test(source)) return null;
+    const tokens = /%(?:d[12]?|s|n|N)/g;
+    let regex = "^", last = 0;
+    for (const match of source.matchAll(tokens)) {
+      regex += source.slice(last, match.index).replace(/[.*+?^$()|{}[\]\\]/g, "\\  let englishByChinese = new Map();").replace(/\s+/g, "\\s*");
+      regex += "([0-9]+(?:\\.[0-9]+)?)";
+      last = match.index + match[0].length;
+    }
+    regex += source.slice(last).replace(/[.*+?^$()|{}[\]\\]/g, "\\  let englishByChinese = new Map();").replace(/\s+/g, "\\s*") + "$";
+    try { return {pattern:new RegExp(regex), english, prefix:source.split("%")[0].slice(0,8)}; }
+    catch (_) { return null; }
+  }
+  function installGameTerms(rows) {
+    const map = new Map(), ambiguous = new Set(), templates = [];
+    for (const item of rows || []) {
+      if (!item || typeof item.zh_TW !== "string" || typeof item.en !== "string" || !item.en.trim()) continue;
+      const source = normalize(item.zh_TW);
+      if (map.has(source) && map.get(source) !== item.en) ambiguous.add(source);
+      else map.set(source, item.en);
+      const template = compileTermTemplate(source, item.en);
+      if (template) templates.push(template);
+    }
+    ambiguous.forEach(source => map.delete(source));
+    gameTermsByChinese = map;
+    parameterTerms = templates;
+  }
+  async function loadGameTerms() {
+    if (locale !== "en") return;
+    try {
+      installGameTerms(await json(root + "assets/locales/game-custom.json"));
+      translate(document);
+    } catch (error) { console.warn("Custom localization unavailable", error); }
+  }
+  function indexOfficialTranslations(localized, chinese) {
+    const map = new Map(), ambiguous = new Set();
+    for (const kind of ["UNIT","SKILL","ABILITY","EQUIP"]) {
+      const translations = localized?.official?.[kind] || {};
+      for (const [key, raw] of Object.entries(chinese?.official?.[kind] || {})) {
+        if (typeof raw !== "string" || typeof translations[key] !== "string") continue;
+        const original = normalize(raw.replaceAll("\\n", " "));
+        if (!original || original.length > 160) continue;
+        if (map.has(original) && map.get(original) !== translations[key]) ambiguous.add(original);
+        else map.set(original, translations[key]);
+      }
+    }
+    ambiguous.forEach(source => map.delete(source));
+    officialByChinese = map;
+  }
+
   const gameData = {};
   const gamePromises = {};
   const uiPatterns = [
+    [/^超進化\s*(\d+)\s*星$/, m => "Hyper " + m[1] + " Stars"],
+    [/^(?:終極進化|究極進化)\s*(\d+)\s*星$/, m => "Ultra " + m[1] + " Stars"],
+    [/^(\d+(?:\.\d+)?)\s*點\s*\/\s*秒$/, m => m[1] + " pt/sec"],
+    [/^(\d+(?:\.\d+)?)\s*秒\s*\/\s*下$/, m => m[1] + " sec/attack"],
+    [/^(\d+(?:\.\d+)?)\s*秒$/, m => m[1] + " sec"],
+    [/^排名第\s*([\d,]+)\s*名\s*[·・]\s*([\d,]+)\s*\/\s*([\d,]+)\s*名成員$/, m => "Rank #" + m[1] + " · " + m[2] + " / " + m[3] + " members"],
     [/^第\s*(\d+)\s*\/\s*(\d+)\s*頁，顯示第\s*(\d+)[–-](\d+)\s*筆，共\s*(\d+)\s*筆$/, m => "Page " + m[1] + " / " + m[2] + ", showing " + m[3] + "–" + m[4] + " of " + m[5]],
     [/^第\s*(\d+)\s*關$/, m => "Stage " + m[1]],
     [/^第\s*(\d+)\s*層$/, m => "Floor " + m[1]],
@@ -31,6 +91,17 @@
     if (!cleaned) return original;
     const direct = englishByChinese.get(cleaned);
     if (direct) return direct;
+    const gameTerm = gameTermsByChinese.get(cleaned) || officialByChinese.get(cleaned);
+    if (gameTerm) return gameTerm;
+    if (/[一-鿿]/.test(cleaned)) {
+      for (const item of parameterTerms) {
+        if (item.prefix && !cleaned.startsWith(item.prefix)) continue;
+        const match = cleaned.match(item.pattern);
+        if (!match) continue;
+        let index = 0;
+        return item.english.replace(/%(?:d[12]?|s|n|N)/g, () => match[++index] || "");
+      }
+    }
     for (const [pattern, build] of uiPatterns) {
       const match = cleaned.match(pattern);
       if (match) return build(match);
@@ -127,6 +198,8 @@
       ]).then(([localized, chinese]) => {
         gameData[selected] = localized;
         gameData["zh-Hant"] = chinese;
+        indexOfficialTranslations(localized, chinese);
+        if (locale === selected) translate(document);
         return localized;
       }).catch(() => null);
     }
@@ -174,7 +247,10 @@
     unitDescription(id, original) { return lookup("UNIT", id + "_desc", original); }
   };
   window.RangerbookI18n = api;
-  api.ready = loadUi(locale);
+  api.ready = Promise.all([loadUi(locale),loadGameTerms()]).then(() => null);
+  if (locale === "en" && /\/(ranger|gear|ability|hsEnemy|mainstage|hs-stage|endless|labyrinth|pvp|guildwar)\//i.test(location.pathname)) {
+    api.ready.then(() => readyGame());
+  }
   document.addEventListener("DOMContentLoaded", () => translate(document));
   const pending = new Set();
   let scheduled = false;
