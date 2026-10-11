@@ -66,7 +66,12 @@
 
   const gameData = {};
   const gamePromises = {};
+  const speedWords = {"非常快":"Very Fast","快":"Fast","普通":"Normal","慢":"Slow","非常慢":"Very Slow"};
   const uiPatterns = [
+    [/^(\d+)\s*星$/, m => m[1] + " Stars"],
+    [/^(非常快|非常慢|快|慢|普通)\s*[(（]\s*(\d+(?:\.\d+)?)\s*點\/秒\s*[)）]$/, m => speedWords[m[1]] + " (" + m[2] + " pt/sec)"],
+    [/^(非常快|非常慢|快|慢|普通)\s*[(（]\s*(\d+(?:\.\d+)?)\s*秒\/下\s*[)）]$/, m => speedWords[m[1]] + " (" + m[2] + " sec/attack)"],
+    [/^後方敵人\s*[(（]\s*倍率\s*[:：]\s*(\d+(?:\.\d+)?)\s*倍\s*[)）]$/, m => "Rear Enemy (Multiplier: " + m[1] + "×)"],
     [/^超進化\s*(\d+)\s*星$/, m => "Hyper " + m[1] + " Stars"],
     [/^(?:終極進化|究極進化)\s*(\d+)\s*星$/, m => "Ultra " + m[1] + " Stars"],
     [/^(\d+(?:\.\d+)?)\s*點\s*\/\s*秒$/, m => m[1] + " pt/sec"],

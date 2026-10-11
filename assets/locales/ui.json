@@ -681,7 +681,16 @@
     "ranger.timeUnit": "秒",
     "ranger.speedUnit": "點/秒",
     "ranger.attackSpeedUnit": "秒/下",
-    "ui.all": "全部"
+    "ui.all": "全部",
+    "trigger.frontEnemy": "前方敵人",
+    "trigger.self": "自身",
+    "trigger.rearEnemy": "後方敵人",
+    "speed.verySlow": "非常慢",
+    "speed.slow": "慢",
+    "speed.normal": "普通",
+    "speed.fast": "快",
+    "speed.veryFast": "非常快",
+    "grade.star": "星"
   },
   "en": {
     "nav.home": "Home",
@@ -1365,6 +1374,15 @@
     "ranger.timeUnit": "sec",
     "ranger.speedUnit": "pt/sec",
     "ranger.attackSpeedUnit": "sec/attack",
-    "ui.all": "All"
+    "ui.all": "All",
+    "trigger.frontEnemy": "Front Enemy",
+    "trigger.self": "Self",
+    "trigger.rearEnemy": "Rear Enemy",
+    "speed.verySlow": "Very Slow",
+    "speed.slow": "Slow",
+    "speed.normal": "Normal",
+    "speed.fast": "Fast",
+    "speed.veryFast": "Very Fast",
+    "grade.star": "Stars"
   }
 }
