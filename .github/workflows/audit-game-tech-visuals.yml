@@ -5,6 +5,9 @@ on:
     paths:
       - "assets/css/**"
       - "assets/js/site.js"
+      - "assets/js/admin-page.js"
+      - "assets/js/admin-traffic-charts.js"
+      - "tests/admin-traffic-ui.cjs"
       - "**/*.html"
       - "tests/game-tech-contract.test.js"
       - "tests/first-paint.cjs"
@@ -53,6 +56,8 @@ jobs:
         run: node tests/first-paint.cjs
       - name: Check admin tab layout with mocked permissions
         run: node tests/admin-workspace-ui.cjs
+      - name: Check traffic dashboard charts (dark/light, mobile/desktop, 7/30/90)
+        run: node tests/admin-traffic-ui.cjs
       - name: Save screenshots and issue report
         if: always()
         uses: actions/upload-artifact@v4

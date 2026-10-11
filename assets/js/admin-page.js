@@ -115,38 +115,60 @@
     if (focus) workspacePanels[section].button?.focus();
   }
 
+  let trafficRequestId = 0;
+  const trafficIds = ["trafficSummary", "trafficDaily", "trafficPages", "trafficSources"];
+  function clearTraffic() {
+    trafficIds.forEach(id => $(id)?.replaceChildren());
+  }
+
   async function loadTraffic() {
     if (!auth.isSuperAdmin()) return;
-    const status = $("trafficStatus"), days = Number($("trafficDays").value);
+    const requestId = ++trafficRequestId;
+    const status = $("trafficStatus");
+    const days = Number($("trafficDays").value);
     status.textContent = "載入中…";
     try {
       const data = await auth.api("/super-admin/traffic?days=" + days);
+      // Switching ranges or logging out must not display stale private data.
+      if (requestId !== trafficRequestId || !auth.isSuperAdmin()) return;
       if (data.status !== "ready") {
         status.textContent = data.message || "尚未設定 GA4 資料來源";
-        ["trafficSummary","trafficDaily","trafficPages","trafficSources"].forEach(id => $(id).textContent = "");
+        clearTraffic();
         return;
       }
-      const numeric = n => Number(n || 0).toLocaleString("zh-TW");
+      const numeric = value => Number(value || 0).toLocaleString("zh-TW");
       status.textContent = "最新更新：" + (data.updatedAt || "-");
       $("trafficSummary").replaceChildren();
-      Object.entries(data.summary || {}).forEach(([key,value]) => {
-        const card=document.createElement("div");
-        const label=document.createElement("span"),num=document.createElement("strong");
-        label.textContent=({users:"使用者",views:"瀏覽次數",sessions:"工作階段",engagedSessions:"互動工作階段"})[key] || key;
-        num.textContent=numeric(value);card.append(label,num);$("trafficSummary").append(card);
+      Object.entries(data.summary || {}).forEach(([key, value]) => {
+        const card = document.createElement("div");
+        const label = document.createElement("span");
+        const number = document.createElement("strong");
+        label.textContent = ({
+          users: "使用者", views: "瀏覽次數",
+          sessions: "工作階段", engagedSessions: "互動工作階段"
+        })[key] || key;
+        number.textContent = numeric(value);
+        card.append(label, number);
+        $("trafficSummary").append(card);
       });
-      const render=(id,rows,key,metric) => {
-        const list=$(id);list.replaceChildren();
-        (rows || []).forEach(item => {
-          const row=document.createElement("div");row.className="traffic-row";
-          const left=document.createElement("span"),right=document.createElement("strong");
-          left.textContent=item[key];right.textContent=numeric(item[metric]);row.append(left,right);list.append(row);
-        });
-      };
-      render("trafficDaily",data.daily,"date","views");
-      render("trafficPages",data.pages,"path","views");
-      render("trafficSources",data.sources,"source","sessions");
-    } catch (error) {status.textContent = "無法讀取：" + error.message;}
+      const pages = $("trafficPages");
+      pages.replaceChildren();
+      (Array.isArray(data.pages) ? data.pages : []).forEach(item => {
+        const row = document.createElement("div");
+        row.className = "traffic-row";
+        const left = document.createElement("span"), right = document.createElement("strong");
+        left.textContent = item.path ?? "-";
+        right.textContent = numeric(item.views);
+        row.append(left, right);
+        pages.append(row);
+      });
+      window.RangerbookTrafficCharts.renderDaily($("trafficDaily"), data.daily);
+      window.RangerbookTrafficCharts.renderSources($("trafficSources"), data.sources);
+    } catch (error) {
+      if (requestId !== trafficRequestId || !auth.isSuperAdmin()) return;
+      clearTraffic();
+      status.textContent = "無法讀取：" + (error?.message || "未知錯誤");
+    }
   }
   $("trafficRefresh")?.addEventListener("click",loadTraffic);
   $("trafficDays")?.addEventListener("change",loadTraffic);
@@ -158,6 +180,11 @@
     if (resourceUpdatesCard) resourceUpdatesCard.hidden = !auth.isAdmin();
     renderWorkspaceTabs();
 
+    if (!auth.isSuperAdmin()) {
+      ++trafficRequestId;
+      clearTraffic();
+      $("trafficStatus").textContent = "";
+    }
     if (!user.logged_in) return;
 
     currentAccount.textContent = user.account || "-";

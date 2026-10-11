@@ -194,3 +194,25 @@ test("GA4 Workload Identity Federation is scoped to the single EC2 and keyless",
  assert.doesNotMatch(script,/--key-file\s|service-accounts keys create/);
  assert.match(guide,/540346392/);
 });
+
+test("GA4 traffic charts have no CDN dependencies and preserve role-protected data",()=>{
+  const html=read("admin/index.html");
+  const js=read("assets/js/admin-page.js");
+  const charts=read("assets/js/admin-traffic-charts.js");
+  const css=read("assets/css/admin.css");
+  assert.match(html,/class="traffic-toolbar"/);
+  assert.match(html,/id="trafficDaily" class="traffic-chart-scroll"/);
+  assert.match(html,/id="trafficPages" class="traffic-scroll-list"/);
+  assert.match(html,/id="trafficSources" class="traffic-source-chart"/);
+  assert.match(html,/admin-traffic-charts\.js\?v=20261011a/);
+  assert.match(js,/RangerbookTrafficCharts\.renderDaily/);
+  assert.match(js,/RangerbookTrafficCharts\.renderSources/);
+  assert.match(js,/auth\.isSuperAdmin\(\)/);
+  assert.match(charts,/document\.createElementNS/);
+  assert.match(charts,/aria-label/);
+  assert.match(charts,/traffic-pie-slice/);
+  assert.match(charts,/traffic-chart-point/);
+  assert.doesNotMatch(html,/chart\.js|cdn\.jsdelivr\.net/i);
+  assert.match(css,/scrollbar-gutter:\s*stable/);
+  assert.match(css,/\.traffic-toolbar\s*\{[^}]*display:\s*flex/);
+});
