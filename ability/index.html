@@ -28,22 +28,22 @@
   <main class="page">
     <section class="page-title">
       <p class="eyebrow">LINE Rangers Database</p>
-      <h1>能力</h1>
+      <h1 data-i18n="ability.title">能力</h1>
       <p>
-        查詢能力的詳細數據。
+        <span data-i18n="ability.intro">查詢能力的詳細數據。</span>
       </p>
     </section>
 
     <section class="controls">
       <label class="search-box">
-        <span>搜尋能力</span>
-        <input id="searchInput" type="search" placeholder="輸入名稱、敘述、效果或條件...">
+        <span data-i18n="ability.search">搜尋能力</span>
+        <input id="searchInput" type="search" placeholder="輸入名稱、敘述、效果或條件..." data-i18n-placeholder="ability.placeholder">
       </label>
 
       <label>
-        <span>能力分類</span>
+        <span data-i18n="ability.category">能力分類</span>
         <select id="categoryFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
           <option value="覺醒">覺醒</option>
           <option value="敵人">敵人</option>
           <option value="迷宮">迷宮</option>
@@ -53,33 +53,33 @@
       </label>
 
       <label>
-        <span>發動時機</span>
+        <span data-i18n="ability.timing">發動時機</span>
         <select id="timingFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
         </select>
       </label>
 
       <label>
-        <span>場合</span>
+        <span data-i18n="ability.mode">場合</span>
         <select id="modeFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
         </select>
       </label>
 
       <label>
-        <span>條件</span>
+        <span data-i18n="ability.condition">條件</span>
         <select id="conditionFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
         </select>
       </label>
 
-      <button id="resetBtn" type="button">清除篩選</button>
+      <button id="resetBtn" type="button" data-i18n="filter.reset">清除篩選</button>
     </section>
 
     <section class="summary-bar">
       <div>
         <strong id="resultCount">0</strong>
-        <span>筆結果</span>
+        <span data-i18n="filter.result">筆結果</span>
       </div>
     </section>
 
@@ -95,6 +95,7 @@
     </div>
   </div>
 
+  <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-auth-compat.js"></script>
