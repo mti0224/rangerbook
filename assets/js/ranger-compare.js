@@ -270,7 +270,7 @@
 
   const valueOf = (ranger, key) => ranger ? fmt(ranger[key]) : "-";
   const rawValue = (ranger, key) => ranger ? ranger[key] : "";
-  const row = (label, left, right) => `<tr><th>${label}</th><td>${left}</td><td>${right}</td></tr>`;
+  const row = (label, left, right) => `<tr><th>${window.RangerbookI18n?.uiText(label) || label}</th><td>${left}</td><td>${right}</td></tr>`;
 
   function section(title, rows, extraClass = "") {
     const columns = `<colgroup><col class="compare-label-column"><col class="compare-value-column"><col class="compare-value-column"></colgroup>`;
@@ -291,7 +291,7 @@
     const better = state.highlightBetter ? betterSide(key, leftRaw, rightRaw) : null;
     const leftClass = better === "left" ? " class=\"compare-better\"" : "";
     const rightClass = better === "right" ? " class=\"compare-better\"" : "";
-    return `<tr><th>${html(label)}</th><td${leftClass}>${valueOf(state.left, key)}</td><td${rightClass}>${valueOf(state.right, key)}</td></tr>`;
+    return `<tr><th>${html(window.RangerbookI18n?.uiText(label) || label)}</th><td${leftClass}>${valueOf(state.left, key)}</td><td${rightClass}>${valueOf(state.right, key)}</td></tr>`;
   }
 
   function basicStatTitle() {
@@ -323,14 +323,14 @@
     const metaRows = metaFields.map((field) => `<tr><th>${html(field)}</th><td colspan="3">${skillMetaValue(leftSkill, field, leftMeta, leftKey)}</td><td colspan="3">${skillMetaValue(rightSkill, field, rightMeta, key)}</td></tr>`);
     const effectRows = [];
     if (effectCount) {
-      effectRows.push(`<tr class="compare-skill-subhead"><th>技能效果</th><td>效果</td><td>係數</td><td>時間</td><td>效果</td><td>係數</td><td>時間</td></tr>`);
+      effectRows.push(`<tr class="compare-skill-subhead"><th data-i18n="table.skillEffect">技能效果</th><td data-i18n="table.effect">效果</td><td data-i18n="table.coefficient">係數</td><td data-i18n="table.duration">時間</td><td data-i18n="table.effect">效果</td><td data-i18n="table.coefficient">係數</td><td data-i18n="table.duration">時間</td></tr>`);
       for (let i = 0; i < effectCount; i += 1) {
         const left = leftEffects[i];
         const right = rightEffects[i];
         effectRows.push(`<tr><th>效果 ${i + 1}</th><td>${effectCell(left, "效果")}</td><td>${effectCell(left, "係數")}</td><td>${effectCell(left, "時間")}</td><td>${effectCell(right, "效果")}</td><td>${effectCell(right, "係數")}</td><td>${effectCell(right, "時間")}</td></tr>`);
       }
     } else {
-      effectRows.push(`<tr><th>技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
+      effectRows.push(`<tr><th data-i18n="table.skillEffect">技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
     }
     return `<section class="compare-section compare-skill-section"><h3>${skillTitle(title)}</h3><div class="compare-table-wrap"><table class="compare-table compare-skill-table"><tbody>${[...metaRows, ...effectRows].join("")}</tbody></table></div></section>`;
   }

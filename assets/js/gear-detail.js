@@ -108,7 +108,7 @@
     const options = LEVELS.map((value) => (
       `<option value="${value}"${value === level ? " selected" : ""}>${value === 5 ? "+Max" : `+${value}`}</option>`
     )).join("");
-    return `<label class="gear-level-control"><span class="sr-only">${escapeHtml(section)}強化等級</span><select class="gear-level-select" data-gear-id="${escapeHtml(id)}" data-gear-level-section="${escapeHtml(section)}" aria-label="${escapeHtml(section)}強化等級">${options}</select></label>`;
+    return `<label class="gear-level-control"><span class="sr-only">${escapeHtml(section)}${escapeHtml(window.RangerbookI18n?.t("detail.upgradeLevel", "強化等級") || "強化等級")}</span><select class="gear-level-select" data-gear-id="${escapeHtml(id)}" data-gear-level-section="${escapeHtml(section)}" aria-label="${escapeHtml(section)}${escapeHtml(window.RangerbookI18n?.t("detail.upgradeLevel", "強化等級") || "強化等級")}">${options}</select></label>`;
   }
 
   function heading(id, section, level, hasData = true) {
@@ -117,7 +117,7 @@
 
   function effectTable(rows, className = "") {
     if (!rows.length) return `<div class="empty-state small">沒有資料。</div>`;
-    return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table ${className}"><thead><tr><th>效果</th><th>數值</th></tr></thead><tbody>${rows.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div>`;
+    return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table ${className}"><thead><tr><th data-i18n="table.effect">效果</th><th data-i18n="table.value">數值</th></tr></thead><tbody>${rows.map((row) => `<tr><td>${escapeHtml(window.RangerbookI18n?.uiText(row.effect) || row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div>`;
   }
 
   function hasMeaningfulValue(value, key = "") {
@@ -219,7 +219,7 @@
   }
 
   function skillTable(rows, level) {
-    return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table gear-skillplus-table"><thead><tr><th>技能效果</th><th>係數</th><th>有效時間</th></tr></thead><tbody>${rows.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(transformValue(row.factor, level, "increment", row.factorIncrement))}</td><td>${escapeHtml(transformValue(row.duration, level, "increment", row.durationIncrement))}</td></tr>`).join("")}</tbody></table></div>`;
+    return `<div class="table-scroll gear-effect-table-wrap"><table class="gear-effect-table gear-skillplus-table"><thead><tr><th data-i18n="table.skillEffect">技能效果</th><th data-i18n="table.coefficient">係數</th><th data-i18n="table.effectiveDuration">有效時間</th></tr></thead><tbody>${rows.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(transformValue(row.factor, level, "increment", row.factorIncrement))}</td><td>${escapeHtml(transformValue(row.duration, level, "increment", row.durationIncrement))}</td></tr>`).join("")}</tbody></table></div>`;
   }
 
   function rangerValue(ranger, keys) {
@@ -336,11 +336,11 @@
     }
 
     const basicHtml = basics.length
-      ? `<div class="talent-section gear-specplus-section"><h5>基本效果</h5><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-basic-table"><thead><tr><th>效果</th><th>數值</th></tr></thead><tbody>${basics.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div></div>`
+      ? `<div class="talent-section gear-specplus-section"><h5>基本效果</h5><div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-basic-table"><thead><tr><th data-i18n="table.effect">效果</th><th data-i18n="table.value">數值</th></tr></thead><tbody>${basics.map((row) => `<tr><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.value)}</td></tr>`).join("")}</tbody></table></div></div>`
       : "";
     const conditionValues = conditions.length ? conditions : ["無特定條件"];
     const specialHtml = hasSpecial
-      ? `<div class="talent-section gear-specplus-section gear-specplus-special-section"><h5>特殊效果</h5>${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table gear-specplus-condition-table"><thead><tr><th>機率</th><th>條件</th></tr></thead><tbody>${conditionValues.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditionValues.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}<td>${escapeHtml(condition)}</td></tr>`).join("")}</tbody></table></div>${triggers.length ? `<div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-effect-table"><thead><tr><th>機率</th><th>效果</th><th>係數</th><th>時間</th></tr></thead><tbody>${triggers.map((row) => `<tr><td>${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody></table></div>` : ""}</div>`
+      ? `<div class="talent-section gear-specplus-section gear-specplus-special-section"><h5>特殊效果</h5>${description ? `<p class="ranger-talent-description gear-specplus-special-description">${escapeHtml(description)}</p>` : ""}<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table gear-specplus-condition-table"><thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.condition">條件</th></tr></thead><tbody>${conditionValues.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditionValues.length}" class="talent-prob-cell">${escapeHtml(probability)}</td>` : ""}<td>${escapeHtml(condition)}</td></tr>`).join("")}</tbody></table></div>${triggers.length ? `<div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table gear-specplus-effect-table"><thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.effect">效果</th><th data-i18n="table.coefficient">係數</th><th data-i18n="table.duration">時間</th></tr></thead><tbody>${triggers.map((row) => `<tr><td>${escapeHtml(row.probability)}</td><td>${escapeHtml(row.effect)}</td><td>${escapeHtml(row.factor)}</td><td>${escapeHtml(row.time)}</td></tr>`).join("")}</tbody></table></div>` : ""}</div>`
       : "";
 
     return `<section class="detail-section" data-gear-section="Spec+">${heading(id, "Spec+", level)}<div class="ranger-talent-list gear-specplus-detail"><article class="ranger-talent-card gear-specplus-card"><h4 class="talent-title-with-icon"><span>${escapeHtml(name)}</span></h4>${basicHtml}${specialHtml}</article></div></section>`;
