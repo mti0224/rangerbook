@@ -143,7 +143,7 @@
 
   // Rankings and member snapshots update independently. Rank is not a guild ID.
   function guildUid(guild) {
-    return String(guild?.uid ?? guild?.guildUid ?? guild?.guildId ?? guild?.id ?? "").trim();
+    return String(guild?.uid ?? guild?.guildUid ?? guild?.guildUID ?? guild?.guildId ?? guild?.guild_id ?? "").trim();
   }
 
   function guildNameKey(guild) {
