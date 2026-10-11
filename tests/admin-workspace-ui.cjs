@@ -44,13 +44,14 @@ const roles = ["guest","user","admin","super_admin"];
     else{
       assert.equal(s.session,false);assert.equal(s.workspace,false);assert.equal(s.name,"test_"+role);
       assert.deepEqual(s.selected,["password"]);assert.equal(s.password,false);assert.equal(s.resources,true);assert.equal(s.accounts,true);
-      assert.equal(s.accountTab,role!=="super_admin");assert.equal(s.trafficTab,role!=="super_admin");
+      assert.equal(s.accountTab,role!=="super_admin");assert.equal(s.trafficTab,false);
       await page.locator("#adminResourcesTab").click();
       s=await state();
       assert.deepEqual(s.selected,["resources"]);assert.equal(s.password,true);assert.equal(s.resources,false);assert.equal(s.accounts,true);
+      await page.locator("#adminTrafficTab").click();
+      s=await state();assert.deepEqual(s.selected,["traffic"]);assert.equal(s.traffic,false);assert.equal(s.resources,true);
+      assert.ok(protectedPaths.includes("/admin/traffic"),role+" must request admin traffic report");
       if(role==="super_admin"){
-        await page.locator("#adminTrafficTab").click();
-        s=await state();assert.deepEqual(s.selected,["traffic"]);assert.equal(s.traffic,false);assert.equal(s.resources,true);
         await page.locator("#adminAccountsTab").click();
         s=await state();assert.deepEqual(s.selected,["accounts"]);assert.equal(s.accounts,false);assert.equal(s.resources,true);
         await page.locator("#adminAccountsTab").focus();
