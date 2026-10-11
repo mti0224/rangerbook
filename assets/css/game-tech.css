@@ -153,12 +153,38 @@ body.gt-app .gt-sidebar-nav a:hover {
 body.gt-app .gt-sidebar-nav a[aria-current="page"] { box-shadow: inset 2px 0 var(--primary); }
 body.gt-app .gt-sidebar-nav a[aria-current="page"]::before { color: var(--primary); }
 body.gt-app .gt-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
   border-top: 1px solid var(--line);
   padding: 1.2rem .8rem .5rem;
   color: var(--muted);
   font-size: .68rem;
   margin-top: auto;
 }
+body.gt-app .gt-sidebar-admin-entry {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .7rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--gt-inset);
+  color: var(--text);
+  font-size: .86rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+body.gt-app .gt-sidebar-admin-entry::before {
+  content: "⚙";
+  color: var(--primary);
+  font-size: 1rem;
+}
+body.gt-app .gt-sidebar-admin-entry:is(:hover, :focus-visible, [aria-current="page"]) {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+body.gt-app .gt-sidebar-admin-entry[hidden] { display: none !important; }
 body.gt-app .site-header {
   left: var(--gt-sidebar-width);
   right: 0;
