@@ -377,7 +377,7 @@
     if (isCurrent) a.setAttribute("aria-current", "page");
   });
   const gtFoot = document.createElement("div");
-  gtFoot.className = "gt-sidebar-bottom";
+  gtFoot.className = "gt-sidebar-bottom gt-sidebar-nav";
   const gtFootCaption = document.createElement("span");
   gtFootCaption.textContent = "GAME DATA / RANGERBOOK";
   const gtAdminLink = document.createElement("a");
