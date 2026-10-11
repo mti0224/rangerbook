@@ -93,7 +93,9 @@
   }
 
   function getName(gear) {
-    return scalarText(gear?.["裝備名稱"] || gear?.name || getId(gear));
+    const original = scalarText(gear?.["裝備名稱"] || gear?.name || getId(gear));
+    const id = getId(gear);
+    return window.RangerbookI18n?.lookup("EQUIP", id + "_nm", original) || original;
   }
 
   function getType(gear) {
@@ -112,6 +114,7 @@
     return [
       getId(gear),
       getName(gear),
+      scalarText(gear?.["裝備名稱"]),
       gear?.["裝備星級"],
       getType(gear),
       gear?.["基本效果"],
@@ -552,6 +555,7 @@
       const response = await fetch(DATA_URL);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const raw = await response.json();
+      await window.RangerbookI18n?.readyGame?.();
       state.rows = (Array.isArray(raw) ? raw : [])
         .map((gear, index) => ({ gear, index, search: searchBlob(gear) }))
         .sort(sortGearRows);

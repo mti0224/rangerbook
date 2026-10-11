@@ -609,7 +609,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>技能 ${index + 1}：${html(skill["技能名稱"] || "未命名技能")}</h4>${description(skill["技能敘述"], "ranger-skill-description")}</div>
+          <div><h4>技能 ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
         </div>
         ${skillMetaTable(skill, animationMeta, index)}
         ${skillTable(skill)}
@@ -643,7 +643,7 @@
       <article class="ranger-ability-card">
         <div class="ranger-icon-title">
           ${ability.icon ? `<img class="small-icon" src="${ABILITY_ICON(ability.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>${html(ability.name)}</h4>${description(ability.detail?.["敘述"], "preline")}</div>
+          <div><h4>${html(window.RangerbookI18n?.matchOfficial("ABILITY", ability.name) || ability.name)}</h4>${description(window.RangerbookI18n?.matchOfficial("ABILITY", ability.detail?.["敘述"]) || ability.detail?.["敘述"], "preline")}</div>
         </div>
         ${abilityTable(abilityEffects(ability.detail))}
       </article>`).join("")}</div>`;

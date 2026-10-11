@@ -11,6 +11,7 @@
   let dictionary = {};
   const gameData = {};
   const gamePromises = {};
+  const reverseCache = {};
   function json(url) {
     return fetch(url).then(r => {
       if (!r.ok) throw new Error("HTTP " + r.status + " at " + url);
@@ -46,8 +47,14 @@
     if (locale === "zh-Hant") return Promise.resolve(null);
     const selected = locale;
     if (!gamePromises[selected]) {
-      gamePromises[selected] = json(root + "res/i18n/" + encodeURIComponent(selected) + ".json")
-        .then(data => { gameData[selected] = data; return data; }).catch(() => null);
+      gamePromises[selected] = Promise.all([
+        json(root + "res/i18n/" + encodeURIComponent(selected) + ".json"),
+        json(root + "res/i18n/zh-Hant.json")
+      ]).then(([localized, chinese]) => {
+        gameData[selected] = localized;
+        gameData["zh-Hant"] = chinese;
+        return localized;
+      }).catch(() => null);
     }
     return gamePromises[selected];
   }
@@ -55,6 +62,26 @@
     if (locale === "zh-Hant") return original;
     const result = gameData[locale];
     return result?.official?.[kind]?.[key] || original;
+  }
+  // Exact, unambiguous official Chinese text matches only. Never touch source JSON.
+  function matchOfficial(kind, original) {
+    if (locale === "zh-Hant" || typeof original !== "string" || !original.trim()) return original;
+    const local = gameData[locale]?.official?.[kind];
+    const chinese = gameData["zh-Hant"]?.official?.[kind];
+    if (!local || !chinese) return original;
+    if (!reverseCache[kind]) {
+      const found = new Map();
+      const duplicates = new Set();
+      for (const [key, chineseText] of Object.entries(chinese)) {
+        if (!local[key] || !chineseText || !chineseText.trim()) continue;
+        const normalized = chineseText.replaceAll("\\\\n", "\\n").trim();
+        if (found.has(normalized) && found.get(normalized) !== local[key]) duplicates.add(normalized);
+        else found.set(normalized, local[key]);
+      }
+      duplicates.forEach(key => found.delete(key));
+      reverseCache[kind] = found;
+    }
+    return reverseCache[kind].get(original.replaceAll("\\\\n", "\\n").trim()) || original;
   }
   function setLocale(value) {
     if (!supported.includes(value) || value === locale) return;
@@ -65,7 +92,7 @@
   const api = {
     supported, setLocale, get locale() { return locale; },
     translate, t(key, fallback = "") { return dictionary[key] || fallback || key; },
-    readyGame, lookup,
+    readyGame, lookup, matchOfficial,
     custom(key, original) {
       return gameData[locale]?.custom?.[key] || original;
     },
