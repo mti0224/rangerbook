@@ -25,11 +25,8 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
           .some(sheet=>sheet.href?.includes("sidebar-drawer.css")),null,{timeout:13000});
         const nav=page.locator(".gt-sidebar-nav");
         const admin=nav.locator(".gt-sidebar-admin-entry");
-        await admin.waitFor({state:"visible",timeout:13000}).catch(async err=>{
-          if(width>1120)throw err;
-          // On smaller screens, CSS drawer keeps the authorized link off screen;
-          // visibility is tested via hidden property and actual drawer opening below.
-        });
+        await page.waitForFunction(()=>document.querySelector(".gt-sidebar-admin-entry")?.hidden === false,
+          null,{timeout:13000});
         assert.equal(await admin.getAttribute("href"),"/admin/");
         const items=await nav.locator("a").allTextContents();
         const sponsor=items.indexOf("贊助");
