@@ -19,11 +19,11 @@
     const tokens = /%(?:d[12]?|s|n|N)/g;
     let regex = "^", last = 0;
     for (const match of source.matchAll(tokens)) {
-      regex += source.slice(last, match.index).replace(/[.*+?^$()|{}[\]\\]/g, "\\  let englishByChinese = new Map();").replace(/\s+/g, "\\s*");
+      regex += source.slice(last, match.index).replace(/[.*+?^$()|{}[\]\\]/g, "\\$&").replace(/\s+/g, "\\s*");
       regex += "([0-9]+(?:\\.[0-9]+)?)";
       last = match.index + match[0].length;
     }
-    regex += source.slice(last).replace(/[.*+?^$()|{}[\]\\]/g, "\\  let englishByChinese = new Map();").replace(/\s+/g, "\\s*") + "$";
+    regex += source.slice(last).replace(/[.*+?^$()|{}[\]\\]/g, "\\$&").replace(/\s+/g, "\\s*") + "$";
     try { return {pattern:new RegExp(regex), english, prefix:source.split("%")[0].slice(0,8)}; }
     catch (_) { return null; }
   }
