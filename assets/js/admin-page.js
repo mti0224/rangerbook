@@ -84,7 +84,7 @@
       password: auth.isAdmin(),
       resources: auth.isAdmin(),
       accounts: auth.isSuperAdmin(),
-      traffic: auth.isSuperAdmin()
+      traffic: auth.isAdmin()
     };
   }
 
@@ -115,6 +115,21 @@
     if (focus) workspacePanels[section].button?.focus();
   }
 
+  // GA4 updates are stored in UTC. Display Taiwan time regardless of browser locale.
+  function formatTrafficUpdatedAt(value) {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    const parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Taipei", hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    }).formatToParts(date).filter(part => part.type !== "literal")
+      .map(part => [part.type, part.value]));
+    return parts.year + "-" + parts.month + "-" + parts.day + " [" +
+      parts.hour + ":" + parts.minute + ":" + parts.second + "]";
+  }
+
   let trafficRequestId = 0;
   const trafficIds = ["trafficSummary", "trafficDaily", "trafficPages", "trafficSources"];
   function clearTraffic() {
@@ -122,22 +137,22 @@
   }
 
   async function loadTraffic() {
-    if (!auth.isSuperAdmin()) return;
+    if (!auth.isAdmin()) return;
     const requestId = ++trafficRequestId;
     const status = $("trafficStatus");
     const days = Number($("trafficDays").value);
     status.textContent = "載入中…";
     try {
-      const data = await auth.api("/super-admin/traffic?days=" + days);
+      const data = await auth.api("/admin/traffic?days=" + days);
       // Switching ranges or logging out must not display stale private data.
-      if (requestId !== trafficRequestId || !auth.isSuperAdmin()) return;
+      if (requestId !== trafficRequestId || !auth.isAdmin()) return;
       if (data.status !== "ready") {
         status.textContent = data.message || "尚未設定 GA4 資料來源";
         clearTraffic();
         return;
       }
       const numeric = value => Number(value || 0).toLocaleString("zh-TW");
-      status.textContent = "最新更新：" + (data.updatedAt || "-");
+      status.textContent = "最新更新：" + formatTrafficUpdatedAt(data.updatedAt);
       $("trafficSummary").replaceChildren();
       Object.entries(data.summary || {}).forEach(([key, value]) => {
         const card = document.createElement("div");
@@ -165,7 +180,7 @@
       window.RangerbookTrafficCharts.renderDaily($("trafficDaily"), data.daily);
       window.RangerbookTrafficCharts.renderSources($("trafficSources"), data.sources);
     } catch (error) {
-      if (requestId !== trafficRequestId || !auth.isSuperAdmin()) return;
+      if (requestId !== trafficRequestId || !auth.isAdmin()) return;
       clearTraffic();
       status.textContent = "無法讀取：" + (error?.message || "未知錯誤");
     }
@@ -180,7 +195,7 @@
     if (resourceUpdatesCard) resourceUpdatesCard.hidden = !auth.isAdmin();
     renderWorkspaceTabs();
 
-    if (!auth.isSuperAdmin()) {
+    if (!auth.isAdmin()) {
       ++trafficRequestId;
       clearTraffic();
       $("trafficStatus").textContent = "";

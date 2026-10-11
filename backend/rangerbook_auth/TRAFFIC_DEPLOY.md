@@ -1,5 +1,14 @@
 # Rangerbook 網站流量系統
 
+## 待部署更新：管理員共用網站流量（2026-10-11）
+
+- 前端「網站流量」分頁開放給已登入的 \`admin\` 與 \`super_admin\`；「帳號管理」仍僅限 \`super_admin\`。
+- 新的主要唯讀端點是 \`GET /admin/traffic?days=7|30|90\`，透過既有 \`require_admin\` 依賴確認 Session；舊路徑 \`/super-admin/traffic\` 保留為不在 OpenAPI 顯示的相容別名，亦受 \`require_admin\` 保護。
+- 新增每日趨勢 SVG 的滑鼠／鍵盤浮動日期與瀏覽數提示；「最新更新」固定顯示台灣時間 \`YYYY-MM-DD [HH:MM:SS]\`，只改格式，不影響 GA4 UTC 快取原值。
+- 部署順序：**先部署 EC2 \`app.py\` 並重啟 Auth、完成 API 驗證，再合併／發布 GitHub Pages 的新版前端**。前端部署之前完成後端端點，避免新 \`/admin/traffic\` 呼叫出現 404。
+- 驗收：未登入 \`401\`、一般 user \`403\`、admin／super_admin \`200\` 並且回傳真實快取；\`/admin/users\` 等帳號管理功能維持 super-admin 專用。未取得正式帳號 Session 時不得宣稱已完成真實登入 HTTP 200 驗證。
+- **本節所述是這份待合併 PR 的變更；不代表已更新正式 AWS 或 GitHub Pages。** 不需要更動 GA4 Collector、WIF 金鑰配置、私有快取或每小時排程。
+
 ## 正式後端部署結果（2026-10-11，已驗證）
 
 - **GA4 API 讀取已成功**：EC2 透過 IMDSv2 + Workload Identity Federation 取得短效 Google 權杖，並對 GA4 Property `540346392` 發出實際報表查詢，收到 HTTP 200。
@@ -14,7 +23,7 @@
 
 ## 狀態
 
-本套件包含最高管理員「網站流量」分頁、受 Session 權限保護的 FastAPI 唯讀端點、GA4 資料同步程式、每小時同步的 systemd timer。部署前需確認 **執行 rangerbook-auth 的正確 EC2** 與 Google Analytics 權限。不得部署至不相關的 Discord bot EC2。
+本套件包含管理員「網站流量」分頁、受 Session 權限保護的 FastAPI 唯讀端點、GA4 資料同步程式、每小時同步的 systemd timer。部署前需確認 **執行 rangerbook-auth 的正確 EC2** 與 Google Analytics 權限。不得部署至不相關的 Discord bot EC2。
 
 ## GA4 啟用
 
@@ -32,7 +41,7 @@
 - 執行既有虛擬環境 pip install -r requirements.txt。
 - 將 rangerbook-traffic.service 與 rangerbook-traffic.timer 放到 /etc/systemd/system，systemctl daemon-reload。
 - 先執行 sudo systemctl start rangerbook-traffic.service，確認 exit code、日誌與 7/30/90 天 cache JSON；再執行 sudo systemctl enable --now rangerbook-traffic.timer。
-- 重新啟動 rangerbook-auth；GET /super-admin/traffic?days=30 應只有 super_admin 能取得資料，admin/user 應收到 403，未登入收到 401。
+- 重新啟動 rangerbook-auth；GET /admin/traffic?days=30 應讓 admin／super_admin 取得資料，user 收到 403，未登入收到 401。
 - 確保 traffic-cache 僅存在 EC2 私有資料夾，不要發布至 GitHub Pages 的 res/ 或任何公開靜態目錄。
 
 ## 監控與故障

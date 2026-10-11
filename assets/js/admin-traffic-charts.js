@@ -37,6 +37,8 @@
     const limit = Math.max(step * 4, Math.ceil(Math.max(...points.map(p => p.value)) / step) * step);
     const x = index => left + (points.length === 1 ? plotW / 2 : index * plotW / (points.length - 1));
     const y = value => top + plotH * (1 - value / limit);
+    const wrapper = document.createElement("div");
+    wrapper.className = "traffic-line-interactive";
     const svg = node("svg", {
       class: "traffic-line-svg", viewBox: "0 0 " + width + " " + height,
       role: "img", "aria-label": "每日瀏覽次數折線圖，共 " + points.length + " 天",
@@ -60,15 +62,73 @@
       d: points.map((point, i) => (i ? "L" : "M") + x(i).toFixed(2) + " " + y(point.value).toFixed(2)).join(" "),
       class: "traffic-chart-line", fill: "none"
     }));
+    const crosshair = node("line", {
+      class: "traffic-chart-crosshair", x1: 0, x2: 0, y1: top, y2: top + plotH,
+      visibility: "hidden"
+    });
+    const highlighted = node("circle", {
+      class: "traffic-chart-active-point", cx: 0, cy: 0, r: 7, visibility: "hidden"
+    });
+    svg.append(crosshair, highlighted);
     points.forEach((point, i) => {
       const marker = node("circle", {
         cx: x(i).toFixed(2), cy: y(point.value).toFixed(2), r: points.length > 35 ? 2.8 : 4,
-        class: "traffic-chart-point"
+        class: "traffic-chart-point", tabindex: "0",
+        "aria-label": point.label + "，" + format(point.value) + " 次瀏覽"
       });
-      marker.append(node("title", {}, point.label + "： " + format(point.value) + " 次瀏覽"));
+      marker.append(node("title", {}, point.label + "：" + format(point.value) + " 次瀏覽"));
+      marker.addEventListener("focus", () => showPoint(i));
+      marker.addEventListener("blur", hidePoint);
       svg.append(marker);
     });
-    container.replaceChildren(svg);
+    const tooltip = document.createElement("div");
+    tooltip.className = "traffic-line-tooltip";
+    tooltip.hidden = true;
+    tooltip.setAttribute("aria-hidden", "true");
+    const tooltipDate = document.createElement("span");
+    tooltipDate.className = "traffic-line-tooltip-date";
+    const tooltipValue = document.createElement("strong");
+    tooltipValue.className = "traffic-line-tooltip-value";
+    tooltip.append(tooltipDate, tooltipValue);
+
+    function showPoint(i) {
+      const point = points[i];
+      if (!point) return;
+      const px = x(i);
+      crosshair.setAttribute("x1", px);
+      crosshair.setAttribute("x2", px);
+      crosshair.setAttribute("visibility", "visible");
+      highlighted.setAttribute("cx", px);
+      highlighted.setAttribute("cy", y(point.value));
+      highlighted.setAttribute("visibility", "visible");
+      tooltipDate.textContent = point.label;
+      tooltipValue.textContent = format(point.value) + " 次瀏覽";
+      tooltip.hidden = false;
+      const scaledWidth = wrapper.getBoundingClientRect().width;
+      const factor = scaledWidth / width;
+      const tipWidth = tooltip.offsetWidth || 160;
+      const leftPx = Math.min(Math.max(px * factor - tipWidth / 2, 4), scaledWidth - tipWidth - 4);
+      tooltip.style.left = Math.max(4, leftPx) + "px";
+      tooltip.style.top = Math.max(4, y(point.value) * factor - tooltip.offsetHeight - 15) + "px";
+    }
+    function hidePoint() {
+      crosshair.setAttribute("visibility", "hidden");
+      highlighted.setAttribute("visibility", "hidden");
+      tooltip.hidden = true;
+    }
+    svg.addEventListener("pointermove", event => {
+      if (event.pointerType === "touch") return;
+      const bounds = svg.getBoundingClientRect();
+      if (!bounds.width) return;
+      const position = (event.clientX - bounds.left) / bounds.width * width;
+      const index = points.length === 1 ? 0 :
+        Math.max(0, Math.min(points.length - 1,
+          Math.round((position - left) / plotW * (points.length - 1))));
+      showPoint(index);
+    });
+    svg.addEventListener("pointerleave", hidePoint);
+    wrapper.append(svg, tooltip);
+    container.replaceChildren(wrapper);
   }
 
   function renderSources(container, rows) {

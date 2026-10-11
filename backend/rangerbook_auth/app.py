@@ -652,10 +652,11 @@ def bootstrap_super_admin(account: str, password: str) -> dict[str, Any]:
 # Cached aggregated statistics are never copied into the public website.
 TRAFFIC_CACHE_DIR = Path(os.getenv("RANGERBOOK_TRAFFIC_CACHE_DIR", "/home/ubuntu/rangerbook-auth/traffic-cache")).resolve()
 
-@app.get("/super-admin/traffic")
+@app.get("/admin/traffic")
+@app.get("/super-admin/traffic", include_in_schema=False)  # Backward-compatible read-only alias.
 def traffic_report(
     days: int = 30,
-    _: sqlite3.Row = Depends(require_super_admin),
+    _: sqlite3.Row = Depends(require_admin),
 ) -> dict[str, Any]:
     if days not in (7, 30, 90):
         raise HTTPException(status_code=400, detail="只支援 7、30、90 天")
