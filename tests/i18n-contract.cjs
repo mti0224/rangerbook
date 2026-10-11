@@ -5,7 +5,7 @@ const root = path.resolve(__dirname, "..");
 const json = p => JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
 const zh = json("assets/locales/zh-Hant.json");
 const keys = Object.keys(zh);
-for (const locale of ["en","ja","ko","th"]) {
+for (const locale of ["en"]) {
   const words = json("assets/locales/" + locale + ".json");
   assert.deepEqual(Object.keys(words).sort(), keys.slice().sort());
   assert.ok(Object.values(words).every(x => typeof x === "string" && x.length));
@@ -16,7 +16,8 @@ for (const locale of ["en","ja","ko","th"]) {
 }
 const shared = fs.readFileSync(path.join(root,"assets/js/site.js"),"utf8");
 const runtime = fs.readFileSync(path.join(root,"assets/js/i18n.js"),"utf8");
-assert.match(shared,/site-language-select/);
+assert.match(shared,/href="\$\{rootPrefix\}settings\//);
+assert.doesNotMatch(shared,/site-settings-menu" role="menu"/);
 assert.match(shared,/nav\.admin/);
 assert.match(runtime,/rangerbook-language/);
 assert.match(runtime,/unitDescription/);
@@ -29,4 +30,9 @@ for (const [key, value] of Object.entries(review.entries)) {
   const placeholders = text => (text.match(/%[A-Za-z0-9]+%?/g) || []).sort();
   assert.deepEqual(placeholders(value.zh), placeholders(value.en), "placeholder mismatch: " + key);
 }
+const settings = fs.readFileSync(path.join(root,"settings/index.html"),"utf8");
+const logic = fs.readFileSync(path.join(root,"assets/js/settings.js"),"utf8");
+for (const part of ['name="theme" value="light"','name="theme" value="dark"','name="language" value="zh-Hant"','name="language" value="en"']) assert.ok(settings.includes(part), part);
+assert.match(logic, /rangerbook-theme/);
+assert.match(logic, /setLocale/);
 console.log("LOCALIZATION_CONTRACT_OK");

@@ -37,5 +37,17 @@
   "ranger.type": "Type",
   "ranger.element": "Element",
   "ranger.all": "All",
-  "home.intro": "Browse LINE Rangers characters, equipment, abilities, main stages, Endless Tower, events, Advent stages, Labyrinth, PvP and Guild War data."
+  "home.intro": "Browse LINE Rangers characters, equipment, abilities, main stages, Endless Tower, events, Advent stages, Labyrinth, PvP and Guild War data.",
+  "settings.open": "Open settings",
+  "settings.title": "Settings",
+  "settings.description": "Customize your display mode and website language.",
+  "settings.appearance": "Appearance",
+  "settings.theme.help": "Choose your preferred color theme.",
+  "settings.light": "Light mode",
+  "settings.dark": "Dark mode",
+  "settings.lang.help": "Changing the language reloads the page and saves your preference.",
+  "settings.zh": "Traditional Chinese",
+  "settings.en": "English",
+  "settings.saved": "Settings updated",
+  "settings.back": "Back to home"
 }

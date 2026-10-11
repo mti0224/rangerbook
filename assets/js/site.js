@@ -267,21 +267,20 @@
   }
 
   function getStoredTheme() {
-    const stored = localStorage.getItem(THEME_KEY);
+    let stored = null;
+    try { stored = localStorage.getItem(THEME_KEY); } catch (_) {}
     if (stored === "light" || stored === "dark") return stored;
     return "light";
   }
 
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem(THEME_KEY, theme);
+    try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
     const text = theme === "dark" ? "深色模式" : "淺色模式";
     document.querySelectorAll(".theme-current-mode").forEach((el) => { el.textContent = text; });
     document.querySelectorAll(".site-settings-icon").forEach((img) => {
       img.src = theme === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT;
     });
-    const toggle = document.querySelector(".theme-toggle-row");
-    toggle?.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   }
 
   ensureSiteIcon();
@@ -293,7 +292,6 @@
   loadStylesheet("game-tech.css", "20261010b");
   loadStylesheet("game-tech-controls.css", "20261010a");
   loadStylesheet("sidebar-drawer.css", "20261011a");
-  loadStylesheet("language.css", "20261011a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
@@ -314,30 +312,9 @@
           <a href="${rootPrefix}sponsor/" data-i18n="nav.sponsor">贊助</a>
         </nav>
         <div class="site-actions">
-          <div class="site-settings">
-            <button class="site-settings-toggle" type="button" aria-label="開啟設定" aria-expanded="false">
-              <img class="site-settings-icon" src="${getStoredTheme() === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT}" alt="" aria-hidden="true" loading="eager">
-            </button>
-            <div class="site-settings-menu" role="menu">
-              <button class="theme-toggle-row" type="button" role="menuitem" aria-pressed="false">
-                <span class="theme-toggle-label">
-                  <span data-i18n="settings.theme">深淺色模式</span>
-                  <small class="theme-current-mode">淺色模式</small>
-                </span>
-                <span class="theme-toggle-pill" aria-hidden="true"></span>
-              </button>
-              <label class="language-toggle-row">
-                <span data-i18n="settings.language">網站語言</span>
-                <select class="site-language-select" aria-label="Language">
-                  <option value="zh-Hant">繁體中文</option>
-                  <option value="en">English</option>
-                  <option value="ja">日本語</option>
-                  <option value="ko">한국어</option>
-                  <option value="th">ไทย</option>
-                </select>
-              </label>
-            </div>
-          </div>
+          <a class="site-settings site-settings-toggle" href="${rootPrefix}settings/" aria-label="開啟設定" data-i18n-aria-label="settings.open" title="設定">
+            <img class="site-settings-icon" src="${getStoredTheme() === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT}" alt="" aria-hidden="true" loading="eager">
+          </a>
           <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
@@ -351,19 +328,6 @@
   const nav = mount.querySelector(".site-nav");
   const homeLink = mount.querySelector(".site-home-link");
   const toggle = mount.querySelector(".site-menu-toggle");
-  const settings = mount.querySelector(".site-settings");
-  const settingsToggle = mount.querySelector(".site-settings-toggle");
-  const themeToggle = mount.querySelector(".theme-toggle-row");
-  const languageSelect = mount.querySelector(".site-language-select");
-  try { languageSelect.value = localStorage.getItem("rangerbook-language") || "zh-Hant"; } catch (_) {}
-  if (!["zh-Hant", "en", "ja", "ko", "th"].includes(languageSelect.value)) languageSelect.value = "zh-Hant";
-  languageSelect.addEventListener("change", () => {
-    if (window.RangerbookI18n) window.RangerbookI18n.setLocale(languageSelect.value);
-    else {
-      try { localStorage.setItem("rangerbook-language", languageSelect.value); } catch (_) {}
-      window.location.reload();
-    }
-  });
   if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
     const script = document.createElement("script");
     script.dataset.rangerbookI18n = "true";
@@ -477,11 +441,6 @@
     else if (restoreFocus && compactSidebar.matches) toggle.focus({ preventScroll: true });
   }
 
-  function setSettingsOpen(open) {
-    settings.classList.toggle("open", open);
-    settingsToggle.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-
   function updateMenuMode() {
     if (!header || !inner || !nav || !homeLink) return;
 
@@ -505,7 +464,6 @@
   }
 
   toggle.addEventListener("click", () => {
-    setSettingsOpen(false);
     setOpen(!gtSidebar.classList.contains("gt-drawer-open"));
   });
   gtDrawerClose.addEventListener("click", () => setOpen(false, true));
@@ -532,21 +490,8 @@
     }
   });
 
-  settingsToggle.addEventListener("click", () => {
-    setOpen(false);
-    setSettingsOpen(!settings.classList.contains("open"));
-  });
-
-  themeToggle.addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    applyTheme(next);
-  });
-
   document.addEventListener("click", event => {
-    if (!header.contains(event.target) && !gtSidebar.contains(event.target)) {
-      setOpen(false);
-      setSettingsOpen(false);
-    }
+    if (!header.contains(event.target) && !gtSidebar.contains(event.target)) setOpen(false);
   });
 
   nav.querySelectorAll("a").forEach((link) => {

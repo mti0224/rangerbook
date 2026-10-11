@@ -37,5 +37,17 @@
   "ranger.type": "類型",
   "ranger.element": "屬性",
   "ranger.all": "全部",
-  "home.intro": "提供 LINE Rangers 的角色、裝備、能力、主要關卡、無限之塔、活動關卡、降臨關卡、迷宮、PvP 與公會戰資料查詢，方便快速查看各項詳細數據。"
+  "home.intro": "提供 LINE Rangers 的角色、裝備、能力、主要關卡、無限之塔、活動關卡、降臨關卡、迷宮、PvP 與公會戰資料查詢，方便快速查看各項詳細數據。",
+  "settings.open": "開啟設定",
+  "settings.title": "設定",
+  "settings.description": "自訂本站的顯示模式與語言偏好。",
+  "settings.appearance": "顯示模式",
+  "settings.theme.help": "選擇適合自己的顏色主題。",
+  "settings.light": "淺色模式",
+  "settings.dark": "深色模式",
+  "settings.lang.help": "切換後將重新載入網頁，並保留你的選擇。",
+  "settings.zh": "繁體中文",
+  "settings.en": "English",
+  "settings.saved": "設定已更新",
+  "settings.back": "返回首頁"
 }

@@ -2,6 +2,9 @@ name: Validate localization
 on:
   pull_request:
     paths:
+      - "settings/**"
+      - "assets/js/settings.js"
+      - "assets/css/settings-page.css"
       - "assets/js/i18n.js"
       - "assets/locales/**"
       - "res/i18n/**"
@@ -25,5 +28,5 @@ jobs:
         with:
           node-version: "22"
       - run: python -m unittest discover -s tests -p 'test_game_locale_export.py' -v
-      - run: node --check assets/js/i18n.js && node --check assets/js/site.js && node --check assets/js/ranger.js
+      - run: node --check assets/js/i18n.js && node --check assets/js/site.js && node --check assets/js/ranger.js && node --check assets/js/settings.js
       - run: node tests/i18n-contract.cjs

@@ -2,7 +2,7 @@
 (() => {
   "use strict";
   if (window.RangerbookI18n) return;
-  const supported = ["zh-Hant", "en", "ja", "ko", "th"];
+  const supported = ["zh-Hant", "en"];
   const root = location.pathname.startsWith("/rangerbook/") ? "/rangerbook/" : "/";
   const storageKey = "rangerbook-language";
   let saved = null;
@@ -20,18 +20,19 @@
   function translate(rootNode) {
     if (!rootNode || !rootNode.querySelectorAll) return;
     const found = [];
-    if (rootNode.nodeType === 1 && rootNode.matches("[data-i18n],[data-i18n-placeholder]")) found.push(rootNode);
-    rootNode.querySelectorAll("[data-i18n],[data-i18n-placeholder]").forEach(node => found.push(node));
+    if (rootNode.nodeType === 1 && rootNode.matches("[data-i18n],[data-i18n-placeholder],[data-i18n-aria-label]")) found.push(rootNode);
+    rootNode.querySelectorAll("[data-i18n],[data-i18n-placeholder],[data-i18n-aria-label]").forEach(node => found.push(node));
     for (const node of found) {
       const key = node.getAttribute("data-i18n");
       if (key && Object.prototype.hasOwnProperty.call(dictionary,key) && node.textContent !== dictionary[key]) {
         node.textContent = dictionary[key];
       }
+      const ariaKey = node.getAttribute("data-i18n-aria-label");
+      if (ariaKey && dictionary[ariaKey] !== undefined) node.setAttribute("aria-label",dictionary[ariaKey]);
       const inputKey = node.getAttribute("data-i18n-placeholder");
       if (inputKey && dictionary[inputKey] !== undefined) node.setAttribute("placeholder",dictionary[inputKey]);
     }
     document.documentElement.lang = locale;
-    document.querySelectorAll(".site-language-select").forEach(select => { select.value = locale; });
   }
   async function loadUi(selected) {
     const load = l => json(root + "assets/locales/" + encodeURIComponent(l) + ".json").catch(() => ({}));

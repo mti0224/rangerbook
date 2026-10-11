@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <script>
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) { document.documentElement.dataset.theme = "light"; }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>設定｜LINE Rangers Database</title>
+  <meta name="description" content="設定 LINE Rangers 資料站的顯示模式與語言。">
+  <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/settings-page.css?v=20261011a">
+</head>
+<body class="gt-app">
+  <div id="site-header"></div>
+  <main class="page rb-settings-page">
+    <header class="rb-settings-header">
+      <span class="rb-settings-eyebrow">RANGERBOOK / PREFERENCES</span>
+      <h1 data-i18n="settings.title">設定</h1>
+      <p data-i18n="settings.description">自訂本站的顯示模式與語言偏好。</p>
+    </header>
+    <section class="rb-settings-panel" aria-labelledby="appearanceTitle">
+      <div class="rb-settings-section-head">
+        <span class="rb-settings-section-icon" aria-hidden="true">◐</span>
+        <div>
+          <h2 id="appearanceTitle" data-i18n="settings.appearance">顯示模式</h2>
+          <p data-i18n="settings.theme.help">選擇適合自己的顏色主題。</p>
+        </div>
+      </div>
+      <fieldset class="rb-choice-group" id="settingsTheme">
+        <legend class="sr-only" data-i18n="settings.appearance">顯示模式</legend>
+        <label class="rb-choice">
+          <input type="radio" name="theme" value="light">
+          <span class="rb-choice-body"><strong data-i18n="settings.light">淺色模式</strong><span class="rb-choice-preview light" aria-hidden="true"></span></span>
+        </label>
+        <label class="rb-choice">
+          <input type="radio" name="theme" value="dark">
+          <span class="rb-choice-body"><strong data-i18n="settings.dark">深色模式</strong><span class="rb-choice-preview dark" aria-hidden="true"></span></span>
+        </label>
+      </fieldset>
+    </section>
+    <section class="rb-settings-panel" aria-labelledby="languageTitle">
+      <div class="rb-settings-section-head">
+        <span class="rb-settings-section-icon" aria-hidden="true">文</span>
+        <div>
+          <h2 id="languageTitle" data-i18n="settings.language">網站語言</h2>
+          <p data-i18n="settings.lang.help">切換後將重新載入網頁，並保留你的選擇。</p>
+        </div>
+      </div>
+      <fieldset class="rb-choice-group" id="settingsLanguage">
+        <legend class="sr-only" data-i18n="settings.language">網站語言</legend>
+        <label class="rb-choice">
+          <input type="radio" name="language" value="zh-Hant">
+          <span class="rb-choice-body"><strong data-i18n="settings.zh">繁體中文</strong><small>繁體中文</small></span>
+        </label>
+        <label class="rb-choice">
+          <input type="radio" name="language" value="en">
+          <span class="rb-choice-body"><strong data-i18n="settings.en">English</strong><small>English</small></span>
+        </label>
+      </fieldset>
+    </section>
+    <p class="rb-settings-feedback" role="status" aria-live="polite" id="settingsFeedback"></p>
+    <a href="../" class="rb-settings-back" data-i18n="settings.back">返回首頁</a>
+  </main>
+  <script src="../assets/js/i18n.js"></script>
+  <script src="../assets/js/site.js"></script>
+  <script src="../assets/js/settings.js"></script>
+</body>
+</html>
