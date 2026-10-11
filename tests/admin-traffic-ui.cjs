@@ -6,6 +6,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 (async () => {
   const browser = await chromium.launch({headless: true});
   try {
+    for (const role of ["admin", "super_admin"]) {
     for (const theme of ["light", "dark"]) {
       for (const width of [390, 1180]) {
         const context = await browser.newContext({viewport:{width,height:900}});
@@ -17,8 +18,8 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
           const url = new URL(route.request().url()), pathname = url.pathname;
           let body;
           if (pathname === "/auth/me") {
-            body = {logged_in:true,role:"super_admin",account:"traffic_test",admin_application_status:"approved"};
-          } else if (pathname === "/super-admin/traffic") {
+            body = {logged_in:true,role,account:"traffic_test",admin_application_status:"approved"};
+          } else if (pathname === "/admin/traffic") {
             const days = Number(url.searchParams.get("days"));
             ranges.push(days);
             if(mode === "unconfigured") {
@@ -47,7 +48,8 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
             body:JSON.stringify(body)});
         });
         await page.goto(base+"/admin/",{waitUntil:"domcontentloaded"});
-        await page.waitForFunction(()=>window.RangerbookAuth?.isSuperAdmin(),null,{timeout:15000});
+        await page.waitForFunction(expected=>window.RangerbookAuth?.isAdmin() &&
+          window.RangerbookAuth.getUser().role===expected,role,{timeout:15000});
         await page.locator("#adminTrafficTab").click();
         await page.locator("#trafficDaily svg.traffic-line-svg").waitFor();
         await page.locator("#trafficSources svg.traffic-pie-svg").waitFor();
@@ -59,6 +61,25 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         assert.match(await page.locator("#trafficDaily svg").getAttribute("aria-label"),/30 天/);
         assert.match(await page.locator("#trafficSummary").innerText(),/30,840/);
         assert.equal(await page.locator("#trafficPages .traffic-row").count(),2);
+
+        assert.equal(await page.locator("#trafficStatus").innerText(),
+          "最新更新：2026-10-11 [10:28:00]");
+        const sampleDate = new Date(Date.UTC(2026,9,11-30+1+14)).toISOString().slice(0,10);
+        const tooltip=page.locator("#trafficDaily .traffic-line-tooltip");
+        const marker=page.locator("#trafficDaily .traffic-chart-point").nth(14);
+        await marker.hover();
+        await tooltip.waitFor({state:"visible",timeout:5000});
+        assert.match(await tooltip.innerText(),new RegExp(sampleDate));
+        assert.match(await tooltip.innerText(),/1,238 次瀏覽/);
+        assert.equal(await page.locator("#trafficDaily .traffic-chart-crosshair").getAttribute("visibility"),"visible");
+        await page.mouse.move(4,4);
+        await tooltip.waitFor({state:"hidden",timeout:5000});
+        await marker.focus();
+        await tooltip.waitFor({state:"visible",timeout:5000});
+        assert.match(await tooltip.innerText(),/1,238 次瀏覽/);
+        await marker.blur();
+        await tooltip.waitFor({state:"hidden",timeout:5000});
+
 
         const dimensions=await page.evaluate(()=>{
           const range=document.getElementById("trafficDays").getBoundingClientRect();
@@ -95,9 +116,10 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         assert.equal(await page.locator("#trafficDaily svg").count(),0);
         assert.equal(await page.locator("#trafficSources svg").count(),0);
         assert.equal(await page.locator("#trafficPages .traffic-row").count(),0);
-        console.log("ADMIN_TRAFFIC_CHART_OK "+JSON.stringify({theme,width,ranges,scrollGap:dimensions.scrollGap}));
+        console.log("ADMIN_TRAFFIC_CHART_OK "+JSON.stringify({role,theme,width,ranges,scrollGap:dimensions.scrollGap}));
         await context.close();
       }
+    }
     }
   } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
