@@ -153,7 +153,8 @@
   }
 
   function getName(ranger) {
-    return text(ranger?.["Ranger名稱"]) || getId(ranger) || "未命名角色";
+    const original = text(ranger?.["Ranger名稱"]) || getId(ranger) || "未命名角色";
+    return window.RangerbookI18n?.unitName(getId(ranger), original) || original;
   }
 
   function attackValue(ranger) {
@@ -752,7 +753,7 @@
           <h2 id="rangerModalTitle">${html(getName(ranger))}</h2>
           <div class="ranger-tags detail-tags">${detailTags}</div>
           <p class="ranger-date">登場時間：${html(ranger["登場時間"] || "-")}</p>
-          ${description(ranger["角色敘述"], "ranger-description")}
+          ${description(window.RangerbookI18n?.unitDescription(id, ranger["角色敘述"]) || ranger["角色敘述"], "ranger-description")}
         </div>
       </div>
       <section class="detail-section"><h3>基本數值</h3><div class="ranger-stat-grid">${stats}</div></section>
@@ -1021,6 +1022,7 @@
       if (!rangerResponse.ok) throw new Error(`HTTP ${rangerResponse.status}`);
       const raw = await rangerResponse.json();
       state.abilityMap = abilityResponse && abilityResponse.ok ? await abilityResponse.json() : {};
+      await window.RangerbookI18n?.readyGame?.();
       state.rows = (Array.isArray(raw) ? raw : [])
         .map((ranger, index) => ({ ranger, index, date: parseDate(ranger["登場時間"]), search: searchBlob(ranger) }))
         .sort((a, b) => (b.date - a.date) || (a.index - b.index));

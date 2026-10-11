@@ -293,24 +293,25 @@
   loadStylesheet("game-tech.css", "20261010b");
   loadStylesheet("game-tech-controls.css", "20261010a");
   loadStylesheet("sidebar-drawer.css", "20261011a");
+  loadStylesheet("language.css", "20261011a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
       <div class="header-inner header-inner-left">
-        <a class="site-home-link" href="${rootPrefix}">首頁</a>
+        <a class="site-home-link" href="${rootPrefix}" data-i18n="nav.home">首頁</a>
         <nav class="site-nav" aria-label="主要導覽">
-          <a href="${rootPrefix}ranger/">Rangers</a>
-          <a href="${rootPrefix}pvp/">PvP</a>
-          <a href="${rootPrefix}guildwar/">公會</a>
-          <a href="${rootPrefix}gear/">裝備</a>
-          <a href="${rootPrefix}mainstage/">主要關卡</a>
-          <a href="${rootPrefix}endless/">無限之塔</a>
-          <a href="${rootPrefix}eventStageEnemy/">活動關卡</a>
-          <a href="${rootPrefix}adventEnemy/">降臨關卡</a>
-          <a href="${rootPrefix}labyrinth/">迷宮</a>
-          <a href="${rootPrefix}ability/">能力</a>
-          <a href="${rootPrefix}about/">關於本站</a>
-          <a href="${rootPrefix}sponsor/">贊助</a>
+          <a href="${rootPrefix}ranger/" data-i18n="nav.rangers">Rangers</a>
+          <a href="${rootPrefix}pvp/" data-i18n="nav.pvp">PvP</a>
+          <a href="${rootPrefix}guildwar/" data-i18n="nav.guildwar">公會</a>
+          <a href="${rootPrefix}gear/" data-i18n="nav.gear">裝備</a>
+          <a href="${rootPrefix}mainstage/" data-i18n="nav.mainstage">主要關卡</a>
+          <a href="${rootPrefix}endless/" data-i18n="nav.endless">無限之塔</a>
+          <a href="${rootPrefix}eventStageEnemy/" data-i18n="nav.event">活動關卡</a>
+          <a href="${rootPrefix}adventEnemy/" data-i18n="nav.advent">降臨關卡</a>
+          <a href="${rootPrefix}labyrinth/" data-i18n="nav.labyrinth">迷宮</a>
+          <a href="${rootPrefix}ability/" data-i18n="nav.ability">能力</a>
+          <a href="${rootPrefix}about/" data-i18n="nav.about">關於本站</a>
+          <a href="${rootPrefix}sponsor/" data-i18n="nav.sponsor">贊助</a>
         </nav>
         <div class="site-actions">
           <div class="site-settings">
@@ -320,11 +321,21 @@
             <div class="site-settings-menu" role="menu">
               <button class="theme-toggle-row" type="button" role="menuitem" aria-pressed="false">
                 <span class="theme-toggle-label">
-                  <span>深淺色模式</span>
+                  <span data-i18n="settings.theme">深淺色模式</span>
                   <small class="theme-current-mode">淺色模式</small>
                 </span>
                 <span class="theme-toggle-pill" aria-hidden="true"></span>
               </button>
+              <label class="language-toggle-row">
+                <span data-i18n="settings.language">網站語言</span>
+                <select class="site-language-select" aria-label="Language">
+                  <option value="zh-Hant">繁體中文</option>
+                  <option value="en">English</option>
+                  <option value="ja">日本語</option>
+                  <option value="ko">한국어</option>
+                  <option value="th">ไทย</option>
+                </select>
+              </label>
             </div>
           </div>
           <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
@@ -343,6 +354,22 @@
   const settings = mount.querySelector(".site-settings");
   const settingsToggle = mount.querySelector(".site-settings-toggle");
   const themeToggle = mount.querySelector(".theme-toggle-row");
+  const languageSelect = mount.querySelector(".site-language-select");
+  try { languageSelect.value = localStorage.getItem("rangerbook-language") || "zh-Hant"; } catch (_) {}
+  if (!["zh-Hant", "en", "ja", "ko", "th"].includes(languageSelect.value)) languageSelect.value = "zh-Hant";
+  languageSelect.addEventListener("change", () => {
+    if (window.RangerbookI18n) window.RangerbookI18n.setLocale(languageSelect.value);
+    else {
+      try { localStorage.setItem("rangerbook-language", languageSelect.value); } catch (_) {}
+      window.location.reload();
+    }
+  });
+  if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
+    const script = document.createElement("script");
+    script.dataset.rangerbookI18n = "true";
+    script.src = rootPrefix + "assets/js/i18n.js";
+    document.head.appendChild(script);
+  }
 
   // Presentation shell only: clone public links, do not touch authentication.
   // In particular never add /admin/ or /pvp/search/ to the public nav.
@@ -395,6 +422,7 @@
   gtAdminLink.className = "gt-sidebar-admin-entry";
   gtAdminLink.href = rootPrefix + "admin/";
   gtAdminLink.textContent = "管理員頁面";
+  gtAdminLink.dataset.i18n = "nav.admin";
   gtAdminLink.hidden = true;
   if (gtPath.startsWith(rootPrefix + "admin/")) {
     gtAdminLink.setAttribute("aria-current", "page");
