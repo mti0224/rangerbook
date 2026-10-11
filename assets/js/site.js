@@ -292,6 +292,7 @@
   loadStylesheet("theme-toggle.css", "20260525a");
   loadStylesheet("game-tech.css", "20261010b");
   loadStylesheet("game-tech-controls.css", "20261010a");
+  loadStylesheet("sidebar-drawer.css", "20261011a");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
@@ -347,6 +348,8 @@
   // In particular never add /admin/ or /pvp/search/ to the public nav.
   const gtSidebar = document.createElement("aside");
   gtSidebar.className = "gt-sidebar";
+  gtSidebar.id = "gt-site-drawer";
+  gtSidebar.tabIndex = -1;
   gtSidebar.setAttribute("aria-label", "資料站功能導覽");
   const gtBrand = document.createElement("a");
   gtBrand.className = "gt-brand";
@@ -361,6 +364,14 @@
   gtBrandDescription.textContent = "LINE Rangers 資料站";
   gtBrandTitle.append(gtBrandName, gtBrandDescription);
   gtBrand.append(gtLogo, gtBrandTitle);
+  const gtDrawerTop = document.createElement("div");
+  gtDrawerTop.className = "gt-drawer-top";
+  const gtDrawerClose = document.createElement("button");
+  gtDrawerClose.className = "gt-drawer-close";
+  gtDrawerClose.type = "button";
+  gtDrawerClose.textContent = "×";
+  gtDrawerClose.setAttribute("aria-label", "關閉選單");
+  gtDrawerTop.append(gtBrand, gtDrawerClose);
   const gtLabel = document.createElement("div");
   gtLabel.className = "gt-sidebar-label";
   gtLabel.textContent = "資料查詢";
@@ -377,7 +388,7 @@
     if (isCurrent) a.setAttribute("aria-current", "page");
   });
   const gtFoot = document.createElement("div");
-  gtFoot.className = "gt-sidebar-bottom gt-sidebar-nav";
+  gtFoot.className = "gt-sidebar-bottom";
   const gtFootCaption = document.createElement("span");
   gtFootCaption.textContent = "GAME DATA / RANGERBOOK";
   const gtAdminLink = document.createElement("a");
@@ -388,8 +399,10 @@
   if (gtPath.startsWith(rootPrefix + "admin/")) {
     gtAdminLink.setAttribute("aria-current", "page");
   }
-  gtFoot.append(gtFootCaption, gtAdminLink);
-  gtSidebar.append(gtBrand, gtLabel, gtNav, gtFoot);
+  // Admin is an ordinary sidebar link directly following Sponsor, not a footer.
+  gtNav.append(gtAdminLink);
+  gtFoot.append(gtFootCaption);
+  gtSidebar.append(gtDrawerTop, gtLabel, gtNav, gtFoot);
 
   // The admin link is a navigation convenience, never an authorization check.
   // Verify the existing server-side session. Protected APIs still enforce roles.
@@ -412,12 +425,28 @@
       .then(setAdminLinkVisibility)
       .catch(() => setAdminLinkVisibility(null));
   }
-  mount.appendChild(gtSidebar);
+  const gtDrawerBackdrop = document.createElement("div");
+  gtDrawerBackdrop.className = "gt-drawer-backdrop";
+  gtDrawerBackdrop.hidden = true;
+  gtDrawerBackdrop.setAttribute("aria-hidden", "true");
+  mount.append(gtDrawerBackdrop, gtSidebar);
   document.body.classList.add("gt-app");
 
-  function setOpen(open) {
-    header.classList.toggle("menu-open", open);
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  const compactSidebar = window.matchMedia("(max-width: 1120px)");
+  toggle.setAttribute("aria-controls", gtSidebar.id);
+
+  function setOpen(open, restoreFocus = false) {
+    const shouldOpen = Boolean(open && compactSidebar.matches);
+    gtSidebar.classList.toggle("gt-drawer-open", shouldOpen);
+    document.body.classList.toggle("gt-drawer-active", shouldOpen);
+    gtSidebar.inert = compactSidebar.matches && !shouldOpen;
+    gtSidebar.setAttribute("aria-hidden", compactSidebar.matches && !shouldOpen ? "true" : "false");
+    gtDrawerBackdrop.hidden = !shouldOpen;
+    header.classList.remove("menu-open"); // Keep the legacy dropdown closed.
+    toggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+    toggle.setAttribute("aria-label", shouldOpen ? "關閉選單" : "開啟選單");
+    if (shouldOpen) gtDrawerClose.focus({ preventScroll: true });
+    else if (restoreFocus && compactSidebar.matches) toggle.focus({ preventScroll: true });
   }
 
   function setSettingsOpen(open) {
@@ -428,15 +457,15 @@
   function updateMenuMode() {
     if (!header || !inner || !nav || !homeLink) return;
 
-    const forceCollapsed = window.matchMedia("(max-width: 760px)").matches;
-
-    if (forceCollapsed) {
+    // The same left-hand sidebar becomes an off-canvas drawer on narrow screens.
+    if (compactSidebar.matches) {
       header.classList.add("nav-collapsed");
+      if (!gtSidebar.classList.contains("gt-drawer-open")) setOpen(false);
       return;
     }
 
+    setOpen(false);
     header.classList.remove("nav-collapsed", "menu-open");
-    toggle.setAttribute("aria-expanded", "false");
 
     const availableWidth = inner.clientWidth - homeLink.offsetWidth - 124;
     const neededWidth = nav.scrollWidth;
@@ -449,7 +478,30 @@
 
   toggle.addEventListener("click", () => {
     setSettingsOpen(false);
-    setOpen(!header.classList.contains("menu-open"));
+    setOpen(!gtSidebar.classList.contains("gt-drawer-open"));
+  });
+  gtDrawerClose.addEventListener("click", () => setOpen(false, true));
+  gtDrawerBackdrop.addEventListener("click", () => setOpen(false, true));
+  gtNav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => setOpen(false));
+  });
+  gtBrand.addEventListener("click", () => setOpen(false));
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && gtSidebar.classList.contains("gt-drawer-open")) {
+      event.preventDefault();
+      setOpen(false, true);
+    }
+    if (event.key !== "Tab" || !gtSidebar.classList.contains("gt-drawer-open")) return;
+    const targets = [...gtSidebar.querySelectorAll("a[href], button:not([disabled])")]
+      .filter(node => !node.hidden && node.getClientRects().length);
+    if (!targets.length) return;
+    if (event.shiftKey && document.activeElement === targets[0]) {
+      event.preventDefault();
+      targets[targets.length - 1].focus();
+    } else if (!event.shiftKey && document.activeElement === targets[targets.length - 1]) {
+      event.preventDefault();
+      targets[0].focus();
+    }
   });
 
   settingsToggle.addEventListener("click", () => {
@@ -462,8 +514,8 @@
     applyTheme(next);
   });
 
-  document.addEventListener("click", (event) => {
-    if (!header.contains(event.target)) {
+  document.addEventListener("click", event => {
+    if (!header.contains(event.target) && !gtSidebar.contains(event.target)) {
       setOpen(false);
       setSettingsOpen(false);
     }
