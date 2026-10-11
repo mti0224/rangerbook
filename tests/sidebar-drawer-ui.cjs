@@ -50,7 +50,16 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
           await toggle.click();
           await drawer.waitFor({state:"visible",timeout:7000});
           assert.equal(await toggle.getAttribute("aria-expanded"),"true");
-          assert.equal(await admin.isVisible(),true,"admin visible in opened drawer");
+          const adminSnapshot = await admin.evaluate(el=>{
+            const style=getComputedStyle(el);
+            const parent=getComputedStyle(el.closest(".gt-sidebar"));
+            return {hidden:el.hidden,cssDisplay:style.display,cssVisibility:style.visibility,
+              parentVisibility:parent.visibility,drawerClasses:el.closest(".gt-sidebar").className,
+              drawerInert:el.closest(".gt-sidebar").inert,
+              rect:el.getBoundingClientRect().toJSON(),scrollTop:el.closest(".gt-sidebar").scrollTop};
+          });
+          console.log("DRAWER_ADMIN_DEBUG "+JSON.stringify({theme,width,adminSnapshot}));
+          await admin.waitFor({state:"visible",timeout:5000});
           assert.equal(await page.locator(".site-header .site-nav").isVisible(),false,
             "legacy floating dropdown must stay closed");
           assert.equal(await backdrop.isVisible(),true);
