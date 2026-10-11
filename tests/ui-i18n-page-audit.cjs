@@ -47,7 +47,7 @@ const paths = [
           });
           // A past bug had the league switcher and the i18n observer continually overwriting
           // each other's text, blocking the main thread indefinitely.
-          assert.ok(!/[\\u3400-\\u9fff]/.test(label), "League label must stay translated: " + label);
+          assert.ok(!/[一-龥]/.test(label), "League label must stay translated: " + label);
         }
         if(path==="/settings/"){
           assert.equal(await page.locator('input[name="language"]:checked').inputValue(),"en");
