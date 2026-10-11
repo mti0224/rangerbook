@@ -632,7 +632,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>技能 ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
+          <div><h4><span data-i18n="copy.skills">技能</span> ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
         </div>
         ${skillMetaTable(skill, animationMeta, index)}
         ${skillTable(skill)}

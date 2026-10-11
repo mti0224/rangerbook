@@ -327,7 +327,7 @@
       for (let i = 0; i < effectCount; i += 1) {
         const left = leftEffects[i];
         const right = rightEffects[i];
-        effectRows.push(`<tr><th>效果 ${i + 1}</th><td>${effectCell(left, "效果")}</td><td>${effectCell(left, "係數")}</td><td>${effectCell(left, "時間")}</td><td>${effectCell(right, "效果")}</td><td>${effectCell(right, "係數")}</td><td>${effectCell(right, "時間")}</td></tr>`);
+        effectRows.push(`<tr><th><span data-i18n="table.effect">效果</span> ${i + 1}</th><td>${effectCell(left, "效果")}</td><td>${effectCell(left, "係數")}</td><td>${effectCell(left, "時間")}</td><td>${effectCell(right, "效果")}</td><td>${effectCell(right, "係數")}</td><td>${effectCell(right, "時間")}</td></tr>`);
       }
     } else {
       effectRows.push(`<tr><th data-i18n="table.skillEffect">技能效果</th><td colspan="3">-</td><td colspan="3">-</td></tr>`);
