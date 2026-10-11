@@ -244,7 +244,7 @@ test("About and Sponsor copy, payment and contributor links match approved conte
   assert.doesNotMatch(about,/https:\/\/p\.ecpay\.com\.tw\/CF7F86A/);
 });
 
-test("shared navigation links Sponsor after About and gates admin footer by AWS session",()=>{
+test("shared navigation puts admin after Sponsor and gates it by AWS session",()=>{
   const shell=read("assets/js/site.js");
   const aboutPos=shell.indexOf('href="\${rootPrefix}about/"');
   const sponsorPos=shell.indexOf('href="\${rootPrefix}sponsor/"');
@@ -255,5 +255,24 @@ test("shared navigation links Sponsor after About and gates admin footer by AWS 
   assert.match(shell,/user\.role === "admin" \|\| user\.role === "super_admin"/);
   assert.match(shell,/credentials: "include"/);
   assert.match(shell,/rangerbook:auth-changed/);
-  assert.match(shell,/gtFoot\.className = "gt-sidebar-bottom gt-sidebar-nav"/);
+  assert.match(shell,/gtFoot\.className = "gt-sidebar-bottom"/);
+  assert.match(shell,/gtNav\.append\(gtAdminLink\)/);
+  assert.doesNotMatch(shell,/gtFoot\.append\(gtFootCaption, gtAdminLink\)/);
+});
+
+test("responsive sidebar uses a single accessible drawer, not a second dropdown",()=>{
+ const shell=read("assets/js/site.js");
+ const css=read("assets/css/sidebar-drawer.css");
+ assert.match(shell,/loadStylesheet\("sidebar-drawer\.css", "20261011a"\)/);
+ assert.match(shell,/gtSidebar\.id = "gt-site-drawer"/);
+ assert.match(shell,/toggle\.setAttribute\("aria-controls", gtSidebar\.id\)/);
+ assert.match(shell,/gtSidebar\.inert = compactSidebar\.matches && !shouldOpen/);
+ assert.match(shell,/gtDrawerBackdrop\.hidden = !shouldOpen/);
+ assert.match(shell,/gtDrawerClose\.addEventListener\("click"/);
+ assert.match(shell,/gtDrawerBackdrop\.addEventListener\("click"/);
+ assert.match(shell,/event\.key === "Escape"/);
+ assert.match(css,/@media \(max-width: 1120px\)/);
+ assert.match(css,/translateX\(-105%\)/);
+ assert.match(css,/\.gt-sidebar\.gt-drawer-open/);
+ assert.match(css,/\.site-header\.nav-collapsed\.menu-open \.site-nav/);
 });

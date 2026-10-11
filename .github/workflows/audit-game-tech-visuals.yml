@@ -9,6 +9,7 @@ on:
       - "assets/js/admin-traffic-charts.js"
       - "tests/admin-traffic-ui.cjs"
       - "tests/site-sidebar-ui.cjs"
+      - "tests/sidebar-drawer-ui.cjs"
       - "**/*.html"
       - "tests/game-tech-contract.test.js"
       - "tests/first-paint.cjs"
@@ -61,6 +62,8 @@ jobs:
         run: node tests/admin-traffic-ui.cjs
       - name: Verify Sponsor navigation and admin sidebar visibility by role
         run: node tests/site-sidebar-ui.cjs
+      - name: Test left-sliding sidebar on phone, tablet and desktop
+        run: node tests/sidebar-drawer-ui.cjs
       - name: Save screenshots and issue report
         if: always()
         uses: actions/upload-artifact@v4

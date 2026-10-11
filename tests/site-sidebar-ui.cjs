@@ -42,8 +42,8 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       const sidebar=page.locator(".gt-sidebar");
       await sidebar.waitFor({state:"attached"});
       const nav=await page.locator(".gt-sidebar-nav a").allTextContents();
-      // A second .gt-sidebar-nav also styles the sidebar footer, but the two
-      // public navigation items must always be adjacent.
+      // One shared sidebar nav. The admin shortcut follows Sponsor directly,
+      // while the bottom footer is decorative only.
       const about=nav.indexOf("關於本站");
       assert.ok(about>=0,"missing About");
       assert.equal(nav[about+1],"贊助",pathname+" sponsor must follow About");
@@ -52,7 +52,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       const admin=page.locator(".gt-sidebar-admin-entry");
       await admin.waitFor({state:"attached"});
       assert.equal(await admin.getAttribute("href"),"/admin/");
-      assert.equal(await page.locator(".gt-sidebar-bottom").locator("a:last-child").count(),1);
+      assert.equal(await page.locator(".gt-sidebar-nav > a:last-child").getAttribute("href"),"/admin/");
+      assert.equal(await page.locator(".gt-sidebar-bottom a").count(),0);
+      assert.equal(await page.locator(".gt-sidebar-nav > a").nth(about+2).innerText(),"管理員頁面");
       if(["admin","super_admin"].includes(role)){
         await admin.waitFor({state:"visible",timeout:10000});
         assert.equal(await admin.isVisible(),true,pathname+" "+role);
