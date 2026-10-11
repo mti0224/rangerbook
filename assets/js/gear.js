@@ -491,7 +491,9 @@
     if (!row || !modalContent || !modal) return;
     const sequence = ++state.openSequence;
     const gear = row.gear;
-    renderList();
+    // The active detail page already owns the selected gear; rebuilding the
+    // entire list here produces a large DOM mutation and needless translations.
+    if (!document.body.classList.contains("gear-detail-page")) renderList();
     modalContent.setAttribute("aria-busy", "true");
 
     try {
