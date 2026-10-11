@@ -53,7 +53,7 @@
       if (card.querySelector(".skill-meta-table-wrap")) return;
 
       const info = [...card.querySelectorAll(".ranger-icon-title p")]
-        .find((p) => p.textContent.includes("發動率") || p.textContent.includes("技能冷卻時間") || p.textContent.includes("觸發基準"));
+        .find((p) => ["發動率","技能冷卻時間","觸發基準","Activation Rate","Skill Cooldown","Trigger Target"].some(label => p.textContent.includes(label)));
       if (!info) return;
 
       const meta = parseSkillMeta(info.textContent);

@@ -9,7 +9,7 @@
     if (root.id === "guildUsageModalContent") {
       root.querySelectorAll(".pvp-modal-section").forEach((section) => {
         const heading = section.querySelector(".pvp-modal-section-heading h3");
-        if (heading?.textContent.trim() === "常見搭配角色") {
+        if (["常見搭配角色", "Frequently Paired Rangers"].includes(heading?.textContent.trim())) {
           section.remove();
         }
       });
