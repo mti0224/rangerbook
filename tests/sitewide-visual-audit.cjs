@@ -7,7 +7,7 @@ const { chromium } = require("playwright");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const pages = ["404.html","ability/index.html","about/index.html","admin/index.html","adventEnemy/index.html","endless/enemy/index.html","endless/index.html","endless/stage/index.html","eventStageEnemy/index.html","gear/index.html","guildwar/index.html","guildwar/ranking/index.html","guildwar/usage/index.html","hsEnemy/index.html","index.html","infEnemy/index.html","labyrinth/artifact/index.html","labyrinth/enemy/index.html","labyrinth/index.html","labyrinth/stage/how_to_find_stage/index.html","labyrinth/stage/index.html","mainstage/extreme/enemy/index.html","mainstage/extreme/index.html","mainstage/extreme/stage/index.html","mainstage/hard/enemy/index.html","mainstage/hard/index.html","mainstage/hard/stage/index.html","mainstage/index.html","pvp/index.html","pvp/leaderboard/index.html","pvp/search/index.html","pvp/usage-history/index.html","pvp/usage/index.html","ranger/compare/index.html","ranger/index.html","ranger/ranger/index.html","ranger/ranking/index.html","ranger/stats/index.html","ranger/stats/marks/index.html","update/index.html"];
+const pages = ["404.html","ability/index.html","about/index.html","sponsor/index.html","admin/index.html","adventEnemy/index.html","endless/enemy/index.html","endless/index.html","endless/stage/index.html","eventStageEnemy/index.html","gear/index.html","guildwar/index.html","guildwar/ranking/index.html","guildwar/usage/index.html","hsEnemy/index.html","index.html","infEnemy/index.html","labyrinth/artifact/index.html","labyrinth/enemy/index.html","labyrinth/index.html","labyrinth/stage/how_to_find_stage/index.html","labyrinth/stage/index.html","mainstage/extreme/enemy/index.html","mainstage/extreme/index.html","mainstage/extreme/stage/index.html","mainstage/hard/enemy/index.html","mainstage/hard/index.html","mainstage/hard/stage/index.html","mainstage/index.html","pvp/index.html","pvp/leaderboard/index.html","pvp/search/index.html","pvp/usage-history/index.html","pvp/usage/index.html","ranger/compare/index.html","ranger/index.html","ranger/ranger/index.html","ranger/ranking/index.html","ranger/stats/index.html","ranger/stats/marks/index.html","update/index.html"];
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 const output = path.resolve(process.env.AUDIT_OUTPUT || "artifacts/visual-audit");
 const viewports = [
@@ -32,6 +32,11 @@ async function recordOne(browser, pathname, mode, viewport) {
     colorScheme: mode
   });
   const page = await context.newPage();
+  // Site shell queries the public Auth session only to reveal the footer link.
+  // Keep the visual audit fully offline and anonymous (no production API traffic).
+  await page.route("https://rangerbook-auth.warmycat.com/auth/me", route =>
+    route.fulfill({ status: 401, contentType: "application/json", body: '{"detail":"Not authenticated"}' })
+  );
   const errors = [];
   page.on("pageerror", err => errors.push(String(err.message).slice(0, 180)));
   page.on("response", response => {
