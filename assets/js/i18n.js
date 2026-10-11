@@ -94,6 +94,11 @@
     if (locale !== "en" || typeof original !== "string") return original;
     const cleaned = original.replace(/\s+/g, " ").trim();
     if (!cleaned) return original;
+    // User-specified evolution naming takes precedence over old generic UI copies.
+    const hyper = cleaned.match(/^超進化\s*(\d+)\s*星$/);
+    if (hyper) return "Hyper " + hyper[1] + " Stars";
+    const ultra = cleaned.match(/^(?:終極進化|究極進化)\s*(\d+)\s*星$/);
+    if (ultra) return "Ultra " + ultra[1] + " Stars";
     const direct = englishByChinese.get(cleaned);
     if (direct) return direct;
     const gameTerm = gameTermsByChinese.get(cleaned) || officialByChinese.get(cleaned);
