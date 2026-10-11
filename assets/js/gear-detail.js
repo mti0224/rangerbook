@@ -8,7 +8,7 @@
   const selectedLevels = new Map();
   let rangerPromise = null;
   let currentContext = null;
-  let currentRangers = [];
+  let currentRangers = null;
 
   const text = (value) => {
     if (value === null || value === undefined) return "";
@@ -275,6 +275,13 @@
   }
 
   function rangerDetails(rows, rangers) {
+    // Rendering the main gear detail must not wait for the full 8 MB ranger
+    // database. Related rangers are optional and only fetched on expansion.
+    if (!Array.isArray(rangers)) {
+      return '<details class="gear-skillplus-ranger-details" data-lazy-related-rangers="true"><summary class="gear-skillplus-ranger-summary">'
+        + escapeHtml(gt("gear.skillRangers","具有此技能效果的角色"))
+        + '</summary><div class="empty-state small">展開後載入相關角色…</div></details>';
+    }
     const matches = matchedRangers(rows, rangers);
     const stars = matches.map((ranger) => rangerValue(ranger, ["星數", "Ranger星數", "star"]));
     const types = matches.map((ranger) => rangerValue(ranger, ["類型", "type"]));
@@ -395,7 +402,8 @@
   }
 
   function preload() {
-    loadRangers();
+    // Retained for compatibility with gear.js. Eager fetch used to download
+    // and parse every ranger even when the user only viewed a gear item.
   }
 
   async function render(context) {
@@ -404,18 +412,16 @@
     const id = context?.id || getId(gear);
     if (!root || !gear || !id) throw new Error("Missing gear detail render context");
 
-    const skillRows = normalizeSkillRows(gear?.["Skill+"] ?? gear?.["Skill＋"] ?? gear?.skillPlus);
-    const rangers = skillRows.length ? await loadRangers() : [];
     if (context.shouldCommit && !context.shouldCommit()) return false;
     currentContext = { ...context, id, gear };
-    currentRangers = rangers;
+    currentRangers = null;
 
     const allGear = Array.isArray(context.allGear) ? context.allGear : [];
     root.innerHTML = [
       renderHead(gear, id),
       renderBasicSection(gear, id),
       renderAdvancedSection(gear, id),
-      renderSkillSection(gear, id, rangers),
+      renderSkillSection(gear, id, null),
       renderSpecSection(gear, id),
       renderSimilarSection(gear, id, allGear, context.isPublicGear)
     ].join("");
@@ -453,6 +459,24 @@
     const empty = details.querySelector(".gear-skillplus-ranger-filter-empty");
     if (empty) empty.hidden = visible > 0;
   }
+
+  // The toggle event does not bubble, so listen in capture phase. Loading
+  // this optional section cannot block the main detail render or modal open.
+  document.addEventListener("toggle", async (event) => {
+    const details = event.target;
+    if (!details?.matches?.(".gear-skillplus-ranger-details[data-lazy-related-rangers]") || !details.open) return;
+    if (details.dataset.loadingRelatedRangers) return;
+    const context = currentContext;
+    if (!context) return;
+    details.dataset.loadingRelatedRangers = "true";
+    const rangers = await loadRangers();
+    if (currentContext !== context || !details.isConnected) return;
+    currentRangers = rangers;
+    const rows = normalizeSkillRows(context.gear?.["Skill+"] ?? context.gear?.["Skill＋"] ?? context.gear?.skillPlus);
+    details.outerHTML = rangerDetails(rows, rangers);
+    const updated = context.root.querySelector(".gear-skillplus-ranger-details");
+    if (updated) updated.open = true;
+  }, true);
 
   document.addEventListener("change", (event) => {
     const level = event.target.closest?.("#gearModalContent .gear-level-select");
