@@ -20,6 +20,7 @@ assert.match(shared,/site-language-select/);
 assert.match(shared,/nav\.admin/);
 assert.match(runtime,/rangerbook-language/);
 assert.match(runtime,/unitDescription/);
+assert.match(runtime,/custom\(key, original\)/);
 const review = json("docs/custom-en-pending-review.json");
 assert.equal(review._meta.count, 38);
 assert.equal(Object.keys(review.entries).length, 38);

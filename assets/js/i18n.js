@@ -65,6 +65,9 @@
     supported, setLocale, get locale() { return locale; },
     translate, t(key, fallback = "") { return dictionary[key] || fallback || key; },
     readyGame, lookup,
+    custom(key, original) {
+      return gameData[locale]?.custom?.[key] || original;
+    },
     unitName(id, original) { return lookup("UNIT", id + "_nm", original); },
     unitDescription(id, original) { return lookup("UNIT", id + "_desc", original); }
   };
