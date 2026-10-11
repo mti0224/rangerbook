@@ -15,7 +15,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261011a">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261011b">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -168,13 +168,26 @@
         <section id="adminTrafficPanel" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminTrafficTab" tabindex="0" hidden>
           <h2>網站流量</h2>
           <p>資料來源為 GA4，僅限最大管理者查看。尚未設定時不顯示虛構數據。</p>
-          <label>日期範圍 <select id="trafficDays"><option value="7">7 天</option><option value="30" selected>30 天</option><option value="90">90 天</option></select></label>
-          <button id="trafficRefresh" type="button">重新整理</button>
+          <div class="traffic-toolbar">
+            <label class="traffic-range" for="trafficDays">時間範圍
+              <select id="trafficDays"><option value="7">最近 7 天</option><option value="30" selected>最近 30 天</option><option value="90">最近 90 天</option></select>
+            </label>
+            <button id="trafficRefresh" type="button">重新整理</button>
+          </div>
           <p id="trafficStatus" aria-live="polite"></p>
           <div id="trafficSummary" class="traffic-metrics"></div>
-          <h3>每日瀏覽次數</h3><div id="trafficDaily"></div>
-          <h3>熱門頁面</h3><div id="trafficPages"></div>
-          <h3>流量來源</h3><div id="trafficSources"></div>
+          <section class="traffic-chart-card" aria-labelledby="trafficDailyHeading">
+            <h3 id="trafficDailyHeading">每日瀏覽次數</h3>
+            <div id="trafficDaily" class="traffic-chart-scroll" aria-live="polite"></div>
+          </section>
+          <section class="traffic-chart-card" aria-labelledby="trafficPagesHeading">
+            <h3 id="trafficPagesHeading">熱門頁面</h3>
+            <div id="trafficPages" class="traffic-scroll-list" aria-live="polite"></div>
+          </section>
+          <section class="traffic-chart-card" aria-labelledby="trafficSourcesHeading">
+            <h3 id="trafficSourcesHeading">流量來源</h3>
+            <div id="trafficSources" class="traffic-source-chart" aria-live="polite"></div>
+          </section>
         </section>
       </div>
 
@@ -183,7 +196,8 @@
 
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/admin-auth.js"></script>
-  <script src="../assets/js/admin-page.js?v=20261011a"></script>
+  <script src="../assets/js/admin-traffic-charts.js?v=20261011a"></script>
+  <script src="../assets/js/admin-page.js?v=20261011b"></script>
   <script src="../assets/js/admin-password.js?v=20261010a"></script>
 </body>
 </html>
