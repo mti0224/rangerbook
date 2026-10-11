@@ -140,7 +140,8 @@
       document.getElementById("pvpUsageLeague"),
     ].filter(Boolean);
     metaNodes.forEach((node) => {
-      if (node.textContent !== label) node.textContent = label;
+      const displayed = displayLeague();
+      if (node.textContent !== displayed) node.textContent = displayed;
     });
 
     const usageEyebrow = document.querySelector("body[data-pvp-page='usage'] .page-title .eyebrow");
@@ -167,7 +168,8 @@
       document.getElementById("pvpUsageLeague"),
     ].filter(Boolean);
     nodes.forEach((node) => {
-      if (node.textContent !== label) node.textContent = label;
+      const displayed = displayLeague();
+      if (node.textContent !== displayed) node.textContent = displayed;
     });
   });
   const metadataRoot = document.querySelector("main") || document.body;
