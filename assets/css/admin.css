@@ -610,6 +610,49 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
   overflow-x: auto;
   padding-bottom: 4px;
 }
+.traffic-line-interactive {
+  position: relative;
+  width: 100%;
+  min-width: 640px;
+}
+.traffic-line-tooltip {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  gap: 3px;
+  min-width: 138px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .16);
+  color: var(--text);
+  font-size: .85rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.traffic-line-tooltip[hidden] { display: none !important; }
+.traffic-line-tooltip-date { color: var(--muted); }
+.traffic-line-tooltip-value { font-size: 1rem; font-variant-numeric: tabular-nums; }
+.traffic-chart-crosshair {
+  stroke: var(--primary);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  opacity: .65;
+  pointer-events: none;
+}
+.traffic-chart-active-point {
+  fill: var(--panel);
+  stroke: var(--primary);
+  stroke-width: 3;
+  pointer-events: none;
+}
+.traffic-chart-point:focus-visible {
+  stroke: var(--text);
+  stroke-width: 3;
+  outline: none;
+}
 .traffic-line-svg {
   display: block;
   width: 100%;
