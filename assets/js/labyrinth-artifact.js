@@ -48,7 +48,7 @@
 
   const ui = value => window.RangerbookI18n?.uiText(String(value ?? "")) || String(value ?? "");
   function displayArtifactName(name) {
-    const match = String(name).match(/^(.*?)\\[([^\\]]+)\\]$/);
+    const match = String(name).match(/^(.*?)\[([^\]]+)\]$/);
     return match ? `${ui(match[1])}[${match[2]}]` : ui(name);
   }
   function getGrade(name) {
