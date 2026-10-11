@@ -597,7 +597,7 @@
           <thead><tr><th data-i18n="table.activationRate">發動率</th><th data-i18n="table.skillCooldown">技能冷卻時間</th><th data-i18n="table.triggerTarget">觸發基準</th><th data-i18n="table.windup">前搖時間</th></tr></thead>
           <tbody><tr>
             <td>${html(skillValue(skill, ["發動機率", "技能發動率", "技能發動機率"]))}</td>
-            <td>${html(skillValue(skill, ["技能冷卻時間", "冷卻時間"]))}</td>
+            <td>${html(window.RangerbookI18n?.uiText(skillValue(skill, ["技能冷卻時間", "冷卻時間"])) || skillValue(skill, ["技能冷卻時間", "冷卻時間"]))}</td>
             <td>${html(skillValue(skill, ["觸發基準", "觸發條件", "基準"]))}</td>
             <td>${html(skillStartupValue(skill, animationMeta, skillIndex))}</td>
           </tr></tbody>
@@ -945,7 +945,7 @@
 
     const status = document.createElement("div");
     status.className = "ranger-detail-loading";
-    status.textContent = "角色資料載入中…";
+    status.textContent = window.RangerbookI18n?.t("ranger.loading", "角色資料載入中…") || "角色資料載入中…";
 
     const content = document.createElement("section");
     content.className = "ranger-detail-content";

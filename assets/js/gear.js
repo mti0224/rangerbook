@@ -465,7 +465,7 @@
           </div>
           <div class="ranger-card-main">
             <div class="ranger-title-row"><h2>${escapeHtml(getName(gear))}</h2></div>
-            <div class="ranger-tags">${tags.map((tag, index) => `<span${index >= 2 ? ' class="gear-trigger-condition-tag"' : ""}>${escapeHtml(tag)}</span>`).join("")}</div>
+            <div class="ranger-tags">${tags.map((tag, index) => `<span${index >= 2 ? ' class="gear-trigger-condition-tag"' : ""}>${escapeHtml(window.RangerbookI18n?.uiText(tag) || tag)}</span>`).join("")}</div>
             <div class="ranger-mini-stats gear-mini-stats">${mini.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>
           </div>
         </button>

@@ -375,7 +375,7 @@
         </div>
         ${canViewTeams ? `<button class="guildwar-member-team-button" type="button" data-member-team-index="${index}">查看進攻隊伍</button>` : ""}
       </div>`).join("")}</div>` : `<div class="guildwar-member-empty">此公會的成員資料尚未產生。</div>`;
-    els.modalContent.innerHTML = `<header class="guildwar-member-header"><h2 id="guildMemberModalTitle">${esc(guild.guildName || "-")}</h2><p>排名第 ${num(guild.rank)} 名 · ${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)} 名成員</p></header>${list}`;
+    els.modalContent.innerHTML = `<header class="guildwar-member-header"><h2 id="guildMemberModalTitle">${esc(guild.guildName || "-")}</h2><p>${window.RangerbookI18n?.uiText(`排名第 ${num(guild.rank)} 名 · ${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)} 名成員`) || `排名第 ${num(guild.rank)} 名 · ${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)} 名成員`}</p></header>${list}`;
   }
 
   function renderMemberTeam(index) {
