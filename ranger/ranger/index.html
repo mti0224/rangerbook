@@ -47,36 +47,36 @@
   <main class="page ranger-page">
     <section class="page-title">
       <p class="eyebrow">LINE Rangers Database</p>
-      <h1>Rangers數據</h1>
+      <h1 data-i18n="ranger.title">Rangers數據</h1>
       <p>
-        查詢每隻角色的詳細數據。
+        <span data-i18n="ranger.intro">查詢每隻角色的詳細數據。</span>
       </p>
     </section>
 
     <section class="controls ranger-controls">
       <label class="search-box">
-        <span>搜尋角色</span>
-        <input id="rangerSearchInput" type="search" placeholder="輸入角色名稱、ID或關鍵字...">
+        <span data-i18n="ranger.search">搜尋角色</span>
+        <input id="rangerSearchInput" type="search" data-i18n-placeholder="ranger.placeholder" placeholder="輸入角色名稱、ID或關鍵字...">
       </label>
 
       <label>
-        <span>星數</span>
+        <span data-i18n="ranger.star">星數</span>
         <select id="starFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
         </select>
       </label>
 
       <label>
-        <span>類型</span>
+        <span data-i18n="ranger.type">類型</span>
         <select id="typeFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
         </select>
       </label>
 
       <label>
-        <span>屬性</span>
+        <span data-i18n="ranger.element">屬性</span>
         <select id="elementFilter">
-          <option value="">全部</option>
+          <option value="" data-i18n="ranger.all">全部</option>
         </select>
       </label>
 
@@ -88,7 +88,7 @@
         <label>
           <span>角色分類</span>
           <select id="specialFilter">
-            <option value="">全部</option>
+            <option value="" data-i18n="ranger.all">全部</option>
             <option value="nft">NFT角色</option>
             <option value="event">降臨關卡角色</option>
             <option value="talent">有才能</option>
@@ -98,28 +98,28 @@
         <label>
           <span>技能效果包含</span>
           <select id="skillEffectFilter">
-            <option value="">全部</option>
+            <option value="" data-i18n="ranger.all">全部</option>
           </select>
         </label>
 
         <label>
           <span>能力 / 覺醒能力包含</span>
           <select id="abilityEffectFilter">
-            <option value="">全部</option>
+            <option value="" data-i18n="ranger.all">全部</option>
           </select>
         </label>
 
         <label>
           <span>才能條件為</span>
           <select id="talentConditionFilter">
-            <option value="">全部</option>
+            <option value="" data-i18n="ranger.all">全部</option>
           </select>
         </label>
 
         <label>
           <span>才能效果包含</span>
           <select id="talentEffectFilter">
-            <option value="">全部</option>
+            <option value="" data-i18n="ranger.all">全部</option>
           </select>
         </label>
       </div>
@@ -146,6 +146,7 @@
     </div>
   </div>
 
+  <script src="../assets/js/i18n.js"></script>
   <script src="../assets/js/site.js"></script>
   <script src="../assets/js/ranger-animation-horizontal-projectile-rule.js"></script>
   <script src="../assets/js/ranger-animation-projectile-data.js"></script>

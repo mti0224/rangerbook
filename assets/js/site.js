@@ -267,21 +267,20 @@
   }
 
   function getStoredTheme() {
-    const stored = localStorage.getItem(THEME_KEY);
+    let stored = null;
+    try { stored = localStorage.getItem(THEME_KEY); } catch (_) {}
     if (stored === "light" || stored === "dark") return stored;
     return "light";
   }
 
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem(THEME_KEY, theme);
+    try { localStorage.setItem(THEME_KEY, theme); } catch (_) {}
     const text = theme === "dark" ? "深色模式" : "淺色模式";
     document.querySelectorAll(".theme-current-mode").forEach((el) => { el.textContent = text; });
     document.querySelectorAll(".site-settings-icon").forEach((img) => {
       img.src = theme === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT;
     });
-    const toggle = document.querySelector(".theme-toggle-row");
-    toggle?.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
   }
 
   ensureSiteIcon();
@@ -297,36 +296,25 @@
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
       <div class="header-inner header-inner-left">
-        <a class="site-home-link" href="${rootPrefix}">首頁</a>
+        <a class="site-home-link" href="${rootPrefix}" data-i18n="nav.home">首頁</a>
         <nav class="site-nav" aria-label="主要導覽">
-          <a href="${rootPrefix}ranger/">Rangers</a>
-          <a href="${rootPrefix}pvp/">PvP</a>
-          <a href="${rootPrefix}guildwar/">公會</a>
-          <a href="${rootPrefix}gear/">裝備</a>
-          <a href="${rootPrefix}mainstage/">主要關卡</a>
-          <a href="${rootPrefix}endless/">無限之塔</a>
-          <a href="${rootPrefix}eventStageEnemy/">活動關卡</a>
-          <a href="${rootPrefix}adventEnemy/">降臨關卡</a>
-          <a href="${rootPrefix}labyrinth/">迷宮</a>
-          <a href="${rootPrefix}ability/">能力</a>
-          <a href="${rootPrefix}about/">關於本站</a>
-          <a href="${rootPrefix}sponsor/">贊助</a>
+          <a href="${rootPrefix}ranger/" data-i18n="nav.rangers">Rangers</a>
+          <a href="${rootPrefix}pvp/" data-i18n="nav.pvp">PvP</a>
+          <a href="${rootPrefix}guildwar/" data-i18n="nav.guildwar">公會</a>
+          <a href="${rootPrefix}gear/" data-i18n="nav.gear">裝備</a>
+          <a href="${rootPrefix}mainstage/" data-i18n="nav.mainstage">主要關卡</a>
+          <a href="${rootPrefix}endless/" data-i18n="nav.endless">無限之塔</a>
+          <a href="${rootPrefix}eventStageEnemy/" data-i18n="nav.event">活動關卡</a>
+          <a href="${rootPrefix}adventEnemy/" data-i18n="nav.advent">降臨關卡</a>
+          <a href="${rootPrefix}labyrinth/" data-i18n="nav.labyrinth">迷宮</a>
+          <a href="${rootPrefix}ability/" data-i18n="nav.ability">能力</a>
+          <a href="${rootPrefix}about/" data-i18n="nav.about">關於本站</a>
+          <a href="${rootPrefix}sponsor/" data-i18n="nav.sponsor">贊助</a>
         </nav>
         <div class="site-actions">
-          <div class="site-settings">
-            <button class="site-settings-toggle" type="button" aria-label="開啟設定" aria-expanded="false">
-              <img class="site-settings-icon" src="${getStoredTheme() === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT}" alt="" aria-hidden="true" loading="eager">
-            </button>
-            <div class="site-settings-menu" role="menu">
-              <button class="theme-toggle-row" type="button" role="menuitem" aria-pressed="false">
-                <span class="theme-toggle-label">
-                  <span>深淺色模式</span>
-                  <small class="theme-current-mode">淺色模式</small>
-                </span>
-                <span class="theme-toggle-pill" aria-hidden="true"></span>
-              </button>
-            </div>
-          </div>
+          <a class="site-settings site-settings-toggle" href="${rootPrefix}settings/" aria-label="開啟設定" data-i18n-aria-label="settings.open" title="設定">
+            <img class="site-settings-icon" src="${getStoredTheme() === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT}" alt="" aria-hidden="true" loading="eager">
+          </a>
           <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
             <span></span><span></span><span></span>
           </button>
@@ -340,9 +328,12 @@
   const nav = mount.querySelector(".site-nav");
   const homeLink = mount.querySelector(".site-home-link");
   const toggle = mount.querySelector(".site-menu-toggle");
-  const settings = mount.querySelector(".site-settings");
-  const settingsToggle = mount.querySelector(".site-settings-toggle");
-  const themeToggle = mount.querySelector(".theme-toggle-row");
+  if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
+    const script = document.createElement("script");
+    script.dataset.rangerbookI18n = "true";
+    script.src = rootPrefix + "assets/js/i18n.js";
+    document.head.appendChild(script);
+  }
 
   // Presentation shell only: clone public links, do not touch authentication.
   // In particular never add /admin/ or /pvp/search/ to the public nav.
@@ -395,6 +386,7 @@
   gtAdminLink.className = "gt-sidebar-admin-entry";
   gtAdminLink.href = rootPrefix + "admin/";
   gtAdminLink.textContent = "管理員頁面";
+  gtAdminLink.dataset.i18n = "nav.admin";
   gtAdminLink.hidden = true;
   if (gtPath.startsWith(rootPrefix + "admin/")) {
     gtAdminLink.setAttribute("aria-current", "page");
@@ -449,11 +441,6 @@
     else if (restoreFocus && compactSidebar.matches) toggle.focus({ preventScroll: true });
   }
 
-  function setSettingsOpen(open) {
-    settings.classList.toggle("open", open);
-    settingsToggle.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-
   function updateMenuMode() {
     if (!header || !inner || !nav || !homeLink) return;
 
@@ -477,7 +464,6 @@
   }
 
   toggle.addEventListener("click", () => {
-    setSettingsOpen(false);
     setOpen(!gtSidebar.classList.contains("gt-drawer-open"));
   });
   gtDrawerClose.addEventListener("click", () => setOpen(false, true));
@@ -504,21 +490,8 @@
     }
   });
 
-  settingsToggle.addEventListener("click", () => {
-    setOpen(false);
-    setSettingsOpen(!settings.classList.contains("open"));
-  });
-
-  themeToggle.addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    applyTheme(next);
-  });
-
   document.addEventListener("click", event => {
-    if (!header.contains(event.target) && !gtSidebar.contains(event.target)) {
-      setOpen(false);
-      setSettingsOpen(false);
-    }
+    if (!header.contains(event.target) && !gtSidebar.contains(event.target)) setOpen(false);
   });
 
   nav.querySelectorAll("a").forEach((link) => {

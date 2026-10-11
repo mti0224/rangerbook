@@ -1,0 +1,36 @@
+name: Validate localization
+on:
+  pull_request:
+    paths:
+      - "settings/**"
+      - "assets/js/settings.js"
+      - "assets/css/settings-page.css"
+      - "assets/js/i18n.js"
+      - "assets/locales/**"
+      - "res/i18n/**"
+      - "scripts/export_game_locales.py"
+      - "tests/i18n-contract.cjs"
+      - "tests/test_game_locale_export.py"
+      - "assets/js/site.js"
+      - "index.html"
+      - "ranger/ranger/index.html"
+      - "gear/index.html"
+      - "ability/index.html"
+      - "assets/js/gear.js"
+      - "assets/js/ability.js"
+      - "assets/js/ranger.js"
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: python -m unittest discover -s tests -p 'test_game_locale_export.py' -v
+      - run: node --check assets/js/i18n.js && node --check assets/js/site.js && node --check assets/js/ranger.js && node --check assets/js/gear.js && node --check assets/js/ability.js && node --check assets/js/settings.js
+      - run: node tests/i18n-contract.cjs

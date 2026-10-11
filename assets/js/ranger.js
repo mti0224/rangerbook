@@ -153,7 +153,8 @@
   }
 
   function getName(ranger) {
-    return text(ranger?.["Ranger名稱"]) || getId(ranger) || "未命名角色";
+    const original = text(ranger?.["Ranger名稱"]) || getId(ranger) || "未命名角色";
+    return window.RangerbookI18n?.unitName(getId(ranger), original) || original;
   }
 
   function attackValue(ranger) {
@@ -299,7 +300,7 @@
     ]);
     const talent = talentSearchCategories(ranger);
     return [
-      getName(ranger), getId(ranger), ranger?.["角色敘述"], ranger?.["登場時間"], ranger?.["Ranger星數"],
+      getName(ranger), ranger?.["Ranger名稱"], getId(ranger), ranger?.["角色敘述"], ranger?.["登場時間"], ranger?.["Ranger星數"],
       ranger?.["類型"], ranger?.["屬性"], ranger?.["命中率"], ranger?.["技能命中率"],
       ...talent.conditions, ...talent.effects, ...abilities, ...skills
     ].map(rawText).join(" ").toLowerCase();
@@ -608,7 +609,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>技能 ${index + 1}：${html(skill["技能名稱"] || "未命名技能")}</h4>${description(skill["技能敘述"], "ranger-skill-description")}</div>
+          <div><h4>技能 ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
         </div>
         ${skillMetaTable(skill, animationMeta, index)}
         ${skillTable(skill)}
@@ -642,7 +643,7 @@
       <article class="ranger-ability-card">
         <div class="ranger-icon-title">
           ${ability.icon ? `<img class="small-icon" src="${ABILITY_ICON(ability.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>${html(ability.name)}</h4>${description(ability.detail?.["敘述"], "preline")}</div>
+          <div><h4>${html(window.RangerbookI18n?.matchOfficial("ABILITY", ability.name) || ability.name)}</h4>${description(window.RangerbookI18n?.matchOfficial("ABILITY", ability.detail?.["敘述"]) || ability.detail?.["敘述"], "preline")}</div>
         </div>
         ${abilityTable(abilityEffects(ability.detail))}
       </article>`).join("")}</div>`;
@@ -752,7 +753,7 @@
           <h2 id="rangerModalTitle">${html(getName(ranger))}</h2>
           <div class="ranger-tags detail-tags">${detailTags}</div>
           <p class="ranger-date">登場時間：${html(ranger["登場時間"] || "-")}</p>
-          ${description(ranger["角色敘述"], "ranger-description")}
+          ${description(window.RangerbookI18n?.unitDescription(id, ranger["角色敘述"]) || ranger["角色敘述"], "ranger-description")}
         </div>
       </div>
       <section class="detail-section"><h3>基本數值</h3><div class="ranger-stat-grid">${stats}</div></section>
@@ -1021,6 +1022,7 @@
       if (!rangerResponse.ok) throw new Error(`HTTP ${rangerResponse.status}`);
       const raw = await rangerResponse.json();
       state.abilityMap = abilityResponse && abilityResponse.ok ? await abilityResponse.json() : {};
+      await window.RangerbookI18n?.readyGame?.();
       state.rows = (Array.isArray(raw) ? raw : [])
         .map((ranger, index) => ({ ranger, index, date: parseDate(ranger["登場時間"]), search: searchBlob(ranger) }))
         .sort((a, b) => (b.date - a.date) || (a.index - b.index));

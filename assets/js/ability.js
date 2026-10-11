@@ -75,12 +75,14 @@
 
   function getAbilityName(item, code = "") {
     const name = displayText(item["名稱"]);
-    if (name) return name;
-    return isAdminMode() && code ? code : "未命名能力";
+    const original = name || (isAdminMode() && code ? code : "未命名能力");
+    return window.RangerbookI18n?.lookup("ABILITY", code + "_nm",
+      window.RangerbookI18n?.matchOfficial("ABILITY", original) || original) || original;
   }
 
   function getAbilityDescription(item) {
-    return displayText(item["敘述"]);
+    const original = displayText(item["敘述"]);
+    return window.RangerbookI18n?.matchOfficial("ABILITY", original) || original;
   }
 
   function getEffects(item) {
@@ -109,6 +111,7 @@
           item["小隊"],
           tag.label,
           getAbilityName(item, code),
+          displayText(item["名稱"]),
           getAbilityDescription(item),
           ...effects.flatMap(effect => [
             effect.label,
@@ -237,12 +240,12 @@
 
       ${description ? `
       <section class="detail-section ability-detail-section">
-        <h3>能力敘述</h3>
+        <h3>${window.RangerbookI18n?.t("ability.description", "能力敘述") || "能力敘述"}</h3>
         <p class="preline">${escapeHtml(description)}</p>
       </section>` : ""}
 
       <section class="detail-section ability-detail-section">
-        <h3>效果資料</h3>
+        <h3>${window.RangerbookI18n?.t("ability.effects", "效果資料") || "效果資料"}</h3>
         ${renderEffects(row.effects)}
       </section>
     `;
@@ -306,6 +309,7 @@
       const res = await fetch(DATA_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.raw = await res.json();
+      await window.RangerbookI18n?.readyGame?.();
       state.rows = toRows(state.raw);
       state.filtered = [...state.rows];
 
