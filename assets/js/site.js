@@ -309,6 +309,7 @@
           <a href="${rootPrefix}labyrinth/">迷宮</a>
           <a href="${rootPrefix}ability/">能力</a>
           <a href="${rootPrefix}about/">關於本站</a>
+          <a href="${rootPrefix}sponsor/">贊助</a>
         </nav>
         <div class="site-actions">
           <div class="site-settings">
@@ -377,8 +378,40 @@
   });
   const gtFoot = document.createElement("div");
   gtFoot.className = "gt-sidebar-bottom";
-  gtFoot.textContent = "GAME DATA / RANGERBOOK";
+  const gtFootCaption = document.createElement("span");
+  gtFootCaption.textContent = "GAME DATA / RANGERBOOK";
+  const gtAdminLink = document.createElement("a");
+  gtAdminLink.className = "gt-sidebar-admin-entry";
+  gtAdminLink.href = rootPrefix + "admin/";
+  gtAdminLink.textContent = "管理員頁面";
+  gtAdminLink.hidden = true;
+  if (gtPath.startsWith(rootPrefix + "admin/")) {
+    gtAdminLink.setAttribute("aria-current", "page");
+  }
+  gtFoot.append(gtFootCaption, gtAdminLink);
   gtSidebar.append(gtBrand, gtLabel, gtNav, gtFoot);
+
+  // The admin link is a navigation convenience, never an authorization check.
+  // Verify the existing server-side session. Protected APIs still enforce roles.
+  function setAdminLinkVisibility(user) {
+    gtAdminLink.hidden = !(user?.logged_in && (user.role === "admin" || user.role === "super_admin"));
+  }
+  window.addEventListener("rangerbook:auth-changed", event => {
+    setAdminLinkVisibility(event.detail);
+  });
+  const sharedAuth = window.RangerbookAuth;
+  if (sharedAuth) {
+    setAdminLinkVisibility(sharedAuth.getUser());
+    sharedAuth.ready().then(setAdminLinkVisibility).catch(() => setAdminLinkVisibility(null));
+  } else if (!gtPath.startsWith(rootPrefix + "admin/") && !gtPath.startsWith(rootPrefix + "pvp/search/")) {
+    // Admin and player-search pages load the existing RangerbookAuth module
+    // immediately after site.js; it will emit rangerbook:auth-changed.
+    fetch("https://rangerbook-auth.warmycat.com/auth/me", {
+      method: "GET", credentials: "include", headers: { Accept: "application/json" }
+    }).then(response => response.ok ? response.json() : null)
+      .then(setAdminLinkVisibility)
+      .catch(() => setAdminLinkVisibility(null));
+  }
   mount.appendChild(gtSidebar);
   document.body.classList.add("gt-app");
 
