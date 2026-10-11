@@ -8,7 +8,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 (async () => {
   const browser = await chromium.launch({ headless: true });
   try {
-    for(const pathname of ["", "admin/", "ranger/ranger/", "gear/", "pvp/usage/", "labyrinth/stage/"]){
+    for(const pathname of ["", "admin/", "sponsor/", "ranger/ranger/", "gear/", "pvp/usage/", "labyrinth/stage/"]){
       for(const mode of ["dark", "light"]){
         const ctx = await browser.newContext({ viewport: {width:1440,height:900} });
         await ctx.addInitScript(value => { localStorage.setItem("rangerbook-theme",value); },mode);
