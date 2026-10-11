@@ -229,6 +229,15 @@
     }
   }
 
+  window.addEventListener("rangerbook:game-terms-ready", () => {
+    if (!state.rows.length) return;
+    buildFilters();
+    applyFilters();
+    if (state.selectedName && modal && !modal.hidden) {
+      const row = state.rows.find(item => item.name === state.selectedName);
+      if (row) modalContent.innerHTML = renderArtifactDetail(row);
+    }
+  });
   searchInput?.addEventListener("input", applyFilters);
   categoryFilter?.addEventListener("change", applyFilters);
   gradeFilter?.addEventListener("change", applyFilters);

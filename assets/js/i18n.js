@@ -11,6 +11,7 @@
   let dictionary = {};
   let englishByChinese = new Map();
   let gameTermsByChinese = new Map();
+  let gameTermsByKey = new Map();
   let officialByChinese = new Map();
   let parameterTerms = [];
   const normalize = value => String(value || "").replace(/\s+/g, " ").trim();
@@ -28,10 +29,11 @@
     catch (_) { return null; }
   }
   function installGameTerms(rows) {
-    const map = new Map(), ambiguous = new Set(), templates = [];
+    const map = new Map(), keys = new Map(), ambiguous = new Set(), templates = [];
     for (const item of rows || []) {
       if (!item || typeof item.zh_TW !== "string" || typeof item.en !== "string" || !item.en.trim()) continue;
       const source = normalize(item.zh_TW);
+      if (typeof item.key === "string") keys.set(item.key, item.en);
       if (map.has(source) && map.get(source) !== item.en) ambiguous.add(source);
       else map.set(source, item.en);
       const template = compileTermTemplate(source, item.en);
@@ -39,6 +41,7 @@
     }
     ambiguous.forEach(source => map.delete(source));
     gameTermsByChinese = map;
+    gameTermsByKey = keys;
     parameterTerms = templates;
   }
   async function loadGameTerms() {
@@ -46,6 +49,7 @@
     try {
       installGameTerms(await json(root + "assets/locales/game-custom.json"));
       translate(document);
+      window.dispatchEvent(new CustomEvent("rangerbook:game-terms-ready", {detail:{locale}}));
     } catch (error) { console.warn("Custom localization unavailable", error); }
   }
   function indexOfficialTranslations(localized, chinese) {
@@ -251,7 +255,7 @@
     translate, uiText, t(key, fallback = "") { return dictionary[key] || fallback || key; },
     readyGame, lookup, matchOfficial,
     custom(key, original) {
-      return gameData[locale]?.custom?.[key] || original;
+      return gameTermsByKey.get(key) || gameData[locale]?.custom?.[key] || original;
     },
     unitName(id, original) { return lookup("UNIT", id + "_nm", original); },
     unitDescription(id, original) { return lookup("UNIT", id + "_desc", original); }
