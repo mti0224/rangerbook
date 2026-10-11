@@ -20,4 +20,10 @@ assert.match(shared,/site-language-select/);
 assert.match(shared,/nav\.admin/);
 assert.match(runtime,/rangerbook-language/);
 assert.match(runtime,/unitDescription/);
+const review = json("docs/custom-en-pending-review.json");
+assert.equal(review._meta.count, 38);
+assert.equal(Object.keys(review.entries).length, 38);
+for (const [key, value] of Object.entries(review.entries)) {
+  assert.ok(key && typeof value === "string" && value.trim());
+}
 console.log("LOCALIZATION_CONTRACT_OK");
