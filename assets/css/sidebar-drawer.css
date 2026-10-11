@@ -1,0 +1,78 @@
+/*
+ * Responsive off-canvas sidebar.
+ * Loaded after the existing Game-Tech / header styles so the tablet and
+ * phone menu share the actual desktop sidebar instead of a second dropdown.
+ */
+body.gt-app .gt-drawer-close,
+body.gt-app .gt-drawer-backdrop { display: none; }
+
+@media (max-width: 1120px) {
+  body.gt-app .gt-sidebar {
+    display: flex;
+    width: min(292px, calc(100vw - 44px));
+    max-width: 100vw;
+    z-index: 2002;
+    transform: translateX(-105%);
+    visibility: hidden;
+    pointer-events: none;
+    box-shadow: 12px 0 36px rgba(0, 0, 0, .16);
+    transition: transform .24s ease, visibility 0s linear .24s;
+    overscroll-behavior: contain;
+  }
+  body.gt-app .gt-sidebar.gt-drawer-open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform .24s ease, visibility 0s;
+  }
+  body.gt-app .gt-drawer-backdrop:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    z-index: 2001;
+    display: block;
+    background: rgba(7, 18, 27, .64);
+    backdrop-filter: blur(2px);
+  }
+  body.gt-app.gt-drawer-active { overflow: hidden; }
+
+  body.gt-app .gt-drawer-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  body.gt-app .gt-drawer-top .gt-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-bottom: 1.55rem;
+  }
+  body.gt-app .gt-drawer-close {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--gt-inset);
+    color: var(--text);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  body.gt-app .gt-drawer-close:hover {
+    background: var(--soft);
+    color: var(--primary-dark);
+  }
+  /* Retire the old tablet/phone dropdown entirely, including the rule in
+     header-responsive.css that would otherwise re-display it on menu-open. */
+  body.gt-app .site-header .site-nav,
+  body.gt-app .site-header.nav-collapsed.menu-open .site-nav,
+  body.gt-app .site-header.menu-open .site-nav {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.gt-app .gt-sidebar { transition: none !important; }
+}
