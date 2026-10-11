@@ -49,6 +49,32 @@ const paths = [
           // each other's text, blocking the main thread indefinitely.
           assert.ok(!/[一-龥]/.test(label), "League label must stay translated: " + label);
         }
+        if (path === "/ranger/ranger/") {
+          // Detail tables are generated after page load. Verify explicit key
+          // bindings translate correctly and do not affect data attributes.
+          await page.evaluate(() => {
+            const el = document.createElement("div");
+            el.id = "detail-i18n-regression";
+            el.innerHTML = [
+              '<table><thead><tr>',
+              '<th data-i18n="table.skillEffect">技能效果</th>',
+              '<th data-i18n="table.coefficient">係數</th>',
+              '<th data-i18n="table.duration">時間</th>',
+              '<th data-i18n="table.range">範圍</th>',
+              '</tr></thead></table>',
+              '<div class="ranger-stat"><span data-i18n="stats.mineralCost">生產礦物費用</span><strong data-raw-stat="生產礦物費用">100</strong></div>',
+              '<div class="ranger-stat"><span data-i18n="stats.splashRange">濺射範圍</span></div>'
+            ].join("");
+            document.body.appendChild(el);
+          });
+          await page.waitForFunction(() => {
+            const root = document.getElementById("detail-i18n-regression");
+            return root?.querySelector('th[data-i18n="table.coefficient"]')?.textContent === "Multiplier";
+          });
+          const labels = await page.locator("#detail-i18n-regression th, #detail-i18n-regression .ranger-stat span").allTextContents();
+          assert.deepEqual(labels, ["Skill Effect", "Multiplier", "Duration", "Range", "Mineral Cost", "Splash Range"]);
+          assert.equal(await page.locator("#detail-i18n-regression strong").getAttribute("data-raw-stat"),"生產礦物費用");
+        }
         if(path==="/settings/"){
           assert.equal(await page.locator('input[name="language"]:checked').inputValue(),"en");
           assert.equal(await page.locator('[data-i18n="settings.title"]').textContent(),"Settings");
