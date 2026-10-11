@@ -46,6 +46,11 @@
     return clean ? `${ARTIFACT_ICON_BASE}${clean}` : "";
   }
 
+  const ui = value => window.RangerbookI18n?.uiText(String(value ?? "")) || String(value ?? "");
+  function displayArtifactName(name) {
+    const match = String(name).match(/^(.*?)\\[([^\\]]+)\\]$/);
+    return match ? `${ui(match[1])}[${match[2]}]` : ui(name);
+  }
   function getGrade(name) {
     const match = text(name).match(/\[([^\]]+)\]$/);
     return match ? match[1] : "";
@@ -79,8 +84,8 @@
 
   function fillSelect(select, values) {
     const current = select.value;
-    select.innerHTML = `<option value="">全部</option>` + values
-      .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
+    select.innerHTML = `<option value="">${escapeHtml(ui("全部"))}</option>` + values
+      .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(ui(value))}</option>`)
       .join("");
     if (values.includes(current)) select.value = current;
   }
@@ -95,7 +100,7 @@
     const category = categoryFilter.value;
     const grade = gradeFilter.value;
     state.filtered = state.rows.filter((row) => {
-      if (q && !row.searchBlob.includes(q)) return false;
+      if (q && !row.searchBlob.includes(q) && !displayArtifactName(row.name).toLowerCase().includes(q)) return false;
       if (category && text(row.item?.["分類"]) !== category) return false;
       if (grade && row.grade !== grade) return false;
       return true;
@@ -122,10 +127,10 @@
           </div>
           <div class="ability-main">
             <div class="ability-title-row">
-              <h2>${escapeHtml(row.name)}</h2>
-              ${category ? `<span class="tag ${categoryClass(category)}">${escapeHtml(category)}</span>` : ""}
+              <h2>${escapeHtml(displayArtifactName(row.name))}</h2>
+              ${category ? `<span class="tag ${categoryClass(category)}">${escapeHtml(ui(category))}</span>` : ""}
             </div>
-            ${item["效果"] ? `<p class="desc">${escapeHtml(item["效果"])}</p>` : ""}
+            ${item["效果"] ? `<p class="desc">${escapeHtml(ui(item["效果"]))}</p>` : ""}
           </div>
         </button>
       `;
@@ -152,14 +157,14 @@
         <table class="labyrinth-score-table">
           <thead>
             <tr>
-              <th>類型／屬性</th>
-              <th>可獲得分數</th>
+              <th data-i18n="lab.scoreType">類型／屬性</th>
+              <th data-i18n="lab.scoreValue">可獲得分數</th>
             </tr>
           </thead>
           <tbody>
             ${entries.map(([label, value]) => `
               <tr>
-                <td>${escapeHtml(label)}</td>
+                <td>${escapeHtml(ui(label))}</td>
                 <td>${formatValue(value)}</td>
               </tr>
             `).join("")}
@@ -178,18 +183,18 @@
           ${iconUrl ? `<img class="ability-icon labyrinth-artifact-icon" src="${iconUrl}" alt="" onerror="this.closest('.ability-icon-wrap').classList.add('missing-icon'); this.remove();">` : `<span class="no-icon">無圖</span>`}
         </div>
         <div>
-          <h2 id="artifactModalTitle">${escapeHtml(row.name)}</h2>
+          <h2 id="artifactModalTitle">${escapeHtml(displayArtifactName(row.name))}</h2>
         </div>
       </div>
 
       ${item["效果"] ? `
       <section class="detail-section ability-detail-section">
-        <h3>敘述</h3>
-        <p class="preline">${escapeHtml(item["效果"])}</p>
+        <h3 data-i18n="lab.artifactDescription">敘述</h3>
+        <p class="preline">${escapeHtml(ui(item["效果"]))}</p>
       </section>` : ""}
 
       <section class="detail-section ability-detail-section">
-        <h3>各類型／屬性可獲得的分數</h3>
+        <h3 data-i18n="lab.artifactScore">各類型／屬性可獲得的分數</h3>
         ${renderScoreTable(row.scores)}
       </section>
     `;

@@ -220,7 +220,7 @@
     const visibleRows = infoRows.filter(([, value]) => hasValue(value));
     if (!visibleRows.length) return "";
     return `
-      ${renderSectionTitle("關卡資訊")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("關卡資訊") || "關卡資訊")}
       <div class="endless-table-wrap endless-stage-info-wrap">
         <table class="endless-stage-table endless-stage-info-table">
           <tbody>
@@ -261,7 +261,7 @@
 
   function renderEnemyLineTable(stage) {
     return `
-      ${renderSectionTitle("敵人生產線")}
+      ${renderSectionTitle(window.RangerbookI18n?.uiText("敵人生產線") || "敵人生產線")}
       <div class="endless-table-wrap">
         <table class="endless-stage-table">
           <thead>
@@ -464,7 +464,7 @@
         </div>
       </div>
       <section class="detail-section">
-        <h3>生產線資訊</h3>
+        <h3 data-i18n="stage.production">生產線資訊</h3>
         <div class="ranger-stat-grid">
           ${renderStat("初登場時間", row["初登場時間"])}
           ${renderStat("再生產間距", row["再生產間距"])}
