@@ -1,0 +1,15 @@
+{
+  "locale": "en",
+  "official": {
+    "UNIT": {
+      "u001e-bella_nm": "Tarzan Bella",
+      "u1134e-brown_nm": "Black Jersey Brown",
+      "u1136e-moon_nm": "Blue Jersey Moon",
+      "u1137e-cony_nm": "Pink Jersey Cony"
+    },
+    "SKILL": {},
+    "ABILITY": {},
+    "EQUIP": {}
+  },
+  "custom": {}
+}

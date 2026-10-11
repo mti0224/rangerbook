@@ -1,0 +1,15 @@
+{
+  "locale": "ja",
+  "official": {
+    "UNIT": {
+      "u001e-bella_nm": "ターザンベラ",
+      "u1134e-brown_nm": "ブラックジャージブラウン",
+      "u1136e-moon_nm": "ブルージャージムーン",
+      "u1137e-cony_nm": "ピンクジャージコニー"
+    },
+    "SKILL": {},
+    "ABILITY": {},
+    "EQUIP": {}
+  },
+  "custom": {}
+}

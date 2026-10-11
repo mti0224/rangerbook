@@ -1,0 +1,15 @@
+{
+  "locale": "th",
+  "official": {
+    "UNIT": {
+      "u001e-bella_nm": "ทาร์ซานเบลล่า",
+      "u1134e-brown_nm": "Brown ชุดดำ",
+      "u1136e-moon_nm": "Moon ชุดฟ้า",
+      "u1137e-cony_nm": "Cony ชุดชมพู"
+    },
+    "SKILL": {},
+    "ABILITY": {},
+    "EQUIP": {}
+  },
+  "custom": {}
+}
