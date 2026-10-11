@@ -34,21 +34,23 @@ const roles = ["guest","user","admin","super_admin"];
       return {auth:hidden("adminAuthCard"),session:hidden("adminSessionCard"),
         workspace:hidden("adminWorkspace"),password:hidden("adminPasswordCard"),
         resources:hidden("adminResourceUpdatesCard"),accounts:hidden("superAdminPanel"),
-        accountTab:hidden("adminAccountsTab"),
+        accountTab:hidden("adminAccountsTab"),trafficTab:hidden("adminTrafficTab"),traffic:hidden("adminTrafficPanel"),
         selected:[...document.querySelectorAll("#adminWorkspaceTabs button")].filter(x=>x.getAttribute("aria-selected")==="true").map(x=>x.dataset.adminSection),
         name:document.getElementById("adminCurrentAccount").textContent};
     });
     let s=await state();
     if(role==="guest"){assert.equal(s.auth,false);assert.equal(s.workspace,true);}
-    else if(role==="user"){assert.equal(s.session,false);assert.equal(s.workspace,true);assert.equal(s.accounts,true);assert.equal(s.accountTab,true);}
+    else if(role==="user"){assert.equal(s.session,false);assert.equal(s.workspace,true);assert.equal(s.accounts,true);assert.equal(s.accountTab,true);assert.equal(s.trafficTab,true);}
     else{
       assert.equal(s.session,false);assert.equal(s.workspace,false);assert.equal(s.name,"test_"+role);
       assert.deepEqual(s.selected,["password"]);assert.equal(s.password,false);assert.equal(s.resources,true);assert.equal(s.accounts,true);
-      assert.equal(s.accountTab,role!=="super_admin");
+      assert.equal(s.accountTab,role!=="super_admin");assert.equal(s.trafficTab,role!=="super_admin");
       await page.locator("#adminResourcesTab").click();
       s=await state();
       assert.deepEqual(s.selected,["resources"]);assert.equal(s.password,true);assert.equal(s.resources,false);assert.equal(s.accounts,true);
       if(role==="super_admin"){
+        await page.locator("#adminTrafficTab").click();
+        s=await state();assert.deepEqual(s.selected,["traffic"]);assert.equal(s.traffic,false);assert.equal(s.resources,true);
         await page.locator("#adminAccountsTab").click();
         s=await state();assert.deepEqual(s.selected,["accounts"]);assert.equal(s.accounts,false);assert.equal(s.resources,true);
         await page.locator("#adminAccountsTab").focus();

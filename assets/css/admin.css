@@ -550,3 +550,5 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
   .admin-workspace-panel { padding: 1.1rem; }
   .admin-session-head { gap: .85rem; }
 }
+
+.traffic-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.traffic-metrics>div{display:grid;gap:10px;padding:16px;background:var(--soft);border:1px solid var(--line);border-radius:10px}.traffic-metrics strong{font-size:1.5rem}.traffic-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}#trafficDaily,#trafficPages,#trafficSources{max-height:360px;overflow:auto;margin:12px 0 24px}

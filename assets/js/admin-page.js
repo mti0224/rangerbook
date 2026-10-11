@@ -12,7 +12,8 @@
   const workspacePanels = {
     password: { button: $("adminPasswordTab"), panel: passwordCard },
     resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
-    accounts: { button: $("adminAccountsTab"), panel: superAdminPanel }
+    accounts: { button: $("adminAccountsTab"), panel: superAdminPanel },
+    traffic: { button: $("adminTrafficTab"), panel: $("adminTrafficPanel") }
   };
   let activeWorkspaceSection = "password";
   const loginPanel = $("adminLoginPanel");
@@ -82,7 +83,8 @@
     return {
       password: auth.isAdmin(),
       resources: auth.isAdmin(),
-      accounts: auth.isSuperAdmin()
+      accounts: auth.isSuperAdmin(),
+      traffic: auth.isSuperAdmin()
     };
   }
 
@@ -109,8 +111,45 @@
     if (!allowedWorkspaceSections()[section]) return;
     activeWorkspaceSection = section;
     renderWorkspaceTabs();
+    if (section === "traffic") loadTraffic();
     if (focus) workspacePanels[section].button?.focus();
   }
+
+  async function loadTraffic() {
+    if (!auth.isSuperAdmin()) return;
+    const status = $("trafficStatus"), days = Number($("trafficDays").value);
+    status.textContent = "載入中…";
+    try {
+      const data = await auth.api("/super-admin/traffic?days=" + days);
+      if (data.status !== "ready") {
+        status.textContent = data.message || "尚未設定 GA4 資料來源";
+        ["trafficSummary","trafficDaily","trafficPages","trafficSources"].forEach(id => $(id).textContent = "");
+        return;
+      }
+      const numeric = n => Number(n || 0).toLocaleString("zh-TW");
+      status.textContent = "最新更新：" + (data.updatedAt || "-");
+      $("trafficSummary").replaceChildren();
+      Object.entries(data.summary || {}).forEach(([key,value]) => {
+        const card=document.createElement("div");
+        const label=document.createElement("span"),num=document.createElement("strong");
+        label.textContent=({users:"使用者",views:"瀏覽次數",sessions:"工作階段",engagedSessions:"互動工作階段"})[key] || key;
+        num.textContent=numeric(value);card.append(label,num);$("trafficSummary").append(card);
+      });
+      const render=(id,rows,key,metric) => {
+        const list=$(id);list.replaceChildren();
+        (rows || []).forEach(item => {
+          const row=document.createElement("div");row.className="traffic-row";
+          const left=document.createElement("span"),right=document.createElement("strong");
+          left.textContent=item[key];right.textContent=numeric(item[metric]);row.append(left,right);list.append(row);
+        });
+      };
+      render("trafficDaily",data.daily,"date","views");
+      render("trafficPages",data.pages,"path","views");
+      render("trafficSources",data.sources,"source","sessions");
+    } catch (error) {status.textContent = "無法讀取：" + error.message;}
+  }
+  $("trafficRefresh")?.addEventListener("click",loadTraffic);
+  $("trafficDays")?.addEventListener("change",loadTraffic);
 
   function renderUserState(user) {
     authCard.hidden = Boolean(user.logged_in);

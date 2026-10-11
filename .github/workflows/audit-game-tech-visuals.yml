@@ -10,6 +10,7 @@ on:
       - "tests/first-paint.cjs"
       - "tests/pvp-history-chip-colors.cjs"
       - "tests/sitewide-visual-audit.cjs"
+      - "backend/rangerbook_auth/**"
       - ".github/workflows/audit-game-tech-visuals.yml"
   workflow_dispatch:
 
@@ -38,6 +39,10 @@ jobs:
           done
           cat /tmp/rangerbook-preview.log
           exit 1
+      - name: Validate Google WIF setup and GA4 collector syntax
+        run: |
+          bash -n backend/rangerbook_auth/setup_google_wif.sh
+          python3 -m py_compile backend/rangerbook_auth/traffic_collector.py
       - name: Render public pages in dark/light desktop/mobile
         run: node tests/sitewide-visual-audit.cjs
         env:

@@ -647,3 +647,25 @@ def bootstrap_super_admin(account: str, password: str) -> dict[str, Any]:
 
         row = connection.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
     return public_user(row)
+
+# Traffic reports are prepared by a separate read-only GA4 collector.
+# Cached aggregated statistics are never copied into the public website.
+TRAFFIC_CACHE_DIR = Path(os.getenv("RANGERBOOK_TRAFFIC_CACHE_DIR", "/home/ubuntu/rangerbook-auth/traffic-cache")).resolve()
+
+@app.get("/super-admin/traffic")
+def traffic_report(
+    days: int = 30,
+    _: sqlite3.Row = Depends(require_super_admin),
+) -> dict[str, Any]:
+    if days not in (7, 30, 90):
+        raise HTTPException(status_code=400, detail="只支援 7、30、90 天")
+    file = TRAFFIC_CACHE_DIR / f"report-{days}.json"
+    if not file.is_file():
+        return {"status": "unconfigured", "days": days, "message": "尚未設定 GA4 或完成首次數據同步"}
+    try:
+        content = json.loads(file.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        raise HTTPException(status_code=503, detail="流量快取無法讀取")
+    if not isinstance(content, dict) or content.get("days") != days or content.get("status") != "ready":
+        raise HTTPException(status_code=503, detail="流量快取內容無效")
+    return content
