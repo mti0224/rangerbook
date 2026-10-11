@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 const paths = [
   "/", "/settings/", "/ranger/", "/ranger/ranger/",
-  "/gear/", "/ability/", "/pvp/", "/pvp/usage/",
+  "/gear/", "/ability/", "/pvp/", "/pvp/leaderboard/", "/pvp/usage/",
   "/guildwar/", "/guildwar/ranking/", "/mainstage/",
   "/labyrinth/", "/admin/", "/about/"
 ];
@@ -40,6 +40,15 @@ const paths = [
         assert.ok(!/[\u3400-\u9fff]/.test(result.title),path+" document title: "+result.title);
         assert.ok(!/[\u3400-\u9fff]/.test(result.heading),path+" heading: "+result.heading);
         assert.ok(!/[\u3400-\u9fff]/.test(result.intro),path+" introduction: "+result.intro);
+        if (path === "/pvp/leaderboard/" || path === "/pvp/usage/") {
+          const label = await page.evaluate(() => {
+            const node = document.getElementById("pvpLeaderboardLeague") || document.getElementById("pvpUsageLeague");
+            return node?.textContent?.trim() || "";
+          });
+          // A past bug had the league switcher and the i18n observer continually overwriting
+          // each other's text, blocking the main thread indefinitely.
+          assert.ok(!/[\\u3400-\\u9fff]/.test(label), "League label must stay translated: " + label);
+        }
         if(path==="/settings/"){
           assert.equal(await page.locator('input[name="language"]:checked').inputValue(),"en");
           assert.equal(await page.locator('[data-i18n="settings.title"]').textContent(),"Settings");

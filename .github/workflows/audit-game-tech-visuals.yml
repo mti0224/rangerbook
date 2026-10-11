@@ -6,6 +6,7 @@ on:
       - "assets/css/**"
       - "assets/js/site.js"
       - "assets/js/i18n.js"
+      - "assets/js/pvp-league-switcher.js"
       - "assets/locales/**"
       - "tests/ui-i18n-page-audit.cjs"
       - "assets/js/admin-page.js"
