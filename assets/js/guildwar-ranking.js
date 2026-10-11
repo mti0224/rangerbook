@@ -45,7 +45,9 @@
   let gearStars = {};
   let abilityMap = {};
   let effectMap = {};
-  let openGuildRank = 0;
+  let activeGuild = null;
+  let activeGuildDetail = null;
+  let modalGeneration = 0;
   let currentUnits = [];
   const tierDataCache = new Map();
   const effectTimers = new WeakMap();
@@ -113,7 +115,7 @@
     if (els.count) els.count.textContent = num(scoped.length);
     if (!els.body) return;
     els.body.innerHTML = rows.length ? rows.map((guild) => `
-      <tr class="guildwar-rank-row" data-guild-rank="${esc(guild.rank)}" tabindex="0" role="button">
+      <tr class="guildwar-rank-row" data-guild-index="${guilds.indexOf(guild)}" tabindex="0" role="button">
         <td class="pvp-rank-cell"><span class="pvp-rank-medal">${esc(guild.rank)}</span></td>
         <td><strong title="${esc(guild.guildName || "-")}">${esc(guild.guildName || "-")}</strong></td>
         <td>${num(guild.score)}</td>
@@ -126,16 +128,43 @@
     if (tierDataCache.has(code)) return tierDataCache.get(code);
     const url = COMPACT_URLS[code];
     if (!url) return {};
-    const promise = fetch(`${url}`)
-      .then((response) => response.ok ? response.json() : {})
-      .catch(() => ({}));
+    const promise = fetch(url)
+      .then((response) => {
+        if (!response.ok) throw new Error(`Guild War ${code} HTTP ${response.status}`);
+        return response.json();
+      })
+      .catch((error) => {
+        tierDataCache.delete(code);
+        throw error;
+      });
     tierDataCache.set(code, promise);
     return promise;
   }
 
-  function compactGuild(data, rank) {
-    return (Array.isArray(data?.guilds) ? data.guilds : [])
-      .find((guild) => Number(guild.rank) === Number(rank)) || null;
+  // Rankings and member snapshots update independently. Rank is not a guild ID.
+  function guildUid(guild) {
+    return String(guild?.uid ?? guild?.guildUid ?? guild?.guildUID ?? guild?.guildId ?? guild?.guild_id ?? "").trim();
+  }
+
+  function guildNameKey(guild) {
+    return String(guild?.guildName ?? guild?.displayName ?? "").normalize("NFKC").trim();
+  }
+
+  function compactGuild(data, rankingGuild) {
+    const source = Array.isArray(data?.guilds) ? data.guilds : [];
+    const uid = guildUid(rankingGuild);
+    if (uid) {
+      const byUid = source.filter((guild) => guildUid(guild) === uid);
+      if (byUid.length === 1) return byUid[0];
+      if (byUid.length > 1) return null;
+    }
+
+    // Older compact files may lack IDs. Never fall back to a conflicting UID.
+    const name = guildNameKey(rankingGuild);
+    if (!name) return null;
+    const byName = source.filter((guild) => guildNameKey(guild) === name
+      && (!uid || !guildUid(guild)));
+    return byName.length === 1 ? byName[0] : null;
   }
 
   function normalizeUnits(value) {
@@ -314,15 +343,31 @@
   }
 
   async function renderGuildMembers(guild) {
+    const generation = modalGeneration;
+    const tierCode = currentTierCode();
     els.modalContent.innerHTML = `<div class="guildwar-member-empty">公會成員資料載入中…</div>`;
-    const data = await loadTierData(currentTierCode());
-    const detail = compactGuild(data, guild.rank);
+    let data;
+    try {
+      data = await loadTierData(tierCode);
+    } catch (error) {
+      if (generation === modalGeneration && !els.modal.hidden) {
+        console.error("Guild War member data load failed", error);
+        els.modalContent.innerHTML = `<div class="guildwar-member-empty">公會成員資料載入失敗，請稍後重試。</div>`;
+      }
+      return;
+    }
+    if (generation !== modalGeneration || els.modal.hidden || currentTierCode() !== tierCode) return;
+
+    const detail = compactGuild(data, guild);
+    activeGuildDetail = detail;
     const source = Array.isArray(detail?.members) ? detail.members : [];
     const members = source.map((member, index) => ({ member, index }))
       .sort((a, b) => memberRawLevel(b.member) - memberRawLevel(a.member)
         || memberName(a.member).localeCompare(memberName(b.member), "zh-Hant"));
     const canViewTeams = ADMIN_MODE && currentTier().teamData;
-    const list = members.length ? `<div class="guildwar-member-list">${members.map(({ member, index }) => `
+    const list = !detail
+      ? `<div class="guildwar-member-empty">公會排名與成員資料尚未同步，為避免顯示其他公會的成員，暫不顯示名單。</div>`
+      : members.length ? `<div class="guildwar-member-list">${members.map(({ member, index }) => `
       <div class="guildwar-member-row">
         <div>
           <div class="guildwar-member-name">${esc(memberName(member))}</div>
@@ -333,13 +378,12 @@
     els.modalContent.innerHTML = `<header class="guildwar-member-header"><h2 id="guildMemberModalTitle">${esc(guild.guildName || "-")}</h2><p>排名第 ${num(guild.rank)} 名 · ${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)} 名成員</p></header>${list}`;
   }
 
-  async function renderMemberTeam(index) {
+  function renderMemberTeam(index) {
     if (!currentTier().teamData) return;
-    const guild = guilds.find((item) => Number(item.rank) === openGuildRank);
-    if (!guild) return;
-    const data = await loadTierData(currentTierCode());
-    const detail = compactGuild(data, openGuildRank);
-    const member = Array.isArray(detail?.members) ? detail.members[index] : null;
+    const guild = activeGuild;
+    const detail = activeGuildDetail;
+    if (!guild || !detail) return;
+    const member = Array.isArray(detail.members) ? detail.members[index] : null;
     if (!member) return;
     currentUnits = normalizeUnits(member.guildwar);
     const content = currentUnits.length ? `
@@ -366,7 +410,9 @@
 
   function openGuild(guild) {
     if (!guild || !els.modal) return;
-    openGuildRank = Number(guild.rank) || 0;
+    modalGeneration += 1;
+    activeGuild = guild;
+    activeGuildDetail = null;
     currentUnits = [];
     els.modal.hidden = false;
     document.body.classList.add("modal-open");
@@ -375,14 +421,17 @@
 
   function closeModal() {
     if (!els.modal || els.modal.hidden) return;
+    modalGeneration += 1;
+    activeGuild = null;
+    activeGuildDetail = null;
     els.modal.hidden = true;
     document.body.classList.remove("modal-open");
     currentUnits = [];
   }
 
   function guildFromRow(row) {
-    const rank = Number(row?.dataset?.guildRank);
-    return guilds.find((guild) => Number(guild.rank) === rank);
+    const index = Number(row?.dataset?.guildIndex);
+    return Number.isInteger(index) && index >= 0 ? guilds[index] || null : null;
   }
 
   async function optional(url, fallback) {
@@ -461,12 +510,12 @@
     render();
   });
   els.body?.addEventListener("click", (event) => {
-    const row = event.target.closest("[data-guild-rank]");
+    const row = event.target.closest("[data-guild-index]");
     if (row) openGuild(guildFromRow(row));
   });
   els.body?.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" && event.key !== " ") return;
-    const row = event.target.closest("[data-guild-rank]");
+    const row = event.target.closest("[data-guild-index]");
     if (row) {
       event.preventDefault();
       openGuild(guildFromRow(row));
@@ -493,8 +542,7 @@
     }
     if (event.target.closest("[data-team-back]")) {
       currentUnits = [];
-      const guild = guilds.find((item) => Number(item.rank) === openGuildRank);
-      if (guild) renderGuildMembers(guild);
+      if (activeGuild) renderGuildMembers(activeGuild);
     }
   });
   els.modalClose?.addEventListener("click", closeModal);
