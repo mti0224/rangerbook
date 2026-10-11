@@ -3,46 +3,199 @@
     "description": "English drafts for 38 Chinese-only custom.json keys. DO NOT deploy until reviewed.",
     "source": "User-authored custom.json; not official LINE Rangers translations",
     "status": "needs_review",
-    "count": 38
+    "count": 38,
+    "format": "key -> zh (user-authored original), en (unreviewed AI draft), reviewed (false until owner approves)"
   },
   "entries": {
-    "EXTREME_STAGE_CONDITION_ENEMY_HP": "When the enemy tower's HP falls below %d%",
-    "EXTREME_STAGE_CONDITION_FRONT": "When our frontline position exceeds %d%",
-    "EXTREME_STAGE_CONDITION_SPECIAL": "Special",
-    "EXTREME_STAGE_CONDITION_START": "%d seconds after the battle begins",
-    "EXTREME_STAGE_CONDITION_TIME": "When battle time exceeds %d seconds",
-    "EXTREME_STAGE_PASSIVE_ext_pas_agi_0001": "The ATK, DEF and HP of Agility-type Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_cooltime_0001": "Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_cost_0001": "The mineral cost of deploying Rangers keeps increasing. Each time a Ranger is deployed, the cost increases by %N%. This effect stacks until the battle ends.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_ctime_0001": "Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_dark_0001": "The ATK, DEF and HP of Dark-element Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_fire_0001": "The ATK, DEF and HP of Fire-element Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_int_0001": "The ATK, DEF and HP of Intelligence-type Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_light_0001": "The ATK, DEF and HP of Light-element Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_mnrl_0001": "Mineral production decreases over time. Every %s seconds, the current mineral production speed decreases by %N%. This effect stacks until the battle ends.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_str_0001": "The ATK, DEF and HP of Strength-type Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_tree_0001": "The ATK, DEF and HP of Wood-element Rangers participating in battle decrease by %N%.",
-    "EXTREME_STAGE_PASSIVE_ext_pas_water_0001": "The ATK, DEF and HP of Water-element Rangers participating in battle decrease by %N%.",
-    "RANGER_FIELD_LABEL_attackIncreaseAmount": "Physical ATK increase amount",
-    "RANGER_FIELD_LABEL_attackIncreaseAmountMax": "Maximum physical ATK increase amount",
-    "RANGER_FIELD_LABEL_generalDefenceDelta": "Physical DEF increase amount",
-    "RANGER_FIELD_LABEL_generalDefenceDeltaMax": "Maximum physical DEF increase amount",
-    "RANGER_FIELD_LABEL_hpIncreaseAmount": "HP increase amount",
-    "RANGER_FIELD_LABEL_hpIncreaseAmountMax": "Maximum HP increase amount",
-    "RANGER_FIELD_LABEL_specialAttackDelta": "Magic ATK increase amount",
-    "RANGER_FIELD_LABEL_specialAttackDeltaMax": "Maximum magic ATK increase amount",
-    "RANGER_FIELD_LABEL_specialDefenceDelta": "Magic DEF increase amount",
-    "RANGER_FIELD_LABEL_specialDefenceDeltaMax": "Maximum magic DEF increase amount",
-    "SKILLEFF_BUFF-CUT_DEBUFF": "Reduce the duration of negative effects",
-    "SKILLEFF_FEAR": "Inflict Fear on enemies",
-    "SKILLEFF_REDUCE_TEMPT": "Reduce the duration of Charm",
-    "SKILLEFF_SKILL_IGNORE": "Ignore incoming skill attacks",
-    "TALENT_TEXT_PASS_STUN": "Ignore Stun Resistance",
-    "TALENT_TEXT_SKILL_IGNORE_S": "Ignore incoming skill attacks (%s seconds)",
-    "TALENT_TEXT_TLT_ATTACK_COUNT_SPLASH": "After performing %n normal attacks",
-    "TALENT_TEXT_TLT_SKILLATTACK_ATKRANGE_FAR": "When a skill hits an enemy farther than %d% from the Ranger's position",
-    "TALENT_TEXT_TLT_SKILLATTACK_HP_DEBUFF": "When a skill hits an enemy affected by an HP reduction effect",
-    "TALENT_TEXT_TLT_SKILLATTACK_HP_STUN": "When a skill hits an enemy, inflict Stun according to the enemy's remaining HP",
-    "TALENT_TEXT_TLT_TIME_GONE": "%n seconds after deployment"
+    "EXTREME_STAGE_CONDITION_ENEMY_HP": {
+      "zh": "敵方塔城血量低於%d%",
+      "en": "When the enemy tower's HP falls below %d%",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_CONDITION_FRONT": {
+      "zh": "我方前線位置超過%d%",
+      "en": "When our frontline position exceeds %d%",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_CONDITION_SPECIAL": {
+      "zh": "特殊",
+      "en": "Special",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_CONDITION_START": {
+      "zh": "遊戲開始後%d秒",
+      "en": "%d seconds after the battle begins",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_CONDITION_TIME": {
+      "zh": "戰鬥時間超過%d秒",
+      "en": "When battle time exceeds %d seconds",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_agi_0001": {
+      "zh": "參加戰鬥的敏捷型Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Agility-type Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_cooltime_0001": {
+      "zh": "Ranger的重新產生時間會隨時間經過持續惡化，每隔%s秒將使Ranger生產累積條的回復速度降低%N%，效果會持續累積至戰鬥結束。",
+      "en": "Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_cost_0001": {
+      "zh": "Ranger生產所需的礦物量會持續增加，每次生產Ranger後費用會增加%N%，效果會持續累積至戰鬥結束。",
+      "en": "The mineral cost of deploying Rangers keeps increasing. Each time a Ranger is deployed, the cost increases by %N%. This effect stacks until the battle ends.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_ctime_0001": {
+      "zh": "Ranger的重新產生時間會隨時間經過持續惡化，每隔%s秒將使Ranger生產累積條的回復速度降低%N%，效果會持續累積至戰鬥結束。",
+      "en": "Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_dark_0001": {
+      "zh": "參加戰鬥的闇屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Dark-element Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_fire_0001": {
+      "zh": "參加戰鬥的火屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Fire-element Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_int_0001": {
+      "zh": "參加戰鬥的智慧型Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Intelligence-type Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_light_0001": {
+      "zh": "參加戰鬥的光屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Light-element Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_mnrl_0001": {
+      "zh": "礦物生產量會隨指定時間經過持續降低，每隔%s秒將降低當前礦物生產速度的%N%，效果會持續累積至戰鬥結束",
+      "en": "Mineral production decreases over time. Every %s seconds, the current mineral production speed decreases by %N%. This effect stacks until the battle ends.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_str_0001": {
+      "zh": "參加戰鬥的力量型Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Strength-type Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_tree_0001": {
+      "zh": "參加戰鬥的木屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Wood-element Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "EXTREME_STAGE_PASSIVE_ext_pas_water_0001": {
+      "zh": "參加戰鬥的水屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+      "en": "The ATK, DEF and HP of Water-element Rangers participating in battle decrease by %N%.",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_attackIncreaseAmount": {
+      "zh": "attackIncreaseAmount",
+      "en": "Physical ATK increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_attackIncreaseAmountMax": {
+      "zh": "attackIncreaseAmountMax",
+      "en": "Maximum physical ATK increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_generalDefenceDelta": {
+      "zh": "generalDefenceDelta",
+      "en": "Physical DEF increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_generalDefenceDeltaMax": {
+      "zh": "generalDefenceDeltaMax",
+      "en": "Maximum physical DEF increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_hpIncreaseAmount": {
+      "zh": "hpIncreaseAmount",
+      "en": "HP increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_hpIncreaseAmountMax": {
+      "zh": "hpIncreaseAmountMax",
+      "en": "Maximum HP increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_specialAttackDelta": {
+      "zh": "specialAttackDelta",
+      "en": "Magic ATK increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_specialAttackDeltaMax": {
+      "zh": "specialAttackDeltaMax",
+      "en": "Maximum magic ATK increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_specialDefenceDelta": {
+      "zh": "specialDefenceDelta",
+      "en": "Magic DEF increase amount",
+      "reviewed": false
+    },
+    "RANGER_FIELD_LABEL_specialDefenceDeltaMax": {
+      "zh": "specialDefenceDeltaMax",
+      "en": "Maximum magic DEF increase amount",
+      "reviewed": false
+    },
+    "SKILLEFF_BUFF-CUT_DEBUFF": {
+      "zh": "負面效果維持時間縮短",
+      "en": "Reduce the duration of negative effects",
+      "reviewed": false
+    },
+    "SKILLEFF_FEAR": {
+      "zh": "使敵人陷入恐懼",
+      "en": "Inflict Fear on enemies",
+      "reviewed": false
+    },
+    "SKILLEFF_REDUCE_TEMPT": {
+      "zh": "誘惑維持時間縮短",
+      "en": "Reduce the duration of Charm",
+      "reviewed": false
+    },
+    "SKILLEFF_SKILL_IGNORE": {
+      "zh": "無視受到的技能攻擊",
+      "en": "Ignore incoming skill attacks",
+      "reviewed": false
+    },
+    "TALENT_TEXT_PASS_STUN": {
+      "zh": "無視電暈抗性",
+      "en": "Ignore Stun Resistance",
+      "reviewed": false
+    },
+    "TALENT_TEXT_SKILL_IGNORE_S": {
+      "zh": "無視受到的技能攻擊（%s秒）",
+      "en": "Ignore incoming skill attacks (%s seconds)",
+      "reviewed": false
+    },
+    "TALENT_TEXT_TLT_ATTACK_COUNT_SPLASH": {
+      "zh": "使用%n次普通攻擊時",
+      "en": "After performing %n normal attacks",
+      "reviewed": false
+    },
+    "TALENT_TEXT_TLT_SKILLATTACK_ATKRANGE_FAR": {
+      "zh": "技能命中距離自身站位%d%以外的敵人時",
+      "en": "When a skill hits an enemy farther than %d% from the Ranger's position",
+      "reviewed": false
+    },
+    "TALENT_TEXT_TLT_SKILLATTACK_HP_DEBUFF": {
+      "zh": "技能命中受到體力降低效果的敵人時",
+      "en": "When a skill hits an enemy affected by an HP reduction effect",
+      "reviewed": false
+    },
+    "TALENT_TEXT_TLT_SKILLATTACK_HP_STUN": {
+      "zh": "技能命中時，依敵人剩餘體力使其電暈",
+      "en": "When a skill hits an enemy, inflict Stun according to the enemy's remaining HP",
+      "reviewed": false
+    },
+    "TALENT_TEXT_TLT_TIME_GONE": {
+      "zh": "出動%n秒後",
+      "en": "%n seconds after deployment",
+      "reviewed": false
+    }
   }
 }

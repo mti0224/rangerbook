@@ -24,6 +24,8 @@ const review = json("docs/custom-en-pending-review.json");
 assert.equal(review._meta.count, 38);
 assert.equal(Object.keys(review.entries).length, 38);
 for (const [key, value] of Object.entries(review.entries)) {
-  assert.ok(key && typeof value === "string" && value.trim());
+  assert.ok(key && value.zh && value.en && value.reviewed === false);
+  const placeholders = text => (text.match(/%[A-Za-z0-9]+%?/g) || []).sort();
+  assert.deepEqual(placeholders(value.zh), placeholders(value.en), "placeholder mismatch: " + key);
 }
 console.log("LOCALIZATION_CONTRACT_OK");
