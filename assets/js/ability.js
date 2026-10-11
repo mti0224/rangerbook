@@ -272,11 +272,11 @@
         <table class="ability-detail-effect-table">
           <thead>
             <tr>
-              <th>機率</th>
-              <th>時機</th>
-              <th>場合</th>
-              <th>條件</th>
-              <th>效果</th>
+              <th data-i18n="table.probability">機率</th>
+              <th data-i18n="table.timing">時機</th>
+              <th data-i18n="table.mode">場合</th>
+              <th data-i18n="table.condition">條件</th>
+              <th data-i18n="table.effect">效果</th>
             </tr>
           </thead>
           <tbody>

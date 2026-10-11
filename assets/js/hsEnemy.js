@@ -412,7 +412,7 @@
     return `
       <div class="table-scroll">
         <table class="enemy-skill-effect-table">
-          <thead><tr><th>技能效果</th><th>係數</th><th>時間</th><th>範圍</th></tr></thead>
+          <thead><tr><th data-i18n="table.skillEffect">技能效果</th><th data-i18n="table.coefficient">係數</th><th data-i18n="table.duration">時間</th><th data-i18n="table.range">範圍</th></tr></thead>
           <tbody>
             ${effects.map((effect) => `
               <tr>

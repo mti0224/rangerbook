@@ -537,17 +537,40 @@
             <div class="ranger-title-row"><h2>${html(getName(ranger))}</h2><span class="tag">${html(ranger["屬性"] || "-")}</span></div>
             <div class="ranger-tags">${tags}</div>
             <div class="ranger-mini-stats">
-              <span>攻擊力 ${fmt(attackValue(ranger))}</span>
-              <span>體力 ${fmt(ranger["體力"])}</span>
-              <span>礦物 ${fmt(ranger["生產礦物費用"])}</span>
+              <span><span data-i18n="stats.attack">攻擊力</span> ${fmt(attackValue(ranger))}</span>
+              <span><span data-i18n="stats.hp">體力</span> ${fmt(ranger["體力"])}</span>
+              <span><span data-i18n="stats.minerals">礦物</span> ${fmt(ranger["生產礦物費用"])}</span>
             </div>
           </div>
         </button>`;
     }).join("");
   }
 
+  const statI18nKeys = {
+      "體力": "stats.hp",
+      "物理攻擊力": "stats.physicalAttack",
+      "魔法攻擊力": "stats.magicAttack",
+      "物理防禦力": "stats.physicalDefense",
+      "魔法防禦力": "stats.magicDefense",
+      "生產礦物費用": "stats.mineralCost",
+      "再生產時間": "stats.respawn",
+      "攻擊範圍": "stats.attackRange",
+      "濺射範圍": "stats.splashRange",
+      "移動速度": "stats.movementSpeed",
+      "攻擊速度": "stats.attackSpeed",
+      "技能抗性": "stats.skillResistance",
+      "爆擊機率": "stats.criticalRate",
+      "爆擊傷害": "stats.criticalDamage",
+      "閃避機率": "stats.dodgeRate",
+      "技能閃避機率": "stats.skillDodge",
+      "命中率": "stats.accuracy",
+      "技能命中率": "stats.skillAccuracy"
+  };
   function stat(label, value) {
-    return `<div class="ranger-stat"><span>${html(label)}</span><strong>${fmt(value)}</strong></div>`;
+    const key = statI18nKeys[label];
+    const display = key ? (window.RangerbookI18n?.t(key, label) || label) : label;
+    const binding = key ? ` data-i18n="${key}"` : "";
+    return `<div class="ranger-stat"><span${binding}>${html(display)}</span><strong>${fmt(value)}</strong></div>`;
   }
 
   function description(value, className) {
@@ -571,7 +594,7 @@
     return `
       <div class="table-scroll skill-meta-table-wrap">
         <table class="skill-meta-table">
-          <thead><tr><th>發動率</th><th>技能冷卻時間</th><th>觸發基準</th><th>前搖時間</th></tr></thead>
+          <thead><tr><th data-i18n="table.activationRate">發動率</th><th data-i18n="table.skillCooldown">技能冷卻時間</th><th data-i18n="table.triggerTarget">觸發基準</th><th data-i18n="table.windup">前搖時間</th></tr></thead>
           <tbody><tr>
             <td>${html(skillValue(skill, ["發動機率", "技能發動率", "技能發動機率"]))}</td>
             <td>${html(skillValue(skill, ["技能冷卻時間", "冷卻時間"]))}</td>
@@ -588,7 +611,7 @@
     return `
       <div class="table-scroll">
         <table class="skill-effect-table">
-          <thead><tr><th>技能效果</th><th>係數</th><th>時間</th><th>範圍</th><th><span class="break-header">作用於<br>活動關卡</span></th><th><span class="break-header">作用於<br>副本</span></th></tr></thead>
+          <thead><tr><th data-i18n="table.skillEffect">技能效果</th><th data-i18n="table.coefficient">係數</th><th data-i18n="table.duration">時間</th><th data-i18n="table.range">範圍</th><th><span class="break-header"><span data-i18n="table.appliesTo">作用於</span><br><span data-i18n="table.eventStage">活動關卡</span></span></th><th><span class="break-header"><span data-i18n="table.appliesTo">作用於</span><br><span data-i18n="table.raid">副本</span></span></th></tr></thead>
           <tbody>${effects.map((effect) => `
             <tr>
               <th>${html(effect["效果"] || "-")}</th>
@@ -609,7 +632,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>技能 ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
+          <div><h4><span data-i18n="copy.skills">技能</span> ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
         </div>
         ${skillMetaTable(skill, animationMeta, index)}
         ${skillTable(skill)}
@@ -623,7 +646,7 @@
       <div class="ability-effect-list">
         <div class="table-scroll ability-effect-table-wrap">
           <table class="ability-effect-table">
-            <thead><tr><th>機率</th><th>時機</th><th>場合</th><th>條件</th><th>效果</th></tr></thead>
+            <thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.timing">時機</th><th data-i18n="table.mode">場合</th><th data-i18n="table.condition">條件</th><th data-i18n="table.effect">效果</th></tr></thead>
             <tbody>${effects.map((effect) => `
               <tr>
                 <td>${html(effect["機率"] || "-")}</td>
@@ -672,7 +695,7 @@
       <div class="table-scroll talent-main-table-wrap">
         <table class="talent-main-table">
           <colgroup><col class="talent-main-prob-col"><col class="talent-main-condition-col"></colgroup>
-          <thead><tr><th>機率</th><th>條件</th></tr></thead>
+          <thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.condition">條件</th></tr></thead>
           <tbody>${conditions.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditions.length}" class="talent-prob-cell">${html(probability)}</td>` : ""}<td>${html(condition)}</td></tr>`).join("")}</tbody>
         </table>
       </div>`;
@@ -680,7 +703,7 @@
       <div class="table-scroll talent-main-effect-wrap">
         <table class="talent-main-effect-table">
           <colgroup><col class="talent-main-prob-col"><col class="talent-main-condition-col"></colgroup>
-          <thead><tr><th>機率</th><th>增益效果</th></tr></thead>
+          <thead><tr><th data-i18n="table.probability">機率</th><th data-i18n="table.bonusEffect">增益效果</th></tr></thead>
           <tbody>${effects.map((effect) => `<tr><td class="talent-prob-cell">${html(effect.probability || "-")}</td><td>${html(effect.effect || "-")}</td></tr>`).join("")}</tbody>
         </table>
       </div>` : "";
@@ -752,11 +775,11 @@
         <div>
           <h2 id="rangerModalTitle">${html(getName(ranger))}</h2>
           <div class="ranger-tags detail-tags">${detailTags}</div>
-          <p class="ranger-date">登場時間：${html(ranger["登場時間"] || "-")}</p>
+          <p class="ranger-date"><span data-i18n="detail.releaseDate">登場時間：</span>${html(ranger["登場時間"] || "-")}</p>
           ${description(window.RangerbookI18n?.unitDescription(id, ranger["角色敘述"]) || ranger["角色敘述"], "ranger-description")}
         </div>
       </div>
-      <section class="detail-section"><h3>基本數值</h3><div class="ranger-stat-grid">${stats}</div></section>
+      <section class="detail-section"><h3 data-i18n="detail.basicStats">基本數值</h3><div class="ranger-stat-grid">${stats}</div></section>
       <section class="detail-section"><h3>技能</h3>${renderSkills(ranger, animationMeta)}</section>
       <section class="detail-section"><h3>能力</h3>${abilityCards(normalAbilities(ranger), "沒有能力資料。", "ranger-ability-group")}</section>
       <section class="detail-section"><h3>覺醒能力</h3>${abilityCards(awakeAbilities(ranger), "沒有覺醒能力資料。", "ranger-awake-ability-group")}</section>
