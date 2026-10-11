@@ -117,7 +117,8 @@
         valueLine("",showText(e.additionalConditionKey))
       ).join("");
     }
-    return (x.gimmicks || x.activeGimmicks || []).map(g=>
+    const gimmicks=x.gimmicks || [...(x.passiveGimmicks || []),...(x.activeGimmicks || [])];
+    return gimmicks.map(g=>
       valueLine("",showText(g.nameKey)+showText(
           g.descriptionArgs ? {templateKey:g.descriptionKey,args:g.descriptionArgs}:g.descriptionKey))
     ).join("");
