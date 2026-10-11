@@ -7,6 +7,7 @@ on:
       - "assets/css/settings-page.css"
       - "assets/js/i18n.js"
       - "assets/locales/**"
+      - "tests/test_ui_locale_coverage.py"
       - "res/i18n/**"
       - "scripts/export_game_locales.py"
       - "tests/i18n-contract.cjs"
@@ -32,5 +33,6 @@ jobs:
         with:
           node-version: "22"
       - run: python -m unittest discover -s tests -p 'test_game_locale_export.py' -v
+      - run: python -m unittest discover -s tests -p 'test_ui_locale_coverage.py' -v
       - run: node --check assets/js/i18n.js && node --check assets/js/site.js && node --check assets/js/ranger.js && node --check assets/js/gear.js && node --check assets/js/ability.js && node --check assets/js/settings.js
       - run: node tests/i18n-contract.cjs

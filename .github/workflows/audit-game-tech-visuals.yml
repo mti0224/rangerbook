@@ -5,6 +5,9 @@ on:
     paths:
       - "assets/css/**"
       - "assets/js/site.js"
+      - "assets/js/i18n.js"
+      - "assets/locales/**"
+      - "tests/ui-i18n-page-audit.cjs"
       - "assets/js/admin-page.js"
       - "assets/js/admin-traffic-charts.js"
       - "tests/admin-traffic-ui.cjs"
@@ -67,6 +70,8 @@ jobs:
         run: node tests/sidebar-drawer-ui.cjs
       - name: Verify settings page light/dark and Traditional Chinese/English controls
         run: node tests/settings-ui.cjs
+      - name: Validate English UI across major pages and dynamic elements
+        run: node tests/ui-i18n-page-audit.cjs
       - name: Save screenshots and issue report
         if: always()
         uses: actions/upload-artifact@v4
