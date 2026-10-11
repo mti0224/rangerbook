@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <script>
+    // Apply the saved theme before any stylesheet can paint the page.
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>贊助｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/home.css">
+  <style>
+    .sponsor-article {
+      margin-top: 1.2rem;
+      padding: clamp(1.35rem, 3vw, 2.2rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      line-height: 1.9;
+      font-size: clamp(1rem, 1.8vw, 1.08rem);
+    }
+    .sponsor-article p { margin: 0; }
+    .sponsor-article a {
+      color: var(--primary-dark);
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
+  <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
+  <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
+  <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261010b">
+  <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
+</head>
+<body class="gt-app">
+  <div id="site-header"></div>
+
+  <main class="page home-page">
+    <section class="page-title">
+      <p class="eyebrow">LINE Rangers Database</p>
+      <h1>贊助</h1>
+    </section>
+
+    <article class="sponsor-article" aria-label="贊助本站">
+      <p>為了讓玩家們有更好的使用體驗，這個網站不會放送任何廣告，如果你覺得 LINE Rangers 資料站對你有幫助，歡迎透過<a href="https://payment.ecpay.com.tw/QuickCollect/PayData?Fd%2bEMYTkwnRiExHKdQxQGH9fNPwDXXGr5xI6v5pYOuo%3d" target="_blank" rel="noopener noreferrer">贊助蚯蚓貓</a>支持本站維護與資料整理。你的支持能讓網站持續更新、改善功能並提供更好的查詢體驗。</p>
+    </article>
+  </main>
+
+  <script src="../assets/js/site.js"></script>
+</body>
+</html>
