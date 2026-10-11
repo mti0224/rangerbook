@@ -17,6 +17,15 @@
   const requested = String(params.get("league") || "LEGEND").toUpperCase();
   const league = allowed.has(requested) ? requested : "LEGEND";
   const label = LABELS[league] || league;
+  // Keep API/filter labels in their original language. Only render UI text in the chosen locale.
+  const EN_LABELS = {
+    LEGEND:"Legend",
+    MASTER_1:"Master I", MASTER_2:"Master II", MASTER_3:"Master III",
+    DIAMOND_1:"Diamond I", DIAMOND_2:"Diamond II", DIAMOND_3:"Diamond III",
+    GOLD_1:"Gold I", GOLD_2:"Gold II", GOLD_3:"Gold III"
+  };
+  const isEnglish = () => window.RangerbookI18n?.locale === "en";
+  const displayLeague = () => isEnglish() ? (EN_LABELS[league] || label) : label;
   const suffix = league === "LEGEND" ? "" : `_${league}`;
   const originalFetch = window.fetch.bind(window);
 
@@ -99,7 +108,7 @@
   function fillLeagueSelect(select) {
     if (!select) return;
     select.innerHTML = LEAGUES.map(([code, text]) =>
-      `<option value="${code}" ${code === league ? "selected" : ""}>${text}</option>`
+      `<option value="${code}" ${code === league ? "selected" : ""}>${isEnglish() ? (EN_LABELS[code] || text) : text}</option>`
     ).join("");
     select.addEventListener("change", () => {
       const next = select.value || "LEGEND";
@@ -123,32 +132,35 @@
 
   function updateLabels() {
     document.querySelectorAll("[data-pvp-league-label]").forEach((node) => {
-      if (node.textContent !== label) node.textContent = label;
+      const displayed = displayLeague();
+      if (node.textContent !== displayed) node.textContent = displayed;
     });
     const metaNodes = [
       document.getElementById("pvpLeaderboardLeague"),
       document.getElementById("pvpUsageLeague"),
     ].filter(Boolean);
     metaNodes.forEach((node) => {
-      if (node.textContent !== label) node.textContent = label;
+      const displayed = displayLeague();
+      if (node.textContent !== displayed) node.textContent = displayed;
     });
 
     const usageEyebrow = document.querySelector("body[data-pvp-page='usage'] .page-title .eyebrow");
-    if (usageEyebrow) usageEyebrow.textContent = `PvP · ${label}`;
+    if (usageEyebrow) usageEyebrow.textContent = `PvP · ${displayLeague()}`;
     const rankingEyebrow = document.querySelector("body[data-pvp-page='leaderboard'] .page-title .eyebrow");
-    if (rankingEyebrow) rankingEyebrow.textContent = `PvP · ${label}`;
+    if (rankingEyebrow) rankingEyebrow.textContent = `PvP · ${displayLeague()}`;
 
     const rankingTitle = document.querySelector("body[data-pvp-page='leaderboard'] .page-title h1");
-    if (rankingTitle) rankingTitle.textContent = `${label}段位排行榜`;
+    if (rankingTitle) rankingTitle.textContent = isEnglish() ? `${displayLeague()} League Leaderboard` : `${label}段位排行榜`;
     const rankingDesc = document.querySelector("body[data-pvp-page='leaderboard'] .page-title p:not(.eyebrow)");
-    if (rankingDesc) rankingDesc.textContent = `顯示目前${label}段位玩家的排名與 PvP 分數。點擊玩家可查看隊伍 1～5 與 PvP 防守隊伍。`;
+    if (rankingDesc) rankingDesc.textContent = isEnglish() ? `View current ${displayLeague()} league rankings and PvP scores. Select a player to view teams 1–5 and their PvP defense team.` : `顯示目前${label}段位玩家的排名與 PvP 分數。點擊玩家可查看隊伍 1～5 與 PvP 防守隊伍。`;
     const usageDesc = document.querySelector("body[data-pvp-page='usage'] .page-title p:not(.eyebrow)");
-    if (usageDesc) usageDesc.textContent = `統計${label}段位排行榜玩家 PvP 防守隊伍中的角色使用比例。點擊角色可查看配裝、覺醒能力與才能解放狀態。`;
+    if (usageDesc) usageDesc.textContent = isEnglish() ? `Ranger usage across ${displayLeague()} league PvP defense teams. Select a Ranger to view equipment, awakened abilities, and talent unlocks.` : `統計${label}段位排行榜玩家 PvP 防守隊伍中的角色使用比例。點擊角色可查看配裝、覺醒能力與才能解放狀態。`;
   }
 
   fillLeagueSelect(document.getElementById("pvpLeagueSelect"));
   updateUsageScope();
   updateLabels();
+  window.addEventListener("rangerbook:locale-ready", updateLabels);
 
   const observer = new MutationObserver(() => {
     const nodes = [
@@ -156,7 +168,8 @@
       document.getElementById("pvpUsageLeague"),
     ].filter(Boolean);
     nodes.forEach((node) => {
-      if (node.textContent !== label) node.textContent = label;
+      const displayed = displayLeague();
+      if (node.textContent !== displayed) node.textContent = displayed;
     });
   });
   const metadataRoot = document.querySelector("main") || document.body;

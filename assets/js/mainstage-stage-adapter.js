@@ -236,7 +236,7 @@
     if (!sections.length) return;
 
     const productionTitle = [...container.querySelectorAll(':scope > .endless-detail-section-title')]
-      .find((node) => node.textContent.trim() === '敵人生產線');
+      .find((node) => ['敵人生產線','Enemy Spawn Timeline'].includes(node.textContent.trim()));
     if (!productionTitle) return;
 
     const panel = document.createElement('div');
@@ -261,7 +261,7 @@
     existing?.remove();
 
     const productionTitle = [...container.querySelectorAll(':scope > .endless-detail-section-title')]
-      .find((node) => node.textContent.trim() === '敵人生產線');
+      .find((node) => ['敵人生產線','Enemy Spawn Timeline'].includes(node.textContent.trim()));
     if (!productionTitle) return;
     productionTitle.insertAdjacentHTML('beforebegin', renderExtremeGimmicks(stage, stageNo));
   }
@@ -281,14 +281,14 @@
 
     if (mode === 'extreme') {
       const title = document.getElementById('hsStageTitle');
-      if (title && title.textContent.includes('困難關卡')) {
-        title.textContent = title.textContent.replace('困難關卡', '極限模式');
+      if (title && (title.textContent.includes('困難關卡') || title.textContent.includes('Hard Stage'))) {
+        title.textContent = title.textContent.replace('困難關卡', '極限模式').replace('Hard Stage', 'Extreme Stage');
       }
       document.querySelectorAll('.empty-state').forEach((node) => {
-        if (node.textContent.includes('困難關卡')) {
+        if ((node.textContent.includes('困難關卡') || node.textContent.includes('Hard Stage'))) {
           node.textContent = node.textContent
             .replaceAll('困難關卡生產線.json', '極限關卡生產線.json')
-            .replaceAll('困難關卡', '極限模式');
+            .replaceAll('困難關卡', '極限模式').replaceAll('Hard Stage', 'Extreme Stage');
         }
       });
       patchExtremeGimmicks();

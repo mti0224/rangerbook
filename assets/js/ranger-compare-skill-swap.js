@@ -137,8 +137,8 @@
 
   function getSkillSections() {
     const sections = Array.from(document.querySelectorAll(".compare-skill-section"));
-    const skill1 = sections.find((section) => text(section.dataset.skillTitle || section.querySelector("h3")?.textContent || "").startsWith("技能1"));
-    const skill2 = sections.find((section) => text(section.dataset.skillTitle || section.querySelector("h3")?.textContent || "").startsWith("技能2"));
+    const skill1 = sections.find((section) => text(section.dataset.skillTitle || section.querySelector("h3")?.textContent || "").startsWith("技能1") || text(section.dataset.skillTitle || section.querySelector("h3")?.textContent || "").startsWith("Skill 1"));
+    const skill2 = sections.find((section) => text(section.dataset.skillTitle || section.querySelector("h3")?.textContent || "").startsWith("技能2") || text(section.dataset.skillTitle || section.querySelector("h3")?.textContent || "").startsWith("Skill 2"));
     return { skill1, skill2 };
   }
 

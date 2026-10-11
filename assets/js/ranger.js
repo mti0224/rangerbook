@@ -882,7 +882,7 @@
     if (!isDetailPage || !els.modalContent) return;
     const limits = levelLimits(ranger);
     const basicSection = [...els.modalContent.querySelectorAll(":scope > .detail-section")]
-      .find((section) => section.querySelector(":scope > h3")?.textContent.trim() === "基本數值");
+      .find((section) => ["基本數值", "Basic Stats"].includes(section.querySelector(":scope > h3")?.textContent.trim()));
     if (!limits || !basicSection || basicSection.querySelector("[data-ranger-level-control]")) return;
 
     const id = getId(ranger);

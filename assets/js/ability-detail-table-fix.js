@@ -13,7 +13,8 @@
     card.querySelectorAll("dl > div").forEach((row) => {
       const key = row.querySelector("dt")?.textContent.trim() || "";
       const value = row.querySelector("dd")?.textContent.trim() || "-";
-      if (key) data[key] = value;
+      const normalized = {Probability:"機率",Timing:"時機",Mode:"場合",Condition:"條件",Effect:"效果"}[key] || key;
+      if (normalized) data[normalized] = value;
     });
     return data;
   }
@@ -55,7 +56,7 @@
     if (!modal || modal.hidden || !content) return;
 
     const sections = [...content.querySelectorAll(".detail-section")];
-    const effectSection = sections.find((section) => section.querySelector("h3")?.textContent.trim() === "效果資料");
+    const effectSection = sections.find((section) => ["效果資料","Effect Details"].includes(section.querySelector("h3")?.textContent.trim()));
     if (!effectSection || effectSection.dataset.tableFixed === "1") return;
 
     const cards = [...effectSection.querySelectorAll(".effect-card")];
