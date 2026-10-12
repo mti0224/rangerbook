@@ -1,0 +1,30 @@
+:root{color-scheme:light dark;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;background:#f5f7f9;color:#17222c;font-size:15px}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh}
+.layout{max-width:1150px;margin:0 auto;padding:28px 22px 60px}
+.heading{position:relative;padding-right:120px}
+.eyebrow{color:#47667d;letter-spacing:.12em;font-weight:750;font-size:.72rem}
+h1{font-size:clamp(1.7rem,4vw,2.5rem);letter-spacing:-.03em;margin:12px 0}
+.heading p:last-child{line-height:1.55;color:#607181;max-width:700px}
+.back{position:absolute;right:0;top:2px;font-size:.92rem;color:#246ba2;text-decoration:none}
+.notice{border-left:3px solid #a0abb5;background:#e9eef2;padding:12px 16px;margin:25px 0;border-radius:4px;color:#394957}
+.controls{display:grid;grid-template-columns:1fr 1fr minmax(200px,1.5fr);gap:14px;margin:22px 0}
+.controls label{display:flex;flex-direction:column;gap:7px;font-weight:600;font-size:.86rem;color:#51616e}
+select,input{width:100%;background:white;color:#152e3f;border:1px solid #cbd5dd;border-radius:9px;padding:11px 12px;font:inherit;outline-offset:2px}
+.status{color:#647786;margin:12px 0 18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:white;color:#1c2b36;border:1px solid #dce5eb;border-radius:13px;padding:16px;min-width:0;box-shadow:0 4px 15px rgba(18,50,68,.03)}
+.card h2{font-size:1.08rem;margin:8px 0;overflow-wrap:anywhere}
+.subhead{font-weight:700;color:#344b5c;margin-top:12px;margin-bottom:4px}
+.card .id{font-family:ui-monospace,monospace;font-size:.78rem;color:#6a7d8e;overflow-wrap:anywhere}
+.card .summary{color:#536575;font-size:.92rem;line-height:1.5;overflow-wrap:anywhere}
+.card details{margin-top:12px;border-top:1px solid #e7edf2;padding-top:10px}
+.card summary{cursor:pointer;font-weight:650;color:#1d638e}
+.card .detail{font-size:.89rem;line-height:1.55;color:#526373;padding:8px 0;overflow-wrap:anywhere}
+.card .detail>div{padding:5px 0;border-bottom:1px solid #f0f3f7}
+.missing{border-bottom:1px dashed #b87639;color:#a46a2f;cursor:help}
+.missing-dot{color:#ba7b37;font-size:.85rem}
+code{white-space:normal;overflow-wrap:anywhere}
+footer{color:#8899a6;margin-top:36px}
+@media(prefers-color-scheme:dark){:root{background:#111a22;color:#e3e9ee}.heading p:last-child,.status{color:#9fb2bf}.back{color:#8cc8ee}.notice{background:#1b2a36;color:#c2d0da}.card{background:#1d2933;color:#e3e9ee;border-color:#354453}.card .id,.card .summary,.card .detail,.subhead{color:#a5b5c0}select,input{background:#1d2933;color:#e3e9ee;border-color:#445663}.card details,.card .detail>div{border-color:#354453}.card summary{color:#91c9ec}.missing{color:#ffbc75}}
+@media(max-width:660px){.layout{padding:18px 14px 38px}.heading{padding-right:0;padding-top:25px}.back{top:0}.controls{grid-template-columns:1fr 1fr}.search-label{grid-column:1/-1}.cards{grid-template-columns:1fr}}

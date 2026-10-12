@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V2 多語系資料預覽｜LINE Rangers Database</title>
+<link rel="stylesheet" href="./preview.css">
+</head>
+<body>
+<main class="layout">
+  <header class="heading">
+    <p class="eyebrow">LINE RANGERS DATABASE / V2</p>
+    <a class="back" href="../" id="backLink">← 返回資料站</a>
+    <h1 id="title">V2 多語系資料預覽</h1>
+    <p id="subtitle">直接檢視獨立 V2 JSON 與語言資料庫，不影響現行 V1 網站。</p>
+  </header>
+  <section class="notice" id="notice">此頁用於測試 V2 資料，不代表正式網站已切換至 V2。</section>
+  <section class="controls" aria-label="V2 settings">
+    <label><span id="localeLabel">顯示語言</span>
+      <select id="locale">
+        <option value="zh_TW">繁體中文</option>
+        <option value="en">English</option>
+        <option value="th">ภาษาไทย</option>
+        <option value="jp">日本語</option>
+      </select>
+    </label>
+    <label><span id="datasetLabel">資料類型</span>
+      <select id="dataset">
+        <option value="rangers">角色</option>
+        <option value="equipment">裝備</option>
+        <option value="abilities">能力</option>
+        <option value="stages/extreme">極限關卡</option>
+        <option value="stages/endless">無限之塔</option>
+      </select>
+    </label>
+    <label class="search-label"><span id="searchLabel">搜尋代碼或名稱</span>
+      <input type="search" id="search" placeholder="ID / Name / Key" autocomplete="off">
+    </label>
+  </section>
+  <p class="status" id="status" role="status" aria-live="polite">資料載入中…</p>
+  <div id="cards" class="cards"></div>
+  <footer><small id="footer">V2 是獨立資料預覽。沒有翻譯時顯示備援文字和缺漏狀態，不會自行猜測官方翻譯。</small></footer>
+</main>
+<script src="./preview.js" defer></script>
+</body>
+</html>
