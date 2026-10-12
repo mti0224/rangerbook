@@ -398,8 +398,14 @@
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
           <div>
             <h4>技能 ${index + 1}</h4>
-            <p><span data-i18n="table.activationRate">發動率</span>: ${escapeHtml(skill["發動機率"] || "-")} · <span data-i18n="table.skillCooldown">技能冷卻時間</span>: ${escapeHtml(skill["技能冷卻時間"] || "-")} · <span data-i18n="table.triggerTarget">觸發基準</span>: ${escapeHtml(skill["觸發基準"] || "-")}</p>
+
           </div>
+        </div>
+        <div class="table-scroll skill-meta-table-wrap enemy-skill-meta-table-wrap">
+          <table class="skill-meta-table enemy-skill-meta-table">
+            <thead><tr><th data-i18n="table.activationRate">技能發動率</th><th data-i18n="table.skillCooldown">技能冷卻時間</th><th data-i18n="table.triggerTarget">觸發基準</th></tr></thead>
+            <tbody><tr><td>${escapeHtml(skill["發動機率"] || "-")}</td><td>${escapeHtml(skill["技能冷卻時間"] || "-")}</td><td>${escapeHtml(skill["觸發基準"] || "-")}</td></tr></tbody>
+          </table>
         </div>
         ${renderSkillTable(skill)}
       </article>

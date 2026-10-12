@@ -1,0 +1,112 @@
+[
+  {
+    "term": "濺射範圍",
+    "source": "authored_ui; no exact standalone key in lang_unit/lang_equip",
+    "key": null,
+    "translations": {
+      "en": "Splash Radius",
+      "th": "รัศมีโจมตีกระจาย",
+      "jp": "スプラッシュ半径"
+    }
+  },
+  {
+    "term": "魔法攻擊力",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_SATK_MUL_nm",
+    "translations": {
+      "en": "Magical ATK",
+      "th": "พลังเวทโจมตี",
+      "jp": "魔法攻撃力"
+    }
+  },
+  {
+    "term": "魔法防禦力",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_SDEF_MUL_nm",
+    "translations": {
+      "en": "Magical DEF",
+      "th": "พลังเวทป้องกัน",
+      "jp": "魔法防御力"
+    }
+  },
+  {
+    "term": "閃避機率",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_AVD_PROB_MUL_nm",
+    "translations": {
+      "en": "Evade Rate",
+      "th": "อัตราการหลบหลีก",
+      "jp": "回避率"
+    }
+  },
+  {
+    "term": "技能閃避機率",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_SKLAVD_PROB_MUL_nm",
+    "translations": {
+      "en": "Skill Evade Rate",
+      "th": "อัตราการหลบสกิล",
+      "jp": "スキル回避率"
+    }
+  },
+  {
+    "term": "技能發動率",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_SKL_PROB_MUL_nm",
+    "translations": {
+      "en": "Skill Use Rate",
+      "th": "อัตราการใช้สกิล",
+      "jp": "スキル発動率"
+    }
+  },
+  {
+    "term": "命中率",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_ANTI_AVD_PROB_MUL_nm",
+    "translations": {
+      "en": "Hit Rate",
+      "th": "อัตราความแม่นยำ",
+      "jp": "命中率"
+    }
+  },
+  {
+    "term": "技能命中率",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_ANTI_SKLAVD_PROB_MUL_nm",
+    "translations": {
+      "en": "Skill Hit Rate",
+      "th": "อัตราความแม่นยำของทักษะ",
+      "jp": "スキル命中率"
+    }
+  },
+  {
+    "term": "爆擊傷害",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_CRI_DMG_MUL_nm",
+    "translations": {
+      "en": "Critical Damage",
+      "th": "แรงโจมตีคริทิคอล",
+      "jp": "決定打のダメージ"
+    }
+  },
+  {
+    "term": "爆擊機率",
+    "source": "official_api/lang_equip",
+    "key": "EQUIP:GEAR_ATTR_CRI_PROB_MUL_nm",
+    "translations": {
+      "en": "Critical Rate",
+      "th": "อัตราติดคริทิคอล",
+      "jp": "決定打の確率"
+    }
+  },
+  {
+    "term": "係數",
+    "source": "authored_ui; no exact standalone key in lang_unit/lang_equip",
+    "key": null,
+    "translations": {
+      "en": "Factor",
+      "th": "ค่าสัมประสิทธิ์",
+      "jp": "係数"
+    }
+  }
+]
