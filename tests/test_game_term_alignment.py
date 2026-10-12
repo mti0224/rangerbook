@@ -25,7 +25,7 @@ class GameTermAlignmentTests(unittest.TestCase):
 
     def test_every_change_has_exact_official_source_and_retains_slots(self):
         sources = {r["sourceKey"]: r for r in self.audit["selectedSources"]}
-        self.assertEqual(len(self.audit["changes"]), 154)
+        self.assertEqual(len(self.audit["changes"]), 185)
         for change in self.audit["changes"]:
             actual = self.rows[change["key"]]
             self.assertEqual(actual["zh_TW"], change["zh_TW"])
@@ -40,12 +40,19 @@ class GameTermAlignmentTests(unittest.TestCase):
                         self.assertEqual(edit["after"], clean(source["officialText"]))
                     elif source["mode"] == "official_label_adapted":
                         self.assertEqual(edit["after"], clean(source["officialText"]).replace("%d", "%N1"))
+                    elif source["mode"] == "official_artifact_base_name":
+                        base = re.split(r"[:：]", re.sub(r"^\[[ABC]\]\s*", "", clean(source["officialText"])), maxsplit=1)[0].strip()
+                        self.assertEqual(edit["after"], base)
+                        self.assertEqual(source["removedDisplayFields"], ["grade", "target"])
+                    elif source["mode"] == "official_term_fragment":
+                        self.assertIn(source["fragment"], source["officialText"])
+                        self.assertIn(source["fragment"], edit["after"])
                     else:
                         self.assertIn(clean(source["officialText"]), edit["after"])
 
     def test_context_conflicts_do_not_replace_unrelated_website_labels(self):
         self.assertEqual(self.rows["CUSTOM:REAPER_GIMMICK_TITLE"]["en"], "Reaper")
-        self.assertEqual(self.rows["CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp"]["en"], "Life Gem")
+        self.assertEqual(self.rows["CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp"]["en"], "Vital Jewel")
         self.assertEqual(self.rows["UI:copy.level"]["en"], "Level")
         self.assertEqual(self.rows["UI:copy.awakened"]["en"], "Awakened")
         self.assertEqual(self.rows["UI:ranger.hyper"]["en"], "Hyper")
@@ -59,6 +66,18 @@ class GameTermAlignmentTests(unittest.TestCase):
         self.assertEqual(self.rows["UI:dynamic.talentStage"]["jp"], "才能%N1ステージ")
         self.assertEqual(self.rows["UI:nav.endless"]["en"], "INFINITOWER")
         self.assertEqual(self.rows["UI:copy.team"]["jp"], "グループ")
+
+    def test_artifact_names_follow_all_437_matching_game_variants(self):
+        checks = self.audit["artifactIdentityChecks"]
+        self.assertEqual(len(checks), 21)
+        self.assertEqual(sum(c["officialVariantsChecked"] for c in checks), 437)
+        self.assertTrue(all(c["chineseBaseNameMatches"] and c["allLanguageBaseNamesAgree"] for c in checks))
+        self.assertEqual(self.rows["CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd"]["en"], "Fresh Lizard's Tail")
+        self.assertEqual(self.rows["CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge"]["en"], "Heavy Boomerang")
+        self.assertEqual(self.rows["CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_redmg"]["en"], "Divine Mirror")
+        artifacts = json.loads((ROOT / "res/v2/labyrinth-artifacts.json").read_text())["artifacts"]
+        self.assertEqual(len(artifacts), 55)
+        self.assertTrue(all(a["grade"] in {"A", "B", "C"} and a["pointsByTarget"] and a["effect"] for a in artifacts))
 
     def test_all_authored_inputs_are_complete_unique_five_column_rows(self):
         self.assertEqual(len(self.rows), 1339)

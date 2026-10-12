@@ -333,7 +333,7 @@
   if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
     const script = document.createElement("script");
     script.dataset.rangerbookI18n = "true";
-    script.src = rootPrefix + "assets/js/i18n.js?v=20261013-v2.3";
+    script.src = rootPrefix + "assets/js/i18n.js?v=20261013-v2.4";
     document.head.appendChild(script);
   }
 
