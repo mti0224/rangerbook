@@ -71,7 +71,7 @@
     const zh=render(ref,"zh_TW");pair(zh,render(ref,locale),2);return zh;
   }
   const catalogPromises=Object.fromEntries(["official","custom","ui"].map(name=>[name,(async()=>{
-    const r=await nativeFetch(root+"res/v2/locales/"+name+".json?v=20261013-v2.2");
+    const r=await nativeFetch(root+"res/v2/locales/"+name+".json?v=20261013-v2.3");
     if (!r.ok) throw new Error("V2 catalog unavailable: "+name);
     const rows=await r.json();
     if (!Array.isArray(rows)) throw new Error("Invalid V2 catalog: "+name);
