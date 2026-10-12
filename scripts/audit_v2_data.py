@@ -66,7 +66,7 @@ def audit(root):
                 if len({tuple(v) for v in signatures.values()}) > 1:
                     issue("placeholder_signature_drift", path, key=key, signatures=signatures)
 
-    def reference(key, path, args=None):
+    def reference(key, path, args=None, bindings=None):
         references[key].append(path)
         if key not in catalog:
             issue("missing_catalog_key", path, key=key)
@@ -78,6 +78,13 @@ def audit(root):
             if not row[lang].strip():
                 continue
             required = slots(row[lang])
+            native = [t[1:-1] for t in TOKEN.findall(row[lang]) if t.startswith("{$")]
+            if native and bindings is not None:
+                if any(not isinstance(bindings.get(t), dict) or
+                       any(bindings[t].get(k) is None for k in ("min", "max", "unit"))
+                       for t in native):
+                    issue("invalid_native_bindings", path, key=key, language=lang, tokens=native)
+                required = [s for s in required if s is not None]
             if required and args is None:
                 issue("unbound_placeholder", path, key=key, language=lang,
                       tokens=TOKEN.findall(row[lang]))
@@ -88,6 +95,13 @@ def audit(root):
 
     def walk(value, path):
         if isinstance(value, dict):
+            if "effectKey" in value and value.get("effectKey") is None and value.get("effectCode") not in (None,"NONE"):
+                issue("missing_effect_translation",path,effectCode=value["effectCode"])
+            if "localizedEffect" in value and value.get("localizedEffect") is None and value.get("effectCode") not in (None,"NONE"):
+                issue("missing_effect_translation",path,effectCode=value["effectCode"])
+            if value.get("untranslated") is True:
+                issue("untranslated_semantic_condition", path,
+                      condition={k:v for k,v in value.items() if k!="untranslated"})
             if isinstance(value.get("templateKey"), str):
                 args = value.get("args")
                 if not isinstance(args, list):
@@ -101,7 +115,8 @@ def audit(root):
                     continue
                 if field.endswith("Key") and isinstance(item, str) and item:
                     args = value.get(field[:-3] + "Args")
-                    reference(item, path + "." + field, args)
+                    bindings = value.get(field[:-3] + "Bindings")
+                    reference(item, path + "." + field, args, bindings)
                 elif field.endswith("Keys") and isinstance(item, list):
                     for i, key in enumerate(item):
                         if isinstance(key, str) and key:
