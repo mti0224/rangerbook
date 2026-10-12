@@ -14,6 +14,7 @@
   }
   let locale = supported.includes(saved) ? saved : "zh-Hant";
   document.documentElement.lang=locale === "jp" ? "ja" : locale;
+  document.cookie=storageKey+"="+locale+"; Path=/; Max-Age=31536000; SameSite=Lax";
   let dictionary = {};
   let englishByChinese = new Map();
   let gameTermsByChinese = new Map();

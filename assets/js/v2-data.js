@@ -8,6 +8,8 @@
   const nativeFetch = window.fetch.bind(window);
   const language = {"zh-Hant":"zh_TW",zh_TW:"zh_TW",en:"en",th:"th",jp:"jp",ja:"jp"};
   let saved; try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
+  if (!language[saved] && typeof document!=="undefined")
+    saved=document.cookie.split("; ").find(x=>x.startsWith("rangerbook-language="))?.split("=")[1];
   const locale = language[saved] || "zh_TW";
   const cache = new Map(), catalog = new Map(), phrases = new Map(), ambiguous = new Set(), priorities = new Map();
   const normalized = s => String(s || "").replace(/\\+n/g," ").replace(/\s+/g," ").trim();

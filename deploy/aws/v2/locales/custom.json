@@ -1,1 +1,3292 @@
-[{"key":"CUSTOM:ENHANCE_TALENT","zh_TW":"強化才能","en":"Enhance Talents","th":"พรสวรรค์เสริม","jp":"強化才能"},{"key":"CUSTOM:GIMMICK_EFFECT","zh_TW":"妨礙效果","en":"Obstacle effects","th":"เอฟเฟกต์อุปสรรค","jp":"障害効果"},{"key":"CUSTOM:INK_GIMMICK_TITLE","zh_TW":"墨","en":"Ink","th":"หมึก","jp":"インク"},{"key":"CUSTOM:MAJOR_TALENT","zh_TW":"主要才能","en":"Main Talents","th":"พรสวรรค์หลัก","jp":"主要才能"},{"key":"CUSTOM:POISONGAS_GIMMICK_TITLE","zh_TW":"毒瓦斯","en":"Poison Gas","th":"แก๊สพิษ","jp":"毒ガス"},{"key":"CUSTOM:REAPER_GIMMICK_TITLE","zh_TW":"死神","en":"Reaper","th":"ยมทูต","jp":"死神"},{"key":"CUSTOM:SIRENSONG_GIMMICK_TITLE","zh_TW":"誘惑之歌","en":"Siren Song","th":"บทเพลงไซเรน","jp":"サイレンの歌"},{"key":"CUSTOM:SLEEP_GIMMICK_TITLE","zh_TW":"沉眠","en":"Deep Sleep","th":"หลับลึก","jp":"深い眠り"},{"key":"CUSTOM:(None)","zh_TW":"(無)","en":"(None)","th":"(ไม่มี)","jp":"(なし)"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_BLIND","zh_TW":"墨","en":"Ink","th":"หมึก","jp":"インク"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_BUFF","zh_TW":"Buff","en":"Buff","th":"บัฟ","jp":"バフ"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_CLONE","zh_TW":"複製分身","en":"Spawn Clone","th":"สร้างร่างโคลน","jp":"分身を生成"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_COPY_ALLY","zh_TW":"生成自己隊伍中的一隻Ranger（不包含飛翔、對空迎擊的Ranger）","en":"Regenerae a Ranger from your team (excluding Flyers and Air Ambush Rangers)","th":"นำเรนเจอร์หนึ่งตัวจากทีมกลับมาเกิดใหม่ (ยกเว้นเรนเจอร์บินและเรนเจอร์โจมตีทางอากาศ)","jp":"チームのレンジャー1体を再出動させる（飛行・空襲レンジャーを除く）"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_DEATH","zh_TW":"死神","en":"Reaper","th":"ยมทูต","jp":"死神"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_DOT","zh_TW":"持續傷害","en":"Continuous Damage","th":"ความเสียหายต่อเนื่อง","jp":"継続ダメージ"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_FREEZE_COOLTIME","zh_TW":"凍結敵方隊伍1隻Ranger的再生產時間","en":"Freeze the regeneration time of 1 Ranger on the opposing team","th":"หยุดเวลาเกิดใหม่ของเรนเจอร์ฝ่ายตรงข้าม 1 ตัว","jp":"相手チームのレンジャー1体の再出動時間を停止"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_GUTS","zh_TW":"死亡後，維持%d秒血量不低於1","en":"After death, HP cannot fall below 1 for %d seconds","th":"หลังตาย HP จะไม่ลดต่ำกว่า 1 เป็นเวลา %d วินาที","jp":"死亡後%d秒間、HPが1未満にならない"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_HIDE","zh_TW":"出動後至戰鬥前無敵","en":"Invincible from deployment until battle begins","th":"เป็นอมตะตั้งแต่ออกสนามจนเริ่มต่อสู้","jp":"出動から戦闘開始まで無敵"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_INSTANT_MISSILE","zh_TW":"即時發射飛彈","en":"Instantly launch a missile","th":"ยิงมิสไซล์ทันที","jp":"ミサイルを即座に発射"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_MINERAL_ADD","zh_TW":"增加敵方隊伍1隻Ranger的礦物成本","en":"Increase the Mineral cost of 1 Ranger on the opposing team","th":"เพิ่มค่าแร่ในการผลิตเรนเจอร์ฝ่ายตรงข้าม 1 ตัว","jp":"相手チームのレンジャー1体の生産ミネラル費用を増加"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_MINERAL_TIME","zh_TW":"降低敵方礦物生產速度","en":"Reduce the opposing team's Mineral production speed","th":"ลดความเร็วในการผลิตแร่ของฝ่ายตรงข้าม","jp":"相手チームのミネラル生産速度を低下"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_MISSILE_DAMAGE","zh_TW":"降低被飛彈攻擊時傷害","en":"Reduce damage taken from missile attacks","th":"ลดความเสียหายที่ได้รับจากมิสไซล์","jp":"ミサイルから受けるダメージを軽減"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_MISSILE_TIME","zh_TW":"降低敵方導彈充填速度","en":"Reduce the opposing team's missile charge speed","th":"ลดความเร็วในการชาร์จมิสไซล์ของฝ่ายตรงข้าม","jp":"相手チームのミサイルチャージ速度を低下"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_REVIVE","zh_TW":"起死回生（以%d%的血量復活）","en":"Revive (with %d% HP)","th":"คืนชีพ (ด้วย HP %d%)","jp":"復活（HP %d%）"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_SILENCE","zh_TW":"毒瓦斯","en":"Poison Gas","th":"แก๊สพิษ","jp":"毒ガス"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_SKILL_COOLTIME","zh_TW":"延長對方技能冷卻時間","en":"Increase the opposing team's Skill cooldowns","th":"เพิ่มคูลดาวน์ทักษะของฝ่ายตรงข้าม","jp":"相手チームのスキルクールタイムを延長"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_STRIKE_KBACK","zh_TW":"擊退","en":"Knockback","th":"กระเด็นถอยหลัง","jp":"ノックバック"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_STRIKE_KILL","zh_TW":"立即消滅1隻敵方Ranger","en":"Instantly defeat 1 enemy Ranger","th":"กำจัดเรนเจอร์ศัตรู 1 ตัวทันที","jp":"敵レンジャー1体を即座に倒す"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_STRIKE_SHIELD","zh_TW":"無敵","en":"Invincibility","th":"อมตะ","jp":"無敵"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_STRIKE_SILENCE","zh_TW":"禁止敵軍使用技能 (靜止)","en":"Prevent enemies from using Skills (Silence)","th":"ทำให้ศัตรูใช้ทักษะไม่ได้ (ใบ้)","jp":"敵のスキル使用を封じる（沈黙）"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_STRIKE_STUN","zh_TW":"擊暈","en":"Stun","th":"ชะงัก","jp":"スタン"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_STUN","zh_TW":"昏迷","en":"Stun","th":"ชะงัก","jp":"スタン"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_TEMPO","zh_TW":"誘惑之歌","en":"Siren Song","th":"บทเพลงไซเรน","jp":"サイレンの歌"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_UNIT_COOLTIME","zh_TW":"延長對方Ranger生產冷卻時間","en":"Increase the opposing team's Ranger production cooldowns","th":"เพิ่มคูลดาวน์การผลิตเรนเจอร์ของฝ่ายตรงข้าม","jp":"相手チームのレンジャー再出動時間を延長"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_BLOODLUST","zh_TW":"狂暴化","en":"Berserk","th":"ความบ้าระห่ำ","jp":"狂暴化"},{"key":"CUSTOM:ABILITY_ACTION_TYPE_MIN_THIEF","zh_TW":"偷取敵方的礦物","en":"Steal the opposing team's Minerals","th":"ขโมยแร่ของฝ่ายตรงข้าม","jp":"相手チームのミネラルを奪う"},{"key":"CUSTOM:ABILITY_ACTIVE_ON_TYPE_ADVENT","zh_TW":"降臨關卡","en":"Advent Stages","th":"ด่านจุติ","jp":"降臨ステージ"},{"key":"CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL","zh_TW":"任何遊戲種類","en":"All Game Modes","th":"ทุกโหมดเกม","jp":"全ゲームモード"},{"key":"CUSTOM:ABILITY_ACTIVE_ON_TYPE_GUILD_WAR","zh_TW":"公會戰","en":"Guild War","th":"สงครามกิลด์","jp":"ギルド戦"},{"key":"CUSTOM:ABILITY_ACTIVE_ON_TYPE_NORMAL","zh_TW":"主要關卡","en":"Main Stages","th":"ด่านหลัก","jp":"メインステージ"},{"key":"CUSTOM:ABILITY_ACTIVE_ON_TYPE_PVP","zh_TW":"PVP","en":"PvP","th":"PvP","jp":"PvP"},{"key":"CUSTOM:ABILITY_ACTIVE_ON_TYPE_SPECIAL","zh_TW":"特殊關卡","en":"Special Stages","th":"ด่านพิเศษ","jp":"スペシャルステージ"},{"key":"CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_BATTLE","zh_TW":"戰鬥時","en":"During Battle","th":"ระหว่างการต่อสู้","jp":"戦闘中"},{"key":"CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_DIE","zh_TW":"死亡時","en":"When Ranger Died","th":"เมื่อเรนเจอร์ตาย","jp":"レンジャー死亡時"},{"key":"CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_INSTANT","zh_TW":"出動/在場上時","en":"On Deployment / While on the Battle Field","th":"เมื่อออกสนาม / ขณะอยู่ในสนามรบ","jp":"出動時／戦場にいる間"},{"key":"CUSTOM:ABILITY_CONDITION_TYPE_CATEGORY","zh_TW":"類型","en":"Type","th":"ชนิด","jp":"タイプ"},{"key":"CUSTOM:ABILITY_CONDITION_TYPE_CHARACTER","zh_TW":"角色","en":"Character","th":"ตัวละคร","jp":"キャラクター"},{"key":"CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT","zh_TW":"屬性","en":"Element","th":"ธาตุ","jp":"属性"},{"key":"CUSTOM:ABILITY_CONDITION_TYPE_SKILLTYPE","zh_TW":"技能","en":"Skill","th":"ทักษะ","jp":"スキル"},{"key":"CUSTOM:ABILITY_CONDITION_TYPE_TALENTTYPE","zh_TW":"才能","en":"Talent","th":"พรสวรรค์","jp":"才能"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_BLIND","zh_TW":"抵抗「墨」妨礙效果","en":"Resist the \"Ink\" obstacle effect","th":"ต้านเอฟเฟกต์อุปสรรค \"หมึก\"","jp":"障害効果「インク」に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_DEATH","zh_TW":"抵抗「死神」妨礙效果","en":"Resist the \"Reaper\" obstacle effect","th":"ต้านเอฟเฟกต์อุปสรรค \"ยมทูต\"","jp":"障害効果「死神」に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_DOT","zh_TW":"抵抗持續傷害","en":"Resist continuous damage","th":"ต้านความเสียหายต่อเนื่อง","jp":"継続ダメージに抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_FLIGHT","zh_TW":"可以對飛翔的Ranger造成傷害","en":"Hit Flyer Rangers","th":"โจมตีเรนเจอร์บินได้","jp":"飛行レンジャーを攻撃できる"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_GHOST","zh_TW":"可以對幽靈形態的Ranger造成傷害","en":"Hit ghost-type Rangers","th":"โจมตีเรนเจอร์ประเภทผีได้","jp":"幽霊レンジャーを攻撃できる"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_ICE","zh_TW":"抵抗道具「發射冰／暴風雪」","en":"Resist the \"Ice Shot / Blizzard\" items","th":"ต้านไอเท็ม \"ยิงน้ำแข็ง / พายุหิมะ\"","jp":"アイテム「アイスショット／ブリザード」に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_METEOR","zh_TW":"抵抗道具「流星／地獄火」","en":"Resist the \"Meteor / Hellfire\" items","th":"ต้านไอเท็ม \"อุกกาบาต / เพลิงนรก\"","jp":"アイテム「メテオ／ヘルファイア」に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_MIRROR_DAMAGE","zh_TW":"技能「傷害反射」的效果降低%d%","en":"Reduce the effect of the \"Damage Reflection\" Skill by %d%","th":"ลดเอฟเฟกต์ทักษะ \"สะท้อนความเสียหาย\" %d%","jp":"「ダメージ反射」スキルの効果を%d%軽減"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_POLYMORPH","zh_TW":"免疫技能「敵軍變身」","en":"Immune to the \"Enemy Transformation\" Skill","th":"ไม่รับผลทักษะ \"เปลี่ยนร่างศัตรู\"","jp":"「敵変身」スキルを無効化"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_SILENCE","zh_TW":"抵抗靜止","en":"Resist Silence","th":"ต้านการใบ้","jp":"沈黙に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_STUN","zh_TW":"抵抗昏迷","en":"Resist Stun","th":"ต้านการชะงัก","jp":"スタンに抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_TEMPO","zh_TW":"抵抗「誘惑之歌」妨礙效果","en":"Resist the \"Siren Song\" obstacle effect","th":"ต้านเอฟเฟกต์อุปสรรค \"บทเพลงไซเรน\"","jp":"障害効果「サイレンの歌」に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_TEMPT","zh_TW":"免疫技能「誘惑敵軍」","en":"Immune to the \"Charm Enemies\" Skill","th":"ไม่รับผลทักษะ \"ล่อลวงศัตรู\"","jp":"「敵誘惑」スキルを無効化"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_TORNADO","zh_TW":"抵抗道具「龍捲風／大雷雨」","en":"Resist the \"Tornado / Thunderstorm\" items","th":"ต้านไอเท็ม \"พายุหมุน / พายุฟ้าคะนอง\"","jp":"アイテム「トルネード／サンダーストーム」に抵抗"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_BARRIER","zh_TW":"技能防護罩（降低%d1%傷害後，能力冷卻%d2秒）","en":"Skill Barrier (reduces damage by %d1%, then the Ability has a %d2-second cooldown)","th":"เกราะป้องกันทักษะ (ลดความเสียหาย %d1% แล้วความสามารถมีคูลดาวน์ %d2 วินาที)","jp":"スキルバリア（ダメージを%d1%軽減し、アビリティのクールタイムは%d2秒）"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_BLANK_HAND","zh_TW":"死亡時妨礙敵方獲得礦物","en":"Prevent the opposing team from gaining Minerals when defeated","th":"เมื่อถูกกำจัด ฝ่ายตรงข้ามจะไม่ได้แร่","jp":"倒された時、相手チームにミネラルを与えない"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_FLIGHT","zh_TW":"飛翔","en":"Flyer","th":"บิน","jp":"飛行"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_GHOST","zh_TW":"幽靈","en":"Ghost","th":"ผี","jp":"幽霊"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_LAST_BURN","zh_TW":"被打倒時發動一項技能","en":"Activate one Skill when defeated","th":"ใช้ทักษะหนึ่งครั้งเมื่อถูกกำจัด","jp":"倒された時にスキルを1回発動"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_MINERAL_BACK","zh_TW":"被打倒時回收%d%生產時所消耗礦物","en":"Restore %d% of the Minerals spent on production when defeated","th":"เมื่อถูกกำจัด คืนแร่ที่ใช้ในการผลิต %d%","jp":"倒された時、生産に使用したミネラルの%d%を返還"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_PASS_DEFENSE","zh_TW":"防禦力無效化","en":"Nullify DEF","th":"ทำให้พลังป้องกันเป็นโมฆะ","jp":"防御力を無効化"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_PASS_SKILLRES","zh_TW":"技能抗性無效化","en":"Nullify Skill Resistance","th":"ทำให้การต้านทักษะเป็นโมฆะ","jp":"スキル抵抗を無効化"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_TOWER","zh_TW":"破壞建築物","en":"Building Smasher","th":"นักทำลายอาคาร","jp":"建物破壊者"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_WATER_GHOST","zh_TW":"死亡時帶著隨機1名敵人同歸於盡","en":"Take 1 random enemy down with you when defeated","th":"เมื่อถูกกำจัด ลากศัตรูแบบสุ่ม 1 ตัวตายไปด้วย","jp":"倒された時、ランダムな敵1体を道連れにする"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_MIN_ADD","zh_TW":"免疫能力「增加敵方礦物成本」","en":"Immune to the \"Enemy Cost Increase\" Ability","th":"ไม่รับผลความสามารถ \"เพิ่มค่าแร่ศัตรู\"","jp":"「敵ミネラル費用増加」アビリティを無効化"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_ANTI_FREEZE","zh_TW":"免疫能力「敵方暫停出動」","en":"Immune to the \"Deployment Freeze\" Ability","th":"ไม่รับผลความสามารถ \"หยุดการออกสนาม\"","jp":"「出動停止」アビリティを無効化"},{"key":"CUSTOM:ABILITY_TALENT_TYPE_PASS_UNBEATABLE","zh_TW":"無視技能、才能及能力提供的防護盾","en":"Ignore shields/invincibility granted by Skills, Talents, and Abilities","th":"ข้ามเกราะและสถานะอมตะที่ได้รับจากทักษะ พรสวรรค์ และความสามารถ","jp":"スキル・才能・アビリティによるシールドと無敵を無視"},{"key":"CUSTOM:SKILLEFF_BUFF-ANTI_AVOID_PROB","zh_TW":"命中率提升","en":"Hit Rate Increase","th":"เพิ่มอัตราโจมตีโดน","jp":"命中率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-ANTI_SK_AVOID_PROB","zh_TW":"技能命中率提升","en":"Skill Hit Rate Increase","th":"เพิ่มอัตราทักษะโจมตีโดน","jp":"スキル命中率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-ANTI_SKILL_AVOID","zh_TW":"技能命中率提升","en":"Skill Hit Rate Increase","th":"เพิ่มอัตราทักษะโจมตีโดน","jp":"スキル命中率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-ATK","zh_TW":"攻擊力提升","en":"ATK increase","th":"เพิ่มพลังโจมตี","jp":"攻撃力アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-ATKRANGE","zh_TW":"攻擊射程提升","en":"Attack Range Increase","th":"เพิ่มระยะโจมตี","jp":"攻撃範囲アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-ATKSPD","zh_TW":"攻擊速度提升","en":"Attack Speed Increase","th":"เพิ่มความเร็วโจมตี","jp":"攻撃速度アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-AVOID_CHANCE","zh_TW":"閃避機率提升","en":"Evade Rate Increase","th":"เพิ่มอัตราหลบหลีก","jp":"回避率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-CHANGE_SPLASH","zh_TW":"轉換為範圍攻擊","en":"Change to Area Attack","th":"เปลี่ยนเป็นการโจมตีแบบพื้นที่","jp":"範囲攻撃に変更"},{"key":"CUSTOM:SKILLEFF_BUFF-CRITICAL_CHANCE","zh_TW":"爆擊機率提升","en":"Critical Rate Increase","th":"เพิ่มอัตราคริทิคอล","jp":"決定打の確率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-CRITICAL_POWER","zh_TW":"爆擊傷害提升","en":"Critical Damage Increase","th":"เพิ่มความเสียหายคริทิคอล","jp":"決定打のダメージアップ"},{"key":"CUSTOM:SKILLEFF_BUFF-HP","zh_TW":"體力提升","en":"HP Increase","th":"เพิ่ม HP","jp":"HPアップ"},{"key":"CUSTOM:SKILLEFF_BUFF-NORMAL_DEF","zh_TW":"物理防禦力提升","en":"Physical DEF Increase","th":"เพิ่มพลังป้องกันกายภาพ","jp":"物理防御力アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-SKILLRANGE","zh_TW":"技能範圍擴大","en":"Skill Range Increase","th":"เพิ่มระยะทักษะ","jp":"スキル範囲アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-SKILL_AVOID_CHANCE","zh_TW":"技能閃避機率提升","en":"Skill Evade Rate Increase","th":"เพิ่มอัตราหลบทักษะ","jp":"スキル回避率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-SKILL_CHANCE","zh_TW":"技能發動率提升","en":"Skill Use Rate Increase","th":"เพิ่มอัตราใช้ทักษะ","jp":"スキル発動率アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-SKILL_RESIST","zh_TW":"技能抗性提升","en":"Skill Resistance Increase","th":"เพิ่มการต้านทักษะ","jp":"スキル抵抗アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-SPECIAL_DEF","zh_TW":"魔法防禦力提升","en":"Magical DEF Increase","th":"เพิ่มพลังป้องกันเวท","jp":"魔法防御力アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-SPEED","zh_TW":"移動速度提升","en":"Move Speed Increase","th":"เพิ่มความเร็วเคลื่อนที่","jp":"移動速度アップ"},{"key":"CUSTOM:SKILLEFF_BUFF-VAMPIRE","zh_TW":"吸血","en":"Life Steal","th":"ดูด HP","jp":"HP吸収"},{"key":"CUSTOM:SKILLEFF_CHANGE_DARK_NONE","zh_TW":"闇屬性敵人變為無屬性","en":"Change Dark-element enemies to no element","th":"เปลี่ยนศัตรูธาตุมืดให้เป็นไร้ธาตุ","jp":"闇属性の敵を無属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_ENEMY","zh_TW":"與敵人互換位置","en":"Switch positions with an enemy","th":"สลับตำแหน่งกับศัตรู","jp":"敵と位置を交換"},{"key":"CUSTOM:SKILLEFF_CHANGE_FIRE_NONE","zh_TW":"火屬性敵人變為無屬性","en":"Change Fire-element enemies to no element","th":"เปลี่ยนศัตรูธาตุไฟให้เป็นไร้ธาตุ","jp":"火属性の敵を無属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_FIRE_WATER","zh_TW":"火屬性敵人變為水屬性","en":"Change Fire-element enemies to Water","th":"เปลี่ยนศัตรูธาตุไฟให้เป็นธาตุน้ำ","jp":"火属性の敵を水属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_LIGHT_NONE","zh_TW":"光屬性敵人變為無屬性","en":"Change Light-element enemies to no element","th":"เปลี่ยนศัตรูธาตุแสงให้เป็นไร้ธาตุ","jp":"光属性の敵を無属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_TREE_FIRE","zh_TW":"木屬性敵人變為火屬性","en":"Change Wood-element enemies to Fire","th":"เปลี่ยนศัตรูธาตุไม้ให้เป็นธาตุไฟ","jp":"木属性の敵を火属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_TREE_NONE","zh_TW":"木屬性敵人變為無屬性","en":"Change Wood-element enemies to no element","th":"เปลี่ยนศัตรูธาตุไม้ให้เป็นไร้ธาตุ","jp":"木属性の敵を無属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_WATER_FIRE","zh_TW":"水屬性敵人變為火屬性","en":"Change Water-element enemies to Fire","th":"เปลี่ยนศัตรูธาตุน้ำให้เป็นธาตุไฟ","jp":"水属性の敵を火属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_WATER_NONE","zh_TW":"水屬性敵人變為無屬性","en":"Change Water-element enemies to no element","th":"เปลี่ยนศัตรูธาตุน้ำให้เป็นไร้ธาตุ","jp":"水属性の敵を無属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_WATER_TREE","zh_TW":"水屬性敵人變為木屬性","en":"Change Water-element enemies to Wood","th":"เปลี่ยนศัตรูธาตุน้ำให้เป็นธาตุไม้","jp":"水属性の敵を木属性に変更"},{"key":"CUSTOM:SKILLEFF_CLEANING_DEBUFF","zh_TW":"清除夥伴的負面狀態 (暫時)","en":"Temporarily remove allies' debuffs","th":"ลบดีบัฟของพันธมิตรชั่วคราว","jp":"味方のデバフを一時的に解除"},{"key":"CUSTOM:SKILLEFF_CLEANING_DOTHEAL","zh_TW":"清除持續體力恢復 (暫時)","en":"Temporarily remove continuous HP recovery","th":"ลบการฟื้นฟู HP ต่อเนื่องชั่วคราว","jp":"継続HP回復を一時的に解除"},{"key":"CUSTOM:SKILLEFF_CLEANING_DOTHEAL-ATK","zh_TW":"清除持續體力恢復 (暫時)","en":"Temporarily remove continuous HP recovery","th":"ลบการฟื้นฟู HP ต่อเนื่องชั่วคราว","jp":"継続HP回復を一時的に解除"},{"key":"CUSTOM:SKILLEFF_CLEANING_ENEMY","zh_TW":"清除增益效果 (暫時)","en":"Temporarily remove buffs","th":"ลบบัฟชั่วคราว","jp":"バフを一時的に解除"},{"key":"CUSTOM:SKILLEFF_CLEANING_POISON","zh_TW":"清除持續傷害 (暫時)","en":"Temporarily remove continuous damage","th":"ลบความเสียหายต่อเนื่องชั่วคราว","jp":"継続ダメージを一時的に解除"},{"key":"CUSTOM:SKILLEFF_CLEANING_SUMMON","zh_TW":"抵抗敵人的召喚","en":"Resist enemies' summoning Skills","th":"ต้านทักษะอัญเชิญของศัตรู","jp":"敵の召喚スキルに抵抗"},{"key":"CUSTOM:SKILLEFF_CLEANING_UNBEAT","zh_TW":"清除敵人無敵技能 (暫時)","en":"Temporarily remove enemy invincibility Skills","th":"ลบทักษะอมตะของศัตรูชั่วคราว","jp":"敵の無敵スキルを一時的に解除"},{"key":"CUSTOM:SKILLEFF_CLEAN_ALLY","zh_TW":"清除夥伴的負面狀態","en":"Remove allies' debuffs","th":"ลบดีบัฟของพันธมิตร","jp":"味方のデバフを解除"},{"key":"CUSTOM:SKILLEFF_CLEAN_DOTHEAL","zh_TW":"清除持續體力恢復","en":"Remove continuous HP recovery","th":"ลบการฟื้นฟู HP ต่อเนื่อง","jp":"継続HP回復を解除"},{"key":"CUSTOM:SKILLEFF_CLEAN_ENEMY","zh_TW":"清除增益效果","en":"Remove buffs","th":"ลบบัฟ","jp":"バフを解除"},{"key":"CUSTOM:SKILLEFF_CLEAN_POISON","zh_TW":"清除持續傷害","en":"Remove continuous damage","th":"ลบความเสียหายต่อเนื่อง","jp":"継続ダメージを解除"},{"key":"CUSTOM:SKILLEFF_CLEAN_UNBEAT","zh_TW":"清除敵人無敵技能","en":"Remove enemy invincibility Skills","th":"ลบทักษะอมตะของศัตรู","jp":"敵の無敵スキルを解除"},{"key":"CUSTOM:SKILLEFF_CLEAN_UNBEAT-ATKSPD","zh_TW":"範圍無敵取消","en":"Cancel area invincibility","th":"ยกเลิกสถานะอมตะแบบพื้นที่","jp":"範囲無敵を解除"},{"key":"CUSTOM:SKILLEFF_CURSE_DEBUFF","zh_TW":"防止負面狀態被解除","en":"Nullifies debuff-canceling skills","th":"ทำให้ทักษะล้างดีบัฟเป็นโมฆะ","jp":"デバフ解除スキルを無効化"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ANTI_AVOID_PROB","zh_TW":"命中率下降","en":"Hit Rate Decrease","th":"ลดอัตราโจมตีโดน","jp":"命中率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ANTI_AVOID","zh_TW":"命中率下降","en":"Hit Rate Decrease","th":"ลดอัตราโจมตีโดน","jp":"命中率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ANTI_SK_AVOID_PROB","zh_TW":"技能命中率下降","en":"Skill Hit Rate Decrease","th":"ลดอัตราทักษะโจมตีโดน","jp":"スキル命中率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ANTI_SKILL_AVOID","zh_TW":"技能命中率下降","en":"Skill Hit Rate Decrease","th":"ลดอัตราทักษะโจมตีโดน","jp":"スキル命中率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ATK","zh_TW":"攻擊力下降","en":"ATK Decrease","th":"ลดพลังโจมตี","jp":"攻撃力ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ATKRANGE","zh_TW":"敵人攻擊射程下降","en":"Enemy Attack Range Decrease","th":"ลดระยะโจมตีของศัตรู","jp":"敵の攻撃範囲ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-ATKSPD","zh_TW":"攻擊速度下降","en":"Attack Speed Decrease","th":"ลดความเร็วโจมตี","jp":"攻撃速度ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-AVOID_CHANCE","zh_TW":"閃避機率降低","en":"Evade Rate Decrease","th":"ลดอัตราหลบหลีก","jp":"回避率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-CRITICAL_CHANCE","zh_TW":"爆擊機率下降","en":"Critical Rate Decrease","th":"ลดอัตราคริทิคอล","jp":"決定打の確率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-CRITICAL_POWER","zh_TW":"爆擊傷害下降","en":"Critical Damage Decrease","th":"ลดความเสียหายคริทิคอล","jp":"決定打のダメージダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-NORMAL_DEF","zh_TW":"物理防禦力下降","en":"Physical DEF Decrease","th":"ลดพลังป้องกันกายภาพ","jp":"物理防御力ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SKILLRANGE","zh_TW":"敵人技能範圍縮小","en":"Enemy Skill Range Decrease","th":"ลดระยะทักษะของศัตรู","jp":"敵のスキル範囲ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SKILL_AVOID_CHANCE","zh_TW":"技能閃避機率下降","en":"Skill Evade Rate Decrease","th":"ลดอัตราหลบทักษะ","jp":"スキル回避率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SKILL_CHANCE","zh_TW":"技能發動率降低","en":"Skill Use Rate Decrease","th":"ลดอัตราใช้ทักษะ","jp":"スキル発動率ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SKILL_RESIST","zh_TW":"技能抗性下降","en":"Skill Resistance Decrease","th":"ลดการต้านทักษะ","jp":"スキル抵抗ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SPECIAL_DEF","zh_TW":"魔法防禦力下降","en":"Magical DEF Decrease","th":"ลดพลังป้องกันเวท","jp":"魔法防御力ダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SPEED","zh_TW":"移動速度下降","en":"Move Speed Decrease","th":"ลดความเร็วเคลื่อนที่","jp":"移動速度ダウン"},{"key":"CUSTOM:SKILLEFF_DMG","zh_TW":"傷害 (單擊)","en":"Damage (Single Hit)","th":"ความเสียหาย (ครั้งเดียว)","jp":"ダメージ（単発）"},{"key":"CUSTOM:SKILLEFF_DMG_NORMAL","zh_TW":"造成額外技能傷害","en":"Deal Additional Skill Damage","th":"สร้างความเสียหายทักษะเพิ่มเติม","jp":"追加スキルダメージを与える"},{"key":"CUSTOM:SKILLEFF_DMG_SKILL","zh_TW":"造成額外技能傷害","en":"Deal Additional Skill Damage","th":"สร้างความเสียหายทักษะเพิ่มเติม","jp":"追加スキルダメージを与える"},{"key":"CUSTOM:SKILLEFF_DOT","zh_TW":"傷害 (持續)","en":"Damage (Continuous)","th":"ความเสียหาย (ต่อเนื่อง)","jp":"ダメージ（継続）"},{"key":"CUSTOM:SKILLEFF_DOTHEAL","zh_TW":"體力恢復 (持續)","en":"HP Recovery (Continuous)","th":"ฟื้นฟู HP (ต่อเนื่อง)","jp":"HP回復（継続）"},{"key":"CUSTOM:SKILLEFF_ELEMENT_TO_NONE","zh_TW":"敵人變為無屬性","en":"Change enemies to no element","th":"เปลี่ยนศัตรูให้เป็นไร้ธาตุ","jp":"敵を無属性に変更"},{"key":"CUSTOM:SKILLEFF_HEAL","zh_TW":"體力恢復 (單次)","en":"HP Recovery (Single)","th":"ฟื้นฟู HP (ครั้งเดียว)","jp":"HP回復（単発）"},{"key":"CUSTOM:SKILLEFF_KNOCKBACK","zh_TW":"擊退","en":"Knockback","th":"กระเด็นถอยหลัง","jp":"ノックバック"},{"key":"CUSTOM:SKILLEFF_MIRROR_MAG","zh_TW":"技能傷害反射為魔法傷害","en":"Reflect Skill damage as magical damage","th":"สะท้อนความเสียหายทักษะเป็นความเสียหายเวท","jp":"スキルダメージを魔法ダメージとして反射"},{"key":"CUSTOM:SKILLEFF_MIRROR_PHY","zh_TW":"技能傷害反射為物理傷害","en":"Reflect Skill damage as physical damage","th":"สะท้อนความเสียหายทักษะเป็นความเสียหายกายภาพ","jp":"スキルダメージを物理ダメージとして反射"},{"key":"CUSTOM:SKILLEFF_MOVE_ATTACK","zh_TW":"強行突破","en":"Forceful Breakthrough","th":"ฝ่าแนวอย่างรุนแรง","jp":"強行突破"},{"key":"CUSTOM:SKILLEFF_MOVE_ENEMY1","zh_TW":"將敵人Ranger移動到前方","en":"Move enemy Rangers forward","th":"ย้ายเรนเจอร์ศัตรูไปด้านหน้า","jp":"敵レンジャーを前方へ移動"},{"key":"CUSTOM:SKILLEFF_MOVE_ENEMY2","zh_TW":"將前方的Ranger移動到後方","en":"Move Rangers in front to the rear","th":"ย้ายเรนเจอร์ที่อยู่ด้านหน้าไปด้านหลัง","jp":"前方のレンジャーを後方へ移動"},{"key":"CUSTOM:SKILLEFF_POLYMORPH","zh_TW":"敵軍變身 (變形)","en":"Transform Enemies (Polymorph)","th":"เปลี่ยนร่างศัตรู (แปลงร่าง)","jp":"敵変身（変形）"},{"key":"CUSTOM:SKILLEFF_SCALE","zh_TW":"敵軍變身 (縮放)","en":"Transform Enemies (Scale)","th":"เปลี่ยนขนาดศัตรู","jp":"敵変身（サイズ変更）"},{"key":"CUSTOM:SKILLEFF_SILENCE","zh_TW":"禁止敵軍使用技能 (靜止)","en":"Prevent enemies from using Skills (Silence)","th":"ทำให้ศัตรูใช้ทักษะไม่ได้ (ใบ้)","jp":"敵のスキル使用を封じる（沈黙）"},{"key":"CUSTOM:SKILLEFF_SKILL_RESET","zh_TW":"重置部分我方技能CD","en":"Reset some allied Skill cooldowns","th":"รีเซ็ตคูลดาวน์ทักษะของพันธมิตรบางตัว","jp":"一部の味方のスキルクールタイムをリセット"},{"key":"CUSTOM:SKILLEFF_STUN","zh_TW":"擊暈","en":"Stun","th":"ชะงัก","jp":"スタン"},{"key":"CUSTOM:SKILLEFF_SUMMON","zh_TW":"召喚支持","en":"Summon Support","th":"อัญเชิญกำลังเสริม","jp":"援軍召喚"},{"key":"CUSTOM:SKILLEFF_SUMMON_ENEMY","zh_TW":"轉化敵人為我方夥伴","en":"Turn enemies into allies","th":"เปลี่ยนศัตรูให้เป็นพันธมิตร","jp":"敵を味方に変える"},{"key":"CUSTOM:SKILLEFF_TEMPT","zh_TW":"誘惑效果","en":"Charm","th":"ล่อลวง","jp":"誘惑"},{"key":"CUSTOM:SKILLEFF_UNBEAT","zh_TW":"無敵","en":"Invincibility","th":"อมตะ","jp":"無敵"},{"key":"CUSTOM:SKILLEFF_REDUCE_TEMPT","zh_TW":"誘惑維持時間縮短","en":"Reduce the duration of Charm","th":"ลดระยะเวลาการล่อลวง","jp":"誘惑の持続時間を短縮"},{"key":"CUSTOM:SKILLEFF_SKILL_IGNORE","zh_TW":"無視受到的技能攻擊","en":"Ignore incoming skill attacks","th":"ไม่รับการโจมตีทักษะที่ได้รับ","jp":"受けるスキル攻撃を無視"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_ANTI_AVOID","zh_TW":"命中率","en":"Hit Rate","th":"อัตราความแม่นยำ","jp":"命中率"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_ANTI_SKILL_AVOID","zh_TW":"技能命中率","en":"Skill Hit Rate","th":"อัตราความแม่นยำของทักษะ","jp":"スキル命中率"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_ATK","zh_TW":"物理攻擊力","en":"Physical ATK","th":"พลังโจมตีกาย","jp":"物理攻撃力"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_ATK_TOWER","zh_TW":"對搭攻擊力","en":"Tower ATK","th":"พลังโจมตีป้อม","jp":"タワー攻撃力"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_NORMAL_DEF","zh_TW":"物理防禦力","en":"Physical DEF","th":"พลังป้องกันกาย","jp":"物理防御力"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_SKILL_RESIST","zh_TW":"技能抗性","en":"Skill Resistance","th":"ต้านสกิล","jp":"スキル抵抗"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_SPECIAL_DEF","zh_TW":"魔法防禦力","en":"Magical DEF","th":"พลังเวทป้องกัน","jp":"魔法防御力"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_SP_ATK","zh_TW":"魔法攻擊力","en":"Magical ATK","th":"พลังเวทโจมตี","jp":"魔法攻撃力"},{"key":"CUSTOM:BUFF_FACTOR_TYPE_ATKSPD","zh_TW":"攻擊速度","en":"Attack Speed","th":"ความเร็วในการโจมตี","jp":"攻撃スピード"},{"key":"CUSTOM:ELEMENT_fire","zh_TW":"火","en":"Fire","th":"ไฟ","jp":"火"},{"key":"CUSTOM:ELEMENT_water","zh_TW":"水","en":"Water","th":"น้ำ","jp":"水"},{"key":"CUSTOM:ELEMENT_tree","zh_TW":"木","en":"Wood","th":"ไม้","jp":"木"},{"key":"CUSTOM:ELEMENT_light","zh_TW":"光","en":"Light","th":"แสง","jp":"光"},{"key":"CUSTOM:ELEMENT_dark","zh_TW":"暗","en":"Dark","th":"มืด","jp":"闇"},{"key":"CUSTOM:ELEMENT_none","zh_TW":"暗","en":"Dark","th":"ไร้ธาตุ","jp":"無属性"},{"key":"CUSTOM:ELEMENT_NONE","zh_TW":"無","en":"None","th":"ไร้ธาตุ","jp":"無属性"},{"key":"CUSTOM:CATEGORY_INT","zh_TW":"智慧型","en":"Intelligence","th":"ไหวพริบ","jp":"知能"},{"key":"CUSTOM:CATEGORY_AGI","zh_TW":"敏捷型","en":"Agility","th":"คล่องแคล่ว","jp":"敏捷"},{"key":"CUSTOM:CATEGORY_STR","zh_TW":"力量型","en":"Strength","th":"พลัง","jp":"力"},{"key":"CUSTOM:CATEGORY_NONE","zh_TW":"無","en":"None","th":"ไม่มี","jp":"なし"},{"key":"CUSTOM:CATEGORY_ALL","zh_TW":"所有敵方","en":"All Enemies","th":"ศัตรูทั้งหมด","jp":"敵全体"},{"key":"CUSTOM:CHARACTER_BROWN","zh_TW":"熊大","en":"Brown","th":"บราวน์","jp":"ブラウン"},{"key":"CUSTOM:SKILLEFF_BUFF-NONE","zh_TW":"增益效果","en":"Buff","th":"บัฟ","jp":"バフ"},{"key":"CUSTOM:SKILLEFF_DEBUFF-NONE","zh_TW":"負面效果","en":"Debuff","th":"ดีบัฟ","jp":"デバフ"},{"key":"CUSTOM:SKILLEFF_BUBBLE","zh_TW":"用泡泡使敵人飄浮","en":"Float enemies into the air with bubbles","th":"ทำให้ศัตรูลอยขึ้นด้วยฟองสบู่","jp":"泡で敵を浮かせる"},{"key":"CUSTOM:SKILLEFF_BUFF-SKILL_DELAY","zh_TW":"技能延遲時間縮短","en":"Reduce Skill delay time","th":"ลดเวลาหน่วงทักษะ","jp":"スキル遅延時間を短縮"},{"key":"CUSTOM:SKILLEFF_CHANGE_ALLY","zh_TW":"與夥伴互換位置","en":"Switch positions with an ally","th":"สลับตำแหน่งกับพันธมิตร","jp":"味方と位置を交換"},{"key":"CUSTOM:SKILLEFF_CHANGE_FIRE_TREE","zh_TW":"火屬性敵人變為木屬性","en":"Change Fire-element enemies to Wood","th":"เปลี่ยนศัตรูธาตุไฟให้เป็นธาตุไม้","jp":"火属性の敵を木属性に変更"},{"key":"CUSTOM:SKILLEFF_CHANGE_TREE_WATER","zh_TW":"木屬性敵人變為水屬性","en":"Change Wood-element enemies to Water","th":"เปลี่ยนศัตรูธาตุไม้ให้เป็นธาตุน้ำ","jp":"木属性の敵を水属性に変更"},{"key":"CUSTOM:SKILLEFF_DEBUFF-HP","zh_TW":"體力下降","en":"HP Decrease","th":"ลด HP","jp":"HPダウン"},{"key":"CUSTOM:SKILLEFF_DEBUFF-SKILL_DELAY","zh_TW":"技能延遲時間增加","en":"Increase Skill delay time","th":"เพิ่มเวลาหน่วงทักษะ","jp":"スキル遅延時間を延長"},{"key":"CUSTOM:SKILLEFF_DEBUFF-VAMPIRE","zh_TW":"吸血率下降","en":"Life Steal Rate Decrease","th":"ลดอัตราดูด HP","jp":"HP吸収率ダウン"},{"key":"CUSTOM:SKILLEFF_FEAR","zh_TW":"使敵人陷入恐懼","en":"Inflict Fear on enemies","th":"ทำให้ศัตรูหวาดกลัว","jp":"敵に恐怖を与える"},{"key":"CUSTOM:SKILLEFF_THROW_ALLY","zh_TW":"將夥伴送往前方","en":"Send allies forward","th":"ส่งพันธมิตรไปด้านหน้า","jp":"味方を前方へ送る"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_SPE_ADD","zh_TW":"移動速度+%n","en":"Move Speed +%n","th":"ความเร็วเคลื่อนที่ +%n","jp":"移動速度 +%n"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL","zh_TW":"體力+%d%","en":"HP +%d%","th":"HP +%d%","jp":"HP +%d%"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL","zh_TW":"物理攻擊力+%d%","en":"Physical ATK +%d%","th":"พลังโจมตีกายภาพ +%d%","jp":"物理攻撃力 +%d%"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_SKLRE_PROB_MUL","zh_TW":"技能抗性+%d%","en":"Skill Resistance +%d%","th":"การต้านทักษะ +%d%","jp":"スキル抵抗 +%d%"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_ANTI_STUN_MUL","zh_TW":"昏迷抗性+%d%","en":"Stun Resistance +%d%","th":"การต้านชะงัก +%d%","jp":"スタン抵抗 +%d%"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_SKLAVD_PROB_MUL","zh_TW":"技能閃避機率+%d%","en":"Skill Evade Rate +%d%","th":"อัตราหลบทักษะ +%d%","jp":"スキル回避率 +%d%"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL","zh_TW":"技能發動率+%d%","en":"Skill Use Rate +%d%","th":"อัตราใช้ทักษะ +%d%","jp":"スキル発動率 +%d%"},{"key":"CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL","zh_TW":"魔法攻擊力+%d%","en":"Magical ATK +%d%","th":"พลังโจมตีเวท +%d%","jp":"魔法攻撃力 +%d%"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLHIT_ATKRANGE_FAR","zh_TW":"受到距離自身站位%d%以外的技能攻擊時","en":"When hit by a Skill attack from more than %d% of this Ranger's position away","th":"เมื่อถูกทักษะโจมตีจากระยะไกลกว่าตำแหน่งเรนเจอร์นี้ %d%","jp":"自身の位置から%d%より遠い距離のスキル攻撃を受けた時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER","zh_TW":"技能命中在體力還有%d%以上的敵人","en":"When a Skill hits an enemy with at least %d% HP remaining","th":"เมื่อทักษะโดนศัตรูที่มี HP เหลืออย่างน้อย %d%","jp":"HPが%d%以上残っている敵にスキルが命中した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_ATTACK_HP_OVER","zh_TW":"普通攻擊命中在體力還有%d%以上的敵人時","en":"When a normal attack hits an enemy with at least %d% HP remaining","th":"เมื่อการโจมตีปกติโดนศัตรูที่มี HP เหลืออย่างน้อย %d%","jp":"HPが%d%以上残っている敵に通常攻撃が命中した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_COUNT","zh_TW":"使用%n次技能攻擊時","en":"After using Skill attacks %n times","th":"หลังใช้ทักษะโจมตี %n ครั้ง","jp":"スキル攻撃を%n回使用した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_ATTACK_COUNT","zh_TW":"使用%n次普通攻擊時","en":"After using normal attacks %n times","th":"หลังใช้การโจมตีปกติ %n ครั้ง","jp":"通常攻撃を%n回使用した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_NO_CONDITION","zh_TW":"無特定條件","en":"No specific condition","th":"ไม่มีเงื่อนไขเฉพาะ","jp":"特定条件なし"},{"key":"CUSTOM:TALENT_TEXT_TLT_MOVED_BY_SKILL","zh_TW":"透過強行突破、移動到前方、移動到後方、聚集、將夥伴送往前方、互換位置使自身移動時","en":"When moved by Forceful Breakthrough, Move Forward, Move Backward, Group Together, Send Allies Forward, or Position Swap","th":"เมื่อเคลื่อนที่ด้วยฝ่าแนวอย่างรุนแรง ย้ายไปด้านหน้า ย้ายไปด้านหลัง รวมกลุ่ม ส่งพันธมิตรไปด้านหน้า หรือสลับตำแหน่ง","jp":"強行突破・前方移動・後方移動・集合・味方前方送り・位置交換で自身が移動した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_ATTACK_SUMN_UNIT","zh_TW":"對召喚獸或變身者進行普通攻擊時","en":"When using a normal attack against a summoned or transformed unit","th":"เมื่อโจมตีปกติใส่ยูนิตที่ถูกอัญเชิญหรือแปลงร่าง","jp":"召喚・変身したユニットに通常攻撃した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_SILENCE","zh_TW":"當技能命中在沈默（靜止）的敵人上時","en":"When a Skill hits a Silenced enemy","th":"เมื่อทักษะโดนศัตรูที่ถูกใบ้","jp":"沈黙中の敵にスキルが命中した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_KILL","zh_TW":"當以技能攻擊打倒敵人時","en":"When defeating an enemy with a Skill attack","th":"เมื่อกำจัดศัตรูด้วยทักษะโจมตี","jp":"スキル攻撃で敵を倒した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_CRITICAL_ATTACK","zh_TW":"當普通攻擊發生爆擊時","en":"When a normal attack lands a critical hit","th":"เมื่อการโจมตีปกติเกิดคริทิคอล","jp":"通常攻撃が決定打が発生した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILL_BUFF_COUNT","zh_TW":"使用%n次增益技能時","en":"After using buff Skills %n times","th":"หลังใช้ทักษะบัฟ %n ครั้ง","jp":"バフスキルを%n回使用した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_TIME_REPEAT","zh_TW":"每隔%n秒時","en":"Every %n seconds","th":"ทุก %n วินาที","jp":"%n秒ごと"},{"key":"CUSTOM:TALENT_TEXT_TLT_HIT_COUNT","zh_TW":"當被普通攻擊命中時","en":"When hit by a normal attack","th":"เมื่อถูกโจมตีปกติ","jp":"通常攻撃を受けた時"},{"key":"CUSTOM:TALENT_TEXT_TLT_BUFF","zh_TW":"增益","en":"Buff","th":"บัฟ","jp":"バフ"},{"key":"CUSTOM:TALENT_TEXT_TLT_ATTACK_COUNT_SPLASH","zh_TW":"使用%n次普通攻擊時","en":"After performing %n normal attacks","th":"หลังโจมตีปกติ %n ครั้ง","jp":"通常攻撃を%n回行った時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_DEBUFF","zh_TW":"技能命中受到體力降低效果的敵人時","en":"When a skill hits an enemy affected by an HP reduction effect","th":"เมื่อทักษะโดนศัตรูที่ได้รับเอฟเฟกต์ลด HP","jp":"HP減少効果を受けている敵にスキルが命中した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_STUN","zh_TW":"技能命中時，依敵人剩餘體力使其電暈","en":"When a skill hits an enemy, inflict Stun according to the enemy's remaining HP","th":"เมื่อทักษะโดนศัตรู ทำให้ชะงักตาม HP ที่เหลือของศัตรู","jp":"スキル命中時、敵の残りHPに応じてスタンさせる"},{"key":"CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_ATKRANGE_FAR","zh_TW":"技能命中距離自身站位%d%以外的敵人時","en":"When a skill hits an enemy farther than %d% from the Ranger's position","th":"เมื่อทักษะโดนศัตรูที่อยู่ไกลกว่าตำแหน่งเรนเจอร์ %d%","jp":"自身の位置から%d%より遠い敵にスキルが命中した時"},{"key":"CUSTOM:TALENT_TEXT_TLT_TIME_GONE","zh_TW":"出動%n秒後","en":"%n seconds after deployment","th":"หลังออกสนาม %n วินาที","jp":"出動から%n秒後"},{"key":"CUSTOM:TALENT_TEXT_PASS_STUN","zh_TW":"無視電暈抗性","en":"Ignore Stun Resistance","th":"ข้ามการต้านชะงัก","jp":"スタン抵抗を無視"},{"key":"CUSTOM:TALENT_TEXT_HP","zh_TW":"體力提升%d%","en":"HP +%d%","th":"HP +%d%","jp":"HP +%d%"},{"key":"CUSTOM:TALENT_TEXT_HP_S","zh_TW":"體力提升%d%（%s秒）","en":"HP +%d% (%s sec)","th":"HP +%d% (%s วินาที)","jp":"HP +%d%（%s秒）"},{"key":"CUSTOM:TALENT_TEXT_DMG_SKILL","zh_TW":"範圍傷害額外增加%d%","en":"Area damage +%d%","th":"ความเสียหายแบบพื้นที่ +%d%","jp":"範囲ダメージ +%d%"},{"key":"CUSTOM:TALENT_TEXT_ALL_SKILL_COOLDOWN","zh_TW":"所有技能冷卻減少%n秒","en":"All Skill cooldowns -%n sec","th":"คูลดาวน์ทักษะทั้งหมด -%n วินาที","jp":"全スキルのクールタイム -%n秒"},{"key":"CUSTOM:TALENT_TEXT_HEAL","zh_TW":"回復自身血量%d%","en":"Recover %d% of own HP","th":"ฟื้นฟู HP ของตนเอง %d%","jp":"自身のHPを%d%回復"},{"key":"CUSTOM:TALENT_TEXT_SUMMON_TIME","zh_TW":"召喚時間增加%n秒","en":"Summon duration +%n sec","th":"ระยะเวลาอัญเชิญ +%n วินาที","jp":"召喚の持続時間 +%n秒"},{"key":"CUSTOM:TALENT_TEXT_SPEED_S","zh_TW":"移動速度增加%d%（%s秒）","en":"Move Speed +%d% (%s sec)","th":"ความเร็วเคลื่อนที่ +%d% (%s วินาที)","jp":"移動速度 +%d%（%s秒）"},{"key":"CUSTOM:TALENT_TEXT_PASS_PHY_DEF","zh_TW":"無視物理防禦力","en":"Ignore Physical DEF","th":"ข้ามพลังป้องกันกายภาพ","jp":"物理防御力を無視"},{"key":"CUSTOM:TALENT_TEXT_PASS_PHY_DEF_S","zh_TW":"無視物理防禦力（%s秒）","en":"Ignore Physical DEF (%s sec)","th":"ข้ามพลังป้องกันกายภาพ (%s วินาที)","jp":"物理防御力を無視（%s秒）"},{"key":"CUSTOM:TALENT_TEXT_DMG_NORMAL","zh_TW":"普通攻擊增加%d%","en":"Normal attack damage +%d%","th":"ความเสียหายโจมตีปกติ +%d%","jp":"通常攻撃ダメージ +%d%"},{"key":"CUSTOM:TALENT_TEXT_DMG_SKILL_S","zh_TW":"範圍傷害額外增加%d%（%s秒）","en":"Area damage +%d% (%s sec)","th":"ความเสียหายแบบพื้นที่ +%d% (%s วินาที)","jp":"範囲ダメージ +%d%（%s秒）"},{"key":"CUSTOM:TALENT_TEXT_STUN_TIME","zh_TW":"電暈時間額外增加%n秒","en":"Stun duration +%n sec","th":"ระยะเวลาชะงัก +%n วินาที","jp":"スタンの持続時間 +%n秒"},{"key":"CUSTOM:TALENT_TEXT_SKILL_IGNORE","zh_TW":"無視受到的技能攻擊","en":"Ignore incoming Skill attacks","th":"ไม่รับการโจมตีทักษะที่ได้รับ","jp":"受けるスキル攻撃を無視"},{"key":"CUSTOM:TALENT_TEXT_SKILL_IGNORE_S","zh_TW":"無視受到的技能攻擊（%s秒）","en":"Ignore incoming skill attacks (%s seconds)","th":"ไม่รับการโจมตีทักษะที่ได้รับ (%s วินาที)","jp":"受けるスキル攻撃を無視（%s秒）"},{"key":"CUSTOM:TALENT_TEXT_ATK_S","zh_TW":"攻擊力增加%d%（%s秒）","en":"ATK +%d% (%s sec)","th":"พลังโจมตี +%d% (%s วินาที)","jp":"攻撃力 +%d%（%s秒）"},{"key":"CUSTOM:TALENT_TEXT_TEMP_COUNT","zh_TW":"誘惑數量額外增加%n隻","en":"Charm target count +%n","th":"จำนวนเป้าหมายล่อลวง +%n","jp":"誘惑対象数 +%n"},{"key":"CUSTOM:TALENT_TEXT_DEBUFF_TIME","zh_TW":"負面效果時間額外增加%n秒","en":"Debuff duration +%n sec","th":"ระยะเวลาดีบัฟ +%n วินาที","jp":"デバフの持続時間 +%n秒"},{"key":"CUSTOM:TALENT_TEXT_ELEMENT","zh_TW":"屬性","en":"Element","th":"ธาตุ","jp":"属性"},{"key":"CUSTOM:TALENT_TEXT_ELEMENT_dark","zh_TW":"暗","en":"Dark","th":"มืด","jp":"闇"},{"key":"CUSTOM:TALENT_TEXT_ELEMENT_light","zh_TW":"光","en":"Light","th":"แสง","jp":"光"},{"key":"CUSTOM:TALENT_TEXT_ELEMENT_tree","zh_TW":"木","en":"Wood","th":"ไม้","jp":"木"},{"key":"CUSTOM:TALENT_TEXT_ELEMENT_water","zh_TW":"水","en":"Water","th":"น้ำ","jp":"水"},{"key":"CUSTOM:TALENT_TEXT_ELEMENT_fire","zh_TW":"火","en":"Fire","th":"ไฟ","jp":"火"},{"key":"CUSTOM:TALENT_TEXT_CATEGORY","zh_TW":"類型","en":"Type","th":"ชนิด","jp":"タイプ"},{"key":"CUSTOM:TALENT_TEXT_CATEGORY_INT","zh_TW":"智慧型","en":"Intelligence","th":"ไหวพริบ","jp":"知能"},{"key":"CUSTOM:TALENT_TEXT_CATEGORY_STR","zh_TW":"力量型","en":"Strength","th":"พลัง","jp":"力"},{"key":"CUSTOM:TALENT_TEXT_CATEGORY_AGI","zh_TW":"敏捷型","en":"Agility","th":"คล่องแคล่ว","jp":"敏捷"},{"key":"CUSTOM:HARD_STAGE_CONDITION_START","zh_TW":"遊戲開始後%d秒","en":"%d sec after battle starts","th":"หลังเริ่มต่อสู้ %d วินาที","jp":"戦闘開始から%d秒後"},{"key":"CUSTOM:HARD_STAGE_CONDITION_FRONT","zh_TW":"我方前線位置超過%d%","en":"Allied frontline position is more than %d%","th":"ตำแหน่งแนวหน้าของฝ่ายเราเกิน %d%","jp":"味方の前線位置が%d%を超えた時"},{"key":"CUSTOM:HARD_STAGE_CONDITION_ENEMY_HP","zh_TW":"敵方塔城血量低於%d%","en":"Enemy Tower HP is below %d%","th":"HP ป้อมศัตรูต่ำกว่า %d%","jp":"敵タワーのHPが%d%未満の時"},{"key":"CUSTOM:HARD_STAGE_CONDITION_TIME","zh_TW":"戰鬥時間超過%d秒","en":"Battle duration exceeds %d sec","th":"เวลาต่อสู้เกิน %d วินาที","jp":"戦闘時間が%d秒を超えた時"},{"key":"CUSTOM:HARD_STAGE_CONDITION_SPECIAL","zh_TW":"特殊","en":"Special","th":"พิเศษ","jp":"特殊"},{"key":"CUSTOM:EXTREME_STAGE_CONDITION_START","zh_TW":"遊戲開始後%d秒","en":"%d sec after battle starts","th":"หลังเริ่มต่อสู้ %d วินาที","jp":"戦闘開始から%d秒後"},{"key":"CUSTOM:EXTREME_STAGE_CONDITION_FRONT","zh_TW":"我方前線位置超過%d%","en":"Allied frontline position is more than %d%","th":"ตำแหน่งแนวหน้าของฝ่ายเราเกิน %d%","jp":"味方の前線位置が%d%を超えた時"},{"key":"CUSTOM:EXTREME_STAGE_CONDITION_ENEMY_HP","zh_TW":"敵方塔城血量低於%d%","en":"Enemy Tower HP is below %d%","th":"HP ป้อมศัตรูต่ำกว่า %d%","jp":"敵タワーのHPが%d%未満の時"},{"key":"CUSTOM:EXTREME_STAGE_CONDITION_TIME","zh_TW":"戰鬥時間超過%d秒","en":"Battle duration exceeds %d sec","th":"เวลาต่อสู้เกิน %d วินาที","jp":"戦闘時間が%d秒を超えた時"},{"key":"CUSTOM:EXTREME_STAGE_CONDITION_SPECIAL","zh_TW":"特殊","en":"Special","th":"พิเศษ","jp":"特殊"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_str_0001","zh_TW":"參加戰鬥的力量型Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Strength-type Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ชนิดพลังที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する力タイプのレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_agi_0001","zh_TW":"參加戰鬥的敏捷型Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Agility-type Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ชนิดคล่องแคล่วที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する敏捷タイプのレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_int_0001","zh_TW":"參加戰鬥的智慧型Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Intelligence-type Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ชนิดไหวพริบที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する知能タイプのレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_fire_0001","zh_TW":"參加戰鬥的火屬性Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Fire-element Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุไฟที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する火属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_water_0001","zh_TW":"參加戰鬥的水屬性Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Water-element Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุน้ำที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する水属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_tree_0001","zh_TW":"參加戰鬥的木屬性Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Wood-element Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุไม้ที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する木属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_light_0001","zh_TW":"參加戰鬥的光屬性Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Light-element Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุแสงที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する光属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_dark_0001","zh_TW":"參加戰鬥的闇屬性Ranger的攻擊力、防禦力和體力降低%N%。","en":"The ATK, DEF and HP of Dark-element Rangers participating in battle decrease by %N%.","th":"พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุมืดที่เข้าร่วมการต่อสู้ลดลง %N%","jp":"戦闘に参加する闇属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_mnrl_0001","zh_TW":"礦物生產量會隨指定時間經過持續降低，每隔%s秒將降低當前礦物生產速度的%N%，效果會持續累積至戰鬥結束","en":"Mineral production decreases over time. Every %s seconds, the current mineral production speed decreases by %N%. This effect stacks until the battle ends.","th":"การผลิตแร่ลดลงตามเวลา ทุก %s วินาที ความเร็วในการผลิตแร่ปัจจุบันลดลง %N% เอฟเฟกต์สะสมจนจบการต่อสู้","jp":"時間とともにミネラル生産量が低下する。%s秒ごとに現在のミネラル生産速度が%N%低下し、戦闘終了まで累積する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_cost_0001","zh_TW":"Ranger生產所需的礦物量會持續增加，每次生產Ranger後費用會增加%N%，效果會持續累積至戰鬥結束。","en":"The mineral cost of deploying Rangers keeps increasing. Each time a Ranger is deployed, the cost increases by %N%. This effect stacks until the battle ends.","th":"ค่าแร่ในการออกสนามเพิ่มขึ้นเรื่อย ๆ ทุกครั้งที่เรนเจอร์ออกสนาม ค่าแร่เพิ่มขึ้น %N% เอฟเฟกต์สะสมจนจบการต่อสู้","jp":"レンジャーの出動ミネラル費用が増加し続ける。出動するたびに費用が%N%増加し、戦闘終了まで累積する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_cooltime_0001","zh_TW":"Ranger的重新產生時間會隨時間經過持續惡化，每隔%s秒將使Ranger生產累積條的回復速度降低%N%，效果會持續累積至戰鬥結束。","en":"Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.","th":"เวลาออกสนามใหม่ของเรนเจอร์แย่ลงตามเวลา ทุก %s วินาที ความเร็วในการฟื้นฟูเกจออกสนามลดลง %N% เอฟเฟกต์สะสมจนจบการต่อสู้","jp":"時間とともに再出動が遅くなる。%s秒ごとにレンジャーの出動ゲージ回復速度が%N%低下し、戦闘終了まで累積する。"},{"key":"CUSTOM:EXTREME_STAGE_PASSIVE_ext_pas_ctime_0001","zh_TW":"Ranger的重新產生時間會隨時間經過持續惡化，每隔%s秒將使Ranger生產累積條的回復速度降低%N%，效果會持續累積至戰鬥結束。","en":"Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.","th":"เวลาออกสนามใหม่ของเรนเจอร์แย่ลงตามเวลา ทุก %s วินาที ความเร็วในการฟื้นฟูเกจออกสนามลดลง %N% เอฟเฟกต์สะสมจนจบการต่อสู้","jp":"時間とともに再出動が遅くなる。%s秒ごとにレンジャーの出動ゲージ回復速度が%N%低下し、戦闘終了まで累積する。"},{"key":"CUSTOM:ENDLESS_BATTLE_TYPE_OFFENCE","zh_TW":"拯救關卡","en":"Rescue Stage","th":"ด่านช่วยเหลือ","jp":"救出ステージ"},{"key":"CUSTOM:ENDLESS_BATTLE_TYPE_TIMEATTACK","zh_TW":"破壞牢籠","en":"Cage Destruction","th":"ทำลายกรง","jp":"牢獄破壊"},{"key":"CUSTOM:ENDLESS_BATTLE_TYPE_SIEGE","zh_TW":"破壞塔城","en":"Tower Destruction","th":"ทำลายป้อม","jp":"タワー破壊"},{"key":"CUSTOM:ENDLESS_BATTLE_TYPE_BOSS","zh_TW":"擊倒魔王","en":"Defeat the Boss","th":"กำจัดบอส","jp":"ボスを倒す"},{"key":"CUSTOM:ENDLESS_ELEMENT_water","zh_TW":"水","en":"Water","th":"น้ำ","jp":"水"},{"key":"CUSTOM:ENDLESS_ELEMENT_fire","zh_TW":"火","en":"Fire","th":"ไฟ","jp":"火"},{"key":"CUSTOM:ENDLESS_ELEMENT_tree","zh_TW":"木","en":"Wood","th":"ไม้","jp":"木"},{"key":"CUSTOM:ENDLESS_ELEMENT_light","zh_TW":"光","en":"Light","th":"แสง","jp":"光"},{"key":"CUSTOM:ENDLESS_ELEMENT_dark","zh_TW":"暗","en":"Dark","th":"มืด","jp":"闇"},{"key":"CUSTOM:EQUIP_TYPE_WEAPON","zh_TW":"武器","en":"Weapon","th":"อาวุธ","jp":"武器"},{"key":"CUSTOM:EQUIP_TYPE_ACC","zh_TW":"飾品","en":"Accessory","th":"เครื่องประดับ","jp":"アクセサリー"},{"key":"CUSTOM:EQUIP_TYPE_ARMOR","zh_TW":"防具","en":"Armor","th":"เกราะ","jp":"防具"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_FIRE","zh_TW":"火屬性Ranger","en":"Fire-element Rangers","th":"เรนเจอร์ธาตุไฟ","jp":"火属性レンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_TREE","zh_TW":"木屬性Ranger","en":"Wood-element Rangers","th":"เรนเจอร์ธาตุไม้","jp":"木属性レンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_WATER","zh_TW":"水屬性Ranger","en":"Water-element Rangers","th":"เรนเจอร์ธาตุน้ำ","jp":"水属性レンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_DARK","zh_TW":"暗屬性Ranger","en":"Dark-element Rangers","th":"เรนเจอร์ธาตุมืด","jp":"闇属性レンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_LIGHT","zh_TW":"光屬性Ranger","en":"Light-element Rangers","th":"เรนเจอร์ธาตุแสง","jp":"光属性レンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_STR","zh_TW":"力量型Ranger","en":"Strength-type Rangers","th":"เรนเจอร์ชนิดพลัง","jp":"力タイプのレンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_INT","zh_TW":"智慧型Ranger","en":"Intelligence-type Rangers","th":"เรนเจอร์ชนิดไหวพริบ","jp":"知能タイプのレンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_AGI","zh_TW":"敏捷型Ranger","en":"Agility-type Rangers","th":"เรนเจอร์ชนิดคล่องแคล่ว","jp":"敏捷タイプのレンジャー"},{"key":"CUSTOM:EQUIP_RANGER_TYPE_NONE","zh_TW":"無","en":"None","th":"ไม่มี","jp":"なし"},{"key":"CUSTOM:RANGER_EFFECT_ATTACK","zh_TW":"攻擊力","en":"ATK","th":"พลังโจมตี","jp":"攻撃力"},{"key":"CUSTOM:RANGER_EFFECT_AVOID_CHANCE","zh_TW":"閃避機率","en":"Evade Rate","th":"อัตราการหลบหลีก","jp":"回避率"},{"key":"CUSTOM:RANGER_EFFECT_NONE","zh_TW":"無","en":"None","th":"ไม่มี","jp":"なし"},{"key":"CUSTOM:RANGER_EFFECT_ATK","zh_TW":"攻擊力","en":"ATK","th":"พลังโจมตี","jp":"攻撃力"},{"key":"CUSTOM:RANGER_EFFECT_SKILL_RESIST","zh_TW":"技能抗性","en":"Skill Resistance","th":"ต้านสกิล","jp":"スキル抵抗"},{"key":"CUSTOM:RANGER_EFFECT_CRITICAL_POWER","zh_TW":"爆擊傷害","en":"Critical Damage","th":"แรงโจมตีคริทิคอล","jp":"決定打のダメージ"},{"key":"CUSTOM:RANGER_EFFECT_ANTI_SK_AVOID_PROB","zh_TW":"技能命中率","en":"Skill Hit Rate","th":"อัตราความแม่นยำของทักษะ","jp":"スキル命中率"},{"key":"CUSTOM:RANGER_EFFECT_SKILLRANGE","zh_TW":"技能範圍","en":"Skill Range","th":"ระยะทักษะ","jp":"スキル範囲"},{"key":"CUSTOM:RANGER_EFFECT_SPECIAL_DEF","zh_TW":"魔法防禦力","en":"Magical DEF","th":"พลังเวทป้องกัน","jp":"魔法防御力"},{"key":"CUSTOM:RANGER_EFFECT_NORMAL_DEF","zh_TW":"物理防禦力","en":"Physical DEF","th":"พลังป้องกันกาย","jp":"物理防御力"},{"key":"CUSTOM:RANGER_EFFECT_ATKSPD","zh_TW":"攻擊速度","en":"Attack Speed","th":"ความเร็วในการโจมตี","jp":"攻撃スピード"},{"key":"CUSTOM:RANGER_EFFECT_SPEED","zh_TW":"移動速度","en":"Move Speed","th":"ความเร็วการเคลื่อนที","jp":"移動速度"},{"key":"CUSTOM:RANGER_EFFECT_CHANGE_SPLASH","zh_TW":"濺射範圍","en":"Splash Radius","th":"รัศมีโจมตีกระจาย","jp":"スプラッシュ半径"},{"key":"CUSTOM:RANGER_EFFECT_ATKRANGE","zh_TW":"攻擊範圍","en":"Attack Range","th":"ระยะโจมตี","jp":"攻撃範囲"},{"key":"CUSTOM:RANGER_EFFECT_CRITICAL_CHANCE","zh_TW":"爆擊機率","en":"Critical Rate","th":"อัตราติดคริทิคอล","jp":"決定打の確率"},{"key":"CUSTOM:RANGER_EFFECT_VAMPIRE","zh_TW":"吸血","en":"Life Steal","th":"ดูด HP","jp":"HP吸収"},{"key":"CUSTOM:RANGER_EFFECT_SKILL_AVOID_CHANCE","zh_TW":"技能閃避機率","en":"Skill Evade Rate","th":"อัตราการหลบสกิล","jp":"スキル回避率"},{"key":"CUSTOM:RANGER_EFFECT_HP","zh_TW":"體力","en":"HP","th":"พลังชีวิต","jp":"体力"},{"key":"CUSTOM:RANGER_EFFECT_ANTI_AVOID_PROB","zh_TW":"命中率","en":"Hit Rate","th":"อัตราความแม่นยำ","jp":"命中率"},{"key":"CUSTOM:RANGER_EFFECT_SKILL_CHANCE","zh_TW":"技能發動率","en":"Skill Use Rate","th":"อัตราการใช้สกิล","jp":"スキル発動率"},{"key":"CUSTOM:RANGER_TYPE_AGI","zh_TW":"敏捷型","en":"Agility","th":"คล่องแคล่ว","jp":"敏捷"},{"key":"CUSTOM:RANGER_TYPE_INT","zh_TW":"智慧型","en":"Intelligence","th":"ไหวพริบ","jp":"知能"},{"key":"CUSTOM:RANGER_TYPE_STR","zh_TW":"力量型","en":"Strength","th":"พลัง","jp":"力"},{"key":"CUSTOM:RANGER_TYPE_light","zh_TW":"光","en":"Light","th":"แสง","jp":"光"},{"key":"CUSTOM:RANGER_TYPE_dark","zh_TW":"暗","en":"Dark","th":"มืด","jp":"闇"},{"key":"CUSTOM:RANGER_TYPE_fire","zh_TW":"火","en":"Fire","th":"ไฟ","jp":"火"},{"key":"CUSTOM:RANGER_TYPE_tree","zh_TW":"木","en":"Wood","th":"ไม้","jp":"木"},{"key":"CUSTOM:RANGER_TYPE_water","zh_TW":"水","en":"Water","th":"น้ำ","jp":"水"},{"key":"CUSTOM:RANGER_TYPE_none","zh_TW":"無","en":"None","th":"ไร้ธาตุ","jp":"無属性"},{"key":"CUSTOM:RANGER_TYPE_boss_1","zh_TW":"EVA使徒","en":"EVA Angel","th":"เทวทูต EVA","jp":"EVAの使徒"},{"key":"CUSTOM:RANGER_TYPE_boss_2","zh_TW":"EVA使徒","en":"EVA Angel","th":"เทวทูต EVA","jp":"EVAの使徒"},{"key":"CUSTOM:RANGER_SPEED_VERYSLOW","zh_TW":"非常慢","en":"Very Slow","th":"ช้ามาก","jp":"とても遅い"},{"key":"CUSTOM:RANGER_SPEED_SLOW","zh_TW":"慢","en":"Slow","th":"ช้า","jp":"遅い"},{"key":"CUSTOM:RANGER_SPEED_NORMAL","zh_TW":"普通","en":"Normal","th":"ปกติ","jp":"普通"},{"key":"CUSTOM:RANGER_SPEED_FAST","zh_TW":"快","en":"Fast","th":"เร็ว","jp":"速い"},{"key":"CUSTOM:RANGER_SPEED_VERYFAST","zh_TW":"非常快","en":"Very Fast","th":"เร็วมาก","jp":"とても速い"},{"key":"CUSTOM:RANGER_SPEED_DEFAULT","zh_TW":"非常慢","en":"Very Slow","th":"ช้ามาก","jp":"とても遅い"},{"key":"CUSTOM:RANGER_SKILL_TARGET_SEARCH","zh_TW":"前方敵人","en":"Frontmost Enemy","th":"ศัตรูด้านหน้าสุด","jp":"最前方の敵"},{"key":"CUSTOM:RANGER_SKILL_TARGET_RSEARCH","zh_TW":"後方敵人（倍率:%d倍）","en":"Rearmost Enemy (Multiplier: x%d)","th":"ศัตรูด้านหลังสุด (ตัวคูณ: x%d)","jp":"最後方の敵（倍率：x%d）"},{"key":"CUSTOM:RANGER_SKILL_TARGET_SELF","zh_TW":"自身","en":"Self","th":"ตนเอง","jp":"自身"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid","zh_TW":"迷宮探測機","en":"Labyrinth Detector","th":"เครื่องตรวจจับเขาวงกต","jp":"迷宮探知機"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk","zh_TW":"古代王劍","en":"Ancient King's Sword","th":"ดาบราชาโบราณ","jp":"古代王の剣"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd","zh_TW":"新鮮的尾巴","en":"Fresh Tail","th":"หางสดใหม่","jp":"新鮮なしっぽ"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid","zh_TW":"幸運的羽毛","en":"Lucky Feather","th":"ขนนกนำโชค","jp":"幸運の羽"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp","zh_TW":"生命寶石","en":"Life Gem","th":"อัญมณีแห่งชีวิต","jp":"生命の宝石"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd","zh_TW":"神速的羽毛鞋","en":"Swift Feather Shoes","th":"รองเท้าขนนกว่องไว","jp":"俊足の羽靴"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid","zh_TW":"故障的探測機","en":"Broken Detector","th":"เครื่องตรวจจับชำรุด","jp":"壊れた探知機"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk","zh_TW":"斷劍","en":"Broken Sword","th":"ดาบหัก","jp":"折れた剣"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge","zh_TW":"束縛的迴旋鏢","en":"Binding Boomerang","th":"บูมเมอแรงพันธนาการ","jp":"束縛のブーメラン"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd","zh_TW":"腐爛的尾巴","en":"Rotten Tail","th":"หางเน่า","jp":"腐ったしっぽ"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid","zh_TW":"不幸的羽毛","en":"Unlucky Feather","th":"ขนนกอับโชค","jp":"不運の羽"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp","zh_TW":"死亡寶石","en":"Death Gem","th":"อัญมณีแห่งความตาย","jp":"死の宝石"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd","zh_TW":"髒掉的羽毛鞋","en":"Dirty Feather Shoes","th":"รองเท้าขนนกสกปรก","jp":"汚れた羽靴"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_min","zh_TW":"祝福的咒文書","en":"Blessed Spellbook","th":"ตำราเวทที่ได้รับพร","jp":"祝福の魔導書"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_prdtime","zh_TW":"女神的沙漏","en":"Goddess's Hourglass","th":"นาฬิกาทรายเทพธิดา","jp":"女神の砂時計"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_redmg","zh_TW":"加護的鏡子","en":"Mirror of Protection","th":"กระจกป้องกัน","jp":"守護の鏡"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_dead","zh_TW":"可疑的藥丸","en":"Suspicious Pill","th":"ยาเม็ดน่าสงสัย","jp":"怪しい錠剤"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_heal","zh_TW":"感染的樹液","en":"Infected Sap","th":"ยางไม้ติดเชื้อ","jp":"感染した樹液"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_min","zh_TW":"詛咒的咒文書","en":"Cursed Spellbook","th":"ตำราเวทต้องสาป","jp":"呪われた魔導書"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_prdtime","zh_TW":"魔女的沙漏","en":"Witch's Hourglass","th":"นาฬิกาทรายแม่มด","jp":"魔女の砂時計"},{"key":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_silence","zh_TW":"靜音口罩","en":"Silence Mask","th":"หน้ากากใบ้","jp":"沈黙の仮面"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID","zh_TW":"Ranger的命中率/技能命中率提升%d%","en":"Rangers' Hit Rate/Skill Hit Rate +%d%","th":"อัตราโจมตีโดน/อัตราทักษะโจมตีโดนของเรนเจอร์ +%d%","jp":"レンジャーの命中率／スキル命中率 +%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK","zh_TW":"Ranger的攻擊力提升%d%","en":"Rangers' ATK +%d%","th":"พลังโจมตีของเรนเจอร์ +%d%","jp":"レンジャーの攻撃力 +%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD","zh_TW":"Ranger的攻擊速度提升%d%","en":"Rangers' Attack Speed +%d%","th":"ความเร็วโจมตีของเรนเจอร์ +%d%","jp":"レンジャーの攻撃速度 +%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID","zh_TW":"Ranger的閃避機率/技能閃避機率提升%d%","en":"Rangers' Evade Rate/Skill Evade Rate +%d%","th":"อัตราหลบหลีก/อัตราหลบทักษะของเรนเจอร์ +%d%","jp":"レンジャーの回避率／スキル回避率 +%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_HP","zh_TW":"Ranger的體力上限提升%d%","en":"Rangers' Max HP +%d%","th":"HP สูงสุดของเรนเจอร์ +%d%","jp":"レンジャーの最大HP +%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_PRD_SPE","zh_TW":"Ranger的再生產時間減少%d%","en":"Rangers' Regeneration Time -%d%","th":"เวลาเกิดใหม่ของเรนเจอร์ -%d%","jp":"レンジャーの再出動時間 -%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_RE_DMG","zh_TW":"Ranger的承受傷害減少%d%","en":"Rangers' Damage Taken -%d%","th":"ความเสียหายที่เรนเจอร์ได้รับ -%d%","jp":"レンジャーの被ダメージ -%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_SPD","zh_TW":"Ranger的移動速度提升%d%","en":"Rangers' Move Speed +%d%","th":"ความเร็วเคลื่อนที่ของเรนเจอร์ +%d%","jp":"レンジャーの移動速度 +%d%"},{"key":"CUSTOM:LABYRINTH_BUFF_EFFECT_SUMMON_ENGY","zh_TW":"Ranger的生產礦物費用減少%d%","en":"Rangers' Mineral Cost -%d%","th":"ค่าแร่ของเรนเจอร์ -%d%","jp":"レンジャーのミネラル費用 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID","zh_TW":"Ranger的命中率/技能命中率降低%d%","en":"Rangers' Hit Rate/Skill Hit Rate -%d%","th":"อัตราโจมตีโดน/อัตราทักษะโจมตีโดนของเรนเจอร์ -%d%","jp":"レンジャーの命中率／スキル命中率 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_HEAL","zh_TW":"Ranger的回復體力的技能效果降低%d%","en":"Rangers' Skill HP Recovery Effect -%d%","th":"เอฟเฟกต์ฟื้นฟู HP จากทักษะของเรนเจอร์ -%d%","jp":"レンジャーのスキルHP回復効果 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK","zh_TW":"Ranger的攻擊力降低%d%","en":"Rangers' ATK -%d%","th":"พลังโจมตีของเรนเจอร์ -%d%","jp":"レンジャーの攻撃力 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE","zh_TW":"Ranger的攻擊射程降低%d%","en":"Rangers' Attack Range -%d%","th":"ระยะโจมตีของเรนเจอร์ -%d%","jp":"レンジャーの攻撃範囲 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD","zh_TW":"Ranger的攻擊速度降低%d%","en":"Rangers' Attack Speed -%d%","th":"ความเร็วโจมตีของเรนเจอร์ -%d%","jp":"レンジャーの攻撃速度 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID","zh_TW":"Ranger的閃避機率/技能閃避機率降低%d%","en":"Rangers' Evade Rate/Skill Evade Rate -%d%","th":"อัตราหลบหลีก/อัตราหลบทักษะของเรนเจอร์ -%d%","jp":"レンジャーの回避率／スキル回避率 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_DEAD","zh_TW":"%d%的機率使Ranger出動無效 (仍會消耗礦物)","en":"%d% chance that deployed Rangers fail to enter battle (Minerals are still consumed)","th":"เรนเจอร์ที่ออกสนามมีโอกาส %d% ที่จะไม่เข้าต่อสู้ (ยังใช้แร่ตามปกติ)","jp":"出動したレンジャーが%d%の確率で戦闘に参加しない（ミネラルは消費される）"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP","zh_TW":"Ranger的體力上限降低%d%","en":"Rangers' Max HP -%d%","th":"HP สูงสุดของเรนเจอร์ -%d%","jp":"レンジャーの最大HP -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_PRD_SPE","zh_TW":"Ranger的再生產時間增加%d%","en":"Rangers' Regeneration Time +%d%","th":"เวลาเกิดใหม่ของเรนเจอร์ +%d%","jp":"レンジャーの再出動時間 +%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SILENCE","zh_TW":"%d%的機率使Ranger以永久沈默的狀態出動 (此狀態無法解除)","en":"%d% chance for Rangers to deploy permanently Silenced (cannot be removed)","th":"เรนเจอร์มีโอกาส %d% ที่จะออกสนามพร้อมสถานะใบ้ถาวร (ลบไม่ได้)","jp":"レンジャーが%d%の確率で解除不能の永続沈黙状態で出動する"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD","zh_TW":"Ranger的移動速度降低%d%","en":"Rangers' Move Speed -%d%","th":"ความเร็วเคลื่อนที่ของเรนเจอร์ -%d%","jp":"レンジャーの移動速度 -%d%"},{"key":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SUMMON_ENGY","zh_TW":"Ranger的生產礦物費用增加%d%","en":"Rangers' Mineral Cost +%d%","th":"ค่าแร่ของเรนเจอร์ +%d%","jp":"レンジャーのミネラル費用 +%d%"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_WATER","zh_TW":"水屬性","en":"Water Element","th":"ธาตุน้ำ","jp":"水属性"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_FIRE","zh_TW":"火屬性","en":"Fire Element","th":"ธาตุไฟ","jp":"火属性"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_TREE","zh_TW":"木屬性","en":"Wood Element","th":"ธาตุไม้","jp":"木属性"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_LIGHT","zh_TW":"光屬性","en":"Light Element","th":"ธาตุแสง","jp":"光属性"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_DARK","zh_TW":"暗屬性","en":"Dark Element","th":"ธาตุมืด","jp":"闇属性"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_AGI","zh_TW":"敏捷型","en":"Agility Type","th":"ชนิดคล่องแคล่ว","jp":"敏捷タイプ"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_INT","zh_TW":"智慧型","en":"Intelligence Type","th":"ชนิดไหวพริบ","jp":"知能タイプ"},{"key":"CUSTOM:LABYRINTH_TARGET_TYPE_STR","zh_TW":"力量型","en":"Strength Type","th":"ชนิดพลัง","jp":"力タイプ"},{"key":"CUSTOM:LABYRINTH_BATTLE_CONDITION_START","zh_TW":"遊戲開始後%d秒","en":"%d sec after battle starts","th":"หลังเริ่มต่อสู้ %d วินาที","jp":"戦闘開始から%d秒後"},{"key":"CUSTOM:LABYRINTH_BATTLE_CONDITION_BOSS_HP_1","zh_TW":"魔王體力低於%d%","en":"Boss HP is below %d%","th":"HP บอสต่ำกว่า %d%","jp":"ボスのHPが%d%未満の時"},{"key":"CUSTOM:LABYRINTH_BATTLE_CONDITION_BOSS_HP_2","zh_TW":"魔王體力低於%d%","en":"Boss HP is below %d%","th":"HP บอสต่ำกว่า %d%","jp":"ボスのHPが%d%未満の時"},{"key":"CUSTOM:LABYRINTH_BATTLE_CONDITION_BOSS_HP_3","zh_TW":"魔王體力低於%d%","en":"Boss HP is below %d%","th":"HP บอสต่ำกว่า %d%","jp":"ボスのHPが%d%未満の時"},{"key":"CUSTOM:LABYRINTH_STAGE_TYPE_B_DUAL","zh_TW":"混線關卡","en":"Mixed-Lane Stage","th":"ด่านเลนผสม","jp":"混合レーンステージ"},{"key":"CUSTOM:LABYRINTH_STAGE_TYPE_B_NORMAL","zh_TW":"單線關卡","en":"Single-Lane Stage","th":"ด่านเลนเดียว","jp":"単一レーンステージ"},{"key":"CUSTOM:LABYRINTH_STAGE_TYPE_B_HALF","zh_TW":"雙線關卡","en":"Two-Lane Stage","th":"ด่านสองเลน","jp":"2レーンステージ"},{"key":"CUSTOM:LABYRINTH_STAGE_TYPE_B_BOSS","zh_TW":"魔王關卡","en":"Boss Stage","th":"ด่านบอส","jp":"ボスステージ"},{"key":"CUSTOM:RANGER_FIELD_LABEL_unitNameCode","zh_TW":"Ranger名稱","en":"Ranger Name","th":"ชื่อเรนเจอร์","jp":"レンジャー名"},{"key":"CUSTOM:RANGER_FIELD_LABEL_release","zh_TW":"登場時間","en":"Release Date","th":"วันเปิดตัว","jp":"登場日"},{"key":"CUSTOM:RANGER_FIELD_LABEL_grade","zh_TW":"Ranger星數","en":"Ranger Stars","th":"จำนวนดาวเรนเจอร์","jp":"レンジャーの星数"},{"key":"CUSTOM:RANGER_FIELD_LABEL_unitCategoryType","zh_TW":"類型","en":"Type","th":"ชนิด","jp":"タイプ"},{"key":"CUSTOM:RANGER_FIELD_LABEL_unitElement","zh_TW":"屬性","en":"Element","th":"ธาตุ","jp":"属性"},{"key":"CUSTOM:RANGER_FIELD_LABEL_productionSpeed","zh_TW":"Ranger再生產時間","en":"Ranger Regeneration Time","th":"เวลาเกิดใหม่ของเรนเจอร์","jp":"レンジャー再出動時間"},{"key":"CUSTOM:RANGER_FIELD_LABEL_summonEnergy","zh_TW":"生產礦物費用","en":"Mineral \\nProduction cost","th":"ค่าใช้จ่ายการผลิตแร่","jp":"生産ミネラル費用"},{"key":"CUSTOM:RANGER_FIELD_LABEL_attackRange","zh_TW":"攻擊範圍","en":"Attack Range","th":"ระยะโจมตี","jp":"攻撃範囲"},{"key":"CUSTOM:RANGER_FIELD_LABEL_initialAttack","zh_TW":"物理攻擊力","en":"Physical ATK","th":"พลังโจมตีกาย","jp":"物理攻撃力"},{"key":"CUSTOM:RANGER_FIELD_LABEL_specialAttack","zh_TW":"魔法攻擊力","en":"Magical ATK","th":"พลังเวทโจมตี","jp":"魔法攻撃力"},{"key":"CUSTOM:RANGER_FIELD_LABEL_defence","zh_TW":"物理防禦力","en":"Physical DEF","th":"พลังป้องกันกาย","jp":"物理防御力"},{"key":"CUSTOM:RANGER_FIELD_LABEL_specialDefence","zh_TW":"魔法防禦力","en":"Magical DEF","th":"พลังเวทป้องกัน","jp":"魔法防御力"},{"key":"CUSTOM:RANGER_FIELD_LABEL_initialHp","zh_TW":"體力","en":"HP","th":"พลังชีวิต","jp":"体力"},{"key":"CUSTOM:RANGER_FIELD_LABEL_projectileAttackScope","zh_TW":"濺射範圍","en":"Splash Radius","th":"รัศมีโจมตีกระจาย","jp":"スプラッシュ半径"},{"key":"CUSTOM:RANGER_FIELD_LABEL_criticalProbability","zh_TW":"爆擊機率","en":"Critical Rate","th":"อัตราติดคริทิคอล","jp":"決定打の確率"},{"key":"CUSTOM:RANGER_FIELD_LABEL_criticalRatio","zh_TW":"爆擊傷害","en":"Critical Damage","th":"แรงโจมตีคริทิคอล","jp":"決定打のダメージ"},{"key":"CUSTOM:RANGER_FIELD_LABEL_antiAvoidProb","zh_TW":"命中率","en":"Hit Rate","th":"อัตราความแม่นยำ","jp":"命中率"},{"key":"CUSTOM:RANGER_FIELD_LABEL_avoidProbability","zh_TW":"閃避機率","en":"Evade Rate","th":"อัตราการหลบหลีก","jp":"回避率"},{"key":"CUSTOM:RANGER_FIELD_LABEL_antiSkillAvoidProb","zh_TW":"技能命中率","en":"Skill Hit Rate","th":"อัตราความแม่นยำของทักษะ","jp":"スキル命中率"},{"key":"CUSTOM:RANGER_FIELD_LABEL_skillAvoidProbability","zh_TW":"技能閃避機率","en":"Skill Evade Rate","th":"อัตราการหลบสกิล","jp":"スキル回避率"},{"key":"CUSTOM:RANGER_FIELD_LABEL_skillResistance","zh_TW":"技能抗性","en":"Skill Resistance","th":"ต้านสกิล","jp":"スキル抵抗"},{"key":"CUSTOM:RANGER_FIELD_LABEL_attackSpeedType","zh_TW":"攻擊速度","en":"Attack Speed","th":"ความเร็วในการโจมตี","jp":"攻撃スピード"},{"key":"CUSTOM:RANGER_FIELD_LABEL_moveSpeedType","zh_TW":"移動速度","en":"Move Speed","th":"ความเร็วการเคลื่อนที","jp":"移動速度"},{"key":"CUSTOM:RANGER_FIELD_LABEL_hpIncreaseAmount","zh_TW":"hpIncreaseAmount","en":"HP increase amount","th":"ปริมาณ HP ที่เพิ่ม","jp":"HP増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_attackIncreaseAmount","zh_TW":"attackIncreaseAmount","en":"Physical ATK increase amount","th":"ปริมาณพลังโจมตีกายภาพที่เพิ่ม","jp":"物理攻撃力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_specialAttackDelta","zh_TW":"specialAttackDelta","en":"Magic ATK increase amount","th":"ปริมาณพลังโจมตีเวทที่เพิ่ม","jp":"魔法攻撃力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_generalDefenceDelta","zh_TW":"generalDefenceDelta","en":"Physical DEF increase amount","th":"ปริมาณพลังป้องกันกายภาพที่เพิ่ม","jp":"物理防御力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_specialDefenceDelta","zh_TW":"specialDefenceDelta","en":"Magic DEF increase amount","th":"ปริมาณพลังป้องกันเวทที่เพิ่ม","jp":"魔法防御力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_hpIncreaseAmountMax","zh_TW":"hpIncreaseAmountMax","en":"Maximum HP increase amount","th":"ปริมาณ HP ที่เพิ่มสูงสุด","jp":"最大HP増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_attackIncreaseAmountMax","zh_TW":"attackIncreaseAmountMax","en":"Maximum physical ATK increase amount","th":"ปริมาณพลังโจมตีกายภาพที่เพิ่มสูงสุด","jp":"最大物理攻撃力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_specialAttackDeltaMax","zh_TW":"specialAttackDeltaMax","en":"Maximum magic ATK increase amount","th":"ปริมาณพลังโจมตีเวทที่เพิ่มสูงสุด","jp":"最大魔法攻撃力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_generalDefenceDeltaMax","zh_TW":"generalDefenceDeltaMax","en":"Maximum physical DEF increase amount","th":"ปริมาณพลังป้องกันกายภาพที่เพิ่มสูงสุด","jp":"最大物理防御力増加量"},{"key":"CUSTOM:RANGER_FIELD_LABEL_specialDefenceDeltaMax","zh_TW":"specialDefenceDeltaMax","en":"Maximum magic DEF increase amount","th":"ปริมาณพลังป้องกันเวทที่เพิ่มสูงสุด","jp":"最大魔法防御力増加量"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_unitCategoryType","zh_TW":"類型","en":"Type","th":"ชนิด","jp":"タイプ"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_unitElement","zh_TW":"屬性","en":"Element","th":"ธาตุ","jp":"属性"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_summonEnergy","zh_TW":"生產礦物費用","en":"Mineral \\nProduction cost","th":"ค่าใช้จ่ายการผลิตแร่","jp":"生産ミネラル費用"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_attackRange","zh_TW":"攻擊範圍","en":"Attack Range","th":"ระยะโจมตี","jp":"攻撃範囲"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_initialAttack","zh_TW":"物理攻擊力","en":"Physical ATK","th":"พลังโจมตีกาย","jp":"物理攻撃力"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_specialAttack","zh_TW":"魔法攻擊力","en":"Magical ATK","th":"พลังเวทโจมตี","jp":"魔法攻撃力"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_defence","zh_TW":"物理防禦力","en":"Physical DEF","th":"พลังป้องกันกาย","jp":"物理防御力"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_specialDefence","zh_TW":"魔法防禦力","en":"Magical DEF","th":"พลังเวทป้องกัน","jp":"魔法防御力"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_initialHp","zh_TW":"體力","en":"HP","th":"พลังชีวิต","jp":"体力"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_projectileAttackScope","zh_TW":"濺射範圍","en":"Splash Radius","th":"รัศมีโจมตีกระจาย","jp":"スプラッシュ半径"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_criticalProbability","zh_TW":"爆擊機率","en":"Critical Rate","th":"อัตราติดคริทิคอล","jp":"決定打の確率"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_criticalRatio","zh_TW":"爆擊傷害","en":"Critical Damage","th":"แรงโจมตีคริทิคอล","jp":"決定打のダメージ"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_antiAvoidProb","zh_TW":"命中率","en":"Hit Rate","th":"อัตราความแม่นยำ","jp":"命中率"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_avoidProbability","zh_TW":"閃避機率","en":"Evade Rate","th":"อัตราการหลบหลีก","jp":"回避率"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_antiSkillAvoidProb","zh_TW":"技能命中率","en":"Skill Hit Rate","th":"อัตราความแม่นยำของทักษะ","jp":"スキル命中率"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_skillAvoidProbability","zh_TW":"技能閃避機率","en":"Skill Evade Rate","th":"อัตราการหลบสกิล","jp":"スキル回避率"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_skillResistance","zh_TW":"技能抗性","en":"Skill Resistance","th":"ต้านสกิล","jp":"スキル抵抗"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_attackSpeedType","zh_TW":"攻擊速度","en":"Attack Speed","th":"ความเร็วในการโจมตี","jp":"攻撃スピード"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_moveSpeedType","zh_TW":"移動速度","en":"Move Speed","th":"ความเร็วการเคลื่อนที","jp":"移動速度"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_attackDelay","zh_TW":"attackDelay","en":"attackDelay","th":"เวลาหน่วงโจมตี","jp":"攻撃遅延時間"},{"key":"CUSTOM:ENEMY_FIELD_LABEL_movingSpeed","zh_TW":"movingSpeed","en":"movingSpeed","th":"ความเร็วเคลื่อนที่","jp":"移動速度"},{"key":"CUSTOM:SKILLEFF_BUFF-CUT_DEBUFF","zh_TW":"負面效果維持時間縮短","en":"Reduce the duration of debuff effects","th":"ลดระยะเวลาเอฟเฟกต์ดีบัฟ","jp":"デバフ効果の持続時間を短縮"},{"key":"CUSTOM:V2_ABILITY_PER_UNIT_REDUCE_PERCENT","zh_TW":"（每隻降低%N1%）","en":" (reduces %N1% per Ranger)","th":" (ลดลง %N1% ต่อเรนเจอร์)","jp":"（レンジャー1体につき%N1%低下）"},{"key":"CUSTOM:V2_ABILITY_PER_UNIT_EXTEND_PERCENT","zh_TW":"（每隻延長%N1%）","en":" (extends %N1% per Ranger)","th":" (เพิ่มขึ้น %N1% ต่อเรนเจอร์)","jp":"（レンジャー1体につき%N1%延長）"},{"key":"CUSTOM:V2_ABILITY_PER_UNIT_EXTEND_SECONDS","zh_TW":"（每隻延長%N1秒）","en":" (extends %N1 sec per Ranger)","th":" (เพิ่มขึ้น %N1 วินาทีต่อเรนเจอร์)","jp":"（レンジャー1体につき%N1秒延長）"},{"key":"CUSTOM:V2_ABILITY_DURATION_SECONDS","zh_TW":"（%N1秒）","en":" (%N1 sec)","th":" (%N1 วินาที)","jp":"（%N1秒）"},{"key":"CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION","zh_TW":"礦物最大上限減少%N1%","en":"Maximum Mineral capacity -%N1%","th":"ความจุแร่สูงสุด -%N1%","jp":"ミネラル最大容量 -%N1%"},{"key":"CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION","zh_TW":"礦物生產速度減少%N1%","en":"Mineral regeneration speed -%N1%","th":"ความเร็วในการผลิตแร่ -%N1%","jp":"ミネラル生産速度 -%N1%"},{"key":"CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION","zh_TW":"角色能力值減少%N1%","en":"Ranger stats -%N1%","th":"ค่าสถานะเรนเจอร์ -%N1%","jp":"レンジャーの能力値 -%N1%"},{"key":"CUSTOM:V2_ENDLESS_ELEMENT_BUFF","zh_TW":"%N1屬性Rangers強化%N2%","en":"%N1 Rangers' stats +%N2%","th":"ค่าสถานะเรนเจอร์ธาตุ%N1 +%N2%","jp":"%N1属性レンジャーの能力値 +%N2%"},{"key":"CUSTOM:V2_ENDLESS_ELEMENT_DEBUFF","zh_TW":"%N1屬性Rangers弱化%N2%","en":"%N1 Rangers' stats -%N2%","th":"ค่าสถานะเรนเจอร์ธาตุ%N1 -%N2%","jp":"%N1属性レンジャーの能力値 -%N2%"},{"key":"CUSTOM:V2_ABILITY_CONDITION_JOIN","zh_TW":"%N1為%N2","en":"%N1: %N2","th":"%N1: %N2","jp":"%N1：%N2"},{"key":"CUSTOM:V2_ABILITY_INCREASE_PERCENT","zh_TW":"提升%N1%N2%","en":"Increase %N1 by %N2%","th":"เพิ่ม%N1 %N2%","jp":"%N1を%N2%増加"},{"key":"CUSTOM:V2_ABILITY_INCREASE_FLAT","zh_TW":"提升%N1%N2","en":"Increase %N1 by %N2","th":"เพิ่ม%N1 %N2","jp":"%N1を%N2増加"},{"key":"CUSTOM:V2_ABILITY_TIMED_ACTION","zh_TW":"%N1（%N2秒）","en":"%N1 (%N2 sec)","th":"%N1 (%N2 วินาที)","jp":"%N1（%N2秒）"},{"key":"CUSTOM:V2_ABILITY_ACTION_AMOUNT","zh_TW":"%N1%N2","en":"%N1: %N2","th":"%N1: %N2","jp":"%N1：%N2"},{"key":"CUSTOM:V2_GEAR_RESPAWN_TIME","zh_TW":"Ranger重新產生時間 (%)","en":"Ranger respawn time (%)","th":"เวลาเกิดใหม่ของเรนเจอร์ (%)","jp":"レンジャー再出動時間（%）"},{"key":"CUSTOM:V2_GEAR_MINERAL_COST","zh_TW":"Ranger礦物成本 (%)","en":"Ranger Mineral cost (%)","th":"ค่าแร่ของเรนเจอร์ (%)","jp":"レンジャーのミネラル費用（%）"},{"key":"CUSTOM:V2_EXTREME_METEOR","zh_TW":"流星落下並對Ranger造成固定%N1點傷害，被擊中的Ranger有%N2%機率飄浮%N3秒。","en":"A meteor inflicts %N1 fixed damage on Rangers. Hit Rangers have a %N2% chance to be knocked airborne for %N3 sec.","th":"อุกกาบาตสร้างความเสียหายคงที่ %N1 แก่เรนเจอร์ เรนเจอร์ที่ถูกโจมตีมีโอกาส %N2% ที่จะลอยขึ้นเป็นเวลา %N3 วินาที","jp":"メテオがレンジャーに%N1の固定ダメージを与える。命中したレンジャーは%N2%の確率で%N3秒間浮遊する。"},{"key":"CUSTOM:V2_EXTREME_BLIZZARD","zh_TW":"用強力的發射冰對Ranger造成傷害並使其凍結%N1秒。凍結解除時，會以該Ranger解凍瞬間目前體力的%N2%作為碎冰傷害，對自身及自身範圍%N3點內的Ranger造成額外傷害。","en":"A blizzard freezes Rangers for %N1 sec. When thawed, shattered ice deals %N2% of the Ranger's current HP in damage to itself and Rangers within %N3 points.","th":"พายุหิมะแช่แข็งเรนเจอร์ %N1 วินาที เมื่อละลาย น้ำแข็งแตกจะสร้างความเสียหาย %N2% ของ HP ปัจจุบันแก่ตนเองและเรนเจอร์ในระยะ %N3 จุด","jp":"ブリザードがレンジャーを%N1秒間凍結させる。解凍時、氷片が自身と%N3ポイント以内のレンジャーに現在HPの%N2%のダメージを与える。"},{"key":"CUSTOM:V2_EXTREME_BEAST","zh_TW":"戰場上的所有敵人進入獸化狀態%N1秒，能力值提升%N2%，並在獸化期間每秒恢復%N3點體力。","en":"All enemies enter beast mode for %N1 sec, gaining %N2% to stats and restoring %N3 HP per sec.","th":"ศัตรูทั้งหมดเข้าสู่ร่างสัตว์ %N1 วินาที ค่าสถานะเพิ่ม %N2% และฟื้นฟู HP %N3 ต่อวินาที","jp":"敵全体が%N1秒間獣化し、能力値が%N2%増加、毎秒HPを%N3回復する。"},{"key":"CUSTOM:V2_EXTREME_UNBEAT","zh_TW":"戰場上的所有敵人進入無敵狀態%N1秒；期間受到攻擊時，會將該次原始傷害的%N2%以物理傷害反彈給攻擊者。","en":"All enemies become invincible for %N1 sec; when attacked, they reflect %N2% of the original damage as physical damage.","th":"ศัตรูทั้งหมดเป็นอมตะ %N1 วินาที เมื่อถูกโจมตีจะสะท้อนความเสียหายเดิม %N2% เป็นความเสียหายกายภาพ","jp":"敵全体が%N1秒間無敵になり、攻撃を受けると元のダメージの%N2%を物理ダメージとして反射する。"},{"key":"CUSTOM:V2_EXTREME_TORNADO","zh_TW":"用強力龍捲風對Ranger造成%N1點固定傷害加上目標最大體力的%N2%傷害，並將其吹走；被吹走的Ranger會電暈%N3秒。","en":"A tornado deals %N1 fixed damage plus %N2% of max HP, knocks Rangers away, and stuns them for %N3 sec.","th":"พายุหมุนสร้างความเสียหายคงที่ %N1 บวก %N2% ของ HP สูงสุด ผลักเรนเจอร์ออกไปและทำให้ชะงัก %N3 วินาที","jp":"トルネードが%N1の固定ダメージと最大HPの%N2%のダメージを与え、レンジャーを吹き飛ばして%N3秒間スタンさせる。"},{"key":"CUSTOM:ABILITY_CONDITION_TYPE_APTITUDETYPE","zh_TW":"能力","en":"Ability","th":"ความสามารถ","jp":"アビリティ"},{"key":"CUSTOM:V2_ABILITY_HP_SELF_LTE","zh_TW":"自身體力在%N1%以下時","en":"When own HP is %N1% or lower","th":"เมื่อ HP ของตนเองเหลือ %N1% หรือต่ำกว่า","jp":"自身のHPが%N1%以下の時"}]
+[
+  {
+    "key": "ENHANCE_TALENT",
+    "zh_TW": "強化才能",
+    "en": "Enhance Talents",
+    "th": "พรสวรรค์เสริม",
+    "jp": "強化才能"
+  },
+  {
+    "key": "GIMMICK_EFFECT",
+    "zh_TW": "妨礙效果",
+    "en": "Obstacle effects",
+    "th": "เอฟเฟกต์อุปสรรค",
+    "jp": "障害効果"
+  },
+  {
+    "key": "INK_GIMMICK_TITLE",
+    "zh_TW": "墨",
+    "en": "Ink",
+    "th": "หมึก",
+    "jp": "インク"
+  },
+  {
+    "key": "MAJOR_TALENT",
+    "zh_TW": "主要才能",
+    "en": "Main Talents",
+    "th": "พรสวรรค์หลัก",
+    "jp": "主要才能"
+  },
+  {
+    "key": "POISONGAS_GIMMICK_TITLE",
+    "zh_TW": "毒瓦斯",
+    "en": "Poison Gas",
+    "th": "แก๊สพิษ",
+    "jp": "毒ガス"
+  },
+  {
+    "key": "REAPER_GIMMICK_TITLE",
+    "zh_TW": "死神",
+    "en": "Reaper",
+    "th": "ยมทูต",
+    "jp": "死神"
+  },
+  {
+    "key": "SIRENSONG_GIMMICK_TITLE",
+    "zh_TW": "誘惑之歌",
+    "en": "Siren Song",
+    "th": "บทเพลงไซเรน",
+    "jp": "サイレンの歌"
+  },
+  {
+    "key": "SLEEP_GIMMICK_TITLE",
+    "zh_TW": "沉眠",
+    "en": "Deep Sleep",
+    "th": "หลับลึก",
+    "jp": "深い眠り"
+  },
+  {
+    "key": "(None)",
+    "zh_TW": "(無)",
+    "en": "(None)",
+    "th": "(ไม่มี)",
+    "jp": "(なし)"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_BLIND",
+    "zh_TW": "墨",
+    "en": "Ink",
+    "th": "หมึก",
+    "jp": "インク"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_BUFF",
+    "zh_TW": "Buff",
+    "en": "Buff",
+    "th": "บัฟ",
+    "jp": "バフ"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_CLONE",
+    "zh_TW": "複製分身",
+    "en": "Spawn Clone",
+    "th": "สร้างร่างโคลน",
+    "jp": "分身を生成"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_COPY_ALLY",
+    "zh_TW": "生成自己隊伍中的一隻Ranger（不包含飛翔、對空迎擊的Ranger）",
+    "en": "Regenerae a Ranger from your team (excluding Flyers and Air Ambush Rangers)",
+    "th": "นำเรนเจอร์หนึ่งตัวจากทีมกลับมาเกิดใหม่ (ยกเว้นเรนเจอร์บินและเรนเจอร์โจมตีทางอากาศ)",
+    "jp": "チームのレンジャー1体を再出動させる（飛行・空襲レンジャーを除く）"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_DEATH",
+    "zh_TW": "死神",
+    "en": "Reaper",
+    "th": "ยมทูต",
+    "jp": "死神"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_DOT",
+    "zh_TW": "持續傷害",
+    "en": "Continuous Damage",
+    "th": "ความเสียหายต่อเนื่อง",
+    "jp": "継続ダメージ"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_FREEZE_COOLTIME",
+    "zh_TW": "凍結敵方隊伍1隻Ranger的再生產時間",
+    "en": "Freeze the regeneration time of 1 Ranger on the opposing team",
+    "th": "หยุดเวลาเกิดใหม่ของเรนเจอร์ฝ่ายตรงข้าม 1 ตัว",
+    "jp": "相手チームのレンジャー1体の再出動時間を停止"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_GUTS",
+    "zh_TW": "死亡後，維持%d秒血量不低於1",
+    "en": "After death, HP cannot fall below 1 for %d seconds",
+    "th": "หลังตาย HP จะไม่ลดต่ำกว่า 1 เป็นเวลา %d วินาที",
+    "jp": "死亡後%d秒間、HPが1未満にならない"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_HIDE",
+    "zh_TW": "出動後至戰鬥前無敵",
+    "en": "Invincible from deployment until battle begins",
+    "th": "เป็นอมตะตั้งแต่ออกสนามจนเริ่มต่อสู้",
+    "jp": "出動から戦闘開始まで無敵"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_INSTANT_MISSILE",
+    "zh_TW": "即時發射飛彈",
+    "en": "Instantly launch a missile",
+    "th": "ยิงมิสไซล์ทันที",
+    "jp": "ミサイルを即座に発射"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_MINERAL_ADD",
+    "zh_TW": "增加敵方隊伍1隻Ranger的礦物成本",
+    "en": "Increase the Mineral cost of 1 Ranger on the opposing team",
+    "th": "เพิ่มค่าแร่ในการผลิตเรนเจอร์ฝ่ายตรงข้าม 1 ตัว",
+    "jp": "相手チームのレンジャー1体の生産ミネラル費用を増加"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_MINERAL_TIME",
+    "zh_TW": "降低敵方礦物生產速度",
+    "en": "Reduce the opposing team's Mineral production speed",
+    "th": "ลดความเร็วในการผลิตแร่ของฝ่ายตรงข้าม",
+    "jp": "相手チームのミネラル生産速度を低下"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_MISSILE_DAMAGE",
+    "zh_TW": "降低被飛彈攻擊時傷害",
+    "en": "Reduce damage taken from missile attacks",
+    "th": "ลดความเสียหายที่ได้รับจากมิสไซล์",
+    "jp": "ミサイルから受けるダメージを軽減"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_MISSILE_TIME",
+    "zh_TW": "降低敵方導彈充填速度",
+    "en": "Reduce the opposing team's missile charge speed",
+    "th": "ลดความเร็วในการชาร์จมิสไซล์ของฝ่ายตรงข้าม",
+    "jp": "相手チームのミサイルチャージ速度を低下"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_REVIVE",
+    "zh_TW": "起死回生（以%d%的血量復活）",
+    "en": "Revive (with %d% HP)",
+    "th": "คืนชีพ (ด้วย HP %d%)",
+    "jp": "復活（HP %d%）"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_SILENCE",
+    "zh_TW": "毒瓦斯",
+    "en": "Poison Gas",
+    "th": "แก๊สพิษ",
+    "jp": "毒ガス"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_SKILL_COOLTIME",
+    "zh_TW": "延長對方技能冷卻時間",
+    "en": "Increase the opposing team's Skill cooldowns",
+    "th": "เพิ่มคูลดาวน์ทักษะของฝ่ายตรงข้าม",
+    "jp": "相手チームのスキルクールタイムを延長"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_STRIKE_KBACK",
+    "zh_TW": "擊退",
+    "en": "Knockback",
+    "th": "กระเด็นถอยหลัง",
+    "jp": "ノックバック"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_STRIKE_KILL",
+    "zh_TW": "立即消滅1隻敵方Ranger",
+    "en": "Instantly defeat 1 enemy Ranger",
+    "th": "กำจัดเรนเจอร์ศัตรู 1 ตัวทันที",
+    "jp": "敵レンジャー1体を即座に倒す"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_STRIKE_SHIELD",
+    "zh_TW": "無敵",
+    "en": "Invincibility",
+    "th": "อมตะ",
+    "jp": "無敵"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_STRIKE_SILENCE",
+    "zh_TW": "禁止敵軍使用技能 (靜止)",
+    "en": "Prevent enemies from using Skills (Silence)",
+    "th": "ทำให้ศัตรูใช้ทักษะไม่ได้ (ใบ้)",
+    "jp": "敵のスキル使用を封じる（沈黙）"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_STRIKE_STUN",
+    "zh_TW": "擊暈",
+    "en": "Stun",
+    "th": "ชะงัก",
+    "jp": "スタン"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_STUN",
+    "zh_TW": "昏迷",
+    "en": "Stun",
+    "th": "ชะงัก",
+    "jp": "スタン"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_TEMPO",
+    "zh_TW": "誘惑之歌",
+    "en": "Siren Song",
+    "th": "บทเพลงไซเรน",
+    "jp": "サイレンの歌"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_UNIT_COOLTIME",
+    "zh_TW": "延長對方Ranger生產冷卻時間",
+    "en": "Increase the opposing team's Ranger production cooldowns",
+    "th": "เพิ่มคูลดาวน์การผลิตเรนเจอร์ของฝ่ายตรงข้าม",
+    "jp": "相手チームのレンジャー再出動時間を延長"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_BLOODLUST",
+    "zh_TW": "狂暴化",
+    "en": "Berserk",
+    "th": "ความบ้าระห่ำ",
+    "jp": "狂暴化"
+  },
+  {
+    "key": "ABILITY_ACTION_TYPE_MIN_THIEF",
+    "zh_TW": "偷取敵方的礦物",
+    "en": "Steal the opposing team's Minerals",
+    "th": "ขโมยแร่ของฝ่ายตรงข้าม",
+    "jp": "相手チームのミネラルを奪う"
+  },
+  {
+    "key": "ABILITY_ACTIVE_ON_TYPE_ADVENT",
+    "zh_TW": "降臨關卡",
+    "en": "Advent Stages",
+    "th": "ด่านจุติ",
+    "jp": "降臨ステージ"
+  },
+  {
+    "key": "ABILITY_ACTIVE_ON_TYPE_ALL",
+    "zh_TW": "任何遊戲種類",
+    "en": "All Game Modes",
+    "th": "ทุกโหมดเกม",
+    "jp": "全ゲームモード"
+  },
+  {
+    "key": "ABILITY_ACTIVE_ON_TYPE_GUILD_WAR",
+    "zh_TW": "公會戰",
+    "en": "Guild War",
+    "th": "สงครามกิลด์",
+    "jp": "ギルド戦"
+  },
+  {
+    "key": "ABILITY_ACTIVE_ON_TYPE_NORMAL",
+    "zh_TW": "主要關卡",
+    "en": "Main Stages",
+    "th": "ด่านหลัก",
+    "jp": "メインステージ"
+  },
+  {
+    "key": "ABILITY_ACTIVE_ON_TYPE_PVP",
+    "zh_TW": "PVP",
+    "en": "PvP",
+    "th": "PvP",
+    "jp": "PvP"
+  },
+  {
+    "key": "ABILITY_ACTIVE_ON_TYPE_SPECIAL",
+    "zh_TW": "特殊關卡",
+    "en": "Special Stages",
+    "th": "ด่านพิเศษ",
+    "jp": "スペシャルステージ"
+  },
+  {
+    "key": "ABILITY_ACTIVE_WHEN_TYPE_BATTLE",
+    "zh_TW": "戰鬥時",
+    "en": "During Battle",
+    "th": "ระหว่างการต่อสู้",
+    "jp": "戦闘中"
+  },
+  {
+    "key": "ABILITY_ACTIVE_WHEN_TYPE_DIE",
+    "zh_TW": "死亡時",
+    "en": "When Ranger Died",
+    "th": "เมื่อเรนเจอร์ตาย",
+    "jp": "レンジャー死亡時"
+  },
+  {
+    "key": "ABILITY_ACTIVE_WHEN_TYPE_INSTANT",
+    "zh_TW": "出動/在場上時",
+    "en": "On Deployment / While on the Battle Field",
+    "th": "เมื่อออกสนาม / ขณะอยู่ในสนามรบ",
+    "jp": "出動時／戦場にいる間"
+  },
+  {
+    "key": "ABILITY_CONDITION_TYPE_CATEGORY",
+    "zh_TW": "類型",
+    "en": "Type",
+    "th": "ชนิด",
+    "jp": "タイプ"
+  },
+  {
+    "key": "ABILITY_CONDITION_TYPE_CHARACTER",
+    "zh_TW": "角色",
+    "en": "Character",
+    "th": "ตัวละคร",
+    "jp": "キャラクター"
+  },
+  {
+    "key": "ABILITY_CONDITION_TYPE_ELEMENT",
+    "zh_TW": "屬性",
+    "en": "Element",
+    "th": "ธาตุ",
+    "jp": "属性"
+  },
+  {
+    "key": "ABILITY_CONDITION_TYPE_SKILLTYPE",
+    "zh_TW": "技能",
+    "en": "Skill",
+    "th": "ทักษะ",
+    "jp": "スキル"
+  },
+  {
+    "key": "ABILITY_CONDITION_TYPE_TALENTTYPE",
+    "zh_TW": "才能",
+    "en": "Talent",
+    "th": "พรสวรรค์",
+    "jp": "才能"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_BLIND",
+    "zh_TW": "抵抗「墨」妨礙效果",
+    "en": "Resist the \"Ink\" obstacle effect",
+    "th": "ต้านเอฟเฟกต์อุปสรรค \"หมึก\"",
+    "jp": "障害効果「インク」に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_DEATH",
+    "zh_TW": "抵抗「死神」妨礙效果",
+    "en": "Resist the \"Reaper\" obstacle effect",
+    "th": "ต้านเอฟเฟกต์อุปสรรค \"ยมทูต\"",
+    "jp": "障害効果「死神」に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_DOT",
+    "zh_TW": "抵抗持續傷害",
+    "en": "Resist continuous damage",
+    "th": "ต้านความเสียหายต่อเนื่อง",
+    "jp": "継続ダメージに抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_FLIGHT",
+    "zh_TW": "可以對飛翔的Ranger造成傷害",
+    "en": "Hit Flyer Rangers",
+    "th": "โจมตีเรนเจอร์บินได้",
+    "jp": "飛行レンジャーを攻撃できる"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_GHOST",
+    "zh_TW": "可以對幽靈形態的Ranger造成傷害",
+    "en": "Hit ghost-type Rangers",
+    "th": "โจมตีเรนเจอร์ประเภทผีได้",
+    "jp": "幽霊レンジャーを攻撃できる"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_ICE",
+    "zh_TW": "抵抗道具「發射冰／暴風雪」",
+    "en": "Resist the \"Ice Shot / Blizzard\" items",
+    "th": "ต้านไอเท็ม \"ยิงน้ำแข็ง / พายุหิมะ\"",
+    "jp": "アイテム「アイスショット／ブリザード」に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_METEOR",
+    "zh_TW": "抵抗道具「流星／地獄火」",
+    "en": "Resist the \"Meteor / Hellfire\" items",
+    "th": "ต้านไอเท็ม \"อุกกาบาต / เพลิงนรก\"",
+    "jp": "アイテム「メテオ／ヘルファイア」に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_MIRROR_DAMAGE",
+    "zh_TW": "技能「傷害反射」的效果降低%d%",
+    "en": "Reduce the effect of the \"Damage Reflection\" Skill by %d%",
+    "th": "ลดเอฟเฟกต์ทักษะ \"สะท้อนความเสียหาย\" %d%",
+    "jp": "「ダメージ反射」スキルの効果を%d%軽減"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_POLYMORPH",
+    "zh_TW": "免疫技能「敵軍變身」",
+    "en": "Immune to the \"Enemy Transformation\" Skill",
+    "th": "ไม่รับผลทักษะ \"เปลี่ยนร่างศัตรู\"",
+    "jp": "「敵変身」スキルを無効化"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_SILENCE",
+    "zh_TW": "抵抗靜止",
+    "en": "Resist Silence",
+    "th": "ต้านการใบ้",
+    "jp": "沈黙に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_STUN",
+    "zh_TW": "抵抗昏迷",
+    "en": "Resist Stun",
+    "th": "ต้านการชะงัก",
+    "jp": "スタンに抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_TEMPO",
+    "zh_TW": "抵抗「誘惑之歌」妨礙效果",
+    "en": "Resist the \"Siren Song\" obstacle effect",
+    "th": "ต้านเอฟเฟกต์อุปสรรค \"บทเพลงไซเรน\"",
+    "jp": "障害効果「サイレンの歌」に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_TEMPT",
+    "zh_TW": "免疫技能「誘惑敵軍」",
+    "en": "Immune to the \"Charm Enemies\" Skill",
+    "th": "ไม่รับผลทักษะ \"ล่อลวงศัตรู\"",
+    "jp": "「敵誘惑」スキルを無効化"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_TORNADO",
+    "zh_TW": "抵抗道具「龍捲風／大雷雨」",
+    "en": "Resist the \"Tornado / Thunderstorm\" items",
+    "th": "ต้านไอเท็ม \"พายุหมุน / พายุฟ้าคะนอง\"",
+    "jp": "アイテム「トルネード／サンダーストーム」に抵抗"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_BARRIER",
+    "zh_TW": "技能防護罩（降低%d1%傷害後，能力冷卻%d2秒）",
+    "en": "Skill Barrier (reduces damage by %d1%, then the Ability has a %d2-second cooldown)",
+    "th": "เกราะป้องกันทักษะ (ลดความเสียหาย %d1% แล้วความสามารถมีคูลดาวน์ %d2 วินาที)",
+    "jp": "スキルバリア（ダメージを%d1%軽減し、アビリティのクールタイムは%d2秒）"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_BLANK_HAND",
+    "zh_TW": "死亡時妨礙敵方獲得礦物",
+    "en": "Prevent the opposing team from gaining Minerals when defeated",
+    "th": "เมื่อถูกกำจัด ฝ่ายตรงข้ามจะไม่ได้แร่",
+    "jp": "倒された時、相手チームにミネラルを与えない"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_FLIGHT",
+    "zh_TW": "飛翔",
+    "en": "Flyer",
+    "th": "บิน",
+    "jp": "飛行"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_GHOST",
+    "zh_TW": "幽靈",
+    "en": "Ghost",
+    "th": "ผี",
+    "jp": "幽霊"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_LAST_BURN",
+    "zh_TW": "被打倒時發動一項技能",
+    "en": "Activate one Skill when defeated",
+    "th": "ใช้ทักษะหนึ่งครั้งเมื่อถูกกำจัด",
+    "jp": "倒された時にスキルを1回発動"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_MINERAL_BACK",
+    "zh_TW": "被打倒時回收%d%生產時所消耗礦物",
+    "en": "Restore %d% of the Minerals spent on production when defeated",
+    "th": "เมื่อถูกกำจัด คืนแร่ที่ใช้ในการผลิต %d%",
+    "jp": "倒された時、生産に使用したミネラルの%d%を返還"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_PASS_DEFENSE",
+    "zh_TW": "防禦力無效化",
+    "en": "Nullify DEF",
+    "th": "ทำให้พลังป้องกันเป็นโมฆะ",
+    "jp": "防御力を無効化"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_PASS_SKILLRES",
+    "zh_TW": "技能抗性無效化",
+    "en": "Nullify Skill Resistance",
+    "th": "ทำให้การต้านทักษะเป็นโมฆะ",
+    "jp": "スキル抵抗を無効化"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_TOWER",
+    "zh_TW": "破壞建築物",
+    "en": "Building Smasher",
+    "th": "นักทำลายอาคาร",
+    "jp": "建物破壊者"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_WATER_GHOST",
+    "zh_TW": "死亡時帶著隨機1名敵人同歸於盡",
+    "en": "Take 1 random enemy down with you when defeated",
+    "th": "เมื่อถูกกำจัด ลากศัตรูแบบสุ่ม 1 ตัวตายไปด้วย",
+    "jp": "倒された時、ランダムな敵1体を道連れにする"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_MIN_ADD",
+    "zh_TW": "免疫能力「增加敵方礦物成本」",
+    "en": "Immune to the \"Enemy Cost Increase\" Ability",
+    "th": "ไม่รับผลความสามารถ \"เพิ่มค่าแร่ศัตรู\"",
+    "jp": "「敵ミネラル費用増加」アビリティを無効化"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_ANTI_FREEZE",
+    "zh_TW": "免疫能力「敵方暫停出動」",
+    "en": "Immune to the \"Deployment Freeze\" Ability",
+    "th": "ไม่รับผลความสามารถ \"หยุดการออกสนาม\"",
+    "jp": "「出動停止」アビリティを無効化"
+  },
+  {
+    "key": "ABILITY_TALENT_TYPE_PASS_UNBEATABLE",
+    "zh_TW": "無視技能、才能及能力提供的防護盾",
+    "en": "Ignore shields/invincibility granted by Skills, Talents, and Abilities",
+    "th": "ข้ามเกราะและสถานะอมตะที่ได้รับจากทักษะ พรสวรรค์ และความสามารถ",
+    "jp": "スキル・才能・アビリティによるシールドと無敵を無視"
+  },
+  {
+    "key": "SKILLEFF_BUFF-ANTI_AVOID_PROB",
+    "zh_TW": "命中率提升",
+    "en": "Hit Rate Increase",
+    "th": "เพิ่มอัตราโจมตีโดน",
+    "jp": "命中率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+    "zh_TW": "技能命中率提升",
+    "en": "Skill Hit Rate Increase",
+    "th": "เพิ่มอัตราทักษะโจมตีโดน",
+    "jp": "スキル命中率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-ANTI_SKILL_AVOID",
+    "zh_TW": "技能命中率提升",
+    "en": "Skill Hit Rate Increase",
+    "th": "เพิ่มอัตราทักษะโจมตีโดน",
+    "jp": "スキル命中率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-ATK",
+    "zh_TW": "攻擊力提升",
+    "en": "ATK increase",
+    "th": "เพิ่มพลังโจมตี",
+    "jp": "攻撃力アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-ATKRANGE",
+    "zh_TW": "攻擊射程提升",
+    "en": "Attack Range Increase",
+    "th": "เพิ่มระยะโจมตี",
+    "jp": "攻撃範囲アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-ATKSPD",
+    "zh_TW": "攻擊速度提升",
+    "en": "Attack Speed Increase",
+    "th": "เพิ่มความเร็วโจมตี",
+    "jp": "攻撃速度アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-AVOID_CHANCE",
+    "zh_TW": "閃避機率提升",
+    "en": "Evade Rate Increase",
+    "th": "เพิ่มอัตราหลบหลีก",
+    "jp": "回避率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-CHANGE_SPLASH",
+    "zh_TW": "轉換為範圍攻擊",
+    "en": "Change to Area Attack",
+    "th": "เปลี่ยนเป็นการโจมตีแบบพื้นที่",
+    "jp": "範囲攻撃に変更"
+  },
+  {
+    "key": "SKILLEFF_BUFF-CRITICAL_CHANCE",
+    "zh_TW": "爆擊機率提升",
+    "en": "Critical Rate Increase",
+    "th": "เพิ่มอัตราคริทิคอล",
+    "jp": "決定打の確率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-CRITICAL_POWER",
+    "zh_TW": "爆擊傷害提升",
+    "en": "Critical Damage Increase",
+    "th": "เพิ่มความเสียหายคริทิคอล",
+    "jp": "決定打のダメージアップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-HP",
+    "zh_TW": "體力提升",
+    "en": "HP Increase",
+    "th": "เพิ่ม HP",
+    "jp": "HPアップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-NORMAL_DEF",
+    "zh_TW": "物理防禦力提升",
+    "en": "Physical DEF Increase",
+    "th": "เพิ่มพลังป้องกันกายภาพ",
+    "jp": "物理防御力アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SKILLRANGE",
+    "zh_TW": "技能範圍擴大",
+    "en": "Skill Range Increase",
+    "th": "เพิ่มระยะทักษะ",
+    "jp": "スキル範囲アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SKILL_AVOID_CHANCE",
+    "zh_TW": "技能閃避機率提升",
+    "en": "Skill Evade Rate Increase",
+    "th": "เพิ่มอัตราหลบทักษะ",
+    "jp": "スキル回避率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SKILL_CHANCE",
+    "zh_TW": "技能發動率提升",
+    "en": "Skill Use Rate Increase",
+    "th": "เพิ่มอัตราใช้ทักษะ",
+    "jp": "スキル発動率アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SKILL_RESIST",
+    "zh_TW": "技能抗性提升",
+    "en": "Skill Resistance Increase",
+    "th": "เพิ่มการต้านทักษะ",
+    "jp": "スキル抵抗アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SPECIAL_DEF",
+    "zh_TW": "魔法防禦力提升",
+    "en": "Magical DEF Increase",
+    "th": "เพิ่มพลังป้องกันเวท",
+    "jp": "魔法防御力アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SPEED",
+    "zh_TW": "移動速度提升",
+    "en": "Move Speed Increase",
+    "th": "เพิ่มความเร็วเคลื่อนที่",
+    "jp": "移動速度アップ"
+  },
+  {
+    "key": "SKILLEFF_BUFF-VAMPIRE",
+    "zh_TW": "吸血",
+    "en": "Life Steal",
+    "th": "ดูด HP",
+    "jp": "HP吸収"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_DARK_NONE",
+    "zh_TW": "闇屬性敵人變為無屬性",
+    "en": "Change Dark-element enemies to no element",
+    "th": "เปลี่ยนศัตรูธาตุมืดให้เป็นไร้ธาตุ",
+    "jp": "闇属性の敵を無属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_ENEMY",
+    "zh_TW": "與敵人互換位置",
+    "en": "Switch positions with an enemy",
+    "th": "สลับตำแหน่งกับศัตรู",
+    "jp": "敵と位置を交換"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_FIRE_NONE",
+    "zh_TW": "火屬性敵人變為無屬性",
+    "en": "Change Fire-element enemies to no element",
+    "th": "เปลี่ยนศัตรูธาตุไฟให้เป็นไร้ธาตุ",
+    "jp": "火属性の敵を無属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_FIRE_WATER",
+    "zh_TW": "火屬性敵人變為水屬性",
+    "en": "Change Fire-element enemies to Water",
+    "th": "เปลี่ยนศัตรูธาตุไฟให้เป็นธาตุน้ำ",
+    "jp": "火属性の敵を水属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_LIGHT_NONE",
+    "zh_TW": "光屬性敵人變為無屬性",
+    "en": "Change Light-element enemies to no element",
+    "th": "เปลี่ยนศัตรูธาตุแสงให้เป็นไร้ธาตุ",
+    "jp": "光属性の敵を無属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_TREE_FIRE",
+    "zh_TW": "木屬性敵人變為火屬性",
+    "en": "Change Wood-element enemies to Fire",
+    "th": "เปลี่ยนศัตรูธาตุไม้ให้เป็นธาตุไฟ",
+    "jp": "木属性の敵を火属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_TREE_NONE",
+    "zh_TW": "木屬性敵人變為無屬性",
+    "en": "Change Wood-element enemies to no element",
+    "th": "เปลี่ยนศัตรูธาตุไม้ให้เป็นไร้ธาตุ",
+    "jp": "木属性の敵を無属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_WATER_FIRE",
+    "zh_TW": "水屬性敵人變為火屬性",
+    "en": "Change Water-element enemies to Fire",
+    "th": "เปลี่ยนศัตรูธาตุน้ำให้เป็นธาตุไฟ",
+    "jp": "水属性の敵を火属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_WATER_NONE",
+    "zh_TW": "水屬性敵人變為無屬性",
+    "en": "Change Water-element enemies to no element",
+    "th": "เปลี่ยนศัตรูธาตุน้ำให้เป็นไร้ธาตุ",
+    "jp": "水属性の敵を無属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_WATER_TREE",
+    "zh_TW": "水屬性敵人變為木屬性",
+    "en": "Change Water-element enemies to Wood",
+    "th": "เปลี่ยนศัตรูธาตุน้ำให้เป็นธาตุไม้",
+    "jp": "水属性の敵を木属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_DEBUFF",
+    "zh_TW": "清除夥伴的負面狀態 (暫時)",
+    "en": "Temporarily remove allies' debuffs",
+    "th": "ลบดีบัฟของพันธมิตรชั่วคราว",
+    "jp": "味方のデバフを一時的に解除"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_DOTHEAL",
+    "zh_TW": "清除持續體力恢復 (暫時)",
+    "en": "Temporarily remove continuous HP recovery",
+    "th": "ลบการฟื้นฟู HP ต่อเนื่องชั่วคราว",
+    "jp": "継続HP回復を一時的に解除"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_DOTHEAL-ATK",
+    "zh_TW": "清除持續體力恢復 (暫時)",
+    "en": "Temporarily remove continuous HP recovery",
+    "th": "ลบการฟื้นฟู HP ต่อเนื่องชั่วคราว",
+    "jp": "継続HP回復を一時的に解除"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_ENEMY",
+    "zh_TW": "清除增益效果 (暫時)",
+    "en": "Temporarily remove buffs",
+    "th": "ลบบัฟชั่วคราว",
+    "jp": "バフを一時的に解除"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_POISON",
+    "zh_TW": "清除持續傷害 (暫時)",
+    "en": "Temporarily remove continuous damage",
+    "th": "ลบความเสียหายต่อเนื่องชั่วคราว",
+    "jp": "継続ダメージを一時的に解除"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_SUMMON",
+    "zh_TW": "抵抗敵人的召喚",
+    "en": "Resist enemies' summoning Skills",
+    "th": "ต้านทักษะอัญเชิญของศัตรู",
+    "jp": "敵の召喚スキルに抵抗"
+  },
+  {
+    "key": "SKILLEFF_CLEANING_UNBEAT",
+    "zh_TW": "清除敵人無敵技能 (暫時)",
+    "en": "Temporarily remove enemy invincibility Skills",
+    "th": "ลบทักษะอมตะของศัตรูชั่วคราว",
+    "jp": "敵の無敵スキルを一時的に解除"
+  },
+  {
+    "key": "SKILLEFF_CLEAN_ALLY",
+    "zh_TW": "清除夥伴的負面狀態",
+    "en": "Remove allies' debuffs",
+    "th": "ลบดีบัฟของพันธมิตร",
+    "jp": "味方のデバフを解除"
+  },
+  {
+    "key": "SKILLEFF_CLEAN_DOTHEAL",
+    "zh_TW": "清除持續體力恢復",
+    "en": "Remove continuous HP recovery",
+    "th": "ลบการฟื้นฟู HP ต่อเนื่อง",
+    "jp": "継続HP回復を解除"
+  },
+  {
+    "key": "SKILLEFF_CLEAN_ENEMY",
+    "zh_TW": "清除增益效果",
+    "en": "Remove buffs",
+    "th": "ลบบัฟ",
+    "jp": "バフを解除"
+  },
+  {
+    "key": "SKILLEFF_CLEAN_POISON",
+    "zh_TW": "清除持續傷害",
+    "en": "Remove continuous damage",
+    "th": "ลบความเสียหายต่อเนื่อง",
+    "jp": "継続ダメージを解除"
+  },
+  {
+    "key": "SKILLEFF_CLEAN_UNBEAT",
+    "zh_TW": "清除敵人無敵技能",
+    "en": "Remove enemy invincibility Skills",
+    "th": "ลบทักษะอมตะของศัตรู",
+    "jp": "敵の無敵スキルを解除"
+  },
+  {
+    "key": "SKILLEFF_CLEAN_UNBEAT-ATKSPD",
+    "zh_TW": "範圍無敵取消",
+    "en": "Cancel area invincibility",
+    "th": "ยกเลิกสถานะอมตะแบบพื้นที่",
+    "jp": "範囲無敵を解除"
+  },
+  {
+    "key": "SKILLEFF_CURSE_DEBUFF",
+    "zh_TW": "防止負面狀態被解除",
+    "en": "Nullifies debuff-canceling skills",
+    "th": "ทำให้ทักษะล้างดีบัฟเป็นโมฆะ",
+    "jp": "デバフ解除スキルを無効化"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ANTI_AVOID_PROB",
+    "zh_TW": "命中率下降",
+    "en": "Hit Rate Decrease",
+    "th": "ลดอัตราโจมตีโดน",
+    "jp": "命中率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ANTI_AVOID",
+    "zh_TW": "命中率下降",
+    "en": "Hit Rate Decrease",
+    "th": "ลดอัตราโจมตีโดน",
+    "jp": "命中率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ANTI_SK_AVOID_PROB",
+    "zh_TW": "技能命中率下降",
+    "en": "Skill Hit Rate Decrease",
+    "th": "ลดอัตราทักษะโจมตีโดน",
+    "jp": "スキル命中率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ANTI_SKILL_AVOID",
+    "zh_TW": "技能命中率下降",
+    "en": "Skill Hit Rate Decrease",
+    "th": "ลดอัตราทักษะโจมตีโดน",
+    "jp": "スキル命中率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ATK",
+    "zh_TW": "攻擊力下降",
+    "en": "ATK Decrease",
+    "th": "ลดพลังโจมตี",
+    "jp": "攻撃力ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ATKRANGE",
+    "zh_TW": "敵人攻擊射程下降",
+    "en": "Enemy Attack Range Decrease",
+    "th": "ลดระยะโจมตีของศัตรู",
+    "jp": "敵の攻撃範囲ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-ATKSPD",
+    "zh_TW": "攻擊速度下降",
+    "en": "Attack Speed Decrease",
+    "th": "ลดความเร็วโจมตี",
+    "jp": "攻撃速度ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-AVOID_CHANCE",
+    "zh_TW": "閃避機率降低",
+    "en": "Evade Rate Decrease",
+    "th": "ลดอัตราหลบหลีก",
+    "jp": "回避率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-CRITICAL_CHANCE",
+    "zh_TW": "爆擊機率下降",
+    "en": "Critical Rate Decrease",
+    "th": "ลดอัตราคริทิคอล",
+    "jp": "決定打の確率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-CRITICAL_POWER",
+    "zh_TW": "爆擊傷害下降",
+    "en": "Critical Damage Decrease",
+    "th": "ลดความเสียหายคริทิคอล",
+    "jp": "決定打のダメージダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-NORMAL_DEF",
+    "zh_TW": "物理防禦力下降",
+    "en": "Physical DEF Decrease",
+    "th": "ลดพลังป้องกันกายภาพ",
+    "jp": "物理防御力ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SKILLRANGE",
+    "zh_TW": "敵人技能範圍縮小",
+    "en": "Enemy Skill Range Decrease",
+    "th": "ลดระยะทักษะของศัตรู",
+    "jp": "敵のスキル範囲ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SKILL_AVOID_CHANCE",
+    "zh_TW": "技能閃避機率下降",
+    "en": "Skill Evade Rate Decrease",
+    "th": "ลดอัตราหลบทักษะ",
+    "jp": "スキル回避率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SKILL_CHANCE",
+    "zh_TW": "技能發動率降低",
+    "en": "Skill Use Rate Decrease",
+    "th": "ลดอัตราใช้ทักษะ",
+    "jp": "スキル発動率ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SKILL_RESIST",
+    "zh_TW": "技能抗性下降",
+    "en": "Skill Resistance Decrease",
+    "th": "ลดการต้านทักษะ",
+    "jp": "スキル抵抗ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SPECIAL_DEF",
+    "zh_TW": "魔法防禦力下降",
+    "en": "Magical DEF Decrease",
+    "th": "ลดพลังป้องกันเวท",
+    "jp": "魔法防御力ダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SPEED",
+    "zh_TW": "移動速度下降",
+    "en": "Move Speed Decrease",
+    "th": "ลดความเร็วเคลื่อนที่",
+    "jp": "移動速度ダウン"
+  },
+  {
+    "key": "SKILLEFF_DMG",
+    "zh_TW": "傷害 (單擊)",
+    "en": "Damage (Single Hit)",
+    "th": "ความเสียหาย (ครั้งเดียว)",
+    "jp": "ダメージ（単発）"
+  },
+  {
+    "key": "SKILLEFF_DMG_NORMAL",
+    "zh_TW": "造成額外技能傷害",
+    "en": "Deal Additional Skill Damage",
+    "th": "สร้างความเสียหายทักษะเพิ่มเติม",
+    "jp": "追加スキルダメージを与える"
+  },
+  {
+    "key": "SKILLEFF_DMG_SKILL",
+    "zh_TW": "造成額外技能傷害",
+    "en": "Deal Additional Skill Damage",
+    "th": "สร้างความเสียหายทักษะเพิ่มเติม",
+    "jp": "追加スキルダメージを与える"
+  },
+  {
+    "key": "SKILLEFF_DOT",
+    "zh_TW": "傷害 (持續)",
+    "en": "Damage (Continuous)",
+    "th": "ความเสียหาย (ต่อเนื่อง)",
+    "jp": "ダメージ（継続）"
+  },
+  {
+    "key": "SKILLEFF_DOTHEAL",
+    "zh_TW": "體力恢復 (持續)",
+    "en": "HP Recovery (Continuous)",
+    "th": "ฟื้นฟู HP (ต่อเนื่อง)",
+    "jp": "HP回復（継続）"
+  },
+  {
+    "key": "SKILLEFF_ELEMENT_TO_NONE",
+    "zh_TW": "敵人變為無屬性",
+    "en": "Change enemies to no element",
+    "th": "เปลี่ยนศัตรูให้เป็นไร้ธาตุ",
+    "jp": "敵を無属性に変更"
+  },
+  {
+    "key": "SKILLEFF_HEAL",
+    "zh_TW": "體力恢復 (單次)",
+    "en": "HP Recovery (Single)",
+    "th": "ฟื้นฟู HP (ครั้งเดียว)",
+    "jp": "HP回復（単発）"
+  },
+  {
+    "key": "SKILLEFF_KNOCKBACK",
+    "zh_TW": "擊退",
+    "en": "Knockback",
+    "th": "กระเด็นถอยหลัง",
+    "jp": "ノックバック"
+  },
+  {
+    "key": "SKILLEFF_MIRROR_MAG",
+    "zh_TW": "技能傷害反射為魔法傷害",
+    "en": "Reflect Skill damage as magical damage",
+    "th": "สะท้อนความเสียหายทักษะเป็นความเสียหายเวท",
+    "jp": "スキルダメージを魔法ダメージとして反射"
+  },
+  {
+    "key": "SKILLEFF_MIRROR_PHY",
+    "zh_TW": "技能傷害反射為物理傷害",
+    "en": "Reflect Skill damage as physical damage",
+    "th": "สะท้อนความเสียหายทักษะเป็นความเสียหายกายภาพ",
+    "jp": "スキルダメージを物理ダメージとして反射"
+  },
+  {
+    "key": "SKILLEFF_MOVE_ATTACK",
+    "zh_TW": "強行突破",
+    "en": "Forceful Breakthrough",
+    "th": "ฝ่าแนวอย่างรุนแรง",
+    "jp": "強行突破"
+  },
+  {
+    "key": "SKILLEFF_MOVE_ENEMY1",
+    "zh_TW": "將敵人Ranger移動到前方",
+    "en": "Move enemy Rangers forward",
+    "th": "ย้ายเรนเจอร์ศัตรูไปด้านหน้า",
+    "jp": "敵レンジャーを前方へ移動"
+  },
+  {
+    "key": "SKILLEFF_MOVE_ENEMY2",
+    "zh_TW": "將前方的Ranger移動到後方",
+    "en": "Move Rangers in front to the rear",
+    "th": "ย้ายเรนเจอร์ที่อยู่ด้านหน้าไปด้านหลัง",
+    "jp": "前方のレンジャーを後方へ移動"
+  },
+  {
+    "key": "SKILLEFF_POLYMORPH",
+    "zh_TW": "敵軍變身 (變形)",
+    "en": "Transform Enemies (Polymorph)",
+    "th": "เปลี่ยนร่างศัตรู (แปลงร่าง)",
+    "jp": "敵変身（変形）"
+  },
+  {
+    "key": "SKILLEFF_SCALE",
+    "zh_TW": "敵軍變身 (縮放)",
+    "en": "Transform Enemies (Scale)",
+    "th": "เปลี่ยนขนาดศัตรู",
+    "jp": "敵変身（サイズ変更）"
+  },
+  {
+    "key": "SKILLEFF_SILENCE",
+    "zh_TW": "禁止敵軍使用技能 (靜止)",
+    "en": "Prevent enemies from using Skills (Silence)",
+    "th": "ทำให้ศัตรูใช้ทักษะไม่ได้ (ใบ้)",
+    "jp": "敵のスキル使用を封じる（沈黙）"
+  },
+  {
+    "key": "SKILLEFF_SKILL_RESET",
+    "zh_TW": "重置部分我方技能CD",
+    "en": "Reset some allied Skill cooldowns",
+    "th": "รีเซ็ตคูลดาวน์ทักษะของพันธมิตรบางตัว",
+    "jp": "一部の味方のスキルクールタイムをリセット"
+  },
+  {
+    "key": "SKILLEFF_STUN",
+    "zh_TW": "擊暈",
+    "en": "Stun",
+    "th": "ชะงัก",
+    "jp": "スタン"
+  },
+  {
+    "key": "SKILLEFF_SUMMON",
+    "zh_TW": "召喚支持",
+    "en": "Summon Support",
+    "th": "อัญเชิญกำลังเสริม",
+    "jp": "援軍召喚"
+  },
+  {
+    "key": "SKILLEFF_SUMMON_ENEMY",
+    "zh_TW": "轉化敵人為我方夥伴",
+    "en": "Turn enemies into allies",
+    "th": "เปลี่ยนศัตรูให้เป็นพันธมิตร",
+    "jp": "敵を味方に変える"
+  },
+  {
+    "key": "SKILLEFF_TEMPT",
+    "zh_TW": "誘惑效果",
+    "en": "Charm",
+    "th": "ล่อลวง",
+    "jp": "誘惑"
+  },
+  {
+    "key": "SKILLEFF_UNBEAT",
+    "zh_TW": "無敵",
+    "en": "Invincibility",
+    "th": "อมตะ",
+    "jp": "無敵"
+  },
+  {
+    "key": "SKILLEFF_REDUCE_TEMPT",
+    "zh_TW": "誘惑維持時間縮短",
+    "en": "Reduce the duration of Charm",
+    "th": "ลดระยะเวลาการล่อลวง",
+    "jp": "誘惑の持続時間を短縮"
+  },
+  {
+    "key": "SKILLEFF_SKILL_IGNORE",
+    "zh_TW": "無視受到的技能攻擊",
+    "en": "Ignore incoming skill attacks",
+    "th": "ไม่รับการโจมตีทักษะที่ได้รับ",
+    "jp": "受けるスキル攻撃を無視"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_ANTI_AVOID",
+    "zh_TW": "命中率",
+    "en": "Hit Rate",
+    "th": "อัตราความแม่นยำ",
+    "jp": "命中率"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_ANTI_SKILL_AVOID",
+    "zh_TW": "技能命中率",
+    "en": "Skill Hit Rate",
+    "th": "อัตราความแม่นยำของทักษะ",
+    "jp": "スキル命中率"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_ATK",
+    "zh_TW": "物理攻擊力",
+    "en": "Physical ATK",
+    "th": "พลังโจมตีกาย",
+    "jp": "物理攻撃力"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_ATK_TOWER",
+    "zh_TW": "對搭攻擊力",
+    "en": "Tower ATK",
+    "th": "พลังโจมตีป้อม",
+    "jp": "タワー攻撃力"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_NORMAL_DEF",
+    "zh_TW": "物理防禦力",
+    "en": "Physical DEF",
+    "th": "พลังป้องกันกาย",
+    "jp": "物理防御力"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_SKILL_RESIST",
+    "zh_TW": "技能抗性",
+    "en": "Skill Resistance",
+    "th": "ต้านสกิล",
+    "jp": "スキル抵抗"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_SPECIAL_DEF",
+    "zh_TW": "魔法防禦力",
+    "en": "Magical DEF",
+    "th": "พลังเวทป้องกัน",
+    "jp": "魔法防御力"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_SP_ATK",
+    "zh_TW": "魔法攻擊力",
+    "en": "Magical ATK",
+    "th": "พลังเวทโจมตี",
+    "jp": "魔法攻撃力"
+  },
+  {
+    "key": "BUFF_FACTOR_TYPE_ATKSPD",
+    "zh_TW": "攻擊速度",
+    "en": "Attack Speed",
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
+  },
+  {
+    "key": "ELEMENT_fire",
+    "zh_TW": "火",
+    "en": "Fire",
+    "th": "ไฟ",
+    "jp": "火"
+  },
+  {
+    "key": "ELEMENT_water",
+    "zh_TW": "水",
+    "en": "Water",
+    "th": "น้ำ",
+    "jp": "水"
+  },
+  {
+    "key": "ELEMENT_tree",
+    "zh_TW": "木",
+    "en": "Wood",
+    "th": "ไม้",
+    "jp": "木"
+  },
+  {
+    "key": "ELEMENT_light",
+    "zh_TW": "光",
+    "en": "Light",
+    "th": "แสง",
+    "jp": "光"
+  },
+  {
+    "key": "ELEMENT_dark",
+    "zh_TW": "暗",
+    "en": "Dark",
+    "th": "มืด",
+    "jp": "闇"
+  },
+  {
+    "key": "ELEMENT_none",
+    "zh_TW": "暗",
+    "en": "Dark",
+    "th": "ไร้ธาตุ",
+    "jp": "無属性"
+  },
+  {
+    "key": "ELEMENT_NONE",
+    "zh_TW": "無",
+    "en": "None",
+    "th": "ไร้ธาตุ",
+    "jp": "無属性"
+  },
+  {
+    "key": "CATEGORY_INT",
+    "zh_TW": "智慧型",
+    "en": "Intelligence",
+    "th": "ไหวพริบ",
+    "jp": "知能"
+  },
+  {
+    "key": "CATEGORY_AGI",
+    "zh_TW": "敏捷型",
+    "en": "Agility",
+    "th": "คล่องแคล่ว",
+    "jp": "敏捷"
+  },
+  {
+    "key": "CATEGORY_STR",
+    "zh_TW": "力量型",
+    "en": "Strength",
+    "th": "พลัง",
+    "jp": "力"
+  },
+  {
+    "key": "CATEGORY_NONE",
+    "zh_TW": "無",
+    "en": "None",
+    "th": "ไม่มี",
+    "jp": "なし"
+  },
+  {
+    "key": "CATEGORY_ALL",
+    "zh_TW": "所有敵方",
+    "en": "All Enemies",
+    "th": "ศัตรูทั้งหมด",
+    "jp": "敵全体"
+  },
+  {
+    "key": "CHARACTER_BROWN",
+    "zh_TW": "熊大",
+    "en": "Brown",
+    "th": "บราวน์",
+    "jp": "ブラウン"
+  },
+  {
+    "key": "SKILLEFF_BUFF-NONE",
+    "zh_TW": "增益效果",
+    "en": "Buff",
+    "th": "บัฟ",
+    "jp": "バフ"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-NONE",
+    "zh_TW": "負面效果",
+    "en": "Debuff",
+    "th": "ดีบัฟ",
+    "jp": "デバフ"
+  },
+  {
+    "key": "SKILLEFF_BUBBLE",
+    "zh_TW": "用泡泡使敵人飄浮",
+    "en": "Float enemies into the air with bubbles",
+    "th": "ทำให้ศัตรูลอยขึ้นด้วยฟองสบู่",
+    "jp": "泡で敵を浮かせる"
+  },
+  {
+    "key": "SKILLEFF_BUFF-SKILL_DELAY",
+    "zh_TW": "技能延遲時間縮短",
+    "en": "Reduce Skill delay time",
+    "th": "ลดเวลาหน่วงทักษะ",
+    "jp": "スキル遅延時間を短縮"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_ALLY",
+    "zh_TW": "與夥伴互換位置",
+    "en": "Switch positions with an ally",
+    "th": "สลับตำแหน่งกับพันธมิตร",
+    "jp": "味方と位置を交換"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_FIRE_TREE",
+    "zh_TW": "火屬性敵人變為木屬性",
+    "en": "Change Fire-element enemies to Wood",
+    "th": "เปลี่ยนศัตรูธาตุไฟให้เป็นธาตุไม้",
+    "jp": "火属性の敵を木属性に変更"
+  },
+  {
+    "key": "SKILLEFF_CHANGE_TREE_WATER",
+    "zh_TW": "木屬性敵人變為水屬性",
+    "en": "Change Wood-element enemies to Water",
+    "th": "เปลี่ยนศัตรูธาตุไม้ให้เป็นธาตุน้ำ",
+    "jp": "木属性の敵を水属性に変更"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-HP",
+    "zh_TW": "體力下降",
+    "en": "HP Decrease",
+    "th": "ลด HP",
+    "jp": "HPダウン"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-SKILL_DELAY",
+    "zh_TW": "技能延遲時間增加",
+    "en": "Increase Skill delay time",
+    "th": "เพิ่มเวลาหน่วงทักษะ",
+    "jp": "スキル遅延時間を延長"
+  },
+  {
+    "key": "SKILLEFF_DEBUFF-VAMPIRE",
+    "zh_TW": "吸血率下降",
+    "en": "Life Steal Rate Decrease",
+    "th": "ลดอัตราดูด HP",
+    "jp": "HP吸収率ダウン"
+  },
+  {
+    "key": "SKILLEFF_FEAR",
+    "zh_TW": "使敵人陷入恐懼",
+    "en": "Inflict Fear on enemies",
+    "th": "ทำให้ศัตรูหวาดกลัว",
+    "jp": "敵に恐怖を与える"
+  },
+  {
+    "key": "SKILLEFF_THROW_ALLY",
+    "zh_TW": "將夥伴送往前方",
+    "en": "Send allies forward",
+    "th": "ส่งพันธมิตรไปด้านหน้า",
+    "jp": "味方を前方へ送る"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_SPE_ADD",
+    "zh_TW": "移動速度+%n",
+    "en": "Move Speed +%n",
+    "th": "ความเร็วเคลื่อนที่ +%n",
+    "jp": "移動速度 +%n"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_HP_MUL",
+    "zh_TW": "體力+%d%",
+    "en": "HP +%d%",
+    "th": "HP +%d%",
+    "jp": "HP +%d%"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_GATK_MUL",
+    "zh_TW": "物理攻擊力+%d%",
+    "en": "Physical ATK +%d%",
+    "th": "พลังโจมตีกายภาพ +%d%",
+    "jp": "物理攻撃力 +%d%"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_SKLRE_PROB_MUL",
+    "zh_TW": "技能抗性+%d%",
+    "en": "Skill Resistance +%d%",
+    "th": "การต้านทักษะ +%d%",
+    "jp": "スキル抵抗 +%d%"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_ANTI_STUN_MUL",
+    "zh_TW": "昏迷抗性+%d%",
+    "en": "Stun Resistance +%d%",
+    "th": "การต้านชะงัก +%d%",
+    "jp": "スタン抵抗 +%d%"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_SKLAVD_PROB_MUL",
+    "zh_TW": "技能閃避機率+%d%",
+    "en": "Skill Evade Rate +%d%",
+    "th": "อัตราหลบทักษะ +%d%",
+    "jp": "スキル回避率 +%d%"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+    "zh_TW": "技能發動率+%d%",
+    "en": "Skill Use Rate +%d%",
+    "th": "อัตราใช้ทักษะ +%d%",
+    "jp": "スキル発動率 +%d%"
+  },
+  {
+    "key": "ENHANCE_TALENT_TEXT_SATK_MUL",
+    "zh_TW": "魔法攻擊力+%d%",
+    "en": "Magical ATK +%d%",
+    "th": "พลังโจมตีเวท +%d%",
+    "jp": "魔法攻撃力 +%d%"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLHIT_ATKRANGE_FAR",
+    "zh_TW": "受到距離自身站位%d%以外的技能攻擊時",
+    "en": "When hit by a Skill attack from more than %d% of this Ranger's position away",
+    "th": "เมื่อถูกทักษะโจมตีจากระยะไกลกว่าตำแหน่งเรนเจอร์นี้ %d%",
+    "jp": "自身の位置から%d%より遠い距離のスキル攻撃を受けた時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+    "zh_TW": "技能命中在體力還有%d%以上的敵人",
+    "en": "When a Skill hits an enemy with at least %d% HP remaining",
+    "th": "เมื่อทักษะโดนศัตรูที่มี HP เหลืออย่างน้อย %d%",
+    "jp": "HPが%d%以上残っている敵にスキルが命中した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_ATTACK_HP_OVER",
+    "zh_TW": "普通攻擊命中在體力還有%d%以上的敵人時",
+    "en": "When a normal attack hits an enemy with at least %d% HP remaining",
+    "th": "เมื่อการโจมตีปกติโดนศัตรูที่มี HP เหลืออย่างน้อย %d%",
+    "jp": "HPが%d%以上残っている敵に通常攻撃が命中した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_COUNT",
+    "zh_TW": "使用%n次技能攻擊時",
+    "en": "After using Skill attacks %n times",
+    "th": "หลังใช้ทักษะโจมตี %n ครั้ง",
+    "jp": "スキル攻撃を%n回使用した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_ATTACK_COUNT",
+    "zh_TW": "使用%n次普通攻擊時",
+    "en": "After using normal attacks %n times",
+    "th": "หลังใช้การโจมตีปกติ %n ครั้ง",
+    "jp": "通常攻撃を%n回使用した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_NO_CONDITION",
+    "zh_TW": "無特定條件",
+    "en": "No specific condition",
+    "th": "ไม่มีเงื่อนไขเฉพาะ",
+    "jp": "特定条件なし"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_MOVED_BY_SKILL",
+    "zh_TW": "透過強行突破、移動到前方、移動到後方、聚集、將夥伴送往前方、互換位置使自身移動時",
+    "en": "When moved by Forceful Breakthrough, Move Forward, Move Backward, Group Together, Send Allies Forward, or Position Swap",
+    "th": "เมื่อเคลื่อนที่ด้วยฝ่าแนวอย่างรุนแรง ย้ายไปด้านหน้า ย้ายไปด้านหลัง รวมกลุ่ม ส่งพันธมิตรไปด้านหน้า หรือสลับตำแหน่ง",
+    "jp": "強行突破・前方移動・後方移動・集合・味方前方送り・位置交換で自身が移動した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_ATTACK_SUMN_UNIT",
+    "zh_TW": "對召喚獸或變身者進行普通攻擊時",
+    "en": "When using a normal attack against a summoned or transformed unit",
+    "th": "เมื่อโจมตีปกติใส่ยูนิตที่ถูกอัญเชิญหรือแปลงร่าง",
+    "jp": "召喚・変身したユニットに通常攻撃した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_SILENCE",
+    "zh_TW": "當技能命中在沈默（靜止）的敵人上時",
+    "en": "When a Skill hits a Silenced enemy",
+    "th": "เมื่อทักษะโดนศัตรูที่ถูกใบ้",
+    "jp": "沈黙中の敵にスキルが命中した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_KILL",
+    "zh_TW": "當以技能攻擊打倒敵人時",
+    "en": "When defeating an enemy with a Skill attack",
+    "th": "เมื่อกำจัดศัตรูด้วยทักษะโจมตี",
+    "jp": "スキル攻撃で敵を倒した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_CRITICAL_ATTACK",
+    "zh_TW": "當普通攻擊發生爆擊時",
+    "en": "When a normal attack lands a critical hit",
+    "th": "เมื่อการโจมตีปกติเกิดคริทิคอล",
+    "jp": "通常攻撃が決定打が発生した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILL_BUFF_COUNT",
+    "zh_TW": "使用%n次增益技能時",
+    "en": "After using buff Skills %n times",
+    "th": "หลังใช้ทักษะบัฟ %n ครั้ง",
+    "jp": "バフスキルを%n回使用した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_TIME_REPEAT",
+    "zh_TW": "每隔%n秒時",
+    "en": "Every %n seconds",
+    "th": "ทุก %n วินาที",
+    "jp": "%n秒ごと"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_HIT_COUNT",
+    "zh_TW": "當被普通攻擊命中時",
+    "en": "When hit by a normal attack",
+    "th": "เมื่อถูกโจมตีปกติ",
+    "jp": "通常攻撃を受けた時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_BUFF",
+    "zh_TW": "增益",
+    "en": "Buff",
+    "th": "บัฟ",
+    "jp": "バフ"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_ATTACK_COUNT_SPLASH",
+    "zh_TW": "使用%n次普通攻擊時",
+    "en": "After performing %n normal attacks",
+    "th": "หลังโจมตีปกติ %n ครั้ง",
+    "jp": "通常攻撃を%n回行った時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_HP_DEBUFF",
+    "zh_TW": "技能命中受到體力降低效果的敵人時",
+    "en": "When a skill hits an enemy affected by an HP reduction effect",
+    "th": "เมื่อทักษะโดนศัตรูที่ได้รับเอฟเฟกต์ลด HP",
+    "jp": "HP減少効果を受けている敵にスキルが命中した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_HP_STUN",
+    "zh_TW": "技能命中時，依敵人剩餘體力使其電暈",
+    "en": "When a skill hits an enemy, inflict Stun according to the enemy's remaining HP",
+    "th": "เมื่อทักษะโดนศัตรู ทำให้ชะงักตาม HP ที่เหลือของศัตรู",
+    "jp": "スキル命中時、敵の残りHPに応じてスタンさせる"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_SKILLATTACK_ATKRANGE_FAR",
+    "zh_TW": "技能命中距離自身站位%d%以外的敵人時",
+    "en": "When a skill hits an enemy farther than %d% from the Ranger's position",
+    "th": "เมื่อทักษะโดนศัตรูที่อยู่ไกลกว่าตำแหน่งเรนเจอร์ %d%",
+    "jp": "自身の位置から%d%より遠い敵にスキルが命中した時"
+  },
+  {
+    "key": "TALENT_TEXT_TLT_TIME_GONE",
+    "zh_TW": "出動%n秒後",
+    "en": "%n seconds after deployment",
+    "th": "หลังออกสนาม %n วินาที",
+    "jp": "出動から%n秒後"
+  },
+  {
+    "key": "TALENT_TEXT_PASS_STUN",
+    "zh_TW": "無視電暈抗性",
+    "en": "Ignore Stun Resistance",
+    "th": "ข้ามการต้านชะงัก",
+    "jp": "スタン抵抗を無視"
+  },
+  {
+    "key": "TALENT_TEXT_HP",
+    "zh_TW": "體力提升%d%",
+    "en": "HP +%d%",
+    "th": "HP +%d%",
+    "jp": "HP +%d%"
+  },
+  {
+    "key": "TALENT_TEXT_HP_S",
+    "zh_TW": "體力提升%d%（%s秒）",
+    "en": "HP +%d% (%s sec)",
+    "th": "HP +%d% (%s วินาที)",
+    "jp": "HP +%d%（%s秒）"
+  },
+  {
+    "key": "TALENT_TEXT_DMG_SKILL",
+    "zh_TW": "範圍傷害額外增加%d%",
+    "en": "Area damage +%d%",
+    "th": "ความเสียหายแบบพื้นที่ +%d%",
+    "jp": "範囲ダメージ +%d%"
+  },
+  {
+    "key": "TALENT_TEXT_ALL_SKILL_COOLDOWN",
+    "zh_TW": "所有技能冷卻減少%n秒",
+    "en": "All Skill cooldowns -%n sec",
+    "th": "คูลดาวน์ทักษะทั้งหมด -%n วินาที",
+    "jp": "全スキルのクールタイム -%n秒"
+  },
+  {
+    "key": "TALENT_TEXT_HEAL",
+    "zh_TW": "回復自身血量%d%",
+    "en": "Recover %d% of own HP",
+    "th": "ฟื้นฟู HP ของตนเอง %d%",
+    "jp": "自身のHPを%d%回復"
+  },
+  {
+    "key": "TALENT_TEXT_SUMMON_TIME",
+    "zh_TW": "召喚時間增加%n秒",
+    "en": "Summon duration +%n sec",
+    "th": "ระยะเวลาอัญเชิญ +%n วินาที",
+    "jp": "召喚の持続時間 +%n秒"
+  },
+  {
+    "key": "TALENT_TEXT_SPEED_S",
+    "zh_TW": "移動速度增加%d%（%s秒）",
+    "en": "Move Speed +%d% (%s sec)",
+    "th": "ความเร็วเคลื่อนที่ +%d% (%s วินาที)",
+    "jp": "移動速度 +%d%（%s秒）"
+  },
+  {
+    "key": "TALENT_TEXT_PASS_PHY_DEF",
+    "zh_TW": "無視物理防禦力",
+    "en": "Ignore Physical DEF",
+    "th": "ข้ามพลังป้องกันกายภาพ",
+    "jp": "物理防御力を無視"
+  },
+  {
+    "key": "TALENT_TEXT_PASS_PHY_DEF_S",
+    "zh_TW": "無視物理防禦力（%s秒）",
+    "en": "Ignore Physical DEF (%s sec)",
+    "th": "ข้ามพลังป้องกันกายภาพ (%s วินาที)",
+    "jp": "物理防御力を無視（%s秒）"
+  },
+  {
+    "key": "TALENT_TEXT_DMG_NORMAL",
+    "zh_TW": "普通攻擊增加%d%",
+    "en": "Normal attack damage +%d%",
+    "th": "ความเสียหายโจมตีปกติ +%d%",
+    "jp": "通常攻撃ダメージ +%d%"
+  },
+  {
+    "key": "TALENT_TEXT_DMG_SKILL_S",
+    "zh_TW": "範圍傷害額外增加%d%（%s秒）",
+    "en": "Area damage +%d% (%s sec)",
+    "th": "ความเสียหายแบบพื้นที่ +%d% (%s วินาที)",
+    "jp": "範囲ダメージ +%d%（%s秒）"
+  },
+  {
+    "key": "TALENT_TEXT_STUN_TIME",
+    "zh_TW": "電暈時間額外增加%n秒",
+    "en": "Stun duration +%n sec",
+    "th": "ระยะเวลาชะงัก +%n วินาที",
+    "jp": "スタンの持続時間 +%n秒"
+  },
+  {
+    "key": "TALENT_TEXT_SKILL_IGNORE",
+    "zh_TW": "無視受到的技能攻擊",
+    "en": "Ignore incoming Skill attacks",
+    "th": "ไม่รับการโจมตีทักษะที่ได้รับ",
+    "jp": "受けるスキル攻撃を無視"
+  },
+  {
+    "key": "TALENT_TEXT_SKILL_IGNORE_S",
+    "zh_TW": "無視受到的技能攻擊（%s秒）",
+    "en": "Ignore incoming skill attacks (%s seconds)",
+    "th": "ไม่รับการโจมตีทักษะที่ได้รับ (%s วินาที)",
+    "jp": "受けるスキル攻撃を無視（%s秒）"
+  },
+  {
+    "key": "TALENT_TEXT_ATK_S",
+    "zh_TW": "攻擊力增加%d%（%s秒）",
+    "en": "ATK +%d% (%s sec)",
+    "th": "พลังโจมตี +%d% (%s วินาที)",
+    "jp": "攻撃力 +%d%（%s秒）"
+  },
+  {
+    "key": "TALENT_TEXT_TEMP_COUNT",
+    "zh_TW": "誘惑數量額外增加%n隻",
+    "en": "Charm target count +%n",
+    "th": "จำนวนเป้าหมายล่อลวง +%n",
+    "jp": "誘惑対象数 +%n"
+  },
+  {
+    "key": "TALENT_TEXT_DEBUFF_TIME",
+    "zh_TW": "負面效果時間額外增加%n秒",
+    "en": "Debuff duration +%n sec",
+    "th": "ระยะเวลาดีบัฟ +%n วินาที",
+    "jp": "デバフの持続時間 +%n秒"
+  },
+  {
+    "key": "TALENT_TEXT_ELEMENT",
+    "zh_TW": "屬性",
+    "en": "Element",
+    "th": "ธาตุ",
+    "jp": "属性"
+  },
+  {
+    "key": "TALENT_TEXT_ELEMENT_dark",
+    "zh_TW": "暗",
+    "en": "Dark",
+    "th": "มืด",
+    "jp": "闇"
+  },
+  {
+    "key": "TALENT_TEXT_ELEMENT_light",
+    "zh_TW": "光",
+    "en": "Light",
+    "th": "แสง",
+    "jp": "光"
+  },
+  {
+    "key": "TALENT_TEXT_ELEMENT_tree",
+    "zh_TW": "木",
+    "en": "Wood",
+    "th": "ไม้",
+    "jp": "木"
+  },
+  {
+    "key": "TALENT_TEXT_ELEMENT_water",
+    "zh_TW": "水",
+    "en": "Water",
+    "th": "น้ำ",
+    "jp": "水"
+  },
+  {
+    "key": "TALENT_TEXT_ELEMENT_fire",
+    "zh_TW": "火",
+    "en": "Fire",
+    "th": "ไฟ",
+    "jp": "火"
+  },
+  {
+    "key": "TALENT_TEXT_CATEGORY",
+    "zh_TW": "類型",
+    "en": "Type",
+    "th": "ชนิด",
+    "jp": "タイプ"
+  },
+  {
+    "key": "TALENT_TEXT_CATEGORY_INT",
+    "zh_TW": "智慧型",
+    "en": "Intelligence",
+    "th": "ไหวพริบ",
+    "jp": "知能"
+  },
+  {
+    "key": "TALENT_TEXT_CATEGORY_STR",
+    "zh_TW": "力量型",
+    "en": "Strength",
+    "th": "พลัง",
+    "jp": "力"
+  },
+  {
+    "key": "TALENT_TEXT_CATEGORY_AGI",
+    "zh_TW": "敏捷型",
+    "en": "Agility",
+    "th": "คล่องแคล่ว",
+    "jp": "敏捷"
+  },
+  {
+    "key": "HARD_STAGE_CONDITION_START",
+    "zh_TW": "遊戲開始後%d秒",
+    "en": "%d sec after battle starts",
+    "th": "หลังเริ่มต่อสู้ %d วินาที",
+    "jp": "戦闘開始から%d秒後"
+  },
+  {
+    "key": "HARD_STAGE_CONDITION_FRONT",
+    "zh_TW": "我方前線位置超過%d%",
+    "en": "Allied frontline position is more than %d%",
+    "th": "ตำแหน่งแนวหน้าของฝ่ายเราเกิน %d%",
+    "jp": "味方の前線位置が%d%を超えた時"
+  },
+  {
+    "key": "HARD_STAGE_CONDITION_ENEMY_HP",
+    "zh_TW": "敵方塔城血量低於%d%",
+    "en": "Enemy Tower HP is below %d%",
+    "th": "HP ป้อมศัตรูต่ำกว่า %d%",
+    "jp": "敵タワーのHPが%d%未満の時"
+  },
+  {
+    "key": "HARD_STAGE_CONDITION_TIME",
+    "zh_TW": "戰鬥時間超過%d秒",
+    "en": "Battle duration exceeds %d sec",
+    "th": "เวลาต่อสู้เกิน %d วินาที",
+    "jp": "戦闘時間が%d秒を超えた時"
+  },
+  {
+    "key": "HARD_STAGE_CONDITION_SPECIAL",
+    "zh_TW": "特殊",
+    "en": "Special",
+    "th": "พิเศษ",
+    "jp": "特殊"
+  },
+  {
+    "key": "EXTREME_STAGE_CONDITION_START",
+    "zh_TW": "遊戲開始後%d秒",
+    "en": "%d sec after battle starts",
+    "th": "หลังเริ่มต่อสู้ %d วินาที",
+    "jp": "戦闘開始から%d秒後"
+  },
+  {
+    "key": "EXTREME_STAGE_CONDITION_FRONT",
+    "zh_TW": "我方前線位置超過%d%",
+    "en": "Allied frontline position is more than %d%",
+    "th": "ตำแหน่งแนวหน้าของฝ่ายเราเกิน %d%",
+    "jp": "味方の前線位置が%d%を超えた時"
+  },
+  {
+    "key": "EXTREME_STAGE_CONDITION_ENEMY_HP",
+    "zh_TW": "敵方塔城血量低於%d%",
+    "en": "Enemy Tower HP is below %d%",
+    "th": "HP ป้อมศัตรูต่ำกว่า %d%",
+    "jp": "敵タワーのHPが%d%未満の時"
+  },
+  {
+    "key": "EXTREME_STAGE_CONDITION_TIME",
+    "zh_TW": "戰鬥時間超過%d秒",
+    "en": "Battle duration exceeds %d sec",
+    "th": "เวลาต่อสู้เกิน %d วินาที",
+    "jp": "戦闘時間が%d秒を超えた時"
+  },
+  {
+    "key": "EXTREME_STAGE_CONDITION_SPECIAL",
+    "zh_TW": "特殊",
+    "en": "Special",
+    "th": "พิเศษ",
+    "jp": "特殊"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_str_0001",
+    "zh_TW": "參加戰鬥的力量型Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Strength-type Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ชนิดพลังที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する力タイプのレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_agi_0001",
+    "zh_TW": "參加戰鬥的敏捷型Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Agility-type Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ชนิดคล่องแคล่วที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する敏捷タイプのレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_int_0001",
+    "zh_TW": "參加戰鬥的智慧型Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Intelligence-type Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ชนิดไหวพริบที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する知能タイプのレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_fire_0001",
+    "zh_TW": "參加戰鬥的火屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Fire-element Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุไฟที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する火属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_water_0001",
+    "zh_TW": "參加戰鬥的水屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Water-element Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุน้ำที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する水属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_tree_0001",
+    "zh_TW": "參加戰鬥的木屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Wood-element Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุไม้ที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する木属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_light_0001",
+    "zh_TW": "參加戰鬥的光屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Light-element Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุแสงที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する光属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_dark_0001",
+    "zh_TW": "參加戰鬥的闇屬性Ranger的攻擊力、防禦力和體力降低%N%。",
+    "en": "The ATK, DEF and HP of Dark-element Rangers participating in battle decrease by %N%.",
+    "th": "พลังโจมตี พลังป้องกัน และ HP ของเรนเจอร์ธาตุมืดที่เข้าร่วมการต่อสู้ลดลง %N%",
+    "jp": "戦闘に参加する闇属性のレンジャーの攻撃力・防御力・HPが%N%低下する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_mnrl_0001",
+    "zh_TW": "礦物生產量會隨指定時間經過持續降低，每隔%s秒將降低當前礦物生產速度的%N%，效果會持續累積至戰鬥結束",
+    "en": "Mineral production decreases over time. Every %s seconds, the current mineral production speed decreases by %N%. This effect stacks until the battle ends.",
+    "th": "การผลิตแร่ลดลงตามเวลา ทุก %s วินาที ความเร็วในการผลิตแร่ปัจจุบันลดลง %N% เอฟเฟกต์สะสมจนจบการต่อสู้",
+    "jp": "時間とともにミネラル生産量が低下する。%s秒ごとに現在のミネラル生産速度が%N%低下し、戦闘終了まで累積する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_cost_0001",
+    "zh_TW": "Ranger生產所需的礦物量會持續增加，每次生產Ranger後費用會增加%N%，效果會持續累積至戰鬥結束。",
+    "en": "The mineral cost of deploying Rangers keeps increasing. Each time a Ranger is deployed, the cost increases by %N%. This effect stacks until the battle ends.",
+    "th": "ค่าแร่ในการออกสนามเพิ่มขึ้นเรื่อย ๆ ทุกครั้งที่เรนเจอร์ออกสนาม ค่าแร่เพิ่มขึ้น %N% เอฟเฟกต์สะสมจนจบการต่อสู้",
+    "jp": "レンジャーの出動ミネラル費用が増加し続ける。出動するたびに費用が%N%増加し、戦闘終了まで累積する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_cooltime_0001",
+    "zh_TW": "Ranger的重新產生時間會隨時間經過持續惡化，每隔%s秒將使Ranger生產累積條的回復速度降低%N%，效果會持續累積至戰鬥結束。",
+    "en": "Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.",
+    "th": "เวลาออกสนามใหม่ของเรนเจอร์แย่ลงตามเวลา ทุก %s วินาที ความเร็วในการฟื้นฟูเกจออกสนามลดลง %N% เอฟเฟกต์สะสมจนจบการต่อสู้",
+    "jp": "時間とともに再出動が遅くなる。%s秒ごとにレンジャーの出動ゲージ回復速度が%N%低下し、戦闘終了まで累積する。"
+  },
+  {
+    "key": "EXTREME_STAGE_PASSIVE_ext_pas_ctime_0001",
+    "zh_TW": "Ranger的重新產生時間會隨時間經過持續惡化，每隔%s秒將使Ranger生產累積條的回復速度降低%N%，效果會持續累積至戰鬥結束。",
+    "en": "Ranger redeployment time worsens over time. Every %s seconds, the recovery speed of the Ranger deployment gauge decreases by %N%. This effect stacks until the battle ends.",
+    "th": "เวลาออกสนามใหม่ของเรนเจอร์แย่ลงตามเวลา ทุก %s วินาที ความเร็วในการฟื้นฟูเกจออกสนามลดลง %N% เอฟเฟกต์สะสมจนจบการต่อสู้",
+    "jp": "時間とともに再出動が遅くなる。%s秒ごとにレンジャーの出動ゲージ回復速度が%N%低下し、戦闘終了まで累積する。"
+  },
+  {
+    "key": "ENDLESS_BATTLE_TYPE_OFFENCE",
+    "zh_TW": "拯救關卡",
+    "en": "Rescue Stage",
+    "th": "ด่านช่วยเหลือ",
+    "jp": "救出ステージ"
+  },
+  {
+    "key": "ENDLESS_BATTLE_TYPE_TIMEATTACK",
+    "zh_TW": "破壞牢籠",
+    "en": "Cage Destruction",
+    "th": "ทำลายกรง",
+    "jp": "牢獄破壊"
+  },
+  {
+    "key": "ENDLESS_BATTLE_TYPE_SIEGE",
+    "zh_TW": "破壞塔城",
+    "en": "Tower Destruction",
+    "th": "ทำลายป้อม",
+    "jp": "タワー破壊"
+  },
+  {
+    "key": "ENDLESS_BATTLE_TYPE_BOSS",
+    "zh_TW": "擊倒魔王",
+    "en": "Defeat the Boss",
+    "th": "กำจัดบอส",
+    "jp": "ボスを倒す"
+  },
+  {
+    "key": "ENDLESS_ELEMENT_water",
+    "zh_TW": "水",
+    "en": "Water",
+    "th": "น้ำ",
+    "jp": "水"
+  },
+  {
+    "key": "ENDLESS_ELEMENT_fire",
+    "zh_TW": "火",
+    "en": "Fire",
+    "th": "ไฟ",
+    "jp": "火"
+  },
+  {
+    "key": "ENDLESS_ELEMENT_tree",
+    "zh_TW": "木",
+    "en": "Wood",
+    "th": "ไม้",
+    "jp": "木"
+  },
+  {
+    "key": "ENDLESS_ELEMENT_light",
+    "zh_TW": "光",
+    "en": "Light",
+    "th": "แสง",
+    "jp": "光"
+  },
+  {
+    "key": "ENDLESS_ELEMENT_dark",
+    "zh_TW": "暗",
+    "en": "Dark",
+    "th": "มืด",
+    "jp": "闇"
+  },
+  {
+    "key": "EQUIP_TYPE_WEAPON",
+    "zh_TW": "武器",
+    "en": "Weapon",
+    "th": "อาวุธ",
+    "jp": "武器"
+  },
+  {
+    "key": "EQUIP_TYPE_ACC",
+    "zh_TW": "飾品",
+    "en": "Accessory",
+    "th": "เครื่องประดับ",
+    "jp": "アクセサリー"
+  },
+  {
+    "key": "EQUIP_TYPE_ARMOR",
+    "zh_TW": "防具",
+    "en": "Armor",
+    "th": "เกราะ",
+    "jp": "防具"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_FIRE",
+    "zh_TW": "火屬性Ranger",
+    "en": "Fire-element Rangers",
+    "th": "เรนเจอร์ธาตุไฟ",
+    "jp": "火属性レンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_TREE",
+    "zh_TW": "木屬性Ranger",
+    "en": "Wood-element Rangers",
+    "th": "เรนเจอร์ธาตุไม้",
+    "jp": "木属性レンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_WATER",
+    "zh_TW": "水屬性Ranger",
+    "en": "Water-element Rangers",
+    "th": "เรนเจอร์ธาตุน้ำ",
+    "jp": "水属性レンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_DARK",
+    "zh_TW": "暗屬性Ranger",
+    "en": "Dark-element Rangers",
+    "th": "เรนเจอร์ธาตุมืด",
+    "jp": "闇属性レンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_LIGHT",
+    "zh_TW": "光屬性Ranger",
+    "en": "Light-element Rangers",
+    "th": "เรนเจอร์ธาตุแสง",
+    "jp": "光属性レンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_STR",
+    "zh_TW": "力量型Ranger",
+    "en": "Strength-type Rangers",
+    "th": "เรนเจอร์ชนิดพลัง",
+    "jp": "力タイプのレンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_INT",
+    "zh_TW": "智慧型Ranger",
+    "en": "Intelligence-type Rangers",
+    "th": "เรนเจอร์ชนิดไหวพริบ",
+    "jp": "知能タイプのレンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_AGI",
+    "zh_TW": "敏捷型Ranger",
+    "en": "Agility-type Rangers",
+    "th": "เรนเจอร์ชนิดคล่องแคล่ว",
+    "jp": "敏捷タイプのレンジャー"
+  },
+  {
+    "key": "EQUIP_RANGER_TYPE_NONE",
+    "zh_TW": "無",
+    "en": "None",
+    "th": "ไม่มี",
+    "jp": "なし"
+  },
+  {
+    "key": "RANGER_EFFECT_ATTACK",
+    "zh_TW": "攻擊力",
+    "en": "ATK",
+    "th": "พลังโจมตี",
+    "jp": "攻撃力"
+  },
+  {
+    "key": "RANGER_EFFECT_AVOID_CHANCE",
+    "zh_TW": "閃避機率",
+    "en": "Evade Rate",
+    "th": "อัตราการหลบหลีก",
+    "jp": "回避率"
+  },
+  {
+    "key": "RANGER_EFFECT_NONE",
+    "zh_TW": "無",
+    "en": "None",
+    "th": "ไม่มี",
+    "jp": "なし"
+  },
+  {
+    "key": "RANGER_EFFECT_ATK",
+    "zh_TW": "攻擊力",
+    "en": "ATK",
+    "th": "พลังโจมตี",
+    "jp": "攻撃力"
+  },
+  {
+    "key": "RANGER_EFFECT_SKILL_RESIST",
+    "zh_TW": "技能抗性",
+    "en": "Skill Resistance",
+    "th": "ต้านสกิล",
+    "jp": "スキル抵抗"
+  },
+  {
+    "key": "RANGER_EFFECT_CRITICAL_POWER",
+    "zh_TW": "爆擊傷害",
+    "en": "Critical Damage",
+    "th": "แรงโจมตีคริทิคอล",
+    "jp": "決定打のダメージ"
+  },
+  {
+    "key": "RANGER_EFFECT_ANTI_SK_AVOID_PROB",
+    "zh_TW": "技能命中率",
+    "en": "Skill Hit Rate",
+    "th": "อัตราความแม่นยำของทักษะ",
+    "jp": "スキル命中率"
+  },
+  {
+    "key": "RANGER_EFFECT_SKILLRANGE",
+    "zh_TW": "技能範圍",
+    "en": "Skill Range",
+    "th": "ระยะทักษะ",
+    "jp": "スキル範囲"
+  },
+  {
+    "key": "RANGER_EFFECT_SPECIAL_DEF",
+    "zh_TW": "魔法防禦力",
+    "en": "Magical DEF",
+    "th": "พลังเวทป้องกัน",
+    "jp": "魔法防御力"
+  },
+  {
+    "key": "RANGER_EFFECT_NORMAL_DEF",
+    "zh_TW": "物理防禦力",
+    "en": "Physical DEF",
+    "th": "พลังป้องกันกาย",
+    "jp": "物理防御力"
+  },
+  {
+    "key": "RANGER_EFFECT_ATKSPD",
+    "zh_TW": "攻擊速度",
+    "en": "Attack Speed",
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
+  },
+  {
+    "key": "RANGER_EFFECT_SPEED",
+    "zh_TW": "移動速度",
+    "en": "Move Speed",
+    "th": "ความเร็วการเคลื่อนที",
+    "jp": "移動速度"
+  },
+  {
+    "key": "RANGER_EFFECT_CHANGE_SPLASH",
+    "zh_TW": "濺射範圍",
+    "en": "Splash Radius",
+    "th": "รัศมีโจมตีกระจาย",
+    "jp": "スプラッシュ半径"
+  },
+  {
+    "key": "RANGER_EFFECT_ATKRANGE",
+    "zh_TW": "攻擊範圍",
+    "en": "Attack Range",
+    "th": "ระยะโจมตี",
+    "jp": "攻撃範囲"
+  },
+  {
+    "key": "RANGER_EFFECT_CRITICAL_CHANCE",
+    "zh_TW": "爆擊機率",
+    "en": "Critical Rate",
+    "th": "อัตราติดคริทิคอล",
+    "jp": "決定打の確率"
+  },
+  {
+    "key": "RANGER_EFFECT_VAMPIRE",
+    "zh_TW": "吸血",
+    "en": "Life Steal",
+    "th": "ดูด HP",
+    "jp": "HP吸収"
+  },
+  {
+    "key": "RANGER_EFFECT_SKILL_AVOID_CHANCE",
+    "zh_TW": "技能閃避機率",
+    "en": "Skill Evade Rate",
+    "th": "อัตราการหลบสกิล",
+    "jp": "スキル回避率"
+  },
+  {
+    "key": "RANGER_EFFECT_HP",
+    "zh_TW": "體力",
+    "en": "HP",
+    "th": "พลังชีวิต",
+    "jp": "体力"
+  },
+  {
+    "key": "RANGER_EFFECT_ANTI_AVOID_PROB",
+    "zh_TW": "命中率",
+    "en": "Hit Rate",
+    "th": "อัตราความแม่นยำ",
+    "jp": "命中率"
+  },
+  {
+    "key": "RANGER_EFFECT_SKILL_CHANCE",
+    "zh_TW": "技能發動率",
+    "en": "Skill Use Rate",
+    "th": "อัตราการใช้สกิล",
+    "jp": "スキル発動率"
+  },
+  {
+    "key": "RANGER_TYPE_AGI",
+    "zh_TW": "敏捷型",
+    "en": "Agility",
+    "th": "คล่องแคล่ว",
+    "jp": "敏捷"
+  },
+  {
+    "key": "RANGER_TYPE_INT",
+    "zh_TW": "智慧型",
+    "en": "Intelligence",
+    "th": "ไหวพริบ",
+    "jp": "知能"
+  },
+  {
+    "key": "RANGER_TYPE_STR",
+    "zh_TW": "力量型",
+    "en": "Strength",
+    "th": "พลัง",
+    "jp": "力"
+  },
+  {
+    "key": "RANGER_TYPE_light",
+    "zh_TW": "光",
+    "en": "Light",
+    "th": "แสง",
+    "jp": "光"
+  },
+  {
+    "key": "RANGER_TYPE_dark",
+    "zh_TW": "暗",
+    "en": "Dark",
+    "th": "มืด",
+    "jp": "闇"
+  },
+  {
+    "key": "RANGER_TYPE_fire",
+    "zh_TW": "火",
+    "en": "Fire",
+    "th": "ไฟ",
+    "jp": "火"
+  },
+  {
+    "key": "RANGER_TYPE_tree",
+    "zh_TW": "木",
+    "en": "Wood",
+    "th": "ไม้",
+    "jp": "木"
+  },
+  {
+    "key": "RANGER_TYPE_water",
+    "zh_TW": "水",
+    "en": "Water",
+    "th": "น้ำ",
+    "jp": "水"
+  },
+  {
+    "key": "RANGER_TYPE_none",
+    "zh_TW": "無",
+    "en": "None",
+    "th": "ไร้ธาตุ",
+    "jp": "無属性"
+  },
+  {
+    "key": "RANGER_TYPE_boss_1",
+    "zh_TW": "EVA使徒",
+    "en": "EVA Angel",
+    "th": "เทวทูต EVA",
+    "jp": "EVAの使徒"
+  },
+  {
+    "key": "RANGER_TYPE_boss_2",
+    "zh_TW": "EVA使徒",
+    "en": "EVA Angel",
+    "th": "เทวทูต EVA",
+    "jp": "EVAの使徒"
+  },
+  {
+    "key": "RANGER_SPEED_VERYSLOW",
+    "zh_TW": "非常慢",
+    "en": "Very Slow",
+    "th": "ช้ามาก",
+    "jp": "とても遅い"
+  },
+  {
+    "key": "RANGER_SPEED_SLOW",
+    "zh_TW": "慢",
+    "en": "Slow",
+    "th": "ช้า",
+    "jp": "遅い"
+  },
+  {
+    "key": "RANGER_SPEED_NORMAL",
+    "zh_TW": "普通",
+    "en": "Normal",
+    "th": "ปกติ",
+    "jp": "普通"
+  },
+  {
+    "key": "RANGER_SPEED_FAST",
+    "zh_TW": "快",
+    "en": "Fast",
+    "th": "เร็ว",
+    "jp": "速い"
+  },
+  {
+    "key": "RANGER_SPEED_VERYFAST",
+    "zh_TW": "非常快",
+    "en": "Very Fast",
+    "th": "เร็วมาก",
+    "jp": "とても速い"
+  },
+  {
+    "key": "RANGER_SPEED_DEFAULT",
+    "zh_TW": "非常慢",
+    "en": "Very Slow",
+    "th": "ช้ามาก",
+    "jp": "とても遅い"
+  },
+  {
+    "key": "RANGER_SKILL_TARGET_SEARCH",
+    "zh_TW": "前方敵人",
+    "en": "Frontmost Enemy",
+    "th": "ศัตรูด้านหน้าสุด",
+    "jp": "最前方の敵"
+  },
+  {
+    "key": "RANGER_SKILL_TARGET_RSEARCH",
+    "zh_TW": "後方敵人（倍率:%d倍）",
+    "en": "Rearmost Enemy (Multiplier: x%d)",
+    "th": "ศัตรูด้านหลังสุด (ตัวคูณ: x%d)",
+    "jp": "最後方の敵（倍率：x%d）"
+  },
+  {
+    "key": "RANGER_SKILL_TARGET_SELF",
+    "zh_TW": "自身",
+    "en": "Self",
+    "th": "ตนเอง",
+    "jp": "自身"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_atavoid",
+    "zh_TW": "迷宮探測機",
+    "en": "Labyrinth Detector",
+    "th": "เครื่องตรวจจับเขาวงกต",
+    "jp": "迷宮探知機"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_atk",
+    "zh_TW": "古代王劍",
+    "en": "Ancient King's Sword",
+    "th": "ดาบราชาโบราณ",
+    "jp": "古代王の剣"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_atkspd",
+    "zh_TW": "新鮮的尾巴",
+    "en": "Fresh Tail",
+    "th": "หางสดใหม่",
+    "jp": "新鮮なしっぽ"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_avoid",
+    "zh_TW": "幸運的羽毛",
+    "en": "Lucky Feather",
+    "th": "ขนนกนำโชค",
+    "jp": "幸運の羽"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_hp",
+    "zh_TW": "生命寶石",
+    "en": "Life Gem",
+    "th": "อัญมณีแห่งชีวิต",
+    "jp": "生命の宝石"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_spd",
+    "zh_TW": "神速的羽毛鞋",
+    "en": "Swift Feather Shoes",
+    "th": "รองเท้าขนนกว่องไว",
+    "jp": "俊足の羽靴"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_atavoid",
+    "zh_TW": "故障的探測機",
+    "en": "Broken Detector",
+    "th": "เครื่องตรวจจับชำรุด",
+    "jp": "壊れた探知機"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_atk",
+    "zh_TW": "斷劍",
+    "en": "Broken Sword",
+    "th": "ดาบหัก",
+    "jp": "折れた剣"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_atkrge",
+    "zh_TW": "束縛的迴旋鏢",
+    "en": "Binding Boomerang",
+    "th": "บูมเมอแรงพันธนาการ",
+    "jp": "束縛のブーメラン"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_atkspd",
+    "zh_TW": "腐爛的尾巴",
+    "en": "Rotten Tail",
+    "th": "หางเน่า",
+    "jp": "腐ったしっぽ"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_avoid",
+    "zh_TW": "不幸的羽毛",
+    "en": "Unlucky Feather",
+    "th": "ขนนกอับโชค",
+    "jp": "不運の羽"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_hp",
+    "zh_TW": "死亡寶石",
+    "en": "Death Gem",
+    "th": "อัญมณีแห่งความตาย",
+    "jp": "死の宝石"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_spd",
+    "zh_TW": "髒掉的羽毛鞋",
+    "en": "Dirty Feather Shoes",
+    "th": "รองเท้าขนนกสกปรก",
+    "jp": "汚れた羽靴"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_min",
+    "zh_TW": "祝福的咒文書",
+    "en": "Blessed Spellbook",
+    "th": "ตำราเวทที่ได้รับพร",
+    "jp": "祝福の魔導書"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_prdtime",
+    "zh_TW": "女神的沙漏",
+    "en": "Goddess's Hourglass",
+    "th": "นาฬิกาทรายเทพธิดา",
+    "jp": "女神の砂時計"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_bf_redmg",
+    "zh_TW": "加護的鏡子",
+    "en": "Mirror of Protection",
+    "th": "กระจกป้องกัน",
+    "jp": "守護の鏡"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_dead",
+    "zh_TW": "可疑的藥丸",
+    "en": "Suspicious Pill",
+    "th": "ยาเม็ดน่าสงสัย",
+    "jp": "怪しい錠剤"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_heal",
+    "zh_TW": "感染的樹液",
+    "en": "Infected Sap",
+    "th": "ยางไม้ติดเชื้อ",
+    "jp": "感染した樹液"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_min",
+    "zh_TW": "詛咒的咒文書",
+    "en": "Cursed Spellbook",
+    "th": "ตำราเวทต้องสาป",
+    "jp": "呪われた魔導書"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_prdtime",
+    "zh_TW": "魔女的沙漏",
+    "en": "Witch's Hourglass",
+    "th": "นาฬิกาทรายแม่มด",
+    "jp": "魔女の砂時計"
+  },
+  {
+    "key": "LABYRINTH_ARTIFACT_NAME_df_silence",
+    "zh_TW": "靜音口罩",
+    "en": "Silence Mask",
+    "th": "หน้ากากใบ้",
+    "jp": "沈黙の仮面"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_ANTI_AVOID",
+    "zh_TW": "Ranger的命中率/技能命中率提升%d%",
+    "en": "Rangers' Hit Rate/Skill Hit Rate +%d%",
+    "th": "อัตราโจมตีโดน/อัตราทักษะโจมตีโดนของเรนเจอร์ +%d%",
+    "jp": "レンジャーの命中率／スキル命中率 +%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_ATK",
+    "zh_TW": "Ranger的攻擊力提升%d%",
+    "en": "Rangers' ATK +%d%",
+    "th": "พลังโจมตีของเรนเจอร์ +%d%",
+    "jp": "レンジャーの攻撃力 +%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_ATK_SPD",
+    "zh_TW": "Ranger的攻擊速度提升%d%",
+    "en": "Rangers' Attack Speed +%d%",
+    "th": "ความเร็วโจมตีของเรนเจอร์ +%d%",
+    "jp": "レンジャーの攻撃速度 +%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_AVOID",
+    "zh_TW": "Ranger的閃避機率/技能閃避機率提升%d%",
+    "en": "Rangers' Evade Rate/Skill Evade Rate +%d%",
+    "th": "อัตราหลบหลีก/อัตราหลบทักษะของเรนเจอร์ +%d%",
+    "jp": "レンジャーの回避率／スキル回避率 +%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_HP",
+    "zh_TW": "Ranger的體力上限提升%d%",
+    "en": "Rangers' Max HP +%d%",
+    "th": "HP สูงสุดของเรนเจอร์ +%d%",
+    "jp": "レンジャーの最大HP +%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_PRD_SPE",
+    "zh_TW": "Ranger的再生產時間減少%d%",
+    "en": "Rangers' Regeneration Time -%d%",
+    "th": "เวลาเกิดใหม่ของเรนเจอร์ -%d%",
+    "jp": "レンジャーの再出動時間 -%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_RE_DMG",
+    "zh_TW": "Ranger的承受傷害減少%d%",
+    "en": "Rangers' Damage Taken -%d%",
+    "th": "ความเสียหายที่เรนเจอร์ได้รับ -%d%",
+    "jp": "レンジャーの被ダメージ -%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_SPD",
+    "zh_TW": "Ranger的移動速度提升%d%",
+    "en": "Rangers' Move Speed +%d%",
+    "th": "ความเร็วเคลื่อนที่ของเรนเจอร์ +%d%",
+    "jp": "レンジャーの移動速度 +%d%"
+  },
+  {
+    "key": "LABYRINTH_BUFF_EFFECT_SUMMON_ENGY",
+    "zh_TW": "Ranger的生產礦物費用減少%d%",
+    "en": "Rangers' Mineral Cost -%d%",
+    "th": "ค่าแร่ของเรนเจอร์ -%d%",
+    "jp": "レンジャーのミネラル費用 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID",
+    "zh_TW": "Ranger的命中率/技能命中率降低%d%",
+    "en": "Rangers' Hit Rate/Skill Hit Rate -%d%",
+    "th": "อัตราโจมตีโดน/อัตราทักษะโจมตีโดนของเรนเจอร์ -%d%",
+    "jp": "レンジャーの命中率／スキル命中率 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_ANTI_HEAL",
+    "zh_TW": "Ranger的回復體力的技能效果降低%d%",
+    "en": "Rangers' Skill HP Recovery Effect -%d%",
+    "th": "เอฟเฟกต์ฟื้นฟู HP จากทักษะของเรนเจอร์ -%d%",
+    "jp": "レンジャーのスキルHP回復効果 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_ATK",
+    "zh_TW": "Ranger的攻擊力降低%d%",
+    "en": "Rangers' ATK -%d%",
+    "th": "พลังโจมตีของเรนเจอร์ -%d%",
+    "jp": "レンジャーの攻撃力 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_ATK_RANGE",
+    "zh_TW": "Ranger的攻擊射程降低%d%",
+    "en": "Rangers' Attack Range -%d%",
+    "th": "ระยะโจมตีของเรนเจอร์ -%d%",
+    "jp": "レンジャーの攻撃範囲 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_ATK_SPD",
+    "zh_TW": "Ranger的攻擊速度降低%d%",
+    "en": "Rangers' Attack Speed -%d%",
+    "th": "ความเร็วโจมตีของเรนเจอร์ -%d%",
+    "jp": "レンジャーの攻撃速度 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_AVOID",
+    "zh_TW": "Ranger的閃避機率/技能閃避機率降低%d%",
+    "en": "Rangers' Evade Rate/Skill Evade Rate -%d%",
+    "th": "อัตราหลบหลีก/อัตราหลบทักษะของเรนเจอร์ -%d%",
+    "jp": "レンジャーの回避率／スキル回避率 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_DEAD",
+    "zh_TW": "%d%的機率使Ranger出動無效 (仍會消耗礦物)",
+    "en": "%d% chance that deployed Rangers fail to enter battle (Minerals are still consumed)",
+    "th": "เรนเจอร์ที่ออกสนามมีโอกาส %d% ที่จะไม่เข้าต่อสู้ (ยังใช้แร่ตามปกติ)",
+    "jp": "出動したレンジャーが%d%の確率で戦闘に参加しない（ミネラルは消費される）"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_HP",
+    "zh_TW": "Ranger的體力上限降低%d%",
+    "en": "Rangers' Max HP -%d%",
+    "th": "HP สูงสุดของเรนเจอร์ -%d%",
+    "jp": "レンジャーの最大HP -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_PRD_SPE",
+    "zh_TW": "Ranger的再生產時間增加%d%",
+    "en": "Rangers' Regeneration Time +%d%",
+    "th": "เวลาเกิดใหม่ของเรนเจอร์ +%d%",
+    "jp": "レンジャーの再出動時間 +%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_SILENCE",
+    "zh_TW": "%d%的機率使Ranger以永久沈默的狀態出動 (此狀態無法解除)",
+    "en": "%d% chance for Rangers to deploy permanently Silenced (cannot be removed)",
+    "th": "เรนเจอร์มีโอกาส %d% ที่จะออกสนามพร้อมสถานะใบ้ถาวร (ลบไม่ได้)",
+    "jp": "レンジャーが%d%の確率で解除不能の永続沈黙状態で出動する"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_SPD",
+    "zh_TW": "Ranger的移動速度降低%d%",
+    "en": "Rangers' Move Speed -%d%",
+    "th": "ความเร็วเคลื่อนที่ของเรนเจอร์ -%d%",
+    "jp": "レンジャーの移動速度 -%d%"
+  },
+  {
+    "key": "LABYRINTH_DEBUFF_EFFECT_SUMMON_ENGY",
+    "zh_TW": "Ranger的生產礦物費用增加%d%",
+    "en": "Rangers' Mineral Cost +%d%",
+    "th": "ค่าแร่ของเรนเจอร์ +%d%",
+    "jp": "レンジャーのミネラル費用 +%d%"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_WATER",
+    "zh_TW": "水屬性",
+    "en": "Water Element",
+    "th": "ธาตุน้ำ",
+    "jp": "水属性"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_FIRE",
+    "zh_TW": "火屬性",
+    "en": "Fire Element",
+    "th": "ธาตุไฟ",
+    "jp": "火属性"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_TREE",
+    "zh_TW": "木屬性",
+    "en": "Wood Element",
+    "th": "ธาตุไม้",
+    "jp": "木属性"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_LIGHT",
+    "zh_TW": "光屬性",
+    "en": "Light Element",
+    "th": "ธาตุแสง",
+    "jp": "光属性"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_DARK",
+    "zh_TW": "暗屬性",
+    "en": "Dark Element",
+    "th": "ธาตุมืด",
+    "jp": "闇属性"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_AGI",
+    "zh_TW": "敏捷型",
+    "en": "Agility Type",
+    "th": "ชนิดคล่องแคล่ว",
+    "jp": "敏捷タイプ"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_INT",
+    "zh_TW": "智慧型",
+    "en": "Intelligence Type",
+    "th": "ชนิดไหวพริบ",
+    "jp": "知能タイプ"
+  },
+  {
+    "key": "LABYRINTH_TARGET_TYPE_STR",
+    "zh_TW": "力量型",
+    "en": "Strength Type",
+    "th": "ชนิดพลัง",
+    "jp": "力タイプ"
+  },
+  {
+    "key": "LABYRINTH_BATTLE_CONDITION_START",
+    "zh_TW": "遊戲開始後%d秒",
+    "en": "%d sec after battle starts",
+    "th": "หลังเริ่มต่อสู้ %d วินาที",
+    "jp": "戦闘開始から%d秒後"
+  },
+  {
+    "key": "LABYRINTH_BATTLE_CONDITION_BOSS_HP_1",
+    "zh_TW": "魔王體力低於%d%",
+    "en": "Boss HP is below %d%",
+    "th": "HP บอสต่ำกว่า %d%",
+    "jp": "ボスのHPが%d%未満の時"
+  },
+  {
+    "key": "LABYRINTH_BATTLE_CONDITION_BOSS_HP_2",
+    "zh_TW": "魔王體力低於%d%",
+    "en": "Boss HP is below %d%",
+    "th": "HP บอสต่ำกว่า %d%",
+    "jp": "ボスのHPが%d%未満の時"
+  },
+  {
+    "key": "LABYRINTH_BATTLE_CONDITION_BOSS_HP_3",
+    "zh_TW": "魔王體力低於%d%",
+    "en": "Boss HP is below %d%",
+    "th": "HP บอสต่ำกว่า %d%",
+    "jp": "ボスのHPが%d%未満の時"
+  },
+  {
+    "key": "LABYRINTH_STAGE_TYPE_B_DUAL",
+    "zh_TW": "混線關卡",
+    "en": "Mixed-Lane Stage",
+    "th": "ด่านเลนผสม",
+    "jp": "混合レーンステージ"
+  },
+  {
+    "key": "LABYRINTH_STAGE_TYPE_B_NORMAL",
+    "zh_TW": "單線關卡",
+    "en": "Single-Lane Stage",
+    "th": "ด่านเลนเดียว",
+    "jp": "単一レーンステージ"
+  },
+  {
+    "key": "LABYRINTH_STAGE_TYPE_B_HALF",
+    "zh_TW": "雙線關卡",
+    "en": "Two-Lane Stage",
+    "th": "ด่านสองเลน",
+    "jp": "2レーンステージ"
+  },
+  {
+    "key": "LABYRINTH_STAGE_TYPE_B_BOSS",
+    "zh_TW": "魔王關卡",
+    "en": "Boss Stage",
+    "th": "ด่านบอส",
+    "jp": "ボスステージ"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_unitNameCode",
+    "zh_TW": "Ranger名稱",
+    "en": "Ranger Name",
+    "th": "ชื่อเรนเจอร์",
+    "jp": "レンジャー名"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_release",
+    "zh_TW": "登場時間",
+    "en": "Release Date",
+    "th": "วันเปิดตัว",
+    "jp": "登場日"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_grade",
+    "zh_TW": "Ranger星數",
+    "en": "Ranger Stars",
+    "th": "จำนวนดาวเรนเจอร์",
+    "jp": "レンジャーの星数"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_unitCategoryType",
+    "zh_TW": "類型",
+    "en": "Type",
+    "th": "ชนิด",
+    "jp": "タイプ"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_unitElement",
+    "zh_TW": "屬性",
+    "en": "Element",
+    "th": "ธาตุ",
+    "jp": "属性"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_productionSpeed",
+    "zh_TW": "Ranger再生產時間",
+    "en": "Ranger Regeneration Time",
+    "th": "เวลาเกิดใหม่ของเรนเจอร์",
+    "jp": "レンジャー再出動時間"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_summonEnergy",
+    "zh_TW": "生產礦物費用",
+    "en": "Mineral \\nProduction cost",
+    "th": "ค่าใช้จ่ายการผลิตแร่",
+    "jp": "生産ミネラル費用"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_attackRange",
+    "zh_TW": "攻擊範圍",
+    "en": "Attack Range",
+    "th": "ระยะโจมตี",
+    "jp": "攻撃範囲"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_initialAttack",
+    "zh_TW": "物理攻擊力",
+    "en": "Physical ATK",
+    "th": "พลังโจมตีกาย",
+    "jp": "物理攻撃力"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_specialAttack",
+    "zh_TW": "魔法攻擊力",
+    "en": "Magical ATK",
+    "th": "พลังเวทโจมตี",
+    "jp": "魔法攻撃力"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_defence",
+    "zh_TW": "物理防禦力",
+    "en": "Physical DEF",
+    "th": "พลังป้องกันกาย",
+    "jp": "物理防御力"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_specialDefence",
+    "zh_TW": "魔法防禦力",
+    "en": "Magical DEF",
+    "th": "พลังเวทป้องกัน",
+    "jp": "魔法防御力"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_initialHp",
+    "zh_TW": "體力",
+    "en": "HP",
+    "th": "พลังชีวิต",
+    "jp": "体力"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_projectileAttackScope",
+    "zh_TW": "濺射範圍",
+    "en": "Splash Radius",
+    "th": "รัศมีโจมตีกระจาย",
+    "jp": "スプラッシュ半径"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_criticalProbability",
+    "zh_TW": "爆擊機率",
+    "en": "Critical Rate",
+    "th": "อัตราติดคริทิคอล",
+    "jp": "決定打の確率"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_criticalRatio",
+    "zh_TW": "爆擊傷害",
+    "en": "Critical Damage",
+    "th": "แรงโจมตีคริทิคอล",
+    "jp": "決定打のダメージ"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_antiAvoidProb",
+    "zh_TW": "命中率",
+    "en": "Hit Rate",
+    "th": "อัตราความแม่นยำ",
+    "jp": "命中率"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_avoidProbability",
+    "zh_TW": "閃避機率",
+    "en": "Evade Rate",
+    "th": "อัตราการหลบหลีก",
+    "jp": "回避率"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_antiSkillAvoidProb",
+    "zh_TW": "技能命中率",
+    "en": "Skill Hit Rate",
+    "th": "อัตราความแม่นยำของทักษะ",
+    "jp": "スキル命中率"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_skillAvoidProbability",
+    "zh_TW": "技能閃避機率",
+    "en": "Skill Evade Rate",
+    "th": "อัตราการหลบสกิล",
+    "jp": "スキル回避率"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_skillResistance",
+    "zh_TW": "技能抗性",
+    "en": "Skill Resistance",
+    "th": "ต้านสกิล",
+    "jp": "スキル抵抗"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_attackSpeedType",
+    "zh_TW": "攻擊速度",
+    "en": "Attack Speed",
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_moveSpeedType",
+    "zh_TW": "移動速度",
+    "en": "Move Speed",
+    "th": "ความเร็วการเคลื่อนที",
+    "jp": "移動速度"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_hpIncreaseAmount",
+    "zh_TW": "hpIncreaseAmount",
+    "en": "HP increase amount",
+    "th": "ปริมาณ HP ที่เพิ่ม",
+    "jp": "HP増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_attackIncreaseAmount",
+    "zh_TW": "attackIncreaseAmount",
+    "en": "Physical ATK increase amount",
+    "th": "ปริมาณพลังโจมตีกายภาพที่เพิ่ม",
+    "jp": "物理攻撃力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_specialAttackDelta",
+    "zh_TW": "specialAttackDelta",
+    "en": "Magic ATK increase amount",
+    "th": "ปริมาณพลังโจมตีเวทที่เพิ่ม",
+    "jp": "魔法攻撃力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_generalDefenceDelta",
+    "zh_TW": "generalDefenceDelta",
+    "en": "Physical DEF increase amount",
+    "th": "ปริมาณพลังป้องกันกายภาพที่เพิ่ม",
+    "jp": "物理防御力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_specialDefenceDelta",
+    "zh_TW": "specialDefenceDelta",
+    "en": "Magic DEF increase amount",
+    "th": "ปริมาณพลังป้องกันเวทที่เพิ่ม",
+    "jp": "魔法防御力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_hpIncreaseAmountMax",
+    "zh_TW": "hpIncreaseAmountMax",
+    "en": "Maximum HP increase amount",
+    "th": "ปริมาณ HP ที่เพิ่มสูงสุด",
+    "jp": "最大HP増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_attackIncreaseAmountMax",
+    "zh_TW": "attackIncreaseAmountMax",
+    "en": "Maximum physical ATK increase amount",
+    "th": "ปริมาณพลังโจมตีกายภาพที่เพิ่มสูงสุด",
+    "jp": "最大物理攻撃力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_specialAttackDeltaMax",
+    "zh_TW": "specialAttackDeltaMax",
+    "en": "Maximum magic ATK increase amount",
+    "th": "ปริมาณพลังโจมตีเวทที่เพิ่มสูงสุด",
+    "jp": "最大魔法攻撃力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_generalDefenceDeltaMax",
+    "zh_TW": "generalDefenceDeltaMax",
+    "en": "Maximum physical DEF increase amount",
+    "th": "ปริมาณพลังป้องกันกายภาพที่เพิ่มสูงสุด",
+    "jp": "最大物理防御力増加量"
+  },
+  {
+    "key": "RANGER_FIELD_LABEL_specialDefenceDeltaMax",
+    "zh_TW": "specialDefenceDeltaMax",
+    "en": "Maximum magic DEF increase amount",
+    "th": "ปริมาณพลังป้องกันเวทที่เพิ่มสูงสุด",
+    "jp": "最大魔法防御力増加量"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_unitCategoryType",
+    "zh_TW": "類型",
+    "en": "Type",
+    "th": "ชนิด",
+    "jp": "タイプ"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_unitElement",
+    "zh_TW": "屬性",
+    "en": "Element",
+    "th": "ธาตุ",
+    "jp": "属性"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_summonEnergy",
+    "zh_TW": "生產礦物費用",
+    "en": "Mineral \\nProduction cost",
+    "th": "ค่าใช้จ่ายการผลิตแร่",
+    "jp": "生産ミネラル費用"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_attackRange",
+    "zh_TW": "攻擊範圍",
+    "en": "Attack Range",
+    "th": "ระยะโจมตี",
+    "jp": "攻撃範囲"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_initialAttack",
+    "zh_TW": "物理攻擊力",
+    "en": "Physical ATK",
+    "th": "พลังโจมตีกาย",
+    "jp": "物理攻撃力"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_specialAttack",
+    "zh_TW": "魔法攻擊力",
+    "en": "Magical ATK",
+    "th": "พลังเวทโจมตี",
+    "jp": "魔法攻撃力"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_defence",
+    "zh_TW": "物理防禦力",
+    "en": "Physical DEF",
+    "th": "พลังป้องกันกาย",
+    "jp": "物理防御力"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_specialDefence",
+    "zh_TW": "魔法防禦力",
+    "en": "Magical DEF",
+    "th": "พลังเวทป้องกัน",
+    "jp": "魔法防御力"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_initialHp",
+    "zh_TW": "體力",
+    "en": "HP",
+    "th": "พลังชีวิต",
+    "jp": "体力"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_projectileAttackScope",
+    "zh_TW": "濺射範圍",
+    "en": "Splash Radius",
+    "th": "รัศมีโจมตีกระจาย",
+    "jp": "スプラッシュ半径"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_criticalProbability",
+    "zh_TW": "爆擊機率",
+    "en": "Critical Rate",
+    "th": "อัตราติดคริทิคอล",
+    "jp": "決定打の確率"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_criticalRatio",
+    "zh_TW": "爆擊傷害",
+    "en": "Critical Damage",
+    "th": "แรงโจมตีคริทิคอล",
+    "jp": "決定打のダメージ"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_antiAvoidProb",
+    "zh_TW": "命中率",
+    "en": "Hit Rate",
+    "th": "อัตราความแม่นยำ",
+    "jp": "命中率"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_avoidProbability",
+    "zh_TW": "閃避機率",
+    "en": "Evade Rate",
+    "th": "อัตราการหลบหลีก",
+    "jp": "回避率"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_antiSkillAvoidProb",
+    "zh_TW": "技能命中率",
+    "en": "Skill Hit Rate",
+    "th": "อัตราความแม่นยำของทักษะ",
+    "jp": "スキル命中率"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_skillAvoidProbability",
+    "zh_TW": "技能閃避機率",
+    "en": "Skill Evade Rate",
+    "th": "อัตราการหลบสกิล",
+    "jp": "スキル回避率"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_skillResistance",
+    "zh_TW": "技能抗性",
+    "en": "Skill Resistance",
+    "th": "ต้านสกิล",
+    "jp": "スキル抵抗"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_attackSpeedType",
+    "zh_TW": "攻擊速度",
+    "en": "Attack Speed",
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_moveSpeedType",
+    "zh_TW": "移動速度",
+    "en": "Move Speed",
+    "th": "ความเร็วการเคลื่อนที",
+    "jp": "移動速度"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_attackDelay",
+    "zh_TW": "attackDelay",
+    "en": "attackDelay",
+    "th": "เวลาหน่วงโจมตี",
+    "jp": "攻撃遅延時間"
+  },
+  {
+    "key": "ENEMY_FIELD_LABEL_movingSpeed",
+    "zh_TW": "movingSpeed",
+    "en": "movingSpeed",
+    "th": "ความเร็วเคลื่อนที่",
+    "jp": "移動速度"
+  },
+  {
+    "key": "SKILLEFF_BUFF-CUT_DEBUFF",
+    "zh_TW": "負面效果維持時間縮短",
+    "en": "Reduce the duration of debuff effects",
+    "th": "ลดระยะเวลาเอฟเฟกต์ดีบัฟ",
+    "jp": "デバフ効果の持続時間を短縮"
+  },
+  {
+    "key": "V2_ABILITY_PER_UNIT_REDUCE_PERCENT",
+    "zh_TW": "（每隻降低%N1%）",
+    "en": " (reduces %N1% per Ranger)",
+    "th": " (ลดลง %N1% ต่อเรนเจอร์)",
+    "jp": "（レンジャー1体につき%N1%低下）"
+  },
+  {
+    "key": "V2_ABILITY_PER_UNIT_EXTEND_PERCENT",
+    "zh_TW": "（每隻延長%N1%）",
+    "en": " (extends %N1% per Ranger)",
+    "th": " (เพิ่มขึ้น %N1% ต่อเรนเจอร์)",
+    "jp": "（レンジャー1体につき%N1%延長）"
+  },
+  {
+    "key": "V2_ABILITY_PER_UNIT_EXTEND_SECONDS",
+    "zh_TW": "（每隻延長%N1秒）",
+    "en": " (extends %N1 sec per Ranger)",
+    "th": " (เพิ่มขึ้น %N1 วินาทีต่อเรนเจอร์)",
+    "jp": "（レンジャー1体につき%N1秒延長）"
+  },
+  {
+    "key": "V2_ABILITY_DURATION_SECONDS",
+    "zh_TW": "（%N1秒）",
+    "en": " (%N1 sec)",
+    "th": " (%N1 วินาที)",
+    "jp": "（%N1秒）"
+  },
+  {
+    "key": "V2_ENDLESS_MINERAL_CAP_REDUCTION",
+    "zh_TW": "礦物最大上限減少%N1%",
+    "en": "Maximum Mineral capacity -%N1%",
+    "th": "ความจุแร่สูงสุด -%N1%",
+    "jp": "ミネラル最大容量 -%N1%"
+  },
+  {
+    "key": "V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+    "zh_TW": "礦物生產速度減少%N1%",
+    "en": "Mineral regeneration speed -%N1%",
+    "th": "ความเร็วในการผลิตแร่ -%N1%",
+    "jp": "ミネラル生産速度 -%N1%"
+  },
+  {
+    "key": "V2_ENDLESS_UNIT_STAT_REDUCTION",
+    "zh_TW": "角色能力值減少%N1%",
+    "en": "Ranger stats -%N1%",
+    "th": "ค่าสถานะเรนเจอร์ -%N1%",
+    "jp": "レンジャーの能力値 -%N1%"
+  },
+  {
+    "key": "V2_ENDLESS_ELEMENT_BUFF",
+    "zh_TW": "%N1屬性Rangers強化%N2%",
+    "en": "%N1 Rangers' stats +%N2%",
+    "th": "ค่าสถานะเรนเจอร์ธาตุ%N1 +%N2%",
+    "jp": "%N1属性レンジャーの能力値 +%N2%"
+  },
+  {
+    "key": "V2_ENDLESS_ELEMENT_DEBUFF",
+    "zh_TW": "%N1屬性Rangers弱化%N2%",
+    "en": "%N1 Rangers' stats -%N2%",
+    "th": "ค่าสถานะเรนเจอร์ธาตุ%N1 -%N2%",
+    "jp": "%N1属性レンジャーの能力値 -%N2%"
+  },
+  {
+    "key": "V2_ABILITY_CONDITION_JOIN",
+    "zh_TW": "%N1為%N2",
+    "en": "%N1: %N2",
+    "th": "%N1: %N2",
+    "jp": "%N1：%N2"
+  },
+  {
+    "key": "V2_ABILITY_INCREASE_PERCENT",
+    "zh_TW": "提升%N1%N2%",
+    "en": "Increase %N1 by %N2%",
+    "th": "เพิ่ม%N1 %N2%",
+    "jp": "%N1を%N2%増加"
+  },
+  {
+    "key": "V2_ABILITY_INCREASE_FLAT",
+    "zh_TW": "提升%N1%N2",
+    "en": "Increase %N1 by %N2",
+    "th": "เพิ่ม%N1 %N2",
+    "jp": "%N1を%N2増加"
+  },
+  {
+    "key": "V2_ABILITY_TIMED_ACTION",
+    "zh_TW": "%N1（%N2秒）",
+    "en": "%N1 (%N2 sec)",
+    "th": "%N1 (%N2 วินาที)",
+    "jp": "%N1（%N2秒）"
+  },
+  {
+    "key": "V2_ABILITY_ACTION_AMOUNT",
+    "zh_TW": "%N1%N2",
+    "en": "%N1: %N2",
+    "th": "%N1: %N2",
+    "jp": "%N1：%N2"
+  },
+  {
+    "key": "V2_GEAR_RESPAWN_TIME",
+    "zh_TW": "Ranger重新產生時間 (%)",
+    "en": "Ranger respawn time (%)",
+    "th": "เวลาเกิดใหม่ของเรนเจอร์ (%)",
+    "jp": "レンジャー再出動時間（%）"
+  },
+  {
+    "key": "V2_GEAR_MINERAL_COST",
+    "zh_TW": "Ranger礦物成本 (%)",
+    "en": "Ranger Mineral cost (%)",
+    "th": "ค่าแร่ของเรนเจอร์ (%)",
+    "jp": "レンジャーのミネラル費用（%）"
+  },
+  {
+    "key": "V2_EXTREME_METEOR",
+    "zh_TW": "流星落下並對Ranger造成固定%N1點傷害，被擊中的Ranger有%N2%機率飄浮%N3秒。",
+    "en": "A meteor inflicts %N1 fixed damage on Rangers. Hit Rangers have a %N2% chance to be knocked airborne for %N3 sec.",
+    "th": "อุกกาบาตสร้างความเสียหายคงที่ %N1 แก่เรนเจอร์ เรนเจอร์ที่ถูกโจมตีมีโอกาส %N2% ที่จะลอยขึ้นเป็นเวลา %N3 วินาที",
+    "jp": "メテオがレンジャーに%N1の固定ダメージを与える。命中したレンジャーは%N2%の確率で%N3秒間浮遊する。"
+  },
+  {
+    "key": "V2_EXTREME_BLIZZARD",
+    "zh_TW": "用強力的發射冰對Ranger造成傷害並使其凍結%N1秒。凍結解除時，會以該Ranger解凍瞬間目前體力的%N2%作為碎冰傷害，對自身及自身範圍%N3點內的Ranger造成額外傷害。",
+    "en": "A blizzard freezes Rangers for %N1 sec. When thawed, shattered ice deals %N2% of the Ranger's current HP in damage to itself and Rangers within %N3 points.",
+    "th": "พายุหิมะแช่แข็งเรนเจอร์ %N1 วินาที เมื่อละลาย น้ำแข็งแตกจะสร้างความเสียหาย %N2% ของ HP ปัจจุบันแก่ตนเองและเรนเจอร์ในระยะ %N3 จุด",
+    "jp": "ブリザードがレンジャーを%N1秒間凍結させる。解凍時、氷片が自身と%N3ポイント以内のレンジャーに現在HPの%N2%のダメージを与える。"
+  },
+  {
+    "key": "V2_EXTREME_BEAST",
+    "zh_TW": "戰場上的所有敵人進入獸化狀態%N1秒，能力值提升%N2%，並在獸化期間每秒恢復%N3點體力。",
+    "en": "All enemies enter beast mode for %N1 sec, gaining %N2% to stats and restoring %N3 HP per sec.",
+    "th": "ศัตรูทั้งหมดเข้าสู่ร่างสัตว์ %N1 วินาที ค่าสถานะเพิ่ม %N2% และฟื้นฟู HP %N3 ต่อวินาที",
+    "jp": "敵全体が%N1秒間獣化し、能力値が%N2%増加、毎秒HPを%N3回復する。"
+  },
+  {
+    "key": "V2_EXTREME_UNBEAT",
+    "zh_TW": "戰場上的所有敵人進入無敵狀態%N1秒；期間受到攻擊時，會將該次原始傷害的%N2%以物理傷害反彈給攻擊者。",
+    "en": "All enemies become invincible for %N1 sec; when attacked, they reflect %N2% of the original damage as physical damage.",
+    "th": "ศัตรูทั้งหมดเป็นอมตะ %N1 วินาที เมื่อถูกโจมตีจะสะท้อนความเสียหายเดิม %N2% เป็นความเสียหายกายภาพ",
+    "jp": "敵全体が%N1秒間無敵になり、攻撃を受けると元のダメージの%N2%を物理ダメージとして反射する。"
+  },
+  {
+    "key": "V2_EXTREME_TORNADO",
+    "zh_TW": "用強力龍捲風對Ranger造成%N1點固定傷害加上目標最大體力的%N2%傷害，並將其吹走；被吹走的Ranger會電暈%N3秒。",
+    "en": "A tornado deals %N1 fixed damage plus %N2% of max HP, knocks Rangers away, and stuns them for %N3 sec.",
+    "th": "พายุหมุนสร้างความเสียหายคงที่ %N1 บวก %N2% ของ HP สูงสุด ผลักเรนเจอร์ออกไปและทำให้ชะงัก %N3 วินาที",
+    "jp": "トルネードが%N1の固定ダメージと最大HPの%N2%のダメージを与え、レンジャーを吹き飛ばして%N3秒間スタンさせる。"
+  },
+  {
+    "key": "ABILITY_CONDITION_TYPE_APTITUDETYPE",
+    "zh_TW": "能力",
+    "en": "Ability",
+    "th": "ความสามารถ",
+    "jp": "アビリティ"
+  },
+  {
+    "key": "V2_ABILITY_HP_SELF_LTE",
+    "zh_TW": "自身體力在%N1%以下時",
+    "en": "When own HP is %N1% or lower",
+    "th": "เมื่อ HP ของตนเองเหลือ %N1% หรือต่ำกว่า",
+    "jp": "自身のHPが%N1%以下の時"
+  }
+]

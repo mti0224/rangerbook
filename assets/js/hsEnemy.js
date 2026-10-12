@@ -522,7 +522,7 @@
 
   [searchInput, abilityFilter, typeFilter, elementFilter].forEach((el) => {
     el?.addEventListener("input", applyFilters);
-    el?.addEventListener("change", applyFilters);
+    if (el !== searchInput) el?.addEventListener("change", applyFilters);
   });
 
   resetBtn.addEventListener("click", () => {

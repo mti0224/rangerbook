@@ -1,5 +1,5 @@
 {
-  "packageVersion": 1,
+  "packageVersion": 2,
   "sourceFiles": {
     "publish_v2.py": {
       "before": "20e4094c33cbd163460d177520d6c69630d93bc11be561d20f19293a8ebb8d5d",
@@ -95,12 +95,13 @@
     }
   },
   "inputSha256": {
-    "locales/custom.json": "bea5b44bb90a3787c24ecd8da4a7e130185db64298343ef054b8e795fb979931",
-    "locales/ui.json": "f494835b5fd0d9013f4f7b92378f3baf3f1b8485a115cad25b4cef1df115b4b9",
+    "locales/custom.json": "ead02d9f60d355dfe757b05d9fd09b8f093c5e54d50b2dfaf3615bfd665b2278",
+    "locales/ui.json": "2c4643bb292e91f7025ad1c83b33e4fd6b7b2fef6dcfbdb979c4860e1aff9f91",
     "metadata/release-dates.json": "a6ec58748dab4fa6e0ce4329047ca63d0eeda979f830618c9d3f312f31888265"
   },
   "patchSha256": "74a1ad6b04cb4319b0708885e74982a5bae7d0fa07dc124f0114352f3cee889f",
   "minimumDiskReserveGiB": 3,
   "dateSeedPolicy": "create_only_if_absent",
-  "outputSource": "independent_official_api"
+  "outputSource": "independent_official_api",
+  "authoredCatalogRevision": "20261013-v2.2"
 }
