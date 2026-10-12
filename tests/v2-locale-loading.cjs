@@ -8,8 +8,8 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
   await ctx.route('**/www.googletagmanager.com/**',r=>r.abort());
   await ctx.route('**/rangerbook-auth.warmycat.com/**',r=>r.fulfill({status:401,contentType:'application/json',body:'{}'}));
   let releaseUi,releaseOfficial;const heldUi=new Promise(r=>releaseUi=r),heldOfficial=new Promise(r=>releaseOfficial=r);
-  await ctx.route('**/res/v2/locales/ui.json',async r=>{await heldUi;await r.continue()});
-  await ctx.route('**/res/v2/locales/official.json',async r=>{await heldOfficial;await r.continue()});
+  await ctx.route('**/res/v2/locales/ui.json*',async r=>{await heldUi;await r.continue()});
+  await ctx.route('**/res/v2/locales/official.json*',async r=>{await heldOfficial;await r.continue()});
   const p=await ctx.newPage();
   await p.goto(base+'/settings/',{waitUntil:'commit'});
   await p.waitForFunction(()=>!!window.RangerbookI18n);
@@ -28,13 +28,20 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
   await p.evaluate(()=>window.RangerbookI18n.ready);
   assert.equal(await p.locator('input[name="language"]:checked').inputValue(),next);
   releaseOfficial();
+  // A restored page must follow a newer saved preference, not its stale in-memory locale.
+  await Promise.all([p.waitForNavigation({waitUntil:'domcontentloaded'}),p.evaluate(l=>{
+    localStorage.setItem('rangerbook-language',l);
+    window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true}));
+  },locale)]);
+  await p.evaluate(()=>window.RangerbookI18n.ready);
+  assert.equal(await p.locator('input[name="language"]:checked').inputValue(),locale);
   // Cookie fallback keeps both presentation and the V2 adapter aligned if storage is unavailable.
   await ctx.addInitScript(()=>{
    const get=Storage.prototype.getItem;Storage.prototype.getItem=function(key){if(key==='rangerbook-language')throw new Error('Storage temporarily unavailable');return get.call(this,key)};
   });
   await p.reload({waitUntil:'domcontentloaded'});await p.evaluate(()=>window.RangerbookI18n.ready);
-  assert.equal(await p.locator('input[name="language"]:checked').inputValue(),next);
-  assert.equal(await p.evaluate(()=>window.RangerbookV2.locale),next);
+  assert.equal(await p.locator('input[name="language"]:checked').inputValue(),locale);
+  assert.equal(await p.evaluate(()=>window.RangerbookV2.locale),locale);
   // A labelled container must preserve child tables and controls.
   assert.equal(await p.evaluate(()=>{
    const e=document.createElement('section');e.dataset.i18n='settings.title';e.append(document.createTextNode('設定'));
