@@ -3,6 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {chromium}=require('playwright');
 const root=path.join(__dirname,'..'),base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
 const rows=JSON.parse(fs.readFileSync(path.join(root,'res/v2/locales/custom.json')));
+const uiRows=JSON.parse(fs.readFileSync(path.join(root,'res/v2/locales/ui.json')));
 const artifacts=JSON.parse(fs.readFileSync(path.join(root,'res/v2/labyrinth-artifacts.json'))).artifacts;
 (async()=>{
  const browser=await chromium.launch({headless:true});
@@ -15,7 +16,13 @@ const artifacts=JSON.parse(fs.readFileSync(path.join(root,'res/v2/labyrinth-arti
    await page.goto(base+'/labyrinth/artifact/',{waitUntil:'domcontentloaded'});
    await page.locator('.labyrinth-artifact-card').first().waitFor();
    await page.evaluate(()=>window.RangerbookV2.ready);
+   await page.evaluate(()=>window.RangerbookI18n.ready);
    const language=locale==='zh-Hant'?'zh_TW':locale;
+   const debuff=locale==='zh-Hant'?'減益':uiRows.find(r=>r.key==='UI:tag.debuffs')[language];
+   assert.equal(await page.locator('#artifactCategoryFilter option[value="減益"]').innerText(),debuff);
+   await page.locator('#artifactCategoryFilter').selectOption('減益');
+   assert.equal(await page.locator('.labyrinth-artifact-card').count(),artifacts.filter(a=>a.effect.direction==='DECREASE').length);
+   await page.locator('#artifactCategoryFilter').selectOption('');
    for(const code of ['bf_atkspd','bf_hp','df_atkrge','bf_redmg','df_heal','df_silence']){
     const name=rows.find(r=>r.key==='CUSTOM:LABYRINTH_ARTIFACT_NAME_'+code)[language];
     const source=artifacts.find(a=>a.artifactCode===code);

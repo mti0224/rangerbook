@@ -46,7 +46,13 @@
     return clean ? `${ARTIFACT_ICON_BASE}${clean}` : "";
   }
 
-  const ui = value => window.RangerbookI18n?.uiText(String(value ?? "")) || String(value ?? "");
+  const ui = value => {
+    const original = String(value ?? "");
+    // This compatibility category retains its value; reuse the authored Debuff label.
+    const label = original === "減益" && window.RangerbookI18n?.locale !== "zh-Hant"
+      ? "負面" : original;
+    return window.RangerbookI18n?.uiText(label) || original;
+  };
   function displayArtifactName(name) {
     const match = String(name).match(/^(.*?)\[([^\]]+)\]$/);
     return match ? `${ui(match[1])}[${match[2]}]` : ui(name);
