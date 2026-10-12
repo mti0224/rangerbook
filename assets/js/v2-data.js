@@ -187,11 +187,10 @@
   async function equipment() {
     return (await data("equipment")).equipment.map(x=>{
       const out={id:x.equipCode,"裝備名稱":text(x.nameKey),"裝備星級":x.starGrade,
-        "裝備種類":{ACC:"飾品",AMR:"防具",WPN:"武器"}[x.equipType]||x.equipType,
+        "裝備種類":text("CUSTOM:EQUIP_TYPE_"+x.equipType),
         "基本效果":Object.fromEntries(x.normalOptions.map(e=>[text(e.optionKey),range(e.range)])),"高級效果":{},"Skill+":[],"Spec+":{}};
       const a=x.highLevelOptions;
-      if(a) out["高級效果"]={"觸發條件":(a.targetCondition?.kind==="rangerType"?types[a.targetCondition.value]:
-          elements[a.targetCondition?.value])+"Ranger","預設效果":text(a.defaultOption.optionKey),
+      if(a) out["高級效果"]={"觸發條件":text("CUSTOM:EQUIP_RANGER_TYPE_"+a.targetCondition.value),"預設效果":text(a.defaultOption.optionKey),
         "預設效果係數":range(a.defaultOption.range),"可切換的效果":Object.fromEntries(a.switchOptions.map(e=>
           [text(e.optionKey),{"係數":range(e.range),"每次升級增加":range({min:e.upgradeStep,max:e.upgradeStep,unit:e.range.unit})}]))};
       out["Skill+"]=x.skillPlus.map(e=>({"技能效果":text("CUSTOM:"+e.effectCode),

@@ -40,7 +40,7 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
    const beforeUpgrade=await page.locator('#gearModalContent [data-gear-section="基本效果"]').innerText();
    await section.selectOption(values.at(-1));
    await page.waitForFunction(v=>document.querySelector('#gearModalContent [data-gear-section="基本效果"]').innerText!==v,beforeUpgrade);
-   assert.ok(!/NaN|Infinity|%(?:N\d*|d)/.test(await page.locator('#gearModalContent').innerText()));
+   assert.ok(!/NaN|Infinity|undefined|%(?:N\d*|d)/.test(await page.locator('#gearModalContent').innerText()));
    assert.deepEqual(errors,[]);console.log('V2_INTERACTIONS_OK '+locale+' localized search, Ranger level, equipment upgrade');
    await context.close();
   }
