@@ -72,7 +72,7 @@ class UITests(unittest.TestCase):
             # assets/locales/ui.json. Validate its actual source catalog.
             page_source = source
             page_known = known
-            if page.relative_to(ROOT).parts[0] == "v2":
+            if page.relative_to(ROOT).parts[0] == "v2" or "v2-data.js" in page.read_text(encoding="utf-8"):
                 rows = json.loads((ROOT / "res/v2/locales/ui.json").read_text(encoding="utf-8"))
                 self.assertTrue(all(r.get("en", "").strip() for r in rows))
                 page_source = {r["key"].removeprefix("UI:"): r["zh_TW"] for r in rows}
