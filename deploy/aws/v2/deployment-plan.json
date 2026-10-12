@@ -95,13 +95,13 @@
     }
   },
   "inputSha256": {
-    "locales/custom.json": "f01e7b518e8b3ee188e3007970b8e32451aa2b3e455b3b76bcf1816a13728029",
-    "locales/ui.json": "095151304c345c8523728cfe6244690769c45e063a568b8cacb453f5c3d1b3ed",
+    "locales/custom.json": "fcf516752e8b280d013fd657551c28ceeb9a34afdf6bed861294e2a74e3c876c",
+    "locales/ui.json": "1368aa3ba9a125d4854a8f4e3c3c13885794a4cec68f502e66efffd1391f837c",
     "metadata/release-dates.json": "a6ec58748dab4fa6e0ce4329047ca63d0eeda979f830618c9d3f312f31888265"
   },
   "patchSha256": "74a1ad6b04cb4319b0708885e74982a5bae7d0fa07dc124f0114352f3cee889f",
   "minimumDiskReserveGiB": 3,
   "dateSeedPolicy": "create_only_if_absent",
   "outputSource": "independent_official_api",
-  "authoredCatalogRevision": "20261013-v2.2"
+  "authoredCatalogRevision": "20261013-v2.4"
 }
