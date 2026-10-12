@@ -81,3 +81,21 @@
 - 迷宮遺物由官方代碼 a1/a2/a3 + bf/df + 類型／屬性對應，檢查 21 個網站名稱與 437 個官方品級／對象變體：四語去除另行顯示的品級／對象後，基底名稱全部一致。修改 17 個有差異的名稱，未改 55 筆遺物的等級、效果與 pointsByTarget。
 - 代表用詞：Fresh Lizard's Tail、Vital Jewel、Heavy Boomerang、Divine Mirror、Noxious Tree Sap、Soundproof Mask；日文遺物為 遺物、泰文 โบราณวัตถุ。自訂說明句子只套用這些名詞片段，不冒充整句官方譯文。
 - 日本文機關標題與主動／被動文字改用 ギミック、泰文 กลไก；英文網站概念保留 Gimmick / Obstacles 的既有情境，不把無限之塔的 Conditions 直接擴大套到所有機關。
+
+### 最終遺物補查版本部署
+
+- 最終翻譯源 commit `3e7f13307b1bc550327c763b935844e9e60f0ac1`，備份 `/home/ubuntu/rangerbook-v2/backups/v2-game-term-alignment-area-20261013/before.tar.gz`（1,985,177 bytes）。
+- 同樣透過既有 V2 compiler／publisher 成功；資料發布 commit `17c21706e1a5e8ed68351fc62350635113c62070`。
+- 後端 23 檔／V1與 systemd 30 檔／日期雜湊核對仍不變；最終 sourceFingerprint `d4f70c3f495e107cdfc711f441c623b7963b8cf5fd2fd4104ed348f6cbbf0e78`，validated content SHA-256 `407b3a3313dc33587ea568299f02453b44e4c9ab15c6a23218c289a8120a7ce1`。
+- 磁碟部署前 3.622 GiB、部署後 3.620 GiB；兩次臨時官方包查核目錄都已清除。
+- 最終迷宮遺物四語瀏覽器測試通過，185 項來源／參數的 6 tests 通過，原先報告回歸四語再次通過。
+- PR #135 已合併，merge commit `7c459f2af10914de84d28d861f17c0c67381683a`；部署後驗收另於本文件記錄。
+
+## 部署後驗證
+
+- Pages [run 38297441742](https://github.com/mti0224/rangerbook/actions/runs/38297441742)：7c459f2 合併版本 completed/success。
+- 台北時間 2026-10-13 03:22:09 V1 定時更新 exit=0；03:24:21 V2 定時更新 exit=0，兩個 timer active。自訂輸入 SHA 與最終 sourceFingerprint 均保留，未被舊版覆蓋。
+- 磁碟再確認 3.609 GiB 可用。
+- 正式英文迷宮遺物頁已顯示 INFINITOWER、Vital Jewel[C/B/A]，搜尋有 3 個品級，10%／20%／40% 效果保留。
+- 正式瀏覽器額外發現 compatibility 分類值「減益」未翻譯。assets/js/labyrinth-artifact.js 在非中文顯示時重用既有 UI:tag.debuffs（Debuff／デバフ／ดีบัฟ），保留原始選單 value 及中文顯示；增加 script cache stamp。此項不修改任何語言庫或 AWS 輸入。
+- 最終遺物 browser test 增加四語分類文字、減益篩選結果筆數及復原全部的實際操作驗證，四語通過。
