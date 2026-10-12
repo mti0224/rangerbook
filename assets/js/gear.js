@@ -54,6 +54,7 @@
   }
 
   function rememberMissingIcon(id, force = false) {
+    if (window.RangerbookV2) return;
     if (!id || (isAdminMode() && !force)) return;
     const set = getMissingIconSet();
     if (set.has(id)) return;
@@ -126,7 +127,8 @@
   function isPubliclyVisible(gear) {
     const id = getId(gear);
     const rawText = gearRawText(gear);
-    return Boolean(id) && !hasKorean(rawText) && !hasTstText(rawText) && !getMissingIconSet().has(id);
+    return Boolean(id) && !hasKorean(rawText) && !hasTstText(rawText) &&
+      (window.RangerbookV2 || !getMissingIconSet().has(id));
   }
 
   function shouldHideGearForPublic(gear) {
@@ -439,7 +441,7 @@
     wrap?.classList.add("missing-icon");
     image.remove();
     rememberMissingIcon(id);
-    if (!isAdminMode()) {
+    if (!window.RangerbookV2 && !isAdminMode()) {
       wrap?.closest(".gear-card")?.remove();
       window.setTimeout(applyFilters, 0);
     }

@@ -45,6 +45,10 @@
       "before": null,
       "after": "f7de435b26fecdd66b79fb3d5280d9b32b2e9a15914223a088a5869795978d7b"
     },
+    "scripts/v2/schemas/v2.json": {
+      "before": null,
+      "after": "3b07a59fb944dbcca0429c23e46bd677c84979ece1dcfcd4ff736c7b7fd8bb74"
+    },
     "scripts/v2/semantic.py": {
       "before": "96f36f092f0c593d7935e3c965581c98e1749448c147f06affa6c7661151465b",
       "after": "7660575430d7f974b86d0b40183784e66a0ff585380eca453ee75b24bea0b2af"
@@ -95,7 +99,7 @@
     "locales/ui.json": "f494835b5fd0d9013f4f7b92378f3baf3f1b8485a115cad25b4cef1df115b4b9",
     "metadata/release-dates.json": "a6ec58748dab4fa6e0ce4329047ca63d0eeda979f830618c9d3f312f31888265"
   },
-  "patchSha256": "54813295f5e18245e4d9b93942af45dbb54646c6a2d3e4590a2546d81f744196",
+  "patchSha256": "74a1ad6b04cb4319b0708885e74982a5bae7d0fa07dc124f0114352f3cee889f",
   "minimumDiskReserveGiB": 3,
   "dateSeedPolicy": "create_only_if_absent",
   "outputSource": "independent_official_api"

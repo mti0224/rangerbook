@@ -555,6 +555,1998 @@
 +        row["releaseDateSource"] = "v2_author_record"
 +    metadata.update(dates=dates, recordingPolicy="first_successful_v2_record_date", timezone="Asia/Taipei")
 +    return (json.dumps(metadata, ensure_ascii=False, indent=2) + "\n").encode("utf8")
+--- /dev/null
++++ b/scripts/v2/schemas/v2.json
+@@ -0,0 +1,1989 @@
++{
++  "$defs": {
++    "template": {
++      "type": "object",
++      "properties": {
++        "templateKey": {
++          "type": "string",
++          "minLength": 1
++        },
++        "args": {
++          "type": "array",
++          "items": {}
++        }
++      },
++      "required": [
++        "templateKey",
++        "args"
++      ],
++      "additionalProperties": false
++    },
++    "parts": {
++      "type": "object",
++      "properties": {
++        "parts": {
++          "type": "array",
++          "items": {
++            "anyOf": [
++              {
++                "type": "string"
++              },
++              {
++                "type": "null"
++              },
++              {
++                "$ref": "#/$defs/template"
++              },
++              {
++                "$ref": "#/$defs/parts"
++              }
++            ]
++          }
++        }
++      },
++      "required": [
++        "parts"
++      ],
++      "additionalProperties": false
++    },
++    "range": {
++      "type": "object",
++      "properties": {
++        "min": {
++          "type": "number"
++        },
++        "max": {
++          "type": "number"
++        },
++        "unit": {
++          "enum": [
++            "PERCENT",
++            "FLAT",
++            "SECOND"
++          ]
++        }
++      },
++      "required": [
++        "min",
++        "max",
++        "unit"
++      ],
++      "additionalProperties": true
++    },
++    "effect": {
++      "type": "object",
++      "properties": {
++        "effectCode": {
++          "type": "string"
++        },
++        "magnitude": {
++          "anyOf": [
++            {
++              "$ref": "#/$defs/magnitude"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "effectTrigger": {
++          "anyOf": [
++            {
++              "type": "object",
++              "properties": {
++                "kind": {
++                  "const": "chance"
++                },
++                "percent": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "kind",
++                "percent"
++              ],
++              "additionalProperties": true
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "targetLimit": {
++          "anyOf": [
++            {
++              "anyOf": [
++                {
++                  "type": "object",
++                  "properties": {
++                    "kind": {
++                      "const": "limited"
++                    },
++                    "maxTargets": {
++                      "type": "integer"
++                    }
++                  },
++                  "required": [
++                    "kind",
++                    "maxTargets"
++                  ],
++                  "additionalProperties": true
++                },
++                {
++                  "type": "object",
++                  "properties": {
++                    "kind": {
++                      "const": "unlimited"
++                    },
++                    "maxTargets": {
++                      "type": "null"
++                    }
++                  },
++                  "required": [
++                    "kind",
++                    "maxTargets"
++                  ],
++                  "additionalProperties": true
++                }
++              ]
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "duration": {
++          "anyOf": [
++            {
++              "$ref": "#/$defs/duration"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "rangePoints": {
++          "type": "number"
++        },
++        "availableIn": {
++          "type": "object",
++          "properties": {
++            "events": {
++              "type": "boolean"
++            },
++            "guardian": {
++              "type": "boolean"
++            }
++          },
++          "required": [
++            "events",
++            "guardian"
++          ],
++          "additionalProperties": true
++        }
++      },
++      "required": [
++        "effectCode",
++        "magnitude",
++        "effectTrigger",
++        "targetLimit",
++        "duration",
++        "rangePoints",
++        "availableIn"
++      ],
++      "additionalProperties": true
++    },
++    "skill": {
++      "type": "object",
++      "properties": {
++        "skillCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "descriptionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "trigger": {
++          "type": "object",
++          "properties": {
++            "type": {
++              "type": "string"
++            }
++          },
++          "required": [
++            "type"
++          ],
++          "additionalProperties": true
++        },
++        "activationRate": {
++          "type": "number"
++        },
++        "cooldownSeconds": {
++          "type": "number"
++        },
++        "effects": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/effect"
++          }
++        },
++        "icon": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        }
++      },
++      "required": [
++        "skillCode",
++        "nameKey",
++        "descriptionKey",
++        "trigger",
++        "activationRate",
++        "cooldownSeconds",
++        "effects",
++        "icon"
++      ],
++      "additionalProperties": true
++    },
++    "ranger": {
++      "type": "object",
++      "properties": {
++        "rangerCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "descriptionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "starGrade": {
++          "type": "number"
++        },
++        "evolution": {
++          "enum": [
++            "NORMAL",
++            "HYPER",
++            "ULTRA"
++          ]
++        },
++        "roleType": {
++          "type": "string"
++        },
++        "elementType": {
++          "type": "string"
++        },
++        "releaseDate": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "stats": {
++          "type": "object",
++          "properties": {
++            "hp": {
++              "type": "number"
++            },
++            "attack": {
++              "type": "object",
++              "properties": {
++                "physical": {
++                  "type": "number"
++                },
++                "magical": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "physical",
++                "magical"
++              ],
++              "additionalProperties": true
++            },
++            "defense": {
++              "type": "object",
++              "properties": {
++                "physical": {
++                  "type": "number"
++                },
++                "magical": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "physical",
++                "magical"
++              ],
++              "additionalProperties": true
++            },
++            "mineralCost": {
++              "type": "number"
++            },
++            "respawnSeconds": {
++              "type": "number"
++            },
++            "attackRange": {
++              "type": "number"
++            },
++            "splashRange": {
++              "type": "number"
++            },
++            "moveSpeed": {
++              "type": "object",
++              "properties": {
++                "pointsPerSecond": {
++                  "type": "number"
++                },
++                "rating": {
++                  "anyOf": [
++                    {
++                      "type": "string"
++                    },
++                    {
++                      "type": "null"
++                    }
++                  ]
++                }
++              },
++              "required": [
++                "pointsPerSecond",
++                "rating"
++              ],
++              "additionalProperties": true
++            },
++            "attackSpeed": {
++              "type": "object",
++              "properties": {
++                "secondsPerAttack": {
++                  "type": "number"
++                },
++                "rating": {
++                  "anyOf": [
++                    {
++                      "type": "string"
++                    },
++                    {
++                      "type": "null"
++                    }
++                  ]
++                }
++              },
++              "required": [
++                "secondsPerAttack",
++                "rating"
++              ],
++              "additionalProperties": true
++            }
++          },
++          "required": [
++            "hp",
++            "attack",
++            "defense",
++            "mineralCost",
++            "respawnSeconds",
++            "attackRange",
++            "splashRange",
++            "moveSpeed",
++            "attackSpeed"
++          ],
++          "additionalProperties": true
++        },
++        "skillSet": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/skill"
++          }
++        },
++        "abilityCodes": {
++          "type": "array",
++          "items": {
++            "type": "string"
++          }
++        },
++        "tags": {
++          "type": "object"
++        },
++        "awakeningAbilities": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        },
++        "talents": {
++          "anyOf": [
++            {
++              "type": "object"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "rankUpStatIncrease": {
++          "type": "object"
++        },
++        "rankUpStatIncreaseMax": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "rangerCode",
++        "nameKey",
++        "descriptionKey",
++        "starGrade",
++        "evolution",
++        "roleType",
++        "elementType",
++        "releaseDate",
++        "stats",
++        "skillSet",
++        "abilityCodes",
++        "tags",
++        "awakeningAbilities",
++        "talents",
++        "rankUpStatIncrease",
++        "rankUpStatIncreaseMax"
++      ],
++      "additionalProperties": true
++    },
++    "enemy": {
++      "type": "object",
++      "properties": {
++        "enemyCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "roleType": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "elementType": {
++          "type": "string"
++        },
++        "stats": {
++          "type": "object",
++          "properties": {
++            "hp": {
++              "type": "number"
++            },
++            "physicalAttack": {
++              "type": "number"
++            },
++            "magicalAttack": {
++              "type": "number"
++            },
++            "physicalDefense": {
++              "type": "number"
++            },
++            "magicalDefense": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "hp",
++            "physicalAttack",
++            "magicalAttack",
++            "physicalDefense",
++            "magicalDefense"
++          ],
++          "additionalProperties": true
++        },
++        "skills": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/skill"
++          }
++        },
++        "abilityCodes": {
++          "type": "array",
++          "items": {
++            "type": "string"
++          }
++        },
++        "flags": {
++          "type": "object",
++          "properties": {
++            "boss": {
++              "type": "boolean"
++            },
++            "nft": {
++              "type": "boolean"
++            }
++          },
++          "required": [
++            "boss",
++            "nft"
++          ],
++          "additionalProperties": true
++        }
++      },
++      "required": [
++        "enemyCode",
++        "nameKey",
++        "roleType",
++        "elementType",
++        "stats",
++        "skills",
++        "abilityCodes",
++        "flags"
++      ],
++      "additionalProperties": true
++    },
++    "option": {
++      "type": "object",
++      "properties": {
++        "optionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "range": {
++          "$ref": "#/$defs/range"
++        }
++      },
++      "required": [
++        "optionKey",
++        "range"
++      ],
++      "additionalProperties": true
++    },
++    "equipment": {
++      "type": "object",
++      "properties": {
++        "equipCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "starGrade": {
++          "type": "integer"
++        },
++        "equipType": {
++          "type": "string"
++        },
++        "normalOptions": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/option"
++          }
++        },
++        "highLevelOptions": {
++          "anyOf": [
++            {
++              "type": "object"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "skillPlus": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "effectCode": {
++                "type": "string"
++              },
++              "dimension": {
++                "enum": [
++                  "MAGNITUDE",
++                  "DURATION"
++                ]
++              },
++              "range": {
++                "$ref": "#/$defs/range"
++              },
++              "upgradeStep": {
++                "type": "number"
++              }
++            },
++            "required": [
++              "effectCode",
++              "dimension",
++              "range",
++              "upgradeStep"
++            ],
++            "additionalProperties": true
++          }
++        },
++        "specPlus": {
++          "anyOf": [
++            {
++              "type": "object"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        }
++      },
++      "required": [
++        "equipCode",
++        "nameKey",
++        "starGrade",
++        "equipType",
++        "normalOptions",
++        "highLevelOptions",
++        "skillPlus",
++        "specPlus"
++      ],
++      "additionalProperties": true
++    },
++    "ability": {
++      "type": "object",
++      "properties": {
++        "abilityCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "descriptionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "icon": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "tags": {
++          "type": "object"
++        },
++        "triggerEffects": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "chancePercent": {
++                "type": "number"
++              },
++              "triggerPhaseKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "battleModeKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "conditionKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "additionalConditionKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "conditions": {
++                "type": "array",
++                "items": {
++                  "type": "object"
++                }
++              },
++              "effectKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "effectCode": {
++                "type": "string"
++              },
++              "aptitudeCode": {
++                "type": "string"
++              },
++              "effectFactor": {
++                "type": "number"
++              },
++              "effectSubFactor": {
++                "type": "number"
++              }
++            },
++            "required": [
++              "chancePercent",
++              "triggerPhaseKey",
++              "battleModeKey",
++              "conditionKey",
++              "additionalConditionKey",
++              "conditions",
++              "effectKey",
++              "effectCode",
++              "aptitudeCode",
++              "effectFactor",
++              "effectSubFactor"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "abilityCode",
++        "nameKey",
++        "descriptionKey",
++        "icon",
++        "tags",
++        "triggerEffects"
++      ],
++      "additionalProperties": true
++    },
++    "spawn": {
++      "type": "object",
++      "properties": {
++        "unitCode": {
++          "type": "string"
++        },
++        "initialDelaySeconds": {
++          "type": "number"
++        },
++        "repeatInterval": {
++          "anyOf": [
++            {
++              "type": "object",
++              "properties": {
++                "minSeconds": {
++                  "type": "number"
++                },
++                "maxSeconds": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "minSeconds",
++                "maxSeconds"
++              ],
++              "additionalProperties": true
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "maxUnits": {
++          "type": "number"
++        },
++        "combatStats": {
++          "type": "object",
++          "properties": {
++            "physicalAttack": {
++              "type": "number"
++            },
++            "magicalAttack": {
++              "type": "number"
++            },
++            "hp": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "physicalAttack",
++            "magicalAttack",
++            "hp"
++          ],
++          "additionalProperties": true
++        }
++      },
++      "required": [
++        "unitCode",
++        "initialDelaySeconds",
++        "repeatInterval",
++        "maxUnits",
++        "combatStats"
++      ],
++      "additionalProperties": true
++    },
++    "stage": {
++      "type": "object",
++      "properties": {
++        "stageId": {
++          "type": "string"
++        },
++        "mode": {
++          "enum": [
++            "hard",
++            "extreme",
++            "endless",
++            "labyrinth"
++          ]
++        },
++        "environment": {
++          "type": "object"
++        },
++        "spawnWaves": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "when": {
++                "type": "object",
++                "properties": {
++                  "kind": {
++                    "type": "string"
++                  }
++                },
++                "required": [
++                  "kind"
++                ],
++                "additionalProperties": true
++              },
++              "units": {
++                "type": "array",
++                "items": {
++                  "$ref": "#/$defs/spawn"
++                }
++              }
++            },
++            "required": [
++              "when",
++              "units"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "stageId",
++        "mode",
++        "environment",
++        "spawnWaves"
++      ],
++      "additionalProperties": true
++    },
++    "artifact": {
++      "type": "object",
++      "properties": {
++        "artifactCode": {
++          "type": "string"
++        },
++        "grade": {
++          "enum": [
++            "A",
++            "B",
++            "C"
++          ]
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "effect": {
++          "type": "object",
++          "properties": {
++            "effectKey": {
++              "anyOf": [
++                {
++                  "type": "string"
++                },
++                {
++                  "type": "null"
++                },
++                {
++                  "$ref": "#/$defs/template"
++                },
++                {
++                  "$ref": "#/$defs/parts"
++                }
++              ]
++            },
++            "effectArgs": {
++              "type": "array",
++              "items": {
++                "type": "number"
++              }
++            },
++            "direction": {
++              "enum": [
++                "INCREASE",
++                "DECREASE"
++              ]
++            },
++            "operation": {
++              "enum": [
++                "ADD",
++                "SUB",
++                "MUL"
++              ]
++            },
++            "percent": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "effectKey",
++            "effectArgs",
++            "direction",
++            "operation",
++            "percent"
++          ],
++          "additionalProperties": true
++        },
++        "pointsByTarget": {
++          "type": "object",
++          "additionalProperties": {
++            "type": "number"
++          }
++        },
++        "iconPath": {
++          "type": "string"
++        }
++      },
++      "required": [
++        "artifactCode",
++        "grade",
++        "nameKey",
++        "effect",
++        "pointsByTarget",
++        "iconPath"
++      ],
++      "additionalProperties": true
++    },
++    "magnitude": {
++      "anyOf": [
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "statPercent"
++            },
++            "stat": {
++              "enum": [
++                "ATK",
++                "HP"
++              ]
++            },
++            "operator": {
++              "enum": [
++                "ADD",
++                "SUBTRACT",
++                "MULTIPLY"
++              ]
++            },
++            "percent": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "stat",
++            "operator",
++            "percent"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "gradeValue"
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "flat"
++            },
++            "direction": {
++              "enum": [
++                "INCREASE",
++                "DECREASE"
++              ]
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "direction",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "points"
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "percent"
++            },
++            "direction": {
++              "enum": [
++                "INCREASE",
++                "DECREASE"
++              ]
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "direction",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "summonLevel"
++            },
++            "level": {
++              "type": "integer"
++            }
++          },
++          "required": [
++            "kind",
++            "level"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "$ref": "#/$defs/levelFormula"
++        }
++      ]
++    },
++    "levelFormula": {
++      "type": "object",
++      "properties": {
++        "kind": {
++          "const": "levelFormula"
++        },
++        "levelSource": {
++          "const": "LEVEL"
++        },
++        "operator": {
++          "enum": [
++            "ADD",
++            "SUBTRACT",
++            "MULTIPLY"
++          ]
++        },
++        "amount": {
++          "type": "number"
++        },
++        "unit": {
++          "enum": [
++            "FLAT",
++            "SECOND"
++          ]
++        }
++      },
++      "required": [
++        "kind",
++        "levelSource",
++        "operator",
++        "amount",
++        "unit"
++      ],
++      "additionalProperties": true
++    },
++    "duration": {
++      "anyOf": [
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "fixed"
++            },
++            "seconds": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "seconds"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "gradeCalculated"
++            },
++            "seconds": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "seconds"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "$ref": "#/$defs/levelFormula"
++        }
++      ]
++    }
++  },
++  "datasets": {
++    "locale": {
++      "type": "array",
++      "items": {
++        "type": "object",
++        "properties": {
++          "key": {
++            "type": "string"
++          },
++          "zh_TW": {
++            "type": "string"
++          },
++          "en": {
++            "type": "string"
++          },
++          "th": {
++            "type": "string"
++          },
++          "jp": {
++            "type": "string"
++          }
++        },
++        "required": [
++          "key",
++          "zh_TW",
++          "en",
++          "th",
++          "jp"
++        ],
++        "additionalProperties": false
++      }
++    },
++    "manifest": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "status": {
++          "const": "standalone_v2"
++        },
++        "source": {
++          "const": "independent_official_api"
++        },
++        "sourceFingerprint": {
++          "type": "string"
++        },
++        "datasets": {
++          "type": "object"
++        },
++        "languageCatalogs": {
++          "type": "object"
++        },
++        "translationAudit": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "status",
++        "source",
++        "sourceFingerprint",
++        "datasets",
++        "languageCatalogs",
++        "translationAudit"
++      ],
++      "additionalProperties": true
++    },
++    "audit": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "officialReferencedButAbsentFromApi": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        },
++        "officialApiRowsMissingEnglish": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        },
++        "generatedDescriptionKeysNotStructured": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "officialReferencedButAbsentFromApi",
++        "officialApiRowsMissingEnglish",
++        "generatedDescriptionKeysNotStructured"
++      ],
++      "additionalProperties": true
++    },
++    "rangers": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "rangers": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/ranger"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "rangers"
++      ],
++      "additionalProperties": true
++    },
++    "equipment": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "equipment": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/equipment"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "equipment"
++      ],
++      "additionalProperties": true
++    },
++    "abilities": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "abilities": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/ability"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "abilities"
++      ],
++      "additionalProperties": true
++    },
++    "labyrinth-artifacts": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "artifacts": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/artifact"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "artifacts"
++      ],
++      "additionalProperties": true
++    },
++    "ranger-index": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "rangers": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "rangerCode": {
++                "type": "string"
++              },
++              "nameKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "starGrade": {
++                "type": "number"
++              },
++              "roleType": {
++                "type": "string"
++              },
++              "elementType": {
++                "type": "string"
++              },
++              "evolution": {
++                "enum": [
++                  "NORMAL",
++                  "HYPER",
++                  "ULTRA"
++                ]
++              }
++            },
++            "required": [
++              "rangerCode",
++              "nameKey",
++              "starGrade",
++              "roleType",
++              "elementType",
++              "evolution"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "rangers"
++      ],
++      "additionalProperties": true
++    },
++    "equipment-name-index": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "equipment": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "equipCode": {
++                "type": "string"
++              },
++              "nameKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              }
++            },
++            "required": [
++              "equipCode",
++              "nameKey"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "equipment"
++      ],
++      "additionalProperties": true
++    },
++    "equipment-effects": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "effects": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "attributeId": {
++                "type": "integer"
++              },
++              "optionKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              }
++            },
++            "required": [
++              "attributeId",
++              "optionKey"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "effects"
++      ],
++      "additionalProperties": true
++    },
++    "resources": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "assets": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "assetGroup": {
++                "type": "string"
++              },
++              "format": {
++                "type": "string"
++              },
++              "bytes": {
++                "type": "number"
++              },
++              "removed": {
++                "type": "boolean"
++              }
++            },
++            "required": [
++              "assetGroup",
++              "format",
++              "bytes",
++              "removed"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "assets"
++      ],
++      "additionalProperties": true
++    },
++    "projectiles": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "units": {
++          "type": "object",
++          "additionalProperties": {
++            "type": "object",
++            "properties": {
++              "unitCode": {
++                "type": "string"
++              },
++              "nameKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "visual": {
++                "type": "object"
++              },
++              "movement": {
++                "type": "object"
++              },
++              "projectile": {
++                "type": "object"
++              },
++              "attackChannels": {
++                "type": "object"
++              },
++              "effects": {
++                "type": "object"
++              }
++            },
++            "required": [
++              "unitCode",
++              "nameKey",
++              "visual",
++              "movement",
++              "projectile",
++              "attackChannels",
++              "effects"
++            ],
++            "additionalProperties": true
++          }
++        },
++        "validation": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "units",
++        "validation"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/hard": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/extreme": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/endless": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/event": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/advent": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/labyrinth": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "stages/hard": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    },
++    "stages/extreme": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    },
++    "stages/endless": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    },
++    "stages/labyrinth": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    }
++  }
++}
 --- a/scripts/v2/semantic.py
 +++ b/scripts/v2/semantic.py
 @@ -303 +303 @@
