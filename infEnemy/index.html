@@ -3,6 +3,19 @@
 <head>
   <meta charset="utf-8">
   <script>
+    (() => {
+      let saved;try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
+      saved=({zh_TW:"zh-Hant",ja:"jp"})[saved] || saved;
+      if (!["zh-Hant","en","th","jp"].includes(saved))
+        saved=document.cookie.split("; ").find(x=>x.startsWith("rangerbook-language="))?.split("=")[1];
+      const locale=["zh-Hant","en","th","jp"].includes(saved)?saved:"zh-Hant";
+      document.documentElement.lang=locale==="jp"?"ja":locale;
+      if(locale!=="zh-Hant")document.documentElement.dataset.rbLocalizing="true";
+    })();
+  </script>
+  <style>html[data-rb-localizing] body{visibility:hidden}html[data-rb-localizing]::after{content:"Loading…";position:fixed;inset:45% 0;text-align:center;font:16px sans-serif}</style>
+
+  <script>
     // Apply the saved theme before any stylesheet can paint the page.
     try {
       const theme = localStorage.getItem("rangerbook-theme");
@@ -25,6 +38,7 @@
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
   <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261010b">
   <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
+  <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261011a">
 </head>
 <body class="gt-app">
   <div id="site-header"></div>
@@ -87,8 +101,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/v2-data.js?v=20261012-v2.1"></script>
-  <script src="../assets/js/site.js?v=20261012-v2"></script>
+  <script src="../assets/js/v2-data.js?v=20261013-v2.2"></script>
+  <script src="../assets/js/site.js?v=20261013-v2.2"></script>
   <script>
     window.__originalFetchForInfEnemy = window.fetch.bind(window);
     window.fetch = (resource, options) => {
@@ -99,8 +113,8 @@
       return window.__originalFetchForInfEnemy(resource, options);
     };
   </script>
-  <script src="../assets/js/hsEnemy.js"></script>
-  <script src="../assets/js/hsEnemy-skill-meta-table.js"></script>
+  <script src="../assets/js/hsEnemy.js?v=20261013-v2.2"></script>
+  <script src="../assets/js/hsEnemy-skill-meta-table.js?v=20261013-v2.2"></script>
   <script src="../assets/js/infEnemy-boss-tag.js"></script>
   <script src="../assets/js/card-tag-colors.js"></script>
   <script src="../assets/js/bottom-pagination.js"></script>

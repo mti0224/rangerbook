@@ -1130,21 +1130,21 @@
     "key": "BUFF_FACTOR_TYPE_ANTI_AVOID",
     "zh_TW": "命中率",
     "en": "Hit Rate",
-    "th": "อัตราโจมตีโดน",
+    "th": "อัตราความแม่นยำ",
     "jp": "命中率"
   },
   {
     "key": "BUFF_FACTOR_TYPE_ANTI_SKILL_AVOID",
     "zh_TW": "技能命中率",
     "en": "Skill Hit Rate",
-    "th": "อัตราทักษะโจมตีโดน",
+    "th": "อัตราความแม่นยำของทักษะ",
     "jp": "スキル命中率"
   },
   {
     "key": "BUFF_FACTOR_TYPE_ATK",
     "zh_TW": "物理攻擊力",
     "en": "Physical ATK",
-    "th": "พลังโจมตีกายภาพ",
+    "th": "พลังโจมตีกาย",
     "jp": "物理攻撃力"
   },
   {
@@ -1158,36 +1158,36 @@
     "key": "BUFF_FACTOR_TYPE_NORMAL_DEF",
     "zh_TW": "物理防禦力",
     "en": "Physical DEF",
-    "th": "พลังป้องกันกายภาพ",
+    "th": "พลังป้องกันกาย",
     "jp": "物理防御力"
   },
   {
     "key": "BUFF_FACTOR_TYPE_SKILL_RESIST",
     "zh_TW": "技能抗性",
     "en": "Skill Resistance",
-    "th": "การต้านทักษะ",
+    "th": "ต้านสกิล",
     "jp": "スキル抵抗"
   },
   {
     "key": "BUFF_FACTOR_TYPE_SPECIAL_DEF",
     "zh_TW": "魔法防禦力",
     "en": "Magical DEF",
-    "th": "พลังป้องกันเวท",
+    "th": "พลังเวทป้องกัน",
     "jp": "魔法防御力"
   },
   {
     "key": "BUFF_FACTOR_TYPE_SP_ATK",
     "zh_TW": "魔法攻擊力",
     "en": "Magical ATK",
-    "th": "พลังโจมตีเวท",
+    "th": "พลังเวทโจมตี",
     "jp": "魔法攻撃力"
   },
   {
     "key": "BUFF_FACTOR_TYPE_ATKSPD",
     "zh_TW": "攻擊速度",
     "en": "Attack Speed",
-    "th": "ความเร็วโจมตี",
-    "jp": "攻撃速度"
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
   },
   {
     "key": "ELEMENT_fire",
@@ -2068,7 +2068,7 @@
     "key": "RANGER_EFFECT_AVOID_CHANCE",
     "zh_TW": "閃避機率",
     "en": "Evade Rate",
-    "th": "อัตราหลบหลีก",
+    "th": "อัตราการหลบหลีก",
     "jp": "回避率"
   },
   {
@@ -2089,21 +2089,21 @@
     "key": "RANGER_EFFECT_SKILL_RESIST",
     "zh_TW": "技能抗性",
     "en": "Skill Resistance",
-    "th": "การต้านทักษะ",
+    "th": "ต้านสกิล",
     "jp": "スキル抵抗"
   },
   {
     "key": "RANGER_EFFECT_CRITICAL_POWER",
     "zh_TW": "爆擊傷害",
     "en": "Critical Damage",
-    "th": "ความเสียหายคริทิคอล",
+    "th": "แรงโจมตีคริทิคอล",
     "jp": "決定打のダメージ"
   },
   {
     "key": "RANGER_EFFECT_ANTI_SK_AVOID_PROB",
     "zh_TW": "技能命中率",
     "en": "Skill Hit Rate",
-    "th": "อัตราทักษะโจมตีโดน",
+    "th": "อัตราความแม่นยำของทักษะ",
     "jp": "スキル命中率"
   },
   {
@@ -2117,36 +2117,36 @@
     "key": "RANGER_EFFECT_SPECIAL_DEF",
     "zh_TW": "魔法防禦力",
     "en": "Magical DEF",
-    "th": "พลังป้องกันเวท",
+    "th": "พลังเวทป้องกัน",
     "jp": "魔法防御力"
   },
   {
     "key": "RANGER_EFFECT_NORMAL_DEF",
     "zh_TW": "物理防禦力",
     "en": "Physical DEF",
-    "th": "พลังป้องกันกายภาพ",
+    "th": "พลังป้องกันกาย",
     "jp": "物理防御力"
   },
   {
     "key": "RANGER_EFFECT_ATKSPD",
     "zh_TW": "攻擊速度",
     "en": "Attack Speed",
-    "th": "ความเร็วโจมตี",
-    "jp": "攻撃速度"
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
   },
   {
     "key": "RANGER_EFFECT_SPEED",
     "zh_TW": "移動速度",
     "en": "Move Speed",
-    "th": "ความเร็วเคลื่อนที่",
+    "th": "ความเร็วการเคลื่อนที",
     "jp": "移動速度"
   },
   {
     "key": "RANGER_EFFECT_CHANGE_SPLASH",
     "zh_TW": "濺射範圍",
-    "en": "Splash Area",
-    "th": "พื้นที่โจมตีกระจาย",
-    "jp": "スプラッシュ範囲"
+    "en": "Splash Radius",
+    "th": "ระยะสแปลช",
+    "jp": "スプラッシュの範囲"
   },
   {
     "key": "RANGER_EFFECT_ATKRANGE",
@@ -2159,7 +2159,7 @@
     "key": "RANGER_EFFECT_CRITICAL_CHANCE",
     "zh_TW": "爆擊機率",
     "en": "Critical Rate",
-    "th": "อัตราคริทิคอล",
+    "th": "อัตราติดคริทิคอล",
     "jp": "決定打の確率"
   },
   {
@@ -2173,28 +2173,28 @@
     "key": "RANGER_EFFECT_SKILL_AVOID_CHANCE",
     "zh_TW": "技能閃避機率",
     "en": "Skill Evade Rate",
-    "th": "อัตราหลบทักษะ",
+    "th": "อัตราการหลบสกิล",
     "jp": "スキル回避率"
   },
   {
     "key": "RANGER_EFFECT_HP",
     "zh_TW": "體力",
     "en": "HP",
-    "th": "HP",
-    "jp": "HP"
+    "th": "พลังชีวิต",
+    "jp": "体力"
   },
   {
     "key": "RANGER_EFFECT_ANTI_AVOID_PROB",
     "zh_TW": "命中率",
     "en": "Hit Rate",
-    "th": "อัตราโจมตีโดน",
+    "th": "อัตราความแม่นยำ",
     "jp": "命中率"
   },
   {
     "key": "RANGER_EFFECT_SKILL_CHANCE",
     "zh_TW": "技能發動率",
     "en": "Skill Use Rate",
-    "th": "อัตราใช้ทักษะ",
+    "th": "อัตราการใช้สกิล",
     "jp": "スキル発動率"
   },
   {
@@ -2788,9 +2788,9 @@
   {
     "key": "RANGER_FIELD_LABEL_summonEnergy",
     "zh_TW": "生產礦物費用",
-    "en": "Mineral Cost",
-    "th": "ค่าแร่",
-    "jp": "ミネラル費用"
+    "en": "Mineral \\nProduction cost",
+    "th": "ค่าใช้จ่ายการผลิตแร่",
+    "jp": "生産ミネラル費用"
   },
   {
     "key": "RANGER_FIELD_LABEL_attackRange",
@@ -2803,105 +2803,105 @@
     "key": "RANGER_FIELD_LABEL_initialAttack",
     "zh_TW": "物理攻擊力",
     "en": "Physical ATK",
-    "th": "พลังโจมตีกายภาพ",
+    "th": "พลังโจมตีกาย",
     "jp": "物理攻撃力"
   },
   {
     "key": "RANGER_FIELD_LABEL_specialAttack",
     "zh_TW": "魔法攻擊力",
     "en": "Magical ATK",
-    "th": "พลังโจมตีเวท",
+    "th": "พลังเวทโจมตี",
     "jp": "魔法攻撃力"
   },
   {
     "key": "RANGER_FIELD_LABEL_defence",
     "zh_TW": "物理防禦力",
     "en": "Physical DEF",
-    "th": "พลังป้องกันกายภาพ",
+    "th": "พลังป้องกันกาย",
     "jp": "物理防御力"
   },
   {
     "key": "RANGER_FIELD_LABEL_specialDefence",
     "zh_TW": "魔法防禦力",
     "en": "Magical DEF",
-    "th": "พลังป้องกันเวท",
+    "th": "พลังเวทป้องกัน",
     "jp": "魔法防御力"
   },
   {
     "key": "RANGER_FIELD_LABEL_initialHp",
     "zh_TW": "體力",
     "en": "HP",
-    "th": "HP",
-    "jp": "HP"
+    "th": "พลังชีวิต",
+    "jp": "体力"
   },
   {
     "key": "RANGER_FIELD_LABEL_projectileAttackScope",
     "zh_TW": "濺射範圍",
     "en": "Splash Radius",
-    "th": "รัศมีโจมตีกระจาย",
-    "jp": "スプラッシュ半径"
+    "th": "ระยะสแปลช",
+    "jp": "スプラッシュの範囲"
   },
   {
     "key": "RANGER_FIELD_LABEL_criticalProbability",
     "zh_TW": "爆擊機率",
     "en": "Critical Rate",
-    "th": "อัตราคริทิคอล",
+    "th": "อัตราติดคริทิคอล",
     "jp": "決定打の確率"
   },
   {
     "key": "RANGER_FIELD_LABEL_criticalRatio",
     "zh_TW": "爆擊傷害",
     "en": "Critical Damage",
-    "th": "ความเสียหายคริทิคอล",
+    "th": "แรงโจมตีคริทิคอล",
     "jp": "決定打のダメージ"
   },
   {
     "key": "RANGER_FIELD_LABEL_antiAvoidProb",
     "zh_TW": "命中率",
     "en": "Hit Rate",
-    "th": "อัตราโจมตีโดน",
+    "th": "อัตราความแม่นยำ",
     "jp": "命中率"
   },
   {
     "key": "RANGER_FIELD_LABEL_avoidProbability",
     "zh_TW": "閃避機率",
     "en": "Evade Rate",
-    "th": "อัตราหลบหลีก",
+    "th": "อัตราการหลบหลีก",
     "jp": "回避率"
   },
   {
     "key": "RANGER_FIELD_LABEL_antiSkillAvoidProb",
     "zh_TW": "技能命中率",
     "en": "Skill Hit Rate",
-    "th": "อัตราทักษะโจมตีโดน",
+    "th": "อัตราความแม่นยำของทักษะ",
     "jp": "スキル命中率"
   },
   {
     "key": "RANGER_FIELD_LABEL_skillAvoidProbability",
     "zh_TW": "技能閃避機率",
     "en": "Skill Evade Rate",
-    "th": "อัตราหลบทักษะ",
+    "th": "อัตราการหลบสกิล",
     "jp": "スキル回避率"
   },
   {
     "key": "RANGER_FIELD_LABEL_skillResistance",
     "zh_TW": "技能抗性",
     "en": "Skill Resistance",
-    "th": "การต้านทักษะ",
+    "th": "ต้านสกิล",
     "jp": "スキル抵抗"
   },
   {
     "key": "RANGER_FIELD_LABEL_attackSpeedType",
     "zh_TW": "攻擊速度",
     "en": "Attack Speed",
-    "th": "ความเร็วโจมตี",
-    "jp": "攻撃速度"
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
   },
   {
     "key": "RANGER_FIELD_LABEL_moveSpeedType",
     "zh_TW": "移動速度",
     "en": "Move Speed",
-    "th": "ความเร็วเคลื่อนที่",
+    "th": "ความเร็วการเคลื่อนที",
     "jp": "移動速度"
   },
   {
@@ -2991,9 +2991,9 @@
   {
     "key": "ENEMY_FIELD_LABEL_summonEnergy",
     "zh_TW": "生產礦物費用",
-    "en": "Mineral Cost",
-    "th": "ค่าแร่",
-    "jp": "ミネラル費用"
+    "en": "Mineral \\nProduction cost",
+    "th": "ค่าใช้จ่ายการผลิตแร่",
+    "jp": "生産ミネラル費用"
   },
   {
     "key": "ENEMY_FIELD_LABEL_attackRange",
@@ -3006,105 +3006,105 @@
     "key": "ENEMY_FIELD_LABEL_initialAttack",
     "zh_TW": "物理攻擊力",
     "en": "Physical ATK",
-    "th": "พลังโจมตีกายภาพ",
+    "th": "พลังโจมตีกาย",
     "jp": "物理攻撃力"
   },
   {
     "key": "ENEMY_FIELD_LABEL_specialAttack",
     "zh_TW": "魔法攻擊力",
     "en": "Magical ATK",
-    "th": "พลังโจมตีเวท",
+    "th": "พลังเวทโจมตี",
     "jp": "魔法攻撃力"
   },
   {
     "key": "ENEMY_FIELD_LABEL_defence",
     "zh_TW": "物理防禦力",
     "en": "Physical DEF",
-    "th": "พลังป้องกันกายภาพ",
+    "th": "พลังป้องกันกาย",
     "jp": "物理防御力"
   },
   {
     "key": "ENEMY_FIELD_LABEL_specialDefence",
     "zh_TW": "魔法防禦力",
     "en": "Magical DEF",
-    "th": "พลังป้องกันเวท",
+    "th": "พลังเวทป้องกัน",
     "jp": "魔法防御力"
   },
   {
     "key": "ENEMY_FIELD_LABEL_initialHp",
     "zh_TW": "體力",
     "en": "HP",
-    "th": "HP",
-    "jp": "HP"
+    "th": "พลังชีวิต",
+    "jp": "体力"
   },
   {
     "key": "ENEMY_FIELD_LABEL_projectileAttackScope",
     "zh_TW": "濺射範圍",
     "en": "Splash Radius",
-    "th": "รัศมีโจมตีกระจาย",
-    "jp": "スプラッシュ半径"
+    "th": "ระยะสแปลช",
+    "jp": "スプラッシュの範囲"
   },
   {
     "key": "ENEMY_FIELD_LABEL_criticalProbability",
     "zh_TW": "爆擊機率",
     "en": "Critical Rate",
-    "th": "อัตราคริทิคอล",
+    "th": "อัตราติดคริทิคอล",
     "jp": "決定打の確率"
   },
   {
     "key": "ENEMY_FIELD_LABEL_criticalRatio",
     "zh_TW": "爆擊傷害",
     "en": "Critical Damage",
-    "th": "ความเสียหายคริทิคอล",
+    "th": "แรงโจมตีคริทิคอล",
     "jp": "決定打のダメージ"
   },
   {
     "key": "ENEMY_FIELD_LABEL_antiAvoidProb",
     "zh_TW": "命中率",
     "en": "Hit Rate",
-    "th": "อัตราโจมตีโดน",
+    "th": "อัตราความแม่นยำ",
     "jp": "命中率"
   },
   {
     "key": "ENEMY_FIELD_LABEL_avoidProbability",
     "zh_TW": "閃避機率",
     "en": "Evade Rate",
-    "th": "อัตราหลบหลีก",
+    "th": "อัตราการหลบหลีก",
     "jp": "回避率"
   },
   {
     "key": "ENEMY_FIELD_LABEL_antiSkillAvoidProb",
     "zh_TW": "技能命中率",
     "en": "Skill Hit Rate",
-    "th": "อัตราทักษะโจมตีโดน",
+    "th": "อัตราความแม่นยำของทักษะ",
     "jp": "スキル命中率"
   },
   {
     "key": "ENEMY_FIELD_LABEL_skillAvoidProbability",
     "zh_TW": "技能閃避機率",
     "en": "Skill Evade Rate",
-    "th": "อัตราหลบทักษะ",
+    "th": "อัตราการหลบสกิล",
     "jp": "スキル回避率"
   },
   {
     "key": "ENEMY_FIELD_LABEL_skillResistance",
     "zh_TW": "技能抗性",
     "en": "Skill Resistance",
-    "th": "การต้านทักษะ",
+    "th": "ต้านสกิล",
     "jp": "スキル抵抗"
   },
   {
     "key": "ENEMY_FIELD_LABEL_attackSpeedType",
     "zh_TW": "攻擊速度",
     "en": "Attack Speed",
-    "th": "ความเร็วโจมตี",
-    "jp": "攻撃速度"
+    "th": "ความเร็วในการโจมตี",
+    "jp": "攻撃スピード"
   },
   {
     "key": "ENEMY_FIELD_LABEL_moveSpeedType",
     "zh_TW": "移動速度",
     "en": "Move Speed",
-    "th": "ความเร็วเคลื่อนที่",
+    "th": "ความเร็วการเคลื่อนที",
     "jp": "移動速度"
   },
   {

@@ -8,17 +8,23 @@
   const nativeFetch = window.fetch.bind(window);
   const language = {"zh-Hant":"zh_TW",zh_TW:"zh_TW",en:"en",th:"th",jp:"jp",ja:"jp"};
   let saved; try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
+  if (!language[saved] && typeof document!=="undefined")
+    saved=document.cookie.split("; ").find(x=>x.startsWith("rangerbook-language="))?.split("=")[1];
   const locale = language[saved] || "zh_TW";
-  const cache = new Map(), catalog = new Map(), phrases = new Map(), ambiguous = new Set();
+  const cache = new Map(), catalog = new Map(), phrases = new Map(), ambiguous = new Set(), priorities = new Map();
+  const normalized = s => String(s || "").replace(/\\+n/g," ").replace(/\s+/g," ").trim();
   const types = {STR:"力量型",AGI:"敏捷型",INT:"智慧型"};
   const elements = {NONE:"無",FIRE:"火",WATER:"水",TREE:"木",LIGHT:"光",DARK:"暗"};
   const speeds = {VERYFAST:"非常快",FAST:"快",NORMAL:"普通",SLOW:"慢",VERYSLOW:"非常慢"};
   const number = n => String(Math.round(Number(n)*1000)/1000);
-  function pair(source, target) {
-    if (!source || !target || source===target || ambiguous.has(source)) return;
-    if (phrases.has(source) && phrases.get(source)!==target) {
-      phrases.delete(source);ambiguous.add(source);
-    } else phrases.set(source,target);
+  function pair(source, target, priority=0) {
+    source=normalized(source);target=normalized(target);
+    if (!source || !target || source===target) return;
+    const current=priorities.get(source) ?? -1;
+    if (priority < current || (priority === current && ambiguous.has(source))) return;
+    if (priority > current) {ambiguous.delete(source);phrases.set(source,target);priorities.set(source,priority);}
+    else if (phrases.has(source) && phrases.get(source)!==target) {phrases.delete(source);ambiguous.add(source);}
+    else {phrases.set(source,target);priorities.set(source,priority);}
   }
   function arg(x, lang) {
     if (x && typeof x==="object") {
@@ -62,18 +68,20 @@
     throw new Error("Unknown V2 text reference");
   }
   function text(ref) {
-    const zh=render(ref,"zh_TW");pair(zh,render(ref,locale));return zh;
+    const zh=render(ref,"zh_TW");pair(zh,render(ref,locale),2);return zh;
   }
-  const catalogsReady=Promise.all(["official","custom","ui"].map(async name=>{
-    const r=await nativeFetch(root+"res/v2/locales/"+name+".json");
+  const catalogPromises=Object.fromEntries(["official","custom","ui"].map(name=>[name,(async()=>{
+    const r=await nativeFetch(root+"res/v2/locales/"+name+".json?v=20261013-v2.2");
     if (!r.ok) throw new Error("V2 catalog unavailable: "+name);
     const rows=await r.json();
     if (!Array.isArray(rows)) throw new Error("Invalid V2 catalog: "+name);
     for (const row of rows) {
       if (catalog.has(row.key)) throw new Error("Duplicate V2 key: "+row.key);
-      catalog.set(row.key,row);pair(row.zh_TW,row[locale]);
+      catalog.set(row.key,row);pair(row.zh_TW,row[locale],/^EQUIP:GEAR_ATTR_.*_nm$/.test(row.key)?4:/^ABILITY:.*_nm$/.test(row.key)?3:0);
     }
-  }));
+  })()]));
+  const authoredReady=Promise.all([catalogPromises.custom,catalogPromises.ui]);
+  const catalogsReady=Promise.all(Object.values(catalogPromises));
   // Report rejected bootstrap without silently switching to V1.
   catalogsReady.catch(e=>console.error("V2 language catalogs failed",e));
   async function data(name) {
@@ -113,12 +121,20 @@
       default: throw new Error("Unknown V2 magnitude: "+v.kind);
     }
   }
+  function effectMagnitude(e) {
+    if (e.effectTrigger && e.targetLimit?.kind === "limited")
+      return text({templateKey:"UI:skill.chanceAndLimit",args:[e.effectTrigger.percent,e.targetLimit.maxTargets]});
+    if (e.magnitude?.kind === "summonLevel" && e.targetLimit)
+      return text({templateKey:e.targetLimit.kind === "unlimited" ? "UI:skill.summonUnlimited" : "UI:skill.summonLimited",
+        args:e.targetLimit.kind === "unlimited" ? [e.magnitude.level] : [e.targetLimit.maxTargets,e.magnitude.level]});
+    return magnitude(e.magnitude);
+  }
   function skill(s) {
     const trigger=s.trigger.type==="SELF"?"自身":s.trigger.type==="SEARCH"?"前方敵人":
       s.trigger.type==="RSEARCH"?"後方敵人（倍率:"+number(s.trigger.searchRatio)+"倍）":s.trigger.type;
     return {"技能名稱":text(s.nameKey)||s.skillCode,"技能敘述":text(s.descriptionKey),
       "發動機率":percent(s.activationRate),"觸發基準":trigger,"技能冷卻時間":seconds(s.cooldownSeconds),icon:s.icon,
-      "技能組":s.effects.map(e=>({"效果":text("CUSTOM:"+e.effectCode),"係數":magnitude(e.magnitude),
+      "技能組":s.effects.map(e=>({"效果":text("CUSTOM:"+e.effectCode),"係數":effectMagnitude(e),
         "有效時間":!e.duration?"-":e.duration.kind==="levelFormula"?formula(e.duration):seconds(e.duration.seconds),
         "範圍":points(e.rangePoints),"適用於活動關卡":e.availableIn.events?"是":"否",
         "適用於守護神":e.availableIn.guardian?"是":"否",
@@ -157,12 +173,14 @@
   }
   function talent(t) {
     if (!t) return "無";
-    const out={"強化才能":(t.enhancements||[]).map(x=>text(x.localizedEffect))};
+    const out={};
     if(t.major) {const m=t.major;
       out["主要才能"]={"敘述":text(m.descriptionKey),"觸發機率":percent(m.activationChancePercent),
         "條件":text(m.activationConditionKey),"增益效果":m.effects.map(x=>text(x.localizedEffect))};
       (m.additionalConditions||[]).forEach((x,i)=>out["主要才能"]["條件"+(i+2)]=text(x.text || x.textKey || x));
-    }return out;
+    }
+    out["強化才能"]=(t.enhancements||[]).map(x=>text(x.localizedEffect));
+    return out;
   }
   function stars(x) {return (x.evolution==="HYPER"?"超進化":x.evolution==="ULTRA"?"究極進化":"")+x.starGrade+"星";}
   async function actors(name) {
@@ -301,11 +319,11 @@
     else if(/\/res\/i18n\//.test(path))build=()=>legacyLocale(name.replace(/\.json$/,""));
     if(!build)return nativeFetch(input,options);
     try {
-      await catalogsReady;
+      await (path.includes("/assets/locales/") ? authoredReady : catalogsReady);
       if(!viewCache.has(path))viewCache.set(path,Promise.resolve().then(build));
       return new Response(JSON.stringify(await viewCache.get(path)),{status:200,headers:{"Content-Type":"application/json","X-Rangerbook-Source":"v2"}});
     }catch(e){viewCache.delete(path);console.error("V2 view failed",path,e);return new Response(JSON.stringify({error:"V2 unavailable"}),{status:503,headers:{"Content-Type":"application/json"}});}
   };
   window.RangerbookV2={ready:catalogsReady,locale,data,render,text,catalog,
-    translateText:s=>phrases.get(s)||s,source:"v2",routes:Object.keys(routes)};
+    translateText:s=>phrases.get(normalized(s))||s,source:"v2",routes:Object.keys(routes)};
 })();

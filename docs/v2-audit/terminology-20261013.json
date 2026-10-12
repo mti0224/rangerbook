@@ -1,0 +1,123 @@
+[
+  {
+    "term": "濺射範圍",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_SPLASH_RANGE",
+    "translations": {
+      "zh_TW": "濺射範圍",
+      "en": "Splash Radius",
+      "jp": "スプラッシュの範囲",
+      "th": "ระยะสแปลช"
+    }
+  },
+  {
+    "term": "魔法攻擊力",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_SPECIAL_ATK",
+    "translations": {
+      "zh_TW": "魔法攻擊力",
+      "en": "Magical ATK",
+      "jp": "魔法攻撃力",
+      "th": "พลังเวทโจมตี"
+    }
+  },
+  {
+    "term": "魔法防禦力",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_SPECIAL_DEF",
+    "translations": {
+      "zh_TW": "魔法防禦力",
+      "en": "Magical DEF",
+      "jp": "魔法防御力",
+      "th": "พลังเวทป้องกัน"
+    }
+  },
+  {
+    "term": "閃避機率",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_AVOID_PROB",
+    "translations": {
+      "zh_TW": "閃避機率",
+      "en": "Evade Rate",
+      "jp": "回避率",
+      "th": "อัตราการหลบหลีก"
+    }
+  },
+  {
+    "term": "技能閃避機率",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_SKILL_AVOID_PROB",
+    "translations": {
+      "zh_TW": "技能閃避機率",
+      "en": "Skill Evade Rate",
+      "jp": "スキル回避率",
+      "th": "อัตราการหลบสกิล"
+    }
+  },
+  {
+    "term": "技能發動率",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_SKILL_PROB",
+    "translations": {
+      "zh_TW": "技能發動率",
+      "en": "Skill Use Rate",
+      "jp": "スキル発動率",
+      "th": "อัตราการใช้สกิล"
+    }
+  },
+  {
+    "term": "命中率",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_ANTI_AVOID_PROB",
+    "translations": {
+      "zh_TW": "命中率",
+      "en": "Hit Rate",
+      "jp": "命中率",
+      "th": "อัตราความแม่นยำ"
+    }
+  },
+  {
+    "term": "技能命中率",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_ANTI_SKILL_AVOID_PROB",
+    "translations": {
+      "zh_TW": "技能命中率",
+      "en": "Skill Hit Rate",
+      "jp": "スキル命中率",
+      "th": "อัตราความแม่นยำของทักษะ"
+    }
+  },
+  {
+    "term": "爆擊傷害",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_CRITICAL_POWER",
+    "translations": {
+      "zh_TW": "爆擊傷害",
+      "en": "Critical Damage",
+      "jp": "決定打のダメージ",
+      "th": "แรงโจมตีคริทิคอล"
+    }
+  },
+  {
+    "term": "爆擊機率",
+    "source": "official_api/lang_prop",
+    "key": "lang_prop:PROFILE_TITLE_CRITICAL_PROB",
+    "translations": {
+      "zh_TW": "爆擊機率",
+      "en": "Critical Rate",
+      "jp": "決定打の確率",
+      "th": "อัตราติดคริทิคอล"
+    }
+  },
+  {
+    "term": "係數",
+    "source": "authored_ui; no corresponding coefficient label found in checked official language packages",
+    "key": null,
+    "translations": {
+      "en": "Factor",
+      "th": "ค่าสัมประสิทธิ์",
+      "jp": "係数",
+      "zh_TW": "係數"
+    }
+  }
+]

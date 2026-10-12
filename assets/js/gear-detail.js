@@ -372,7 +372,7 @@
   function similarCard(gear) {
     const id = getId(gear);
     const name = localGearName(gear);
-    const tags = [getGearStar(gear) ? `${getGearStar(gear)}星` : "", localText(getGearTypeLabel(gear))].filter(Boolean).join(" / ");
+    const tags = [getGearStar(gear) ? localText(`${getGearStar(gear)}星`) : "", localText(getGearTypeLabel(gear))].filter(Boolean).join(" / ");
     return `<a class="gear-similar-card" href="${ROOT}gear/${encodeURIComponent(id)}" title="${escapeHtml(name)}" data-gear-id="${escapeHtml(id)}"><img src="${GEAR_ICON(id)}" alt="${escapeHtml(name)}" loading="lazy"><span class="gear-similar-name">${escapeHtml(name)}</span><span class="gear-similar-tags">${escapeHtml(tags)}</span></a>`;
   }
 
@@ -387,7 +387,7 @@
   }
 
   function renderHead(gear, id) {
-    const tags = [getGearStar(gear) ? `${getGearStar(gear)}星` : "", localText(getGearTypeLabel(gear))].filter(Boolean);
+    const tags = [getGearStar(gear) ? localText(`${getGearStar(gear)}星`) : "", localText(getGearTypeLabel(gear))].filter(Boolean);
     return `<div class="ranger-detail-head gear-detail-head"><div class="ranger-detail-image-wrap gear-detail-image-wrap"><img class="ranger-detail-image gear-detail-image" src="${GEAR_ICON(id)}" alt="${escapeHtml(localGearName(gear))}"></div><div><h2 id="gearModalTitle">${escapeHtml(localGearName(gear))}</h2><div class="ranger-tags detail-tags">${tags.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div></div></div>`;
   }
 

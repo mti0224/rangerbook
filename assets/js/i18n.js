@@ -7,7 +7,14 @@
   const storageKey = "rangerbook-language";
   let saved = null;
   try { saved = localStorage.getItem(storageKey); } catch (_) {}
+  const aliases={zh_TW:"zh-Hant",ja:"jp"};
+  saved=aliases[saved] || saved;
+  if (!supported.includes(saved)) {
+    saved=document.cookie.split("; ").find(x=>x.startsWith(storageKey+"="))?.split("=")[1];
+  }
   let locale = supported.includes(saved) ? saved : "zh-Hant";
+  document.documentElement.lang=locale === "jp" ? "ja" : locale;
+  document.cookie=storageKey+"="+locale+"; Path=/; Max-Age=31536000; SameSite=Lax";
   let dictionary = {};
   let englishByChinese = new Map();
   let gameTermsByChinese = new Map();
@@ -22,7 +29,7 @@
     const escape = value => value.replace(/[.*+?^$()|{}[\]\\]/g, "\\$&").replace(/\s+/g, "\\s*");
     for (const match of source.matchAll(tokens)) {
       const capture="([+-]?[0-9]+(?:[.,][0-9]+)*(?:\\s*[~～–-]\\s*[+-]?[0-9]+(?:[.,][0-9]+)*)?)";
-      regex += escape(source.slice(last, match.index)) + capture;
+      regex += escape(source.slice(last, match.index)) + "\\s*" + capture + "\\s*";
       slots.push(/^%[Nd]\d+$/.test(match[0]) ? Number(match[0].slice(2))-1 : sequential++);
       last = match.index + match[0].length;
     }
@@ -186,7 +193,11 @@
     for (const node of found) {
       const key = node.getAttribute("data-i18n");
       if (key && Object.prototype.hasOwnProperty.call(dictionary,key) && node.textContent !== dictionary[key]) {
-        node.textContent = dictionary[key];
+        if (!node.children.length) node.textContent = dictionary[key];
+        else {
+          const label=[...node.childNodes].find(x=>x.nodeType===3 && x.nodeValue.trim());
+          if (label && label.nodeValue.trim()!==dictionary[key]) label.nodeValue=dictionary[key];
+        }
       }
       const ariaKey = node.getAttribute("data-i18n-aria-label");
       if (ariaKey && dictionary[ariaKey] !== undefined) node.setAttribute("aria-label",dictionary[ariaKey]);
@@ -264,6 +275,7 @@
     if (!supported.includes(value) || value === locale) return;
     locale = value;
     try { localStorage.setItem(storageKey, locale); } catch (_) {}
+    document.cookie=storageKey+"="+locale+"; Path=/; Max-Age=31536000; SameSite=Lax";
     location.reload();
   }
   const api = {
@@ -277,7 +289,16 @@
     unitDescription(id, original) { return lookup("UNIT", id + "_desc", original); }
   };
   window.RangerbookI18n = api;
-  api.ready = Promise.all([loadUi(locale),loadGameTerms()]).then(() => null);
+  api.ready = Promise.all([loadUi(locale),loadGameTerms()]).finally(() => {
+    delete document.documentElement.dataset.rbLocalizing;
+  }).then(() => null);
+  function refreshSavedLocale() {
+    let current;try {current=localStorage.getItem(storageKey);} catch (_) {}
+    current=aliases[current] || current;
+    if (supported.includes(current) && current!==locale) location.reload();
+  }
+  window.addEventListener("pageshow",refreshSavedLocale);
+  window.addEventListener("storage",event=>{if(event.key===storageKey)refreshSavedLocale();});
   if (locale !== "zh-Hant" && /\/(ranger|gear|ability|hsEnemy|mainstage|hs-stage|endless|labyrinth|pvp|guildwar)\//i.test(location.pathname)) {
     api.ready.then(() => readyGame());
   }

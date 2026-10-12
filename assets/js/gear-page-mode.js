@@ -33,7 +33,8 @@
       if (!link) {
         link = document.createElement("a");
         link.className = "gear-detail-link";
-        link.textContent = "查看詳細資訊";
+        link.dataset.i18n = "action.viewDetails";
+        link.textContent = window.RangerbookI18n?.t("action.viewDetails", "查看詳細資訊") || "查看詳細資訊";
         summaryArea.appendChild(link);
       }
       link.href = detailEntryUrl(id);

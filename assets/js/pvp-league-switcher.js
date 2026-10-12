@@ -162,7 +162,11 @@
   fillLeagueSelect(document.getElementById("pvpLeagueSelect"));
   updateUsageScope();
   updateLabels();
-  window.addEventListener("rangerbook:locale-ready", updateLabels);
+  window.addEventListener("rangerbook:locale-ready", () => {
+    const select=document.getElementById("pvpLeagueSelect");
+    if(select) for(const option of select.options) option.textContent=localized(LABELS[option.value] || option.value);
+    updateLabels();
+  });
 
   const observer = new MutationObserver(() => {
     const nodes = [

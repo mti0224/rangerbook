@@ -3,6 +3,19 @@
 <head>
   <meta charset="utf-8">
   <script>
+    (() => {
+      let saved;try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
+      saved=({zh_TW:"zh-Hant",ja:"jp"})[saved] || saved;
+      if (!["zh-Hant","en","th","jp"].includes(saved))
+        saved=document.cookie.split("; ").find(x=>x.startsWith("rangerbook-language="))?.split("=")[1];
+      const locale=["zh-Hant","en","th","jp"].includes(saved)?saved:"zh-Hant";
+      document.documentElement.lang=locale==="jp"?"ja":locale;
+      if(locale!=="zh-Hant")document.documentElement.dataset.rbLocalizing="true";
+    })();
+  </script>
+  <style>html[data-rb-localizing] body{visibility:hidden}html[data-rb-localizing]::after{content:"Loading…";position:fixed;inset:45% 0;text-align:center;font:16px sans-serif}</style>
+
+  <script>
     // Match the stored theme before any page is rendered.
     try {
       const theme = localStorage.getItem("rangerbook-theme");
@@ -47,6 +60,7 @@
       });
     })();
   </script>
+  <link rel="stylesheet" href="' + root + 'assets/css/sidebar-drawer.css?v=20261011a">
 </head>
 <body class="gt-app">
   <div id="site-header"></div>
@@ -130,13 +144,13 @@
           : root + 'mainstage/hard/stage/';
       }
 
-      document.write('<script src="' + root + 'assets/js/v2-data.js?v=20261012-v2.1"><\/script>');
-      document.write('<script src="' + root + 'assets/js/site.js?v=20261012-v2"><\/script>');
+      document.write('<script src="' + root + 'assets/js/v2-data.js?v=20261013-v2.2"><\/script>');
+      document.write('<script src="' + root + 'assets/js/site.js?v=20261013-v2.2"><\/script>');
       if (kind === 'endless-stage') {
         document.write('<script src="' + root + 'assets/js/endless-stage.js"><\/script>');
       } else if (kind === 'mainstage-hard-stage' || kind === 'mainstage-extreme-stage') {
-        document.write('<script src="' + root + 'assets/js/mainstage-stage-adapter.js"><\/script>');
-        document.write('<script src="' + root + 'assets/js/hs-stage.js"><\/script>');
+        document.write('<script src="' + root + 'assets/js/mainstage-stage-adapter.js?v=20261013-v2.2"><\/script>');
+        document.write('<script src="' + root + 'assets/js/hs-stage.js?v=20261013-v2.2"><\/script>');
       }
       document.write('<script src="' + root + 'assets/js/card-tag-colors.js"><\/script>');
     })();

@@ -310,7 +310,7 @@
         <a class="pvp-modal-detail-link" href="${RANGER_DETAIL(row.rangerId)}">查看角色詳細資料</a>
       </header>
 
-      <section class="pvp-modal-section">
+      <section class="pvp-modal-section" data-pvp-section="equipment">
         <div class="pvp-modal-section-heading">
           <h3>配裝情況</h3>
         </div>

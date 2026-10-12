@@ -235,8 +235,7 @@
     const sections = [...container.querySelectorAll(':scope > .hs-condition-section')];
     if (!sections.length) return;
 
-    const productionTitle = [...container.querySelectorAll(':scope > .endless-detail-section-title')]
-      .find((node) => ['敵人生產線','Enemy Spawn Timeline'].includes(node.textContent.trim()));
+    const productionTitle = container.querySelector(':scope > [data-stage-section="production"]');
     if (!productionTitle) return;
 
     const panel = document.createElement('div');
@@ -260,8 +259,7 @@
     if (existing?.dataset.stageNo === String(stageNo)) return;
     existing?.remove();
 
-    const productionTitle = [...container.querySelectorAll(':scope > .endless-detail-section-title')]
-      .find((node) => ['敵人生產線','Enemy Spawn Timeline'].includes(node.textContent.trim()));
+    const productionTitle = container.querySelector(':scope > [data-stage-section="production"]');
     if (!productionTitle) return;
     productionTitle.insertAdjacentHTML('beforebegin', renderExtremeGimmicks(stage, stageNo));
   }

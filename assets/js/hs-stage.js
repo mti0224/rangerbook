@@ -195,7 +195,7 @@
 
     stageConditions.innerHTML = `
       ${renderStageInfoTable(stage)}
-      ${renderSectionTitle(window.RangerbookI18n?.uiText("敵人生產線") || "敵人生產線")}
+      <h2 class="endless-detail-section-title" data-stage-section="production" data-i18n="copy.enemy.spawn.timeline">敵人生產線</h2>
       ${stage.conditions.length ? stage.conditions.map((group, index) => `
         <section class="hs-condition-section">
           <h3 class="hs-condition-title"><span class="hs-condition-label">${escapeHtml(group.condition)}</span></h3>
