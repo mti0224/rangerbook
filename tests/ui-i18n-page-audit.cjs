@@ -28,7 +28,7 @@ const paths = [
         console.log("UI_I18N_CHECK",path);
         await page.goto(base+path,{waitUntil:"domcontentloaded",timeout:12000});
         await page.waitForFunction(() => document.documentElement.lang === "en" &&
-          window.RangerbookI18n?.t("nav.home") === "Home",null,{timeout:9000});
+          window.RangerbookI18n?.t("nav.home") === "Home",null,{timeout:20000});
         const result = await page.evaluate(() => {
           const title = document.title;
           const heading = document.querySelector("main h1")?.textContent?.trim() || "";

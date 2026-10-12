@@ -21,7 +21,7 @@
     let regex = "^", last = 0, sequential = 0;
     const escape = value => value.replace(/[.*+?^$()|{}[\]\\]/g, "\\$&").replace(/\s+/g, "\\s*");
     for (const match of source.matchAll(tokens)) {
-      const capture=String(key).startsWith("UI:") ? "([+-]?[0-9]+(?:[.,][0-9]+)*(?:\\s*[~～–-]\\s*[+-]?[0-9]+(?:[.,][0-9]+)*)?)" : "(.+?)";
+      const capture="([+-]?[0-9]+(?:[.,][0-9]+)*(?:\\s*[~～–-]\\s*[+-]?[0-9]+(?:[.,][0-9]+)*)?)";
       regex += escape(source.slice(last, match.index)) + capture;
       slots.push(/^%[Nd]\d+$/.test(match[0]) ? Number(match[0].slice(2))-1 : sequential++);
       last = match.index + match[0].length;
@@ -39,7 +39,9 @@
       else map.set(source, item[locale]);
       // Generic semantic templates require explicit Key/args bindings. Their
       // adjacent text slots must never infer matches from arbitrary DOM text.
-      const template = String(item.key).startsWith("UI:")
+      const literal=source.replace(/%(?:[Nd]\d*|s|n)/g, "").replace(/[\s%():：（）]/g, "");
+      const contextual=literal.length>=2 && !/%(?:[Nd]\d*|s|n)%(?:[Nd]\d*|s|n)/.test(source);
+      const template = String(item.key).startsWith("UI:") || contextual
         ? compileTermTemplate(source, item[locale], item.key) : null;
       if (template) templates.push(template);
     }
