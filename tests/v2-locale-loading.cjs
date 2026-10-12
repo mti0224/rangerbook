@@ -23,10 +23,11 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
   assert.equal(await p.locator('[data-i18n="settings.title"]').innerText(),row[locale]);
   assert.equal(await p.locator('input[name="language"]:checked').inputValue(),locale);
   // A real settings change must work while the official game catalog is still held.
-  const next=locale==='jp'?'en':'jp';releaseOfficial();
+  const next=locale==='jp'?'en':'jp';
   await Promise.all([p.waitForNavigation({waitUntil:'domcontentloaded'}),p.locator('input[name="language"][value="'+next+'"]').click({noWaitAfter:true})]);
   await p.evaluate(()=>window.RangerbookI18n.ready);
   assert.equal(await p.locator('input[name="language"]:checked').inputValue(),next);
+  releaseOfficial();
   // Cookie fallback keeps both presentation and the V2 adapter aligned if storage is unavailable.
   await ctx.addInitScript(()=>{
    const get=Storage.prototype.getItem;Storage.prototype.getItem=function(key){if(key==='rangerbook-language')throw new Error('Storage temporarily unavailable');return get.call(this,key)};

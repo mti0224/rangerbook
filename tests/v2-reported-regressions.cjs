@@ -78,6 +78,18 @@ const fixture={metadata,rangers:[{rank:1,rangerId:'u1535e-brown',playerCount:2,a
    assert.equal(Object.keys(coeff).length,5);
    await go('/gear/');await p.locator('.gear-card').first().click();
    await p.waitForFunction(expected=>document.querySelector('.gear-detail-link')?.textContent===expected,ui('action.viewDetails',locale));
+   const rareEffects=[['eq_2301_wpn_07','GEAR_ATTR_DOUBLE_SKL_PROB_MUL_nm'],['eq_2202_amr_06','GEAR_ATTR_MIR_PHY_MUL_nm'],['eq_2206_acc_06','GEAR_ATTR_MIR_MAG_MUL_nm'],['eq_2609_wpn_09','GEAR_ATTR_DOUBLE_ATK_PROB_MUL_nm'],['eq_2604_amr_08','GEAR_ATTR_FIX_SKLAVD_PROB_MUL_nm'],['eq_test_acc_998','GEAR_ATTR_FIX_AVD_PROB_MUL_nm']];
+   for(const [id,key] of rareEffects){
+    await go('/gear/?detail='+id);await p.locator('.gear-detail-content:not([hidden])').waitFor();
+    const expected=await p.evaluate(key=>window.RangerbookV2.render('EQUIP:'+key,window.RangerbookV2.locale).replace(/\\+n/g,' ').replace(/\s+/g,' ').trim(),key);
+    await p.waitForFunction(expected=>document.getElementById('gearModalContent')?.textContent.replace(/\s+/g,' ').includes(expected),expected);
+   }
+   await go('/ranger/ranger/?detail=u1430e-moon');await p.locator('#rangerModalContent .ranger-ability-card').first().waitFor();
+   const freeze=await p.evaluate(()=>window.RangerbookV2.render('ABILITY:aab233_antifreeze_nm',window.RangerbookV2.locale).replace(/\s+/g,' ').trim());
+   await p.waitForFunction(expected=>document.getElementById('rangerModalContent')?.textContent.replace(/\s+/g,' ').includes(expected),freeze);
+   await go('/mainstage/extreme/enemy/');await p.locator('#enemySearchInput').fill('u92002-ro-515');await p.locator('[data-enemy-id="u92002-ro-515"]').first().click();
+   const mineral=await p.evaluate(()=>window.RangerbookV2.render('ABILITY:ab232_antiminadd_nm',window.RangerbookV2.locale).replace(/\s+/g,' ').trim());
+   await p.waitForFunction(expected=>document.getElementById('enemyModalContent')?.textContent.replace(/\s+/g,' ').includes(expected),mineral);
    await go('/gear/?detail=eq_2610_amr_29');await p.locator('.gear-similar-card').first().waitFor();
    const starLabels=await p.locator('.gear-similar-tags').allTextContents();console.log('STARS',locale,starLabels.slice(0,6));
    assert.ok(starLabels.length>0);if(locale!=='zh-Hant')assert.ok(starLabels.every(x=>!/[星]/.test(x)||locale==='jp'));

@@ -35,7 +35,7 @@ function pages(dir='') {
     console.log("V2_PAGE_START "+locale+" "+route);
     errors=[];legacy=[];page=await context.newPage();page.setDefaultNavigationTimeout(60000);observe(page);
     try {
-     await page.goto(base+route,{waitUntil:'load',timeout:60000});
+     await page.goto(base+route,{waitUntil:'domcontentloaded',timeout:60000});
      await page.waitForFunction(l=>window.RangerbookI18n?.locale===l,locale,{timeout:20000});
      await page.evaluate(()=>window.RangerbookI18n.ready);
      await page.waitForTimeout(500);
@@ -66,7 +66,7 @@ function pages(dir='') {
    assert.equal(await page.locator('input[name="language"]').count(),4);
    for(const selected of ['en','jp','th','zh-Hant']) {
     if(await page.locator('input[name="language"][value="'+selected+'"]').isChecked())continue;
-    await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.locator('input[name="language"][value="'+selected+'"]').click({noWaitAfter:true})]);
+    await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded'}),page.locator('input[name="language"][value="'+selected+'"]').click({noWaitAfter:true})]);
     await page.waitForFunction(l=>document.documentElement.lang===(l==='jp'?'ja':l) && document.querySelector('input[name="language"][value="'+l+'"]').checked,selected);
    }
    result.interactions.push({locale,settingsFourLanguages:true});

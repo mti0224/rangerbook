@@ -2145,8 +2145,8 @@
     "key": "RANGER_EFFECT_CHANGE_SPLASH",
     "zh_TW": "濺射範圍",
     "en": "Splash Radius",
-    "th": "รัศมีโจมตีกระจาย",
-    "jp": "スプラッシュ半径"
+    "th": "ระยะสแปลช",
+    "jp": "スプラッシュの範囲"
   },
   {
     "key": "RANGER_EFFECT_ATKRANGE",
@@ -2838,8 +2838,8 @@
     "key": "RANGER_FIELD_LABEL_projectileAttackScope",
     "zh_TW": "濺射範圍",
     "en": "Splash Radius",
-    "th": "รัศมีโจมตีกระจาย",
-    "jp": "スプラッシュ半径"
+    "th": "ระยะสแปลช",
+    "jp": "スプラッシュの範囲"
   },
   {
     "key": "RANGER_FIELD_LABEL_criticalProbability",
@@ -3041,8 +3041,8 @@
     "key": "ENEMY_FIELD_LABEL_projectileAttackScope",
     "zh_TW": "濺射範圍",
     "en": "Splash Radius",
-    "th": "รัศมีโจมตีกระจาย",
-    "jp": "スプラッシュ半径"
+    "th": "ระยะสแปลช",
+    "jp": "スプラッシュの範囲"
   },
   {
     "key": "ENEMY_FIELD_LABEL_criticalProbability",
