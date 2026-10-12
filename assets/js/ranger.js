@@ -303,7 +303,7 @@
       getName(ranger), ranger?.["Ranger名稱"], getId(ranger), ranger?.["角色敘述"], ranger?.["登場時間"], ranger?.["Ranger星數"],
       ranger?.["類型"], ranger?.["屬性"], ranger?.["命中率"], ranger?.["技能命中率"],
       ...talent.conditions, ...talent.effects, ...abilities, ...skills
-    ].map(rawText).join(" ").toLowerCase();
+    ].map(rawText).flatMap(value=>[value,window.RangerbookI18n?.uiText(value)||value]).join(" ").toLowerCase();
   }
 
   function valueText(value) {

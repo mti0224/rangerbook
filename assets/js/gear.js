@@ -256,7 +256,9 @@
   }
 
   function searchBlob(gear) {
-    return gearRawText(gear).toLowerCase();
+    const raw=gearRawText(gear);
+    const name=scalarText(gear?.["裝備名稱"]);
+    return [raw,window.RangerbookI18n?.uiText(name)||name].join(" ").toLowerCase();
   }
 
   function uniqueSorted(values) {

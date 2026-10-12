@@ -26,14 +26,14 @@ function pages(dir='') {
    await context.addInitScript(({locale})=>{if(!localStorage.getItem('rangerbook-language'))localStorage.setItem('rangerbook-language',locale);if(!localStorage.getItem('rangerbook-theme'))localStorage.setItem('rangerbook-theme',locale==='jp'||locale==='en'?'dark':'light');},{locale});
    await context.route('**/rangerbook-auth.warmycat.com/**',r=>r.fulfill({status:401,contentType:'application/json',body:'{"logged_in":false}'}));
    await context.route('**/www.googletagmanager.com/**',r=>r.abort());
-   const page=await context.newPage();
+   let page;
    let errors=[],legacy=[];
-   page.on('pageerror',e=>errors.push(e.message));
-   page.on('request',r=>{const u=new URL(r.url());if(u.origin===new URL(base).origin && /\/res\//.test(u.pathname) && !u.pathname.includes('/res/v2/') && !u.pathname.includes('ranger_stats_config') && !decodeURIComponent(u.pathname).includes('更新日誌'))legacy.push(u.pathname);});
+   function observe(page) { page.on('pageerror',e=>errors.push(e.message));
+   page.on('request',r=>{const u=new URL(r.url());if(u.origin===new URL(base).origin && /\/res\//.test(u.pathname) && !u.pathname.includes('/res/v2/') && !u.pathname.includes('ranger_stats_config') && !decodeURIComponent(u.pathname).includes('更新日誌'))legacy.push(u.pathname);}); }
    for(const route of routes) {
-    errors=[];legacy=[];
+    errors=[];legacy=[];page=await context.newPage();observe(page);
     try {
-     await page.goto(base+route,{waitUntil:'domcontentloaded',timeout:30000});
+     await page.goto(base+route,{waitUntil:'load',timeout:30000});
      await page.waitForFunction(l=>window.RangerbookI18n?.locale===l,locale,{timeout:20000});
      await page.evaluate(()=>window.RangerbookI18n.ready);
      await page.waitForTimeout(500);
@@ -52,16 +52,18 @@ function pages(dir='') {
      assert.equal(visible.source,'v2');assert.equal(visible.lang,locale==='jp'?'ja':locale);
      assert.equal(legacy.length,0,'Unexpected V1 game network request');
      assert.equal(errors.length,0,errors.join('; '));
-     result.pages.push({route,locale,...visible});
+     result.pages.push({route,finalUrl:page.url(),locale,...visible});
      if(['/settings/','/ranger/ranger/','/gear/','/ability/','/mainstage/extreme/stage/','/labyrinth/stage/'].includes(route))
        await page.screenshot({path:path.join(artifacts,locale+'-'+route.replaceAll('/','_')+'.png'),fullPage:false});
-    }catch(e){result.fatal.push({route,locale,error:e.message,errors,legacy});}
+    }catch(e){result.fatal.push({route,locale,error:e.message,errors,legacy});}finally{await page.close();}
    }
+   page=await context.newPage();
    await page.goto(base+'/settings/',{waitUntil:'domcontentloaded'});
    await page.waitForFunction(()=>window.RangerbookI18n?.ready);
    assert.equal(await page.locator('input[name="language"]').count(),4);
    for(const selected of ['en','jp','th','zh-Hant']) {
-    await page.locator('input[name="language"][value="'+selected+'"]').check();
+    if(await page.locator('input[name="language"][value="'+selected+'"]').isChecked())continue;
+    await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.locator('input[name="language"][value="'+selected+'"]').click({noWaitAfter:true})]);
     await page.waitForFunction(l=>document.documentElement.lang===(l==='jp'?'ja':l) && document.querySelector('input[name="language"][value="'+l+'"]').checked,selected);
    }
    result.interactions.push({locale,settingsFourLanguages:true});

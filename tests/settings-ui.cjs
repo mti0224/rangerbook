@@ -1,4 +1,4 @@
-/* Settings page bilingual/theme interaction; reuses existing Playwright visual-audit runtime. */
+/* Settings page four-language/theme interaction; reuses existing Playwright visual-audit runtime. */
 const assert = require("node:assert/strict");
 const { chromium } = require("playwright");
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
@@ -16,7 +16,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       await page.goto(base + "/settings/", {waitUntil:"domcontentloaded"});
       await page.waitForSelector('.rb-choice input[name="theme"]');
       assert.equal(await page.locator('input[name="theme"]').count(), 2);
-      assert.equal(await page.locator('input[name="language"]').count(), 2);
+      assert.equal(await page.locator('input[name="language"]').count(), 4);
       assert.equal(await page.locator('input[name="theme"]:checked').inputValue(), "light");
       assert.equal(await page.locator('input[name="language"]:checked').inputValue(), "zh-Hant");
       assert.equal(await page.locator('.site-settings-toggle').getAttribute('href'), '/settings/');
@@ -24,7 +24,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       await page.getByRole("radio",{name:"深色模式"}).check();
       assert.equal(await page.locator("html").getAttribute("data-theme"), "dark");
       assert.equal(await page.evaluate(()=>localStorage.getItem("rangerbook-theme")), "dark");
-      await page.locator('input[name="language"][value="en"]').check();
+      await Promise.all([page.waitForNavigation({waitUntil:"load"}),page.locator('input[name="language"][value="en"]').click({noWaitAfter:true})]);
       await page.waitForFunction(() => document.documentElement.lang === "en" && document.querySelector('input[name="language"][value="en"]').checked);
       await page.waitForFunction(() => document.querySelector('[data-i18n="settings.title"]')?.textContent === "Settings");
       assert.equal(await page.locator('input[name="theme"]:checked').inputValue(), "dark");
@@ -39,7 +39,10 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       assert.equal(await page.locator("html").getAttribute("data-theme"),"light");
       await page.goto(base+"/settings/");
       await page.waitForFunction(() => document.querySelector('input[name="language"][value="en"]')?.checked);
-      await page.locator('input[name="language"][value="zh-Hant"]').check();
+      for(const selected of ["jp","th","zh-Hant"]){
+      await Promise.all([page.waitForNavigation({waitUntil:"load"}),page.locator('input[name="language"][value="'+selected+'"]').click({noWaitAfter:true})]);
+      await page.waitForFunction(l=>document.documentElement.lang === (l === "jp" ? "ja" : l),selected);
+      }
       await page.waitForFunction(() => document.documentElement.lang === "zh-Hant" && document.querySelector('input[name="language"][value="zh-Hant"]').checked);
       console.log("SETTINGS_UI_OK "+viewport.width);
       await context.close();

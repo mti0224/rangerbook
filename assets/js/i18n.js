@@ -15,18 +15,19 @@
   let officialByChinese = new Map();
   let parameterTerms = [];
   const normalize = value => String(value || "").replace(/\s+/g, " ").trim();
-  function compileTermTemplate(source, english) {
+  function compileTermTemplate(source, english, key) {
     if (!/%(?:[Nd]\d*|s|n)/.test(source)) return null;
     const tokens = /%(?:[Nd]\d*|s|n)/g, slots=[];
     let regex = "^", last = 0, sequential = 0;
     const escape = value => value.replace(/[.*+?^$()|{}[\]\\]/g, "\\$&").replace(/\s+/g, "\\s*");
     for (const match of source.matchAll(tokens)) {
-      regex += escape(source.slice(last, match.index)) + "(.+?)";
+      const capture=String(key).startsWith("UI:") ? "([+-]?[0-9]+(?:[.,][0-9]+)*(?:\\s*[~～–-]\\s*[+-]?[0-9]+(?:[.,][0-9]+)*)?)" : "(.+?)";
+      regex += escape(source.slice(last, match.index)) + capture;
       slots.push(/^%[Nd]\d+$/.test(match[0]) ? Number(match[0].slice(2))-1 : sequential++);
       last = match.index + match[0].length;
     }
     regex += escape(source.slice(last)) + "$";
-    return {pattern:new RegExp(regex),english,slots,prefix:source.split("%")[0].slice(0,8),length:source.length};
+    return {pattern:new RegExp(regex),english,slots,prefix:source.split("%")[0].trim().slice(0,8),length:source.length};
   }
   function installGameTerms(rows) {
     const map = new Map(), keys = new Map(), ambiguous = new Set(), templates = [];
@@ -36,7 +37,7 @@
       if (typeof item.key === "string") keys.set(item.key, item[locale]);
       if (map.has(source) && map.get(source) !== item[locale]) ambiguous.add(source);
       else map.set(source, item[locale]);
-      const template = compileTermTemplate(source, item[locale]);
+      const template = compileTermTemplate(source, item[locale], item.key);
       if (template) templates.push(template);
     }
     ambiguous.forEach(source => map.delete(source));
@@ -132,15 +133,18 @@
   function eligible(element) {
     return Boolean(element) && !element.closest("script,style,noscript,textarea,code,pre,[contenteditable],[data-i18n-ignore]");
   }
+  const translatedNodes = new WeakMap();
   function translateTextNode(node) {
-    if (!eligible(node.parentElement) || node.parentElement.hasAttribute("data-i18n")) return;
+    if (!eligible(node.parentElement) || node.parentElement.closest("[data-i18n]")) return;
     const original = node.nodeValue;
+    if (translatedNodes.get(node) === original) return;
     const trimmed = original.trim();
     if (!trimmed) return;
     const translated = uiText(trimmed);
     if (translated === trimmed) return;
     const at = original.indexOf(trimmed);
     node.nodeValue = original.slice(0, at) + translated + original.slice(at + trimmed.length);
+    translatedNodes.set(node, node.nodeValue);
   }
   function autoTranslate(rootNode) {
     if (locale === "zh-Hant") return;
