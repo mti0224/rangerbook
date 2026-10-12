@@ -46,7 +46,8 @@
         return /^(?:UNIT|SKILL|ABILITY|EQUIP):/.test(ref)?ref.slice(ref.indexOf(":")+1):ref;
       }
       // Missing official source text is an accepted source gap; retain an ID.
-      return row[lang]?.trim()?row[lang]:row.en || row.zh_TW || ref.slice(ref.indexOf(":")+1);
+      const value=row[lang]?.trim()?row[lang]:row.en || row.zh_TW || ref.slice(ref.indexOf(":")+1);
+      return value.replace(/\\+n/g,"\n");
     }
     if (ref.parts) return ref.parts.map(p=>render(p,lang)).join("");
     if (ref.templateKey) return fill(render(ref.templateKey,lang),ref.args || [],lang);
@@ -285,7 +286,7 @@
     routes[old+"_data.json"]=()=>actors("enemies/"+mode);
   function legacyLocale(lang) {
     const out={locale:lang,official:{UNIT:{},SKILL:{},ABILITY:{},EQUIP:{}},custom:{}};
-    for(const [key,row] of catalog) {const at=key.indexOf(":"),kind=key.slice(0,at),id=key.slice(at+1),value=row[language[lang]||"zh_TW"];
+    for(const [key,row] of catalog) {const at=key.indexOf(":"),kind=key.slice(0,at),id=key.slice(at+1),value=render(key,language[lang]||"zh_TW");
       if(out.official[kind])out.official[kind][id]=value;else if(kind==="CUSTOM")out.custom[id]=value;
     }return out;
   }

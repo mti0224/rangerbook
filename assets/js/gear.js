@@ -255,10 +255,14 @@
     return [...tags.attrs].map((attr) => `${attr}屬性`).concat([...tags.types]);
   }
 
+  function normalizeSearch(value) {
+    return text(value).replaceAll("\\n", "").replace(/\s+/g, "").toLowerCase();
+  }
+
   function searchBlob(gear) {
     const raw=gearRawText(gear);
     const name=scalarText(gear?.["裝備名稱"]);
-    return [raw,window.RangerbookI18n?.uiText(name)||name].join(" ").toLowerCase();
+    return normalizeSearch([raw,getName(gear),window.RangerbookI18n?.uiText(name)||name].join(" "));
   }
 
   function uniqueSorted(values) {
@@ -402,7 +406,7 @@
   }
 
   function applyFilters() {
-    const query = searchInput?.value.trim().toLowerCase() || "";
+    const query = normalizeSearch(searchInput?.value || "");
     const stars = getSelectedValues(starFilter);
     const types = getSelectedValues(typeFilter);
     const basicEffects = getSelectedValues(basicEffectFilter);
