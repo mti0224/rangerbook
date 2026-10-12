@@ -178,7 +178,7 @@
     if (!isObject(obj)) return [];
     return Object.entries(obj)
       .slice(0, limit)
-      .map(([key, value]) => `${key} ${formatBasicEffectValue(value)}`);
+      .map(([key, value]) => `${window.RangerbookI18n?.uiText(key)||key} ${formatBasicEffectValue(value)}`);
   }
 
   function getBasicKeys(gear) {

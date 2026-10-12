@@ -37,7 +37,10 @@
       if (typeof item.key === "string") keys.set(item.key, item[locale]);
       if (map.has(source) && map.get(source) !== item[locale]) ambiguous.add(source);
       else map.set(source, item[locale]);
-      const template = compileTermTemplate(source, item[locale], item.key);
+      // Generic semantic templates require explicit Key/args bindings. Their
+      // adjacent text slots must never infer matches from arbitrary DOM text.
+      const template = String(item.key).startsWith("UI:")
+        ? compileTermTemplate(source, item[locale], item.key) : null;
       if (template) templates.push(template);
     }
     ambiguous.forEach(source => map.delete(source));

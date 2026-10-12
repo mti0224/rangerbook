@@ -570,7 +570,7 @@
     const key = statI18nKeys[label];
     const display = key ? (window.RangerbookI18n?.t(key, label) || label) : label;
     const binding = key ? ` data-i18n="${key}"` : "";
-    return `<div class="ranger-stat"><span${binding}>${html(display)}</span><strong>${fmt(value)}</strong></div>`;
+    return `<div class="ranger-stat"><span${binding}>${html(display)}</span><strong data-raw-stat="${html(label)}">${fmt(value)}</strong></div>`;
   }
 
   function description(value, className) {
@@ -877,7 +877,7 @@
 
   function findStatValue(label) {
     const item = [...(els.modalContent?.querySelectorAll(".ranger-stat") || [])]
-      .find((element) => element.querySelector("span")?.textContent.trim() === label);
+      .find((element) => element.querySelector("[data-raw-stat]")?.dataset.rawStat === label);
     return item?.querySelector("strong") || null;
   }
 
@@ -904,8 +904,7 @@
   function mountLevelControl(ranger) {
     if (!isDetailPage || !els.modalContent) return;
     const limits = levelLimits(ranger);
-    const basicSection = [...els.modalContent.querySelectorAll(":scope > .detail-section")]
-      .find((section) => ["基本數值", "Basic Stats"].includes(section.querySelector(":scope > h3")?.textContent.trim()));
+    const basicSection = els.modalContent.querySelector(".ranger-stat-grid")?.closest(".detail-section");
     if (!limits || !basicSection || basicSection.querySelector("[data-ranger-level-control]")) return;
 
     const id = getId(ranger);

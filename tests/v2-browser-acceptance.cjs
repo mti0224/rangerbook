@@ -49,7 +49,8 @@ function pages(dir='') {
        counts:{rangers:document.querySelectorAll('.ranger-card').length,gear:document.querySelectorAll('.gear-card').length,
        abilities:document.querySelectorAll('.ability-card').length}};
      });
-     assert.equal(visible.source,'v2');assert.equal(visible.lang,locale==='jp'?'ja':locale);
+     assert.equal(visible.source,'v2');
+     assert.equal(await page.evaluate(()=>window.RangerbookI18n.uiText("測試自訂玩家名稱")),"測試自訂玩家名稱","Generic templates must not alter arbitrary names");assert.equal(visible.lang,locale==='jp'?'ja':locale);
      assert.equal(legacy.length,0,'Unexpected V1 game network request');
      assert.equal(errors.length,0,errors.join('; '));
      result.pages.push({route,finalUrl:page.url(),locale,...visible});

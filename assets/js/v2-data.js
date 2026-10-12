@@ -144,6 +144,7 @@
     const rows=(await data("abilities")).abilities;
     return Object.fromEntries(rows.map(a=>{
       const out={icon:a.icon,"名稱":text(a.nameKey),"敘述":text(a.descriptionKey),
+        __v2:{nameKey:a.nameKey,descriptionKey:a.descriptionKey},
         "覺醒能力":a.tags.awakening?"是":"否","一般敵人能力":a.tags.enemy?"是":"否",
         "迷宮敵人能力":a.tags.labyrinthEnemy?"是":"否","隊伍能力":a.tags.team?"是":"否"};
       a.triggerEffects.forEach((e,i)=>{

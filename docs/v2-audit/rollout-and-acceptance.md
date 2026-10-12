@@ -1,6 +1,6 @@
 # V2 integration and acceptance gates
 
-The production site keeps its V1 data readers. The independent `/v2/` page covers all 19 datasets and four languages for verification, without switching the site's existing 42 pages.
+The review branch boots the V2 compatibility adapter on all 42 existing pages. It reads canonical Key-based V2 datasets and keeps immutable legacy property/category contracts inside the adapter so existing filters and calculations continue to work. The independent `/v2/` preview remains available. Main is switched only after browser and backend acceptance.
 
 ## Rollout order
 
@@ -12,7 +12,7 @@ The production site keeps its V1 data readers. The independent `/v2/` page cover
 | 4 | Rankings/statistics, PvP and Guild War | existing account/API routes + V2 display resolver | enum-based filtering, names/icons, distributions, administrative roles, export, hover values |
 | 5 | Home/settings/admin/about/support/update/404 | semantic UI keys from the V2 authored catalog | persisted four-language choice, mobile drawer, dark/light mode, accessible labels, error messages, GMT+8 times |
 
-Keep immutable IDs and enums as filters. Translated labels must not become lookup keys or change arithmetic. Each page needs a feature flag and a V1 fallback adapter until its acceptance gate passes. Do not route production pages to the experimental preview.
+Keep immutable IDs and enums as filters. Translated labels must not become lookup keys or change arithmetic. The V2 adapter returns an explicit error when canonical data fails; it must not silently read a V1-generated file. Restore the predeployment frontend commit and backed-up V2 source/release for rollback. Existing V1 generation and timers are retained.
 
 ## Checks already completed
 
@@ -31,10 +31,14 @@ Keep immutable IDs and enums as filters. Translated labels must not become looku
 - Current live API/admin authentication, protected roles, GA4 charts, player search, PvP/Guild War compatibility.
 - Pixel/layout checks for long Thai/Japanese strings; accessibility and keyboard input.
 - Source gap policy: official text missing from the current API stays explicitly missing. The preview fallback and manifest must show this state. A key with an empty catalog row is not a completed translation.
-- Ranger release dates remain unknown when the official snapshot provides no release-date field. Do not copy V1's third-party dates or infer a release date from an asset modification timestamp.
+- Ranger release dates belong to V2 authored metadata. Existing site dates are migrated once with user approval. New Rangers use the Asia/Taipei calendar date of their first successful V2 recording. Later runs preserve the date; failed validation/promotion preserves both the previous release and date table. Runtime never reads V1 output for dates.
 
 ## Source and translation ownership
 
 `official` is regenerated from the V2-owned official DB snapshot. `custom` and `ui` are author-maintained inputs and must never be rewritten by the API fetcher. Catalog fields remain `key`, `zh_TW`, `en`, `th`, `jp`. Author translations are not represented as official translations or as reviewed by an external human.
 
 The supported schema subset fails closed on unsupported schema keywords. This validates the declared contracts, not arbitrary third-party JSON Schema documents. Adding fields or kinds requires an explicit contract update and semantic test.
+
+## Optional raw snapshot sharing
+
+The user permits sharing decrypted official raw JSON. This release keeps the already verified independent raw fetchers. A later small change may introduce immutable, atomically promoted raw snapshots with separate V1/V2 consumer locks; neither consumer may share generated JSON, custom inputs or output paths. It is optional and is not required for the website migration.

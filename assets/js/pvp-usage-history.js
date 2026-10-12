@@ -86,7 +86,7 @@
       .sort((a, b) => a.name.localeCompare(b.name, "zh-Hant"));
 
     const latest = snapshots.at(-1);
-    el.updated.textContent = latest ? `最新快照：${latest.date}` : "-";
+    el.updated.textContent = latest ? (window.RangerbookI18n?.t("dynamic.latestSnapshot", "最新快照：%N1") || "最新快照：%N1").replace("%N1", latest.date) : "-";
 
     if (!selectedIds.length) {
       const scope = latest?.scopes?.["100"] || Object.values(latest?.scopes || {}).at(-1);
