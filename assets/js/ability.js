@@ -74,6 +74,8 @@
   }
 
   function getAbilityName(item, code = "") {
+    if (item.__v2?.nameKey && window.RangerbookV2)
+      return window.RangerbookV2.render(item.__v2.nameKey,window.RangerbookV2.locale);
     const name = displayText(item["名稱"]);
     const original = name || (isAdminMode() && code ? code : "未命名能力");
     return window.RangerbookI18n?.lookup("ABILITY", code + "_nm",
@@ -81,6 +83,8 @@
   }
 
   function getAbilityDescription(item) {
+    if (item.__v2?.descriptionKey && window.RangerbookV2)
+      return window.RangerbookV2.render(item.__v2.descriptionKey,window.RangerbookV2.locale);
     const original = displayText(item["敘述"]);
     return window.RangerbookI18n?.matchOfficial("ABILITY", original) || original;
   }

@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "catalogs": {
+    "official": {
+      "total": 16207,
+      "missing": {
+        "zh_TW": 749,
+        "en": 749,
+        "th": 749,
+        "jp": 749
+      }
+    },
+    "custom": {
+      "total": 468,
+      "missing": {
+        "zh_TW": 0,
+        "en": 0,
+        "th": 468,
+        "jp": 468
+      }
+    },
+    "ui": {
+      "total": 731,
+      "missing": {
+        "zh_TW": 0,
+        "en": 0,
+        "th": 731,
+        "jp": 731
+      }
+    }
+  },
+  "datasets": {
+    "abilities.json": 202,
+    "enemies/advent.json": 46,
+    "enemies/endless.json": 57,
+    "enemies/event.json": 12,
+    "enemies/extreme.json": 24,
+    "enemies/hard.json": 130,
+    "enemies/labyrinth.json": 24,
+    "equipment-effects.json": 149,
+    "equipment-name-index.json": 951,
+    "equipment.json": 951,
+    "labyrinth-artifacts.json": 55,
+    "projectiles.json": 3140,
+    "ranger-index.json": 2306,
+    "rangers.json": 2306,
+    "resources.json": 29,
+    "stages/endless.json": 320,
+    "stages/extreme.json": 48,
+    "stages/hard.json": 240,
+    "stages/labyrinth.json": 240
+  },
+  "referencedKeys": 10844,
+  "missingReferencedKeys": [
+    "CUSTOM:SKILLEFF_BUFF-DMG_NORMAL",
+    "CUSTOM:SKILLEFF_BUFF-DMG_SKILL",
+    "CUSTOM:SKILLEFF_BUFF-ELEMENT_TO_NONE",
+    "CUSTOM:SKILLEFF_BUFF-HEAL",
+    "CUSTOM:SKILLEFF_BUFF-MIRROR_PHY",
+    "CUSTOM:SKILLEFF_BUFF-REDUCE_TEMPT",
+    "CUSTOM:SKILLEFF_BUFF-SKILL_IGNORE"
+  ],
+  "emptyReferencedKeys": [
+    "ABILITY:aab211_passres_\bfir_desc",
+    "ABILITY:aab211_passres_\btre_desc",
+    "ABILITY:aab211_passres_\bwat_desc",
+    "ABILITY:ab001_sleep_desc",
+    "ABILITY:ab002_poison_desc",
+    "ABILITY:ab003_reaper_desc",
+    "ABILITY:ab004_ink_desc",
+    "ABILITY:ab005_sirensong_desc",
+    "ABILITY:ab201_flight_enemy_desc",
+    "ABILITY:ab201_flight_enemy_nm",
+    "ABILITY:ab202_buildatk_desc",
+    "ABILITY:ab203_ghost_desc"
+  ],
+  "findingCounts": {
+    "control_character_key": 6,
+    "empty_referenced_translation": 1117,
+    "unbound_placeholder": 244,
+    "missing_catalog_key": 15
+  },
+  "findings": [
+    {
+      "kind": "control_character_key",
+      "path": "locales/official.json[5042]",
+      "key": "SKILL:sk32_baigo\n_desc"
+    },
+    {
+      "kind": "control_character_key",
+      "path": "locales/official.json[5043]",
+      "key": "SKILL:sk32_baigo\n_na_desc"
+    },
+    {
+      "kind": "control_character_key",
+      "path": "locales/official.json[5044]",
+      "key": "SKILL:sk32_baigo\n_nm"
+    },
+    {
+      "kind": "control_character_key",
+      "path": "locales/official.json[15466]",
+      "key": "ABILITY:aab211_passres_\bfir_desc"
+    },
+    {
+      "kind": "control_character_key",
+      "path": "locales/official.json[15467]",
+      "key": "ABILITY:aab211_passres_\btre_desc"
+    },
+    {
+      "kind": "control_character_key",
+      "path": "locales/official.json[15468]",
+      "key": "ABILITY:aab211_passres_\bwat_desc"
+    },
+    {
+      "kind": "empty_referenced_translation",
+      "path": "abilities.json.abilities[3].descriptionKey",
+      "key": "ABILITY:aab211_passres_\bfir_desc"
+    },
+    {
+      "kind": "empty_referenced_translation",
+      "path": "abilities.json.abilities[7].descriptionKey",
+      "key": "ABILITY:aab211_passres_\btre_desc"
+    },
+    {
+      "kind": "empty_referenced_translation",
+      "path": "abilities.json.abilities[8].descriptionKey",
+      "key": "ABILITY:aab211_passres_\bwat_desc"
+    },
+    {
+      "kind": "empty_referenced_translation",
+      "path": "abilities.json.abilities[28].descriptionKey",
+      "key": "ABILITY:ab001_sleep_desc"
+    },
+    {
+      "kind": "empty_referenced_translation",
+      "path": "abilities.json.abilities[29].descriptionKey",
+      "key": "ABILITY:ab002_poison_desc"
+    },
+    {
+      "kind": "empty_referenced_translation",
+      "path": "abilities.json.abilities[30].descriptionKey",
+      "key": "ABILITY:ab003_reaper_desc"
+    }
+  ],
+  "missingReferencedKeysCount": 7,
+  "emptyReferencedKeysCount": 741,
+  "note": "Representative sample only; run the auditor for all occurrences."
+}

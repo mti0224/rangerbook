@@ -25,7 +25,9 @@
     GOLD_1:"Gold I", GOLD_2:"Gold II", GOLD_3:"Gold III"
   };
   const isEnglish = () => window.RangerbookI18n?.locale === "en";
-  const displayLeague = () => isEnglish() ? (EN_LABELS[league] || label) : label;
+  const localized = value => window.RangerbookI18n?.uiText(value) || value;
+  const displayLeague = () => localized(label);
+  const leagueSentence = (key, source) => (window.RangerbookI18n?.t(key, source) || source).replace("%N1", displayLeague());
   const suffix = league === "LEGEND" ? "" : `_${league}`;
   const originalFetch = window.fetch.bind(window);
 
@@ -108,7 +110,7 @@
   function fillLeagueSelect(select) {
     if (!select) return;
     select.innerHTML = LEAGUES.map(([code, text]) =>
-      `<option value="${code}" ${code === league ? "selected" : ""}>${isEnglish() ? (EN_LABELS[code] || text) : text}</option>`
+      `<option value="${code}" ${code === league ? "selected" : ""}>${localized(text)}</option>`
     ).join("");
     select.addEventListener("change", () => {
       const next = select.value || "LEGEND";
@@ -150,11 +152,11 @@
     if (rankingEyebrow) rankingEyebrow.textContent = `PvP · ${displayLeague()}`;
 
     const rankingTitle = document.querySelector("body[data-pvp-page='leaderboard'] .page-title h1");
-    if (rankingTitle) rankingTitle.textContent = isEnglish() ? `${displayLeague()} League Leaderboard` : `${label}段位排行榜`;
+    if (rankingTitle) rankingTitle.textContent = leagueSentence("pvp.leagueTitle", "%N1段位排行榜");
     const rankingDesc = document.querySelector("body[data-pvp-page='leaderboard'] .page-title p:not(.eyebrow)");
-    if (rankingDesc) rankingDesc.textContent = isEnglish() ? `View current ${displayLeague()} league rankings and PvP scores. Select a player to view teams 1–5 and their PvP defense team.` : `顯示目前${label}段位玩家的排名與 PvP 分數。點擊玩家可查看隊伍 1～5 與 PvP 防守隊伍。`;
+    if (rankingDesc) rankingDesc.textContent = leagueSentence("pvp.leagueDescription", "顯示目前%N1段位玩家的排名與 PvP 分數。點擊玩家可查看隊伍 1～5 與 PvP 防守隊伍。");
     const usageDesc = document.querySelector("body[data-pvp-page='usage'] .page-title p:not(.eyebrow)");
-    if (usageDesc) usageDesc.textContent = isEnglish() ? `Ranger usage across ${displayLeague()} league PvP defense teams. Select a Ranger to view equipment, awakened abilities, and talent unlocks.` : `統計${label}段位排行榜玩家 PvP 防守隊伍中的角色使用比例。點擊角色可查看配裝、覺醒能力與才能解放狀態。`;
+    if (usageDesc) usageDesc.textContent = leagueSentence("pvp.leagueUsageDescription", "統計%N1段位排行榜玩家 PvP 防守隊伍中的角色使用比例。點擊角色可查看配裝、覺醒能力與才能解放狀態。");
   }
 
   fillLeagueSelect(document.getElementById("pvpLeagueSelect"));

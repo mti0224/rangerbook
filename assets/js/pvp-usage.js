@@ -110,7 +110,7 @@
               <img class="pvp-ranger-thumb" src="${RANGER_IMAGE(row.rangerId)}" alt="" loading="lazy" onerror="this.remove();">
               <span>
                 <span class="pvp-ranger-name">${escapeHtml(row.name || row.rangerId)}</span>
-                <span class="pvp-ranger-sub">${escapeHtml([row.star, row.type, row.element].filter(Boolean).join(" · "))}</span>
+                <span class="pvp-ranger-sub">${escapeHtml([row.star, row.type, row.element].filter(Boolean).map(v=>window.RangerbookI18n?.uiText(String(v))||v).join(" · "))}</span>
               </span>
             </button>
           </td>
@@ -286,7 +286,7 @@
     if (!elements.modal || !elements.modalContent || !row) return;
     modalState.rangerId = String(row.rangerId || "");
     modalState.gearPages = { WEAPON: 0, ARMOR: 0, ACC: 0 };
-    const meta = [row.star, row.type, row.element].filter(Boolean).join(" · ");
+    const meta = [row.star, row.type, row.element].filter(Boolean).map(v=>window.RangerbookI18n?.uiText(String(v))||v).join(" · ");
     const awakening = Array.isArray(row.awakeningUsage)
       ? usageOptionList(row.awakeningUsage, "ability")
       : `<div class="pvp-modal-empty">覺醒能力統計尚未產生，需等待下一次完整 PvP 資料更新。</div>`;

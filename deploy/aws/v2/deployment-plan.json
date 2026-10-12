@@ -1,0 +1,106 @@
+{
+  "packageVersion": 1,
+  "sourceFiles": {
+    "publish_v2.py": {
+      "before": "20e4094c33cbd163460d177520d6c69630d93bc11be561d20f19293a8ebb8d5d",
+      "after": "fa03cf0364d5d83d454d8ec3f2aa54bfef40872b7f87a4b7d43d2818dc30d149"
+    },
+    "scripts/client_version_manager.py": {
+      "before": "0f8f94a9b8342cf475a945e7058c947f1baacaa2c243a02821d66dc1293a1cc2",
+      "after": "15f30566f0b908e94a806359a012ff13811aa8f8ec45eb35f33cbc66c2f99bf9"
+    },
+    "scripts/v2/audit.py": {
+      "before": null,
+      "after": "2cbd06b133e9a2ce6ff323ae5f1b41ff74d9e75d50a042da44cb4041a19a45f6"
+    },
+    "scripts/v2/build_all.py": {
+      "before": "06fe5ce769935cc998509619670fd4a028dac7704151355167aa903b86a62c40",
+      "after": "6b31b4e710e3dc1991b1bcb7e7c3b070648072935bfb9b1dbebdd873785d22f5"
+    },
+    "scripts/v2/locale_catalog.py": {
+      "before": "a3526cc48b0f21097e8eb7b0665688fceb2a3041488ff82752c64e555ad03cbb",
+      "after": "aed6dbbf3626ec5c0a19d38acd4d8b7b36d9ed5840ba01fecb8897c8d22103e7"
+    },
+    "scripts/v2/raw_abilities.py": {
+      "before": "938157c1fa2f9623e57709fb3898f8c7c03ef9e0020c6a383715783fa5a9ca92",
+      "after": "6b119b3a85a596820dfb04ac8f7dfed7c34f47602af4a5a147b228bbfabd25ed"
+    },
+    "scripts/v2/raw_enemies.py": {
+      "before": "6e7d50e43161919a1a5a4d7d9b817704ad2b71a6e9b3fffbe9e44ca31fa1e3f5",
+      "after": "47720048dbebd57be13d78fad765ccf311ca96a1c2405a1fa1e5798d8a6f356c"
+    },
+    "scripts/v2/raw_equipment.py": {
+      "before": "96363770ba901765a46532c5b82f07b949c1b2c6b783a3b28f4db794e45b8dc2",
+      "after": "6880dc708f2ec3ed6466ca4f004dd83d2484a410c048f4ddceb5ad2c6dbf207e"
+    },
+    "scripts/v2/raw_rangers.py": {
+      "before": "bbc60a60c2a6d97d9548401cda09b8c6b4873096078519fd1286883f57290e6f",
+      "after": "2c51ccb9cadc1eb7df1f34a7846e37c7e34517d063edce6aa4eaebe07d583f23"
+    },
+    "scripts/v2/release.py": {
+      "before": null,
+      "after": "06e5de0c72f55b822445538c4b157fa46cf75525797fc8193aacd3f97cac3a54"
+    },
+    "scripts/v2/release_dates.py": {
+      "before": null,
+      "after": "f7de435b26fecdd66b79fb3d5280d9b32b2e9a15914223a088a5869795978d7b"
+    },
+    "scripts/v2/schemas/v2.json": {
+      "before": null,
+      "after": "3b07a59fb944dbcca0429c23e46bd677c84979ece1dcfcd4ff736c7b7fd8bb74"
+    },
+    "scripts/v2/semantic.py": {
+      "before": "96f36f092f0c593d7935e3c965581c98e1749448c147f06affa6c7661151465b",
+      "after": "7660575430d7f974b86d0b40183784e66a0ff585380eca453ee75b24bea0b2af"
+    },
+    "scripts/v2/structured_fixes.py": {
+      "before": "6ea840e48498c3830e564a6f47f5a2e649a9339b0f28153257060d8e4148a88f",
+      "after": "135bb0fd924fda926459e186d728990185ddc66a1c5412ea429abd29238045ad"
+    },
+    "scripts/v2/test_failure_isolation.py": {
+      "before": null,
+      "after": "d4c8bc5686c53bcd95b4656bf6ab58e9773565e8c0f6ecf324d295770bbff4af"
+    },
+    "scripts/v2/test_publisher.py": {
+      "before": null,
+      "after": "6c128d61b20211b8ba81265864eac772c468d18e7cc404a466d5e624b6b05e1b"
+    },
+    "scripts/v2/test_release.py": {
+      "before": null,
+      "after": "c978678d19ea273fcd1f849e16dac6068af48154dd8ba7e9b4a97c33369beda3"
+    },
+    "scripts/v2/test_semantic_audit.py": {
+      "before": null,
+      "after": "6bed81a6828e8172ef3607279b20288572fc42c6e1168fdd3f1cb9a2d4e8e896"
+    },
+    "scripts/v2/test_standalone.py": {
+      "before": "5303e71296dffb21efa81af3b44cd83a5ff50021c0e6cc7d7edfa688b5bee313",
+      "after": "b52f4dc638827af7b8a08413d19697f4c89b4649321dc51db2b3a3cb1308a33f"
+    },
+    "scripts/v2/validate.py": {
+      "before": null,
+      "after": "a257dd97b7816620ff1b19609a8cd0155548bbb685123bf03a7280879511eb4d"
+    },
+    "scripts/v2_preview/normalize.py": {
+      "before": "033ba4f1e92f0d95abf4fe22e514384406f7ce67b130432792dada731297500b",
+      "after": "7ad09da3985f33d0ddb086566cff0a7ca32e17025889616838dd1244ff11eae4"
+    },
+    "scripts/v2_preview/test_normalize.py": {
+      "before": "4bc14a85d00d5c52d084057734a7b56ab914b54378ea92277e3431c2d3f0e590",
+      "after": "a92c388f4de38c6a54ce43b037a508beb86b6d094b095b3a2f74e4b2d24d932c"
+    },
+    "update_all_v2.py": {
+      "before": "e58d94358d367449e177426dabb2e961dbef708d74d93e6642d6576462cf67de",
+      "after": "a8f4e740362dca63339c38b371600c291d4b618cb2233e05033208eaad279c2b"
+    }
+  },
+  "inputSha256": {
+    "locales/custom.json": "bea5b44bb90a3787c24ecd8da4a7e130185db64298343ef054b8e795fb979931",
+    "locales/ui.json": "f494835b5fd0d9013f4f7b92378f3baf3f1b8485a115cad25b4cef1df115b4b9",
+    "metadata/release-dates.json": "a6ec58748dab4fa6e0ce4329047ca63d0eeda979f830618c9d3f312f31888265"
+  },
+  "patchSha256": "74a1ad6b04cb4319b0708885e74982a5bae7d0fa07dc124f0114352f3cee889f",
+  "minimumDiskReserveGiB": 3,
+  "dateSeedPolicy": "create_only_if_absent",
+  "outputSource": "independent_official_api"
+}

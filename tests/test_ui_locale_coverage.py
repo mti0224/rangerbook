@@ -68,12 +68,25 @@ class UITests(unittest.TestCase):
                 continue
             parser = UIParser()
             parser.feed(page.read_text(encoding="utf-8"))
+            # The independent V2 preview loads res/v2/locales/ui.json, not
+            # assets/locales/ui.json. Validate its actual source catalog.
+            page_source = source
+            page_known = known
+            if page.relative_to(ROOT).parts[0] == "v2" or "v2-data.js" in page.read_text(encoding="utf-8"):
+                rows = json.loads((ROOT / "res/v2/locales/ui.json").read_text(encoding="utf-8"))
+                self.assertTrue(all(r.get("en", "").strip() for r in rows))
+                page_source = {r["key"].removeprefix("UI:"): r["zh_TW"] for r in rows}
+                page_known = set(page_source.values()) | {
+                    page_source["v2.title"] + "｜LINE Rangers Database",
+                    "← " + page_source["v2.back"],
+                    "日本語",  # Native language name in the language selector.
+                }
             for text in parser.texts:
                 count += 1
-                if text not in known:
+                if text not in page_known:
                     misses.append(str(page.relative_to(ROOT)) + ": " + text[:100])
             for key in parser.keys:
-                if key not in source:
+                if key not in page_source:
                     misses.append(str(page.relative_to(ROOT)) + ": undefined key " + key)
         self.assertGreater(count, 600)
         self.assertFalse(misses, "\n".join(misses[:45]))

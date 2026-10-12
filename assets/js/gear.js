@@ -54,6 +54,7 @@
   }
 
   function rememberMissingIcon(id, force = false) {
+    if (window.RangerbookV2) return;
     if (!id || (isAdminMode() && !force)) return;
     const set = getMissingIconSet();
     if (set.has(id)) return;
@@ -126,7 +127,8 @@
   function isPubliclyVisible(gear) {
     const id = getId(gear);
     const rawText = gearRawText(gear);
-    return Boolean(id) && !hasKorean(rawText) && !hasTstText(rawText) && !getMissingIconSet().has(id);
+    return Boolean(id) && !hasKorean(rawText) && !hasTstText(rawText) &&
+      (window.RangerbookV2 || !getMissingIconSet().has(id));
   }
 
   function shouldHideGearForPublic(gear) {
@@ -178,7 +180,7 @@
     if (!isObject(obj)) return [];
     return Object.entries(obj)
       .slice(0, limit)
-      .map(([key, value]) => `${key} ${formatBasicEffectValue(value)}`);
+      .map(([key, value]) => `${window.RangerbookI18n?.uiText(key)||key} ${formatBasicEffectValue(value)}`);
   }
 
   function getBasicKeys(gear) {
@@ -255,8 +257,14 @@
     return [...tags.attrs].map((attr) => `${attr}屬性`).concat([...tags.types]);
   }
 
+  function normalizeSearch(value) {
+    return text(value).replaceAll("\\n", "").replace(/\s+/g, "").toLowerCase();
+  }
+
   function searchBlob(gear) {
-    return gearRawText(gear).toLowerCase();
+    const raw=gearRawText(gear);
+    const name=scalarText(gear?.["裝備名稱"]);
+    return normalizeSearch([raw,getName(gear),window.RangerbookI18n?.uiText(name)||name].join(" "));
   }
 
   function uniqueSorted(values) {
@@ -400,7 +408,7 @@
   }
 
   function applyFilters() {
-    const query = searchInput?.value.trim().toLowerCase() || "";
+    const query = normalizeSearch(searchInput?.value || "");
     const stars = getSelectedValues(starFilter);
     const types = getSelectedValues(typeFilter);
     const basicEffects = getSelectedValues(basicEffectFilter);
@@ -433,7 +441,7 @@
     wrap?.classList.add("missing-icon");
     image.remove();
     rememberMissingIcon(id);
-    if (!isAdminMode()) {
+    if (!window.RangerbookV2 && !isAdminMode()) {
       wrap?.closest(".gear-card")?.remove();
       window.setTimeout(applyFilters, 0);
     }

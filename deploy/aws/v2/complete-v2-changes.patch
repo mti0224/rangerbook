@@ -1,0 +1,3279 @@
+--- a/publish_v2.py
++++ b/publish_v2.py
+@@ -9,0 +10,2 @@
++from scripts.v2.release import update_lock
++from scripts.v2.validate import validate
+@@ -27 +29 @@
+-def publish():
++def publish_locked(branch="main"):
+@@ -30,0 +33 @@
++    validate(OUTPUT)
+@@ -39,19 +41,0 @@
+-    git("fetch","origin","main")
+-    git("checkout","main")
+-    git("reset","--hard","origin/main")
+-    destination=REPO/"res/v2"
+-    destination.mkdir(parents=True,exist_ok=True)
+-    desired={str(f.relative_to(OUTPUT)) for f in inputs}
+-    for old in destination.rglob("*.json"):
+-        if str(old.relative_to(destination)) not in desired:
+-            old.unlink()
+-    for source in inputs:
+-        out=destination/source.relative_to(OUTPUT)
+-        out.parent.mkdir(parents=True,exist_ok=True)
+-        if not out.exists() or source.read_bytes()!=out.read_bytes():
+-            shutil.copy2(source,out)
+-    git("add","-A","--","res/v2")
+-    if not git("status","--porcelain","--","res/v2"):
+-        print("[v2] no GitHub res/v2 content changes")
+-        return False
+-    git("commit","-m","chore(v2): publish independent official data and multilingual catalogs")
+@@ -59 +43,23 @@
+-        result=subprocess.run(["git","-C",str(REPO),"push","origin","main"],capture_output=True,text=True)
++        # Reapply this validated release to the latest remote head on each
++        # retry. Never leave or depend on an unfinished rebase.
++        git("fetch","--depth=1","origin","+refs/heads/"+branch+":refs/remotes/origin/"+branch)
++        git("checkout","-B",branch,"origin/"+branch)
++        git("reset","--hard","origin/"+branch)
++        destination=REPO/"res/v2"
++        destination.mkdir(parents=True,exist_ok=True)
++        desired={str(f.relative_to(OUTPUT)) for f in inputs}
++        for old in destination.rglob("*.json"):
++            if str(old.relative_to(destination)) not in desired:old.unlink()
++        for source in inputs:
++            out=destination/source.relative_to(OUTPUT)
++            out.parent.mkdir(parents=True,exist_ok=True)
++            if not out.exists() or source.read_bytes()!=out.read_bytes():shutil.copy2(source,out)
++        git("add","-A","--","res/v2")
++        if not git("status","--porcelain","--","res/v2"):
++            print("[v2] no GitHub res/v2 content changes")
++            return False
++        changed=git("diff","--cached","--name-only").splitlines()
++        if any(not x.startswith("res/v2/") for x in changed):
++            raise RuntimeError("Refuse publishing staged changes outside res/v2")
++        git("commit","-m","chore(v2): publish independent official data and multilingual catalogs")
++        result=subprocess.run(["git","-C",str(REPO),"push","origin","HEAD:"+branch],capture_output=True,text=True)
+@@ -63,2 +68,0 @@
+-        git("fetch","origin","main")
+-        git("rebase","origin/main")
+@@ -67 +71,2 @@
+-if __name__=="__main__":publish()
++def publish(branch="main"):
++    with update_lock(ROOT):return publish_locked(branch)
+@@ -68,0 +74,6 @@
++if __name__=="__main__":
++    import argparse
++    parser=argparse.ArgumentParser()
++    parser.add_argument("--branch",default="main")
++    publish(parser.parse_args().branch)
++
+--- a/scripts/client_version_manager.py
++++ b/scripts/client_version_manager.py
+@@ -34,2 +33,0 @@
+-elif Path("/home/ubuntu").is_dir():
+-    DEFAULT_STATE_PATH = Path("/home/ubuntu/rangerbook-secrets/client_version.json")
+@@ -37 +35 @@
+-    DEFAULT_STATE_PATH = Path.home() / ".rangerbook" / "client_version.json"
++    DEFAULT_STATE_PATH = Path(__file__).resolve().parents[1] / "state/client_version.json"
+--- /dev/null
++++ b/scripts/v2/audit.py
+@@ -0,0 +1,172 @@
++#!/usr/bin/env python3
++"""Read-only audit of public V2 catalogs and semantic text bindings.
++
++Empty official translations are reported, never filled or treated as success.
++This CLI has no dependency on V1 output or the EC2 compiler environment.
++"""
++import argparse
++import collections
++import json
++import re
++from pathlib import Path
++
++LANGUAGES = ("zh_TW", "en", "th", "jp")
++FIELDS = {"key", *LANGUAGES}
++TOKEN = re.compile(r"%(?:N\d*|d\d*|s|n)|\{\$\d+[pf]\}")
++CJK = re.compile(r"[\u3400-\u9fff]")
++
++
++def slots(text):
++    """Numbered placeholders share argument slots; bare tokens are sequential."""
++    sequential = 0
++    result = []
++    for match in TOKEN.finditer(text):
++        token = match.group()
++        indexed = re.fullmatch(r"%[Nd](\d+)", token)
++        if indexed:
++            result.append(int(indexed[1]) - 1)
++        elif token.startswith("{$"):
++            result.append(None)  # Native game formatting needs an explicit binding.
++        else:
++            result.append(sequential)
++            sequential += 1
++    return result
++
++
++def audit(root):
++    findings = []
++    catalog = {}
++    stats = {}
++    references = collections.defaultdict(list)
++
++    def issue(kind, path, **detail):
++        findings.append({"kind": kind, "path": path, **detail})
++
++    for kind in ("official", "custom", "ui"):
++        file = root / "locales" / (kind + ".json")
++        rows = json.loads(file.read_text(encoding="utf-8"))
++        stats[kind] = {"total": len(rows), "missing": {
++            lang: sum(not isinstance(r.get(lang), str) or not r[lang].strip()
++                      for r in rows) for lang in LANGUAGES}}
++        for i, row in enumerate(rows):
++            path = f"locales/{kind}.json[{i}]"
++            if set(row) != FIELDS or not all(isinstance(row.get(k), str) for k in FIELDS):
++                issue("invalid_catalog_row", path)
++                continue
++            key = row["key"]
++            if key in catalog:
++                issue("duplicate_catalog_key", path, key=key)
++            catalog[key] = row
++            if any(ord(c) < 32 for c in key):
++                issue("control_character_key", path, key=key)
++            if kind != "official":
++                layouts = {lang: slots(row[lang]) for lang in LANGUAGES if row[lang].strip()}
++                signatures = {lang: sorted(s for s in values if s is not None)
++                              for lang, values in layouts.items()}
++                if len({tuple(v) for v in signatures.values()}) > 1:
++                    issue("placeholder_signature_drift", path, key=key, signatures=signatures)
++
++    def reference(key, path, args=None, bindings=None):
++        references[key].append(path)
++        if key not in catalog:
++            issue("missing_catalog_key", path, key=key)
++            return
++        row = catalog[key]
++        if not any(row[l].strip() for l in LANGUAGES):
++            issue("empty_referenced_translation", path, key=key)
++        for lang in LANGUAGES:
++            if not row[lang].strip():
++                continue
++            required = slots(row[lang])
++            native = [t[1:-1] for t in TOKEN.findall(row[lang]) if t.startswith("{$")]
++            if native and bindings is not None:
++                if any(not isinstance(bindings.get(t), dict) or
++                       any(bindings[t].get(k) is None for k in ("min", "max", "unit"))
++                       for t in native):
++                    issue("invalid_native_bindings", path, key=key, language=lang, tokens=native)
++                required = [s for s in required if s is not None]
++            if required and args is None:
++                issue("unbound_placeholder", path, key=key, language=lang,
++                      tokens=TOKEN.findall(row[lang]))
++            elif args is not None and (None in required or any(
++                    s < 0 or s >= len(args) or args[s] is None for s in required if s is not None)):
++                issue("invalid_template_arguments", path, key=key, language=lang,
++                      requiredSlots=required, args=args)
++
++    def walk(value, path):
++        if isinstance(value, dict):
++            if "effectKey" in value and value.get("effectKey") is None and value.get("effectCode") not in (None,"NONE"):
++                issue("missing_effect_translation",path,effectCode=value["effectCode"])
++            if "localizedEffect" in value and value.get("localizedEffect") is None and value.get("effectCode") not in (None,"NONE"):
++                issue("missing_effect_translation",path,effectCode=value["effectCode"])
++            if value.get("untranslated") is True:
++                issue("untranslated_semantic_condition", path,
++                      condition={k:v for k,v in value.items() if k!="untranslated"})
++            if isinstance(value.get("templateKey"), str):
++                args = value.get("args")
++                if not isinstance(args, list):
++                    issue("invalid_args_type", path)
++                    args = []
++                reference(value["templateKey"], path + ".templateKey", args)
++            if isinstance(value.get("key"), str):
++                reference(value["key"], path + ".key")
++            for field, item in value.items():
++                if field in ("key", "templateKey"):
++                    continue
++                if field.endswith("Key") and isinstance(item, str) and item:
++                    args = value.get(field[:-3] + "Args")
++                    bindings = value.get(field[:-3] + "Bindings")
++                    reference(item, path + "." + field, args, bindings)
++                elif field.endswith("Keys") and isinstance(item, list):
++                    for i, key in enumerate(item):
++                        if isinstance(key, str) and key:
++                            reference(key, f"{path}.{field}[{i}]")
++                if field == "effectCode" and isinstance(item, str) and item.startswith("SKILLEFF_"):
++                    reference("CUSTOM:" + item, path + ".effectCode")
++                walk(item, path + "." + field)
++        elif isinstance(value, list):
++            for i, item in enumerate(value):
++                # Strings in parts are translation references too.
++                if path.endswith(".parts") and isinstance(item, str):
++                    reference(item, f"{path}[{i}]")
++                else:
++                    walk(item, f"{path}[{i}]")
++        elif isinstance(value, str) and CJK.search(value):
++            issue("literal_cjk_value", path, value=value)
++
++    datasets = {}
++    for file in sorted(root.rglob("*.json")):
++        if "locales" in file.relative_to(root).parts or file.name in ("manifest.json", "translation-audit.json"):
++            continue
++        payload = json.loads(file.read_text(encoding="utf-8"))
++        name = file.relative_to(root).as_posix()
++        if not isinstance(payload, dict) or payload.get("schemaVersion") != 2:
++            issue("invalid_dataset_envelope", name)
++        datasets[name] = len(next((v for k, v in payload.items()
++                                  if k != "schemaVersion" and isinstance(v, (dict, list))), []))
++        walk(payload, name)
++    return {"schemaVersion": 1, "catalogs": stats, "datasets": datasets,
++            "referencedKeys": len(references),
++            "missingReferencedKeys": sorted(k for k in references if k not in catalog),
++            "emptyReferencedKeys": sorted(k for k in references if k in catalog
++                                          and not any(catalog[k][l].strip() for l in LANGUAGES)),
++            "findingCounts": dict(collections.Counter(x["kind"] for x in findings)),
++            "findings": findings}
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1] / "res/v2")
++    parser.add_argument("--output", type=Path)
++    parser.add_argument("--strict", action="store_true", help="Exit nonzero for any structural/text binding finding")
++    args = parser.parse_args()
++    result = audit(args.root)
++    if args.output:
++        args.output.parent.mkdir(parents=True, exist_ok=True)
++        args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++    print(json.dumps({k: v for k, v in result.items() if k != "findings"}, ensure_ascii=False, indent=2))
++    return int(args.strict and bool(result["findings"]))
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+--- a/scripts/v2/build_all.py
++++ b/scripts/v2/build_all.py
+@@ -25,0 +26 @@
++from scripts.v2.release import output_dir
+@@ -30,3 +31,3 @@
+-FINAL=ROOT/"data/v2"
+-NEXT=ROOT/"data/.v2-next"
+-PREVIOUS=ROOT/"data/.v2-previous"
++FINAL=output_dir()
++NEXT=FINAL.parent/(FINAL.name+"-next")
++PREVIOUS=FINAL.parent/(FINAL.name+"-previous")
+@@ -65 +66 @@
+-    path.write_text(json.dumps(data,ensure_ascii=False,separators=(",",":"))+"\n",encoding="utf8")
++    path.write_text(json.dumps(data,ensure_ascii=False,separators=(",",":"),allow_nan=False)+"\n",encoding="utf8")
+@@ -231 +232 @@
+-def source_fingerprint():
++def source_fingerprint(release_metadata=None):
+@@ -237,0 +239 @@
++        ROOT/"data/locales/ui.json", ROOT/"data/metadata/release-dates.json",
+@@ -252 +254,3 @@
+-        if path.exists():
++        if path.name=="release-dates.json" and release_metadata is not None:
++            h.update(path.name.encode("utf8"));h.update(release_metadata)
++        elif path.exists():
+@@ -254,0 +259,6 @@
++    for path in sorted((ROOT/"scripts/v2").glob("*.py")):
++        h.update(path.name.encode("utf8"))
++        h.update(path.read_bytes())
++    for path in sorted((ROOT/"scripts/v2/schemas").glob("*.json")):
++        h.update(path.name.encode("utf8"))
++        h.update(path.read_bytes())
+@@ -262,0 +273,5 @@
++    for table,identity in (("unit","unitCode"),("skill","skillCode"),("ability","code")):
++        rows=read(RAW/(table+".json"))
++        ids=[row.get(identity) for row in rows]
++        if any(not isinstance(value,str) or not value for value in ids) or len(ids)!=len(set(ids)):
++            raise ValueError("Missing/duplicate official "+table+" identity")
+@@ -277,0 +293,5 @@
++    from scripts.v2.release_dates import prepare as prepare_release_dates
++    metadata_path=ROOT/"data/metadata/release-dates.json"
++    if metadata_path.exists() and not metadata_path.resolve().is_relative_to((ROOT/"data").resolve()):
++        raise ValueError("V2 release-date metadata must remain inside its own data directory")
++    release_metadata=prepare_release_dates(rangers,read(metadata_path) if metadata_path.exists() else None)
+@@ -288 +308 @@
+-        "starGrade":x["starGrade"],"roleType":x["roleType"],
++        "starGrade":x["starGrade"],"evolution":x["evolution"],"roleType":x["roleType"],
+@@ -328 +348,5 @@
+-                list(raw_units.values()),list(raw_skills.values()),kind.split("/")[1]
++                list(raw_units.values()),list(raw_skills.values()),kind.split("/")[1],
++                awakening_groups=read(RAW/"awake_ability_group.json"),
++                talent_groups=read(RAW/"tlnt_grp.json"),talents=read(RAW/"tlnt.json"),
++                abilities=read(RAW/"ability.json"),
++                custom_rows=read(ROOT/"data/locales/custom.json")
+@@ -425 +449 @@
+-        "sourceFingerprint":source_fingerprint(),
++        "sourceFingerprint":source_fingerprint(release_metadata),
+@@ -443,0 +468,2 @@
++    manifest["releaseDatePolicy"]={"source":"v2_author_record","timezone":"Asia/Taipei","newRecords":"first_successful_v2_record_date","existingDatesPreserved":True}
++    (NEXT/".release-date-input").write_bytes(release_metadata)
+--- a/scripts/v2/locale_catalog.py
++++ b/scripts/v2/locale_catalog.py
+@@ -9,0 +10 @@
++from scripts.v2.release import output_dir
+@@ -14 +15,2 @@
+-DEST=ROOT/"data/v2/locales"
++OUTPUT=output_dir()
++DEST=OUTPUT/"locales"
+@@ -64,0 +67,8 @@
++    references=set()
++    def reference(v):
++        if not v:return
++        references.add(v)
++        if v in known:return
++        if v.startswith("V2:"):missing_generated.add(v)
++        elif v.startswith(("UNIT:","SKILL:","ABILITY:","EQUIP:")):missing_official.add(v)
++        else:raise ValueError("Missing authored display key: "+v)
+@@ -68,4 +78,9 @@
+-                if (k.endswith("Key") or k=="templateKey") and isinstance(v,str) and v and v not in known:
+-                    if v.startswith("V2:"):missing_generated.add(v)
+-                    elif v.startswith(("UNIT:","SKILL:","ABILITY:","EQUIP:")):missing_official.add(v)
+-                    else:raise ValueError(f"Unknown display key namespace: {v}")
++                if (k.endswith("Key") or k=="key") and isinstance(v,str):reference(v)
++                if k.endswith("Keys") and isinstance(v,list):
++                    for item in v:
++                        if isinstance(item,str):reference(item)
++                if k=="parts" and isinstance(v,list):
++                    for item in v:
++                        if isinstance(item,str):reference(item)
++                if k=="effectCode" and isinstance(v,str) and v.startswith("SKILLEFF_"):
++                    reference("CUSTOM:"+v)
+@@ -75 +90 @@
+-    for src in sorted((ROOT/"data/v2").rglob("*.json")):
++    for src in sorted(OUTPUT.rglob("*.json")):
+@@ -98 +113,7 @@
+-        ]
++        ],
++        "officialGapClassification":{
++            "absentFromCurrentApi":sorted(missing_official),
++            "presentButEmptyInAllLanguages":[r["key"] for r in official
++                if r["key"] not in missing_official and not any(r[l].strip() for l in LANG.values())],
++            "sourceControlCharacterKeys":[r["key"] for r in official if any(ord(c)<32 for c in r["key"])],
++        },
+@@ -100 +121 @@
+-    audit_path=ROOT/"data/v2/translation-audit.json"
++    audit_path=OUTPUT/"translation-audit.json"
+@@ -111 +132 @@
+-    manifest=ROOT/"data/v2/manifest.json"
++    manifest=OUTPUT/"manifest.json"
+@@ -119 +140,4 @@
+-            "allPublicDisplayKeysArePresent":True,
++            "allPublicDisplayKeysArePresent":references<={r["key"] for rows in (official,custom,ui) for r in rows},
++            "allReferencedTranslationsComplete":not missing_official and all(
++                all(r[l].strip() for l in LANG.values()) for rows in (official,custom,ui)
++                for r in rows if r["key"] in references),
+@@ -127 +151 @@
+-        v["customSource"]="V2-owned human-reviewed multilingual catalog"
++        v["customSource"]="V2-owned authored catalog; author translations are separate from official API text"
+--- a/scripts/v2/raw_abilities.py
++++ b/scripts/v2/raw_abilities.py
+@@ -9,0 +10 @@
++    if value in (None,""):return 0.
+@@ -11 +12,2 @@
+-    except (ValueError,TypeError):return 0.
++    except (ValueError,TypeError) as exc:
++        raise ValueError("Malformed official ability numeric value: "+repr(value)) from exc
+@@ -25,0 +28,3 @@
++    if kind=="HP_SELF" and row.get("actionType")=="BLOODLUST":
++        percent=_float(_n(row.get("buffFactor"))*100)
++        return _tmpl("V2_ABILITY_HP_SELF_LTE",percent),{"kind":"HP_SELF","operator":"LTE","percent":percent}
+@@ -29 +34,2 @@
+-    value_key=("SKILLEFF_" if kind=="SKILLTYPE" else str(kind)+"_")+str(value)
++    value_key=("SKILLEFF_" if kind=="SKILLTYPE" else
++               "ABILITY_TALENT_TYPE_" if kind=="APTITUDETYPE" else str(kind)+"_")+str(value)
+@@ -38,0 +45,4 @@
++    # BLOODLUST is Berserk, not the GUTS post-death duration template.
++    # Its official ability name is available; preserve the official reference.
++    if action=="BLOODLUST" and row.get("nameCode"):
++        return "ABILITY:"+str(row["nameCode"])
+@@ -41,0 +52,5 @@
++            if row.get("code")=="ab231_bloodlust_c":
++                # Official Berserk description: raw speed factor 2 means +100%.
++                # Keep this verified exception explicit; do not guess a rule
++                # for unrelated stat families.
++                return _tmpl("V2_ABILITY_INCREASE_PERCENT",_ref(key),_float((val-1)*100))
+@@ -78,0 +94 @@
++    if value in (None,""):raise ValueError("Missing official ability activation probability: "+str(row.get("code")))
+@@ -112 +128 @@
+-            "descriptionKey":"ABILITY:"+row["descriptionCode"].replace("\\b","") if row.get("descriptionCode") else None,
++            "descriptionKey":"ABILITY:"+row["descriptionCode"].replace("\b","") if row.get("descriptionCode") else None,
+--- a/scripts/v2/raw_enemies.py
++++ b/scripts/v2/raw_enemies.py
+@@ -8,0 +9 @@
++from scripts.v2.raw_rangers import _awakening,_talent
+@@ -52,0 +54,4 @@
++        "moveSpeed":{"pointsPerSecond":_number(unit.get("movingSpeed")),
++                     "rating":unit.get("moveSpeedType")},
++        "attackSpeed":{"secondsPerAttack":round(float(unit.get("attackDelay") or 0)/30,4),
++                       "rating":unit.get("attackSpeedType")},
+@@ -71 +76,3 @@
+-    return [skill(by_code[code],grade) for code in codes if code in by_code]
++    missing=[code for code in codes if code and code not in by_code]
++    if missing:raise ValueError("Missing official enemy skill: "+", ".join(missing))
++    return [skill(by_code[code],grade,by_code) for code in codes if code]
+@@ -73 +80,2 @@
+-def compile_enemies(units,skills,kind):
++def compile_enemies(units,skills,kind,*,awakening_groups=(),talent_groups=(),
++                    talents=(),abilities=(),custom_rows=()):
+@@ -74,0 +83,5 @@
++    awake={r["id"]:r for r in awakening_groups if r.get("id")}
++    groups={r["id"]:r for r in talent_groups if r.get("id")}
++    definitions={r["keyCode"]:r for r in talents if r.get("keyCode")}
++    by_ability={r["code"]:r for r in abilities if r.get("code")}
++    custom={r["key"]:r for r in custom_rows}
+@@ -93 +106,5 @@
+-            "flags":{"boss":boss,"nft":bool(unit.get("isNftUnit"))}
++            "awakeningAbilities":_awakening(
++                unit if kind=="extreme" else {**unit,"awakeYn":1},awake,by_ability),
++            "talents":_talent(unit,groups,definitions,by_ability,custom),
++            "flags":{"boss":boss,"nft":bool(unit.get("isNftUnit")),
++                     "advent":bool(unit.get("isAdventUnit"))}
+--- a/scripts/v2/raw_equipment.py
++++ b/scripts/v2/raw_equipment.py
+@@ -7,0 +8 @@
++import re
+@@ -20,0 +22,9 @@
++SPEC_EFFECT_ALIASES={
++    "SKILLEFF_BUFF-DMG_NORMAL":"SKILLEFF_DMG_NORMAL",
++    "SKILLEFF_BUFF-DMG_SKILL":"SKILLEFF_DMG_SKILL",
++    "SKILLEFF_BUFF-ELEMENT_TO_NONE":"SKILLEFF_ELEMENT_TO_NONE",
++    "SKILLEFF_BUFF-HEAL":"SKILLEFF_HEAL",
++    "SKILLEFF_BUFF-MIRROR_PHY":"SKILLEFF_MIRROR_PHY",
++    "SKILLEFF_BUFF-REDUCE_TEMPT":"SKILLEFF_REDUCE_TEMPT",
++    "SKILLEFF_BUFF-SKILL_IGNORE":"SKILLEFF_SKILL_IGNORE",
++}
+@@ -44 +54 @@
+-def _spec(raw, definition, attrs, special, abilities, custom_keys):
++def _spec(raw, definition, attrs, special, abilities, custom_keys,custom_rows=()):
+@@ -61 +71,11 @@
+-        cond_keys.append({"templateKey":"CUSTOM:"+talent_key,"args":[factor]})
++        catalogs={r["key"]:r for r in custom_rows}
++        template=catalogs.get(talent_key,{}).get("zh_TW","")
++        tokens=re.findall(r"%(?:d|n|s)",template)
++        args=[]
++        for token in tokens:
++            scale=100 if token=="%d" else 1
++            low=n(float(cond_row.get("buffFactorMin") or 0)*scale)
++            high=n(float(cond_row.get("buffFactorMax") or 0)*scale)
++            args.append(low if low==high else {"min":low,"max":high,
++                        "unit":"PERCENT" if token=="%d" else "FLAT"})
++        cond_keys.append({"templateKey":"CUSTOM:"+talent_key,"args":args})
+@@ -67,0 +88 @@
++    effect_key=SPEC_EFFECT_ALIASES.get(effect_key,effect_key)
+@@ -80,0 +102,8 @@
++    magnitude=({"min":n(float(effect_row.get("buffFactorMin") or 0)*value_factor),
++                "max":n(float(effect_row.get("buffFactorMax") or 0)*value_factor),
++                "unit":value_unit} if effect_row else None)
++    # The game's numbered formatter slots are semantic, not positional args:
++    # $3 is the main effect value; $4 is its duration.
++    bindings={token:bound for token,bound in (
++        ("$3p",magnitude),("$3f",magnitude),("$4f",duration))
++        if "{"+token+"}" in special_description_format}
+@@ -85,0 +115 @@
++            "descriptionBindings":bindings,
+@@ -92,0 +123,2 @@
++                "effectAction":"BUFF" if aptitude_type=="TLT_BUFF" else
++                               "DEBUFF" if aptitude_type=="TLT_DEBUFF" else None,
+@@ -96,3 +128 @@
+-                "magnitudeRange":{"min":n(float(effect_row.get("buffFactorMin") or 0)*value_factor),
+-                    "max":n(float(effect_row.get("buffFactorMax") or 0)*value_factor),
+-                    "unit":value_unit} if effect_row else None,
++                "magnitudeRange":magnitude,
+@@ -136,0 +167,2 @@
++            if item.get(field) not in (None,"",0,"0") and attr is None:
++                raise ValueError("Missing official equipment attribute for "+code+": "+field)
+@@ -137,0 +170,2 @@
++        if item.get("switchCode") not in (None,"") and str(item["switchCode"]) not in options:
++            raise ValueError("Missing official equipment switch group for "+code)
+@@ -139,0 +174,2 @@
++        if item.get("goodGearAttr") not in (None,"",0,"0") and default is None:
++            raise ValueError("Missing official default equipment attribute for "+code)
+@@ -144 +180 @@
+-                if not attr:continue
++                if not attr:raise ValueError("Missing official random equipment attribute for "+code)
+@@ -156,0 +193,2 @@
++        if item.get("skillPlusAttr1") not in (None,"",0,"0") and p is None:
++            raise ValueError("Missing official Skill+ attribute for "+code)
+@@ -158,0 +197,6 @@
++        if item.get("specialOptionCode") not in (None,"") and spec is None:
++            raise ValueError("Missing official Spec+ definition for "+code)
++        if spec:
++            linked=talent_groups.get(spec.get("equipTalentCode"),[])
++            if len(linked)!=2 or any(x.get("targetAbilityCode") not in ability_rows for x in linked):
++                raise ValueError("Incomplete official Spec+ ability references for "+code)
+@@ -167 +211 @@
+-          "specPlus":_spec(english_desc,spec,attrs,talent_groups,ability_rows,custom_keys) if spec else None
++          "specPlus":_spec(english_desc,spec,attrs,talent_groups,ability_rows,custom_keys,custom_rows) if spec else None
+--- a/scripts/v2/raw_rangers.py
++++ b/scripts/v2/raw_rangers.py
+@@ -6,0 +7 @@
++from scripts.v2.raw_abilities import _condition
+@@ -113 +114 @@
+-                "descriptionKey":("ABILITY:"+str(ab["descriptionCode"]).replace("\\b","")) if ab.get("descriptionCode") else None,
++                "descriptionKey":("ABILITY:"+str(ab["descriptionCode"]).replace("\b","")) if ab.get("descriptionCode") else None,
+@@ -115,0 +117,3 @@
++                "additionalConditions":[{"text":text,**details}
++                    for text,details in (_condition(ab,i,custom) for i in (1,2))
++                    if details],
+@@ -161 +165,3 @@
+-        skill_set=[skill(by_skill[k],int(unit.get("grade") or 0)) for k in skill_codes if k and k in by_skill]
++        missing_skills=[k for k in skill_codes if k and k not in by_skill]
++        if missing_skills:raise ValueError("Missing official skill for "+code+": "+", ".join(missing_skills))
++        skill_set=[skill(by_skill[k],int(unit.get("grade") or 0),by_skill) for k in skill_codes if k]
+--- /dev/null
++++ b/scripts/v2/release.py
+@@ -0,0 +1,80 @@
++"""V2-owned release paths, process lock, and recoverable promotion."""
++from contextlib import contextmanager
++import fcntl
++import os
++from pathlib import Path
++
++ROOT=Path(__file__).resolve().parents[2]
++
++
++def output_dir():
++    path=Path(os.environ.get("RANGERBOOK_V2_OUTPUT_DIR",str(ROOT/"data/v2"))).resolve()
++    parent=(ROOT/"data").resolve()
++    if path.parent!=parent or not (path.name=="v2" or path.name.startswith(".v2-candidate-")):
++        raise ValueError("V2 output must be a release or candidate inside its own data directory")
++    return path
++
++
++@contextmanager
++def update_lock(root=ROOT):
++    """Reuse the shell's inherited descriptor, or lock direct Python invocations."""
++    path=root/"runtime/v2-update.lock"
++    path.parent.mkdir(parents=True,exist_ok=True)
++    inherited=False
++    try:
++        current=os.fstat(9)
++        expected=path.stat()
++        inherited=(current.st_dev,current.st_ino)==(expected.st_dev,expected.st_ino)
++    except OSError:
++        pass
++    if inherited:
++        fcntl.flock(9,fcntl.LOCK_EX|fcntl.LOCK_NB)
++        yield
++        return
++    with path.open("a") as lock:
++        fcntl.flock(lock.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
++        try:
++            yield
++        finally:
++            fcntl.flock(lock.fileno(),fcntl.LOCK_UN)
++
++
++def promote(candidate,final,metadata=None):
++    candidate=Path(candidate)
++    final=Path(final)
++    if candidate.parent.resolve()!=final.parent.resolve() or candidate==final:
++        raise ValueError("Release promotion requires sibling candidate and final directories")
++    previous=final.parent/".v2-previous"
++    archived=final.parent/".v2-previous-older"
++    if archived.exists():
++        raise RuntimeError("Unresolved archived release; refusing destructive promotion")
++    if previous.exists():
++        previous.rename(archived)
++    try:
++        if final.exists():
++            final.rename(previous)
++        try:
++            candidate.rename(final)
++            if metadata is not None:
++                target,content=metadata
++                target=Path(target)
++                pending=target.with_suffix(".pending")
++                try:
++                    target.parent.mkdir(parents=True,exist_ok=True)
++                    pending.write_bytes(content)
++                    pending.replace(target)
++                except BaseException:
++                    pending.unlink(missing_ok=True)
++                    final.rename(candidate)
++                    raise
++        except BaseException:
++            if previous.exists():
++                previous.rename(final)
++            raise
++    except BaseException:
++        if archived.exists():
++            archived.rename(previous)
++        raise
++    if archived.exists():
++        import shutil
++        shutil.rmtree(archived)
+--- /dev/null
++++ b/scripts/v2/release_dates.py
+@@ -0,0 +1,24 @@
++"""V2-owned first-observed dates. Existing dates never change automatically."""
++from datetime import date, datetime
++import json
++from zoneinfo import ZoneInfo
++
++
++def prepare(records, previous=None, today=None):
++    metadata = dict(previous or {"schemaVersion": 1, "source": "v2_first_successful_record"})
++    if metadata.get("schemaVersion") != 1 or not isinstance(metadata.get("dates", {}), dict):
++        raise ValueError("Invalid V2 release-date metadata")
++    dates = dict(metadata.get("dates", {}))
++    for code, value in dates.items():
++        if not isinstance(code, str) or not isinstance(value, str) or date.fromisoformat(value).isoformat() != value:
++            raise ValueError("Invalid authored release date: " + str(code))
++    observed = today or datetime.now(ZoneInfo("Asia/Taipei")).date().isoformat()
++    if date.fromisoformat(observed).isoformat() != observed:
++        raise ValueError("Invalid recorded date")
++    for row in records:
++        code = row["rangerCode"]
++        dates.setdefault(code, observed)
++        row["releaseDate"] = dates[code]
++        row["releaseDateSource"] = "v2_author_record"
++    metadata.update(dates=dates, recordingPolicy="first_successful_v2_record_date", timezone="Asia/Taipei")
++    return (json.dumps(metadata, ensure_ascii=False, indent=2) + "\n").encode("utf8")
+--- /dev/null
++++ b/scripts/v2/schemas/v2.json
+@@ -0,0 +1,1989 @@
++{
++  "$defs": {
++    "template": {
++      "type": "object",
++      "properties": {
++        "templateKey": {
++          "type": "string",
++          "minLength": 1
++        },
++        "args": {
++          "type": "array",
++          "items": {}
++        }
++      },
++      "required": [
++        "templateKey",
++        "args"
++      ],
++      "additionalProperties": false
++    },
++    "parts": {
++      "type": "object",
++      "properties": {
++        "parts": {
++          "type": "array",
++          "items": {
++            "anyOf": [
++              {
++                "type": "string"
++              },
++              {
++                "type": "null"
++              },
++              {
++                "$ref": "#/$defs/template"
++              },
++              {
++                "$ref": "#/$defs/parts"
++              }
++            ]
++          }
++        }
++      },
++      "required": [
++        "parts"
++      ],
++      "additionalProperties": false
++    },
++    "range": {
++      "type": "object",
++      "properties": {
++        "min": {
++          "type": "number"
++        },
++        "max": {
++          "type": "number"
++        },
++        "unit": {
++          "enum": [
++            "PERCENT",
++            "FLAT",
++            "SECOND"
++          ]
++        }
++      },
++      "required": [
++        "min",
++        "max",
++        "unit"
++      ],
++      "additionalProperties": true
++    },
++    "effect": {
++      "type": "object",
++      "properties": {
++        "effectCode": {
++          "type": "string"
++        },
++        "magnitude": {
++          "anyOf": [
++            {
++              "$ref": "#/$defs/magnitude"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "effectTrigger": {
++          "anyOf": [
++            {
++              "type": "object",
++              "properties": {
++                "kind": {
++                  "const": "chance"
++                },
++                "percent": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "kind",
++                "percent"
++              ],
++              "additionalProperties": true
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "targetLimit": {
++          "anyOf": [
++            {
++              "anyOf": [
++                {
++                  "type": "object",
++                  "properties": {
++                    "kind": {
++                      "const": "limited"
++                    },
++                    "maxTargets": {
++                      "type": "integer"
++                    }
++                  },
++                  "required": [
++                    "kind",
++                    "maxTargets"
++                  ],
++                  "additionalProperties": true
++                },
++                {
++                  "type": "object",
++                  "properties": {
++                    "kind": {
++                      "const": "unlimited"
++                    },
++                    "maxTargets": {
++                      "type": "null"
++                    }
++                  },
++                  "required": [
++                    "kind",
++                    "maxTargets"
++                  ],
++                  "additionalProperties": true
++                }
++              ]
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "duration": {
++          "anyOf": [
++            {
++              "$ref": "#/$defs/duration"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "rangePoints": {
++          "type": "number"
++        },
++        "availableIn": {
++          "type": "object",
++          "properties": {
++            "events": {
++              "type": "boolean"
++            },
++            "guardian": {
++              "type": "boolean"
++            }
++          },
++          "required": [
++            "events",
++            "guardian"
++          ],
++          "additionalProperties": true
++        }
++      },
++      "required": [
++        "effectCode",
++        "magnitude",
++        "effectTrigger",
++        "targetLimit",
++        "duration",
++        "rangePoints",
++        "availableIn"
++      ],
++      "additionalProperties": true
++    },
++    "skill": {
++      "type": "object",
++      "properties": {
++        "skillCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "descriptionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "trigger": {
++          "type": "object",
++          "properties": {
++            "type": {
++              "type": "string"
++            }
++          },
++          "required": [
++            "type"
++          ],
++          "additionalProperties": true
++        },
++        "activationRate": {
++          "type": "number"
++        },
++        "cooldownSeconds": {
++          "type": "number"
++        },
++        "effects": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/effect"
++          }
++        },
++        "icon": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        }
++      },
++      "required": [
++        "skillCode",
++        "nameKey",
++        "descriptionKey",
++        "trigger",
++        "activationRate",
++        "cooldownSeconds",
++        "effects",
++        "icon"
++      ],
++      "additionalProperties": true
++    },
++    "ranger": {
++      "type": "object",
++      "properties": {
++        "rangerCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "descriptionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "starGrade": {
++          "type": "number"
++        },
++        "evolution": {
++          "enum": [
++            "NORMAL",
++            "HYPER",
++            "ULTRA"
++          ]
++        },
++        "roleType": {
++          "type": "string"
++        },
++        "elementType": {
++          "type": "string"
++        },
++        "releaseDate": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "stats": {
++          "type": "object",
++          "properties": {
++            "hp": {
++              "type": "number"
++            },
++            "attack": {
++              "type": "object",
++              "properties": {
++                "physical": {
++                  "type": "number"
++                },
++                "magical": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "physical",
++                "magical"
++              ],
++              "additionalProperties": true
++            },
++            "defense": {
++              "type": "object",
++              "properties": {
++                "physical": {
++                  "type": "number"
++                },
++                "magical": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "physical",
++                "magical"
++              ],
++              "additionalProperties": true
++            },
++            "mineralCost": {
++              "type": "number"
++            },
++            "respawnSeconds": {
++              "type": "number"
++            },
++            "attackRange": {
++              "type": "number"
++            },
++            "splashRange": {
++              "type": "number"
++            },
++            "moveSpeed": {
++              "type": "object",
++              "properties": {
++                "pointsPerSecond": {
++                  "type": "number"
++                },
++                "rating": {
++                  "anyOf": [
++                    {
++                      "type": "string"
++                    },
++                    {
++                      "type": "null"
++                    }
++                  ]
++                }
++              },
++              "required": [
++                "pointsPerSecond",
++                "rating"
++              ],
++              "additionalProperties": true
++            },
++            "attackSpeed": {
++              "type": "object",
++              "properties": {
++                "secondsPerAttack": {
++                  "type": "number"
++                },
++                "rating": {
++                  "anyOf": [
++                    {
++                      "type": "string"
++                    },
++                    {
++                      "type": "null"
++                    }
++                  ]
++                }
++              },
++              "required": [
++                "secondsPerAttack",
++                "rating"
++              ],
++              "additionalProperties": true
++            }
++          },
++          "required": [
++            "hp",
++            "attack",
++            "defense",
++            "mineralCost",
++            "respawnSeconds",
++            "attackRange",
++            "splashRange",
++            "moveSpeed",
++            "attackSpeed"
++          ],
++          "additionalProperties": true
++        },
++        "skillSet": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/skill"
++          }
++        },
++        "abilityCodes": {
++          "type": "array",
++          "items": {
++            "type": "string"
++          }
++        },
++        "tags": {
++          "type": "object"
++        },
++        "awakeningAbilities": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        },
++        "talents": {
++          "anyOf": [
++            {
++              "type": "object"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "rankUpStatIncrease": {
++          "type": "object"
++        },
++        "rankUpStatIncreaseMax": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "rangerCode",
++        "nameKey",
++        "descriptionKey",
++        "starGrade",
++        "evolution",
++        "roleType",
++        "elementType",
++        "releaseDate",
++        "stats",
++        "skillSet",
++        "abilityCodes",
++        "tags",
++        "awakeningAbilities",
++        "talents",
++        "rankUpStatIncrease",
++        "rankUpStatIncreaseMax"
++      ],
++      "additionalProperties": true
++    },
++    "enemy": {
++      "type": "object",
++      "properties": {
++        "enemyCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "roleType": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "elementType": {
++          "type": "string"
++        },
++        "stats": {
++          "type": "object",
++          "properties": {
++            "hp": {
++              "type": "number"
++            },
++            "physicalAttack": {
++              "type": "number"
++            },
++            "magicalAttack": {
++              "type": "number"
++            },
++            "physicalDefense": {
++              "type": "number"
++            },
++            "magicalDefense": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "hp",
++            "physicalAttack",
++            "magicalAttack",
++            "physicalDefense",
++            "magicalDefense"
++          ],
++          "additionalProperties": true
++        },
++        "skills": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/skill"
++          }
++        },
++        "abilityCodes": {
++          "type": "array",
++          "items": {
++            "type": "string"
++          }
++        },
++        "flags": {
++          "type": "object",
++          "properties": {
++            "boss": {
++              "type": "boolean"
++            },
++            "nft": {
++              "type": "boolean"
++            }
++          },
++          "required": [
++            "boss",
++            "nft"
++          ],
++          "additionalProperties": true
++        }
++      },
++      "required": [
++        "enemyCode",
++        "nameKey",
++        "roleType",
++        "elementType",
++        "stats",
++        "skills",
++        "abilityCodes",
++        "flags"
++      ],
++      "additionalProperties": true
++    },
++    "option": {
++      "type": "object",
++      "properties": {
++        "optionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "range": {
++          "$ref": "#/$defs/range"
++        }
++      },
++      "required": [
++        "optionKey",
++        "range"
++      ],
++      "additionalProperties": true
++    },
++    "equipment": {
++      "type": "object",
++      "properties": {
++        "equipCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "starGrade": {
++          "type": "integer"
++        },
++        "equipType": {
++          "type": "string"
++        },
++        "normalOptions": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/option"
++          }
++        },
++        "highLevelOptions": {
++          "anyOf": [
++            {
++              "type": "object"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "skillPlus": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "effectCode": {
++                "type": "string"
++              },
++              "dimension": {
++                "enum": [
++                  "MAGNITUDE",
++                  "DURATION"
++                ]
++              },
++              "range": {
++                "$ref": "#/$defs/range"
++              },
++              "upgradeStep": {
++                "type": "number"
++              }
++            },
++            "required": [
++              "effectCode",
++              "dimension",
++              "range",
++              "upgradeStep"
++            ],
++            "additionalProperties": true
++          }
++        },
++        "specPlus": {
++          "anyOf": [
++            {
++              "type": "object"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        }
++      },
++      "required": [
++        "equipCode",
++        "nameKey",
++        "starGrade",
++        "equipType",
++        "normalOptions",
++        "highLevelOptions",
++        "skillPlus",
++        "specPlus"
++      ],
++      "additionalProperties": true
++    },
++    "ability": {
++      "type": "object",
++      "properties": {
++        "abilityCode": {
++          "type": "string"
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "descriptionKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "icon": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "tags": {
++          "type": "object"
++        },
++        "triggerEffects": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "chancePercent": {
++                "type": "number"
++              },
++              "triggerPhaseKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "battleModeKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "conditionKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "additionalConditionKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "conditions": {
++                "type": "array",
++                "items": {
++                  "type": "object"
++                }
++              },
++              "effectKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "effectCode": {
++                "type": "string"
++              },
++              "aptitudeCode": {
++                "type": "string"
++              },
++              "effectFactor": {
++                "type": "number"
++              },
++              "effectSubFactor": {
++                "type": "number"
++              }
++            },
++            "required": [
++              "chancePercent",
++              "triggerPhaseKey",
++              "battleModeKey",
++              "conditionKey",
++              "additionalConditionKey",
++              "conditions",
++              "effectKey",
++              "effectCode",
++              "aptitudeCode",
++              "effectFactor",
++              "effectSubFactor"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "abilityCode",
++        "nameKey",
++        "descriptionKey",
++        "icon",
++        "tags",
++        "triggerEffects"
++      ],
++      "additionalProperties": true
++    },
++    "spawn": {
++      "type": "object",
++      "properties": {
++        "unitCode": {
++          "type": "string"
++        },
++        "initialDelaySeconds": {
++          "type": "number"
++        },
++        "repeatInterval": {
++          "anyOf": [
++            {
++              "type": "object",
++              "properties": {
++                "minSeconds": {
++                  "type": "number"
++                },
++                "maxSeconds": {
++                  "type": "number"
++                }
++              },
++              "required": [
++                "minSeconds",
++                "maxSeconds"
++              ],
++              "additionalProperties": true
++            },
++            {
++              "type": "null"
++            }
++          ]
++        },
++        "maxUnits": {
++          "type": "number"
++        },
++        "combatStats": {
++          "type": "object",
++          "properties": {
++            "physicalAttack": {
++              "type": "number"
++            },
++            "magicalAttack": {
++              "type": "number"
++            },
++            "hp": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "physicalAttack",
++            "magicalAttack",
++            "hp"
++          ],
++          "additionalProperties": true
++        }
++      },
++      "required": [
++        "unitCode",
++        "initialDelaySeconds",
++        "repeatInterval",
++        "maxUnits",
++        "combatStats"
++      ],
++      "additionalProperties": true
++    },
++    "stage": {
++      "type": "object",
++      "properties": {
++        "stageId": {
++          "type": "string"
++        },
++        "mode": {
++          "enum": [
++            "hard",
++            "extreme",
++            "endless",
++            "labyrinth"
++          ]
++        },
++        "environment": {
++          "type": "object"
++        },
++        "spawnWaves": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "when": {
++                "type": "object",
++                "properties": {
++                  "kind": {
++                    "type": "string"
++                  }
++                },
++                "required": [
++                  "kind"
++                ],
++                "additionalProperties": true
++              },
++              "units": {
++                "type": "array",
++                "items": {
++                  "$ref": "#/$defs/spawn"
++                }
++              }
++            },
++            "required": [
++              "when",
++              "units"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "stageId",
++        "mode",
++        "environment",
++        "spawnWaves"
++      ],
++      "additionalProperties": true
++    },
++    "artifact": {
++      "type": "object",
++      "properties": {
++        "artifactCode": {
++          "type": "string"
++        },
++        "grade": {
++          "enum": [
++            "A",
++            "B",
++            "C"
++          ]
++        },
++        "nameKey": {
++          "anyOf": [
++            {
++              "type": "string"
++            },
++            {
++              "type": "null"
++            },
++            {
++              "$ref": "#/$defs/template"
++            },
++            {
++              "$ref": "#/$defs/parts"
++            }
++          ]
++        },
++        "effect": {
++          "type": "object",
++          "properties": {
++            "effectKey": {
++              "anyOf": [
++                {
++                  "type": "string"
++                },
++                {
++                  "type": "null"
++                },
++                {
++                  "$ref": "#/$defs/template"
++                },
++                {
++                  "$ref": "#/$defs/parts"
++                }
++              ]
++            },
++            "effectArgs": {
++              "type": "array",
++              "items": {
++                "type": "number"
++              }
++            },
++            "direction": {
++              "enum": [
++                "INCREASE",
++                "DECREASE"
++              ]
++            },
++            "operation": {
++              "enum": [
++                "ADD",
++                "SUB",
++                "MUL"
++              ]
++            },
++            "percent": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "effectKey",
++            "effectArgs",
++            "direction",
++            "operation",
++            "percent"
++          ],
++          "additionalProperties": true
++        },
++        "pointsByTarget": {
++          "type": "object",
++          "additionalProperties": {
++            "type": "number"
++          }
++        },
++        "iconPath": {
++          "type": "string"
++        }
++      },
++      "required": [
++        "artifactCode",
++        "grade",
++        "nameKey",
++        "effect",
++        "pointsByTarget",
++        "iconPath"
++      ],
++      "additionalProperties": true
++    },
++    "magnitude": {
++      "anyOf": [
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "statPercent"
++            },
++            "stat": {
++              "enum": [
++                "ATK",
++                "HP"
++              ]
++            },
++            "operator": {
++              "enum": [
++                "ADD",
++                "SUBTRACT",
++                "MULTIPLY"
++              ]
++            },
++            "percent": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "stat",
++            "operator",
++            "percent"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "gradeValue"
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "flat"
++            },
++            "direction": {
++              "enum": [
++                "INCREASE",
++                "DECREASE"
++              ]
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "direction",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "points"
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "percent"
++            },
++            "direction": {
++              "enum": [
++                "INCREASE",
++                "DECREASE"
++              ]
++            },
++            "value": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "direction",
++            "value"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "summonLevel"
++            },
++            "level": {
++              "type": "integer"
++            }
++          },
++          "required": [
++            "kind",
++            "level"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "$ref": "#/$defs/levelFormula"
++        }
++      ]
++    },
++    "levelFormula": {
++      "type": "object",
++      "properties": {
++        "kind": {
++          "const": "levelFormula"
++        },
++        "levelSource": {
++          "const": "LEVEL"
++        },
++        "operator": {
++          "enum": [
++            "ADD",
++            "SUBTRACT",
++            "MULTIPLY"
++          ]
++        },
++        "amount": {
++          "type": "number"
++        },
++        "unit": {
++          "enum": [
++            "FLAT",
++            "SECOND"
++          ]
++        }
++      },
++      "required": [
++        "kind",
++        "levelSource",
++        "operator",
++        "amount",
++        "unit"
++      ],
++      "additionalProperties": true
++    },
++    "duration": {
++      "anyOf": [
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "fixed"
++            },
++            "seconds": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "seconds"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "type": "object",
++          "properties": {
++            "kind": {
++              "const": "gradeCalculated"
++            },
++            "seconds": {
++              "type": "number"
++            }
++          },
++          "required": [
++            "kind",
++            "seconds"
++          ],
++          "additionalProperties": true
++        },
++        {
++          "$ref": "#/$defs/levelFormula"
++        }
++      ]
++    }
++  },
++  "datasets": {
++    "locale": {
++      "type": "array",
++      "items": {
++        "type": "object",
++        "properties": {
++          "key": {
++            "type": "string"
++          },
++          "zh_TW": {
++            "type": "string"
++          },
++          "en": {
++            "type": "string"
++          },
++          "th": {
++            "type": "string"
++          },
++          "jp": {
++            "type": "string"
++          }
++        },
++        "required": [
++          "key",
++          "zh_TW",
++          "en",
++          "th",
++          "jp"
++        ],
++        "additionalProperties": false
++      }
++    },
++    "manifest": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "status": {
++          "const": "standalone_v2"
++        },
++        "source": {
++          "const": "independent_official_api"
++        },
++        "sourceFingerprint": {
++          "type": "string"
++        },
++        "datasets": {
++          "type": "object"
++        },
++        "languageCatalogs": {
++          "type": "object"
++        },
++        "translationAudit": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "status",
++        "source",
++        "sourceFingerprint",
++        "datasets",
++        "languageCatalogs",
++        "translationAudit"
++      ],
++      "additionalProperties": true
++    },
++    "audit": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "officialReferencedButAbsentFromApi": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        },
++        "officialApiRowsMissingEnglish": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        },
++        "generatedDescriptionKeysNotStructured": {
++          "type": "array",
++          "items": {
++            "type": "object"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "officialReferencedButAbsentFromApi",
++        "officialApiRowsMissingEnglish",
++        "generatedDescriptionKeysNotStructured"
++      ],
++      "additionalProperties": true
++    },
++    "rangers": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "rangers": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/ranger"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "rangers"
++      ],
++      "additionalProperties": true
++    },
++    "equipment": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "equipment": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/equipment"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "equipment"
++      ],
++      "additionalProperties": true
++    },
++    "abilities": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "abilities": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/ability"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "abilities"
++      ],
++      "additionalProperties": true
++    },
++    "labyrinth-artifacts": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "artifacts": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/artifact"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "artifacts"
++      ],
++      "additionalProperties": true
++    },
++    "ranger-index": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "rangers": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "rangerCode": {
++                "type": "string"
++              },
++              "nameKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "starGrade": {
++                "type": "number"
++              },
++              "roleType": {
++                "type": "string"
++              },
++              "elementType": {
++                "type": "string"
++              },
++              "evolution": {
++                "enum": [
++                  "NORMAL",
++                  "HYPER",
++                  "ULTRA"
++                ]
++              }
++            },
++            "required": [
++              "rangerCode",
++              "nameKey",
++              "starGrade",
++              "roleType",
++              "elementType",
++              "evolution"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "rangers"
++      ],
++      "additionalProperties": true
++    },
++    "equipment-name-index": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "equipment": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "equipCode": {
++                "type": "string"
++              },
++              "nameKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              }
++            },
++            "required": [
++              "equipCode",
++              "nameKey"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "equipment"
++      ],
++      "additionalProperties": true
++    },
++    "equipment-effects": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "effects": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "attributeId": {
++                "type": "integer"
++              },
++              "optionKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              }
++            },
++            "required": [
++              "attributeId",
++              "optionKey"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "effects"
++      ],
++      "additionalProperties": true
++    },
++    "resources": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "assets": {
++          "type": "array",
++          "items": {
++            "type": "object",
++            "properties": {
++              "assetGroup": {
++                "type": "string"
++              },
++              "format": {
++                "type": "string"
++              },
++              "bytes": {
++                "type": "number"
++              },
++              "removed": {
++                "type": "boolean"
++              }
++            },
++            "required": [
++              "assetGroup",
++              "format",
++              "bytes",
++              "removed"
++            ],
++            "additionalProperties": true
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "assets"
++      ],
++      "additionalProperties": true
++    },
++    "projectiles": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "units": {
++          "type": "object",
++          "additionalProperties": {
++            "type": "object",
++            "properties": {
++              "unitCode": {
++                "type": "string"
++              },
++              "nameKey": {
++                "anyOf": [
++                  {
++                    "type": "string"
++                  },
++                  {
++                    "type": "null"
++                  },
++                  {
++                    "$ref": "#/$defs/template"
++                  },
++                  {
++                    "$ref": "#/$defs/parts"
++                  }
++                ]
++              },
++              "visual": {
++                "type": "object"
++              },
++              "movement": {
++                "type": "object"
++              },
++              "projectile": {
++                "type": "object"
++              },
++              "attackChannels": {
++                "type": "object"
++              },
++              "effects": {
++                "type": "object"
++              }
++            },
++            "required": [
++              "unitCode",
++              "nameKey",
++              "visual",
++              "movement",
++              "projectile",
++              "attackChannels",
++              "effects"
++            ],
++            "additionalProperties": true
++          }
++        },
++        "validation": {
++          "type": "object"
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "units",
++        "validation"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/hard": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/extreme": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/endless": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/event": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/advent": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "enemies/labyrinth": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "enemies": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/enemy"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "enemies"
++      ],
++      "additionalProperties": true
++    },
++    "stages/hard": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    },
++    "stages/extreme": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    },
++    "stages/endless": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    },
++    "stages/labyrinth": {
++      "type": "object",
++      "properties": {
++        "schemaVersion": {
++          "const": 2
++        },
++        "stages": {
++          "type": "array",
++          "items": {
++            "$ref": "#/$defs/stage"
++          }
++        }
++      },
++      "required": [
++        "schemaVersion",
++        "stages"
++      ],
++      "additionalProperties": true
++    }
++  }
++}
+--- a/scripts/v2/semantic.py
++++ b/scripts/v2/semantic.py
+@@ -303 +303 @@
+-        if isinstance(desc_code,str):desc_code=desc_code.replace("\\b","")
++        if isinstance(desc_code,str):desc_code=desc_code.replace("\b","")
+@@ -353,0 +354,2 @@
++                    "effectArgs":[(round(abs((float(entry.get("buffFactor") or 0)-1)*100),2) if entry.get("buffApplyType")=="MUL"
++                                  else round(float(entry.get("buffFactor") or 0)*100,2))],
+@@ -380 +382 @@
+-            primary.append(skill(skill_by_code[s],int(raw.get("grade") or 0)))
++            primary.append(skill(skill_by_code[s],int(raw.get("grade") or 0),skill_by_code))
+--- a/scripts/v2/structured_fixes.py
++++ b/scripts/v2/structured_fixes.py
+@@ -146 +146,6 @@
+-            sub=raw_abilities.get(source["code"]+"_a",{})
++            children=[code.strip() for code in str(source.get("subAbilities") or "").split(",") if code.strip()]
++            if action!="STG_ACTIVE_UNBEAT" and len(children)!=1:
++                raise ValueError("Active gimmick requires one official sub-ability: "+source["code"])
++            if any(code not in raw_abilities for code in children):
++                raise ValueError("Missing official active gimmick sub-ability: "+source["code"])
++            sub=raw_abilities.get(children[0],{}) if children else {}
+--- /dev/null
++++ b/scripts/v2/test_failure_isolation.py
+@@ -0,0 +1,73 @@
++"""End-to-end failures run only in an explicitly marked isolated V2 workspace."""
++import hashlib
++import json
++import subprocess
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++from types import SimpleNamespace
++import update_all_v2 as runner
++
++ROOT=Path(__file__).resolve().parents[2]
++
++
++def release_hash():
++    h=hashlib.sha256()
++    for p in sorted((ROOT/'data/v2').rglob('*.json')):
++        h.update(str(p.relative_to(ROOT)).encode());h.update(p.read_bytes())
++    metadata=ROOT/'data/metadata/release-dates.json'
++    if metadata.exists():h.update(metadata.read_bytes())
++    return h.hexdigest()
++
++
++@unittest.skipUnless((ROOT/'.isolated-v2-test').is_file(),'Requires explicit isolated test marker')
++class FailureIsolationTests(unittest.TestCase):
++    def corrupt_and_run(self,file,change):
++        path=ROOT/file;before=path.read_bytes();release=release_hash()
++        try:
++            change(path)
++            result=subprocess.run(['python3','update_all_v2.py','--skip-fetch'],cwd=ROOT,
++                                  capture_output=True,text=True)
++            self.assertNotEqual(result.returncode,0,result.stdout[-1000:])
++            self.assertEqual(release_hash(),release)
++            self.assertFalse(list((ROOT/'data').glob('.v2-candidate-*')))
++        finally:
++            path.write_bytes(before)
++
++    def test_malformed_official_unit_keeps_last_successful_release(self):
++        self.corrupt_and_run('data/raw/unit.json',lambda p:p.write_text('{broken'))
++
++    def test_missing_subskill_keeps_last_successful_release(self):
++        def remove_child(path):
++            rows=json.loads(path.read_text())
++            parent=next(r for r in rows if r.get('subSkills'))
++            child=parent['subSkills'].split(',')[0].strip()
++            path.write_text(json.dumps([r for r in rows if r['skillCode']!=child]))
++        self.corrupt_and_run('data/raw/skill.json',remove_child)
++
++    def test_catalog_failure_after_compilation_does_not_promote(self):
++        def damage(path):
++            rows=json.loads(path.read_text());rows[0]['en']+='%N9';path.write_text(json.dumps(rows))
++        self.corrupt_and_run('data/locales/ui.json',damage)
++
++    def test_malformed_ability_number_cannot_be_coerced_to_zero(self):
++        def damage(path):
++            rows=json.loads(path.read_text())
++            row=next(r for r in rows if r.get("abilityType")=="ABILITY")
++            row["activeProbability"]="broken"
++            path.write_text(json.dumps(rows))
++        self.corrupt_and_run('data/raw/ability.json',damage)
++
++    def test_api_failure_prevents_compilation_and_promotion(self):
++        release=release_hash();actual=runner.run
++        def failed_api(command,**kwargs):
++            if any(str(x).endswith('api_db_to_raw.py') for x in command):
++                raise subprocess.CalledProcessError(5,command)
++            return actual(command,**kwargs)
++        with patch.object(runner,'run',failed_api):
++            with self.assertRaises(subprocess.CalledProcessError):
++                runner.execute(SimpleNamespace(skip_fetch=False,force_full_manifest=False,fetch_only=False))
++        self.assertEqual(release_hash(),release)
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/v2/test_publisher.py
+@@ -0,0 +1,76 @@
++"""Publish refusal, recovery and V1/V2 races against a local bare Git remote."""
++import hashlib
++import subprocess
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++import publish_v2 as publisher
++from scripts.v2.release import output_dir
++
++
++def command(*args):
++    return subprocess.run(list(args),check=True,capture_output=True,text=True).stdout.strip()
++
++
++class PublisherTests(unittest.TestCase):
++    def setUp(self):
++        self.directory=tempfile.TemporaryDirectory()
++        self.root=Path(self.directory.name)
++        self.remote=self.root/'remote.git';self.seed=self.root/'seed'
++        command('git','init','--bare','--initial-branch=main',str(self.remote))
++        command('git','clone',str(self.remote),str(self.seed))
++        command('git','-C',str(self.seed),'config','user.email','test@example.invalid')
++        command('git','-C',str(self.seed),'config','user.name','Isolated Test')
++        (self.seed/'res').mkdir();(self.seed/'res/V1-sentinel.json').write_text('{"version":1}\n')
++        command('git','-C',str(self.seed),'add','res')
++        command('git','-C',str(self.seed),'commit','-m','fixture V1')
++        command('git','-C',str(self.seed),'push','origin','main')
++        self.patches=[patch.object(publisher,'REPO',self.root/'publisher'),
++                      patch.object(publisher,'URL',str(self.remote)),
++                      patch.object(publisher,'OUTPUT',output_dir())]
++        for p in self.patches:p.start()
++        publisher.prepare()
++        publisher.git('config','user.name','Isolated V2 Test')
++        publisher.git('config','user.email','test@example.invalid')
++
++    def tearDown(self):
++        for p in reversed(self.patches):p.stop()
++        self.directory.cleanup()
++
++    def test_rejected_push_preserves_remote_then_can_retry(self):
++        before=command('git','--git-dir',str(self.remote),'rev-parse','main')
++        hook=self.remote/'hooks/pre-receive';hook.write_text('#!/bin/sh\nexit 1\n');hook.chmod(0o755)
++        with self.assertRaisesRegex(RuntimeError,'four safe retry'):publisher.publish()
++        self.assertEqual(command('git','--git-dir',str(self.remote),'rev-parse','main'),before)
++        hook.unlink();self.assertTrue(publisher.publish());self.assertFalse(publisher.publish())
++        value=command('git','--git-dir',str(self.remote),'show','main:res/V1-sentinel.json')
++        self.assertEqual(value,'{"version":1}')
++        self.assertFalse((publisher.REPO/'.git/rebase-merge').exists())
++
++    def test_racing_v1_commit_survives_v2_retry(self):
++        original=subprocess.run;first=True
++        def race(args,*a,**kw):
++            nonlocal first
++            if first and isinstance(args,list) and args[:3]==['git','-C',str(publisher.REPO)] and 'push' in args:
++                first=False
++                (self.seed/'res/V1-sentinel.json').write_text('{"version":2}\n')
++                for tail in [('add','res'),('commit','-m','concurrent V1'),('push','origin','main')]:
++                    original(['git','-C',str(self.seed),*tail],check=True,capture_output=True,text=True)
++            return original(args,*a,**kw)
++        with patch.object(subprocess,'run',race):self.assertTrue(publisher.publish())
++        self.assertFalse(first)
++        self.assertEqual(command('git','--git-dir',str(self.remote),'show','main:res/V1-sentinel.json'),'{"version":2}')
++        self.assertEqual(command('git','--git-dir',str(self.remote),'show','main:res/v2/manifest.json'),
++                         (publisher.OUTPUT/'manifest.json').read_text().strip())
++
++    def test_review_branch_publication_does_not_change_main(self):
++        command('git','-C',str(self.seed),'checkout','-b','review')
++        command('git','-C',str(self.seed),'push','origin','review')
++        before=command('git','--git-dir',str(self.remote),'rev-parse','main')
++        self.assertTrue(publisher.publish('review'))
++        self.assertEqual(command('git','--git-dir',str(self.remote),'rev-parse','main'),before)
++        self.assertEqual(command('git','--git-dir',str(self.remote),'show','review:res/V1-sentinel.json'),'{\"version\":1}')
++
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/scripts/v2/test_release.py
+@@ -0,0 +1,94 @@
++"""Failure and contention tests use temporary directories, never production."""
++import multiprocessing
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++from scripts.v2.release import promote,update_lock
++
++
++def attempt_lock(root,pipe):
++    try:
++        with update_lock(Path(root)):pipe.send("acquired")
++    except BlockingIOError:
++        pipe.send("blocked")
++    finally:
++        pipe.close()
++
++
++class ReleaseTests(unittest.TestCase):
++    def test_date_directory_failure_restores_release(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);final=root/"v2";candidate=root/".v2-candidate-test"
++            final.mkdir();candidate.mkdir()
++            (final/"value").write_text("old");(candidate/"value").write_text("new")
++            target=root/"metadata/release-dates.json"
++            mkdir=Path.mkdir
++            def fail_directory(path,*args,**kwargs):
++                if path==target.parent:raise OSError("injected directory failure")
++                return mkdir(path,*args,**kwargs)
++            with patch.object(Path,"mkdir",fail_directory):
++                with self.assertRaisesRegex(OSError,"directory"):
++                    promote(candidate,final,metadata=(target,b"new dates"))
++            self.assertEqual((final/"value").read_text(),"old")
++            self.assertFalse(target.exists())
++
++    def test_date_commit_failure_restores_release_and_preserves_dates(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);final=root/"v2";candidate=root/".v2-candidate-test"
++            final.mkdir();candidate.mkdir()
++            (final/"value").write_text("old");(candidate/"value").write_text("new")
++            target=root/"metadata/release-dates.json";target.parent.mkdir();target.write_bytes(b"old dates")
++            replace=Path.replace
++            def fail_dates(path,dst):
++                if Path(dst)==target:raise OSError("injected date commit failure")
++                return replace(path,dst)
++            with patch.object(Path,"replace",fail_dates):
++                with self.assertRaisesRegex(OSError,"date commit"):
++                    promote(candidate,final,metadata=(target,b"new dates"))
++            self.assertEqual((final/"value").read_text(),"old")
++            self.assertEqual(target.read_bytes(),b"old dates")
++
++    def test_dates_are_saved_with_successful_release(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);candidate=root/".v2-candidate-test";candidate.mkdir()
++            target=root/"metadata/release-dates.json"
++            promote(candidate,root/"v2",metadata=(target,b"recorded dates"))
++            self.assertEqual(target.read_bytes(),b"recorded dates")
++
++    def test_success_preserves_previous_release(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);final=root/"v2";candidate=root/".v2-candidate-test"
++            final.mkdir();candidate.mkdir()
++            (final/"value").write_text("old");(candidate/"value").write_text("new")
++            promote(candidate,final)
++            self.assertEqual((final/"value").read_text(),"new")
++            self.assertEqual((root/".v2-previous/value").read_text(),"old")
++
++    def test_promotion_failure_restores_current_and_previous(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp);final=root/"v2";candidate=root/".v2-candidate-test"
++            previous=root/".v2-previous"
++            for path in (final,candidate,previous):path.mkdir()
++            (final/"value").write_text("old");(candidate/"value").write_text("new")
++            (previous/"value").write_text("older")
++            rename=Path.rename
++            def fail_candidate(path,target):
++                if path==candidate:raise OSError("injected rename failure")
++                return rename(path,target)
++            with patch.object(Path,"rename",fail_candidate):
++                with self.assertRaisesRegex(OSError,"injected"):promote(candidate,final)
++            self.assertEqual((final/"value").read_text(),"old")
++            self.assertEqual((previous/"value").read_text(),"older")
++
++    def test_same_pipeline_is_blocked_but_v1_v2_roots_are_independent(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            v1=Path(tmp)/"v1";v2=Path(tmp)/"v2"
++            with update_lock(v1),update_lock(v2):
++                parent,child=multiprocessing.Pipe(False)
++                process=multiprocessing.Process(target=attempt_lock,args=(str(v2),child))
++                process.start();self.assertTrue(parent.poll(5));self.assertEqual(parent.recv(),"blocked")
++                process.join(5);self.assertEqual(process.exitcode,0)
++
++
++if __name__=="__main__":unittest.main()
+--- /dev/null
++++ b/scripts/v2/test_semantic_audit.py
+@@ -0,0 +1,103 @@
++"""Regression tests use official-style facts, not recompiling an expected copy."""
++import unittest
++from scripts.v2_preview.normalize import skill
++from scripts.v2.raw_abilities import compile_abilities
++from scripts.v2.raw_equipment import _spec
++from scripts.v2.raw_rangers import _talent
++
++
++class SemanticAuditTests(unittest.TestCase):
++    def test_new_actor_records_today_without_overwriting_existing_dates(self):
++        import json
++        from scripts.v2.release_dates import prepare
++        rows=[{"rangerCode":"old"},{"rangerCode":"new"}]
++        previous={"schemaVersion":1,"dates":{"old":"2016-01-18"}}
++        result=json.loads(prepare(rows,previous,today="2026-10-12"))
++        self.assertEqual(rows[0]["releaseDate"],"2016-01-18")
++        self.assertEqual(rows[1]["releaseDate"],"2026-10-12")
++        self.assertEqual(result["timezone"],"Asia/Taipei")
++        self.assertNotIn("new",previous["dates"])
++
++    def test_invalid_author_date_is_rejected(self):
++        from scripts.v2.release_dates import prepare
++        with self.assertRaises(ValueError):
++            prepare([],{"schemaVersion":1,"dates":{"bad":"2026-02-30"}})
++
++    def test_raw_subskills_expand_in_source_order_without_mutation(self):
++        parent={"skillCode":"parent","skillType":"DMG","subSkills":" second,first ",
++                "iconResourcePath":"skill.png"}
++        index={"parent":parent,"first":{"skillCode":"first","skillType":"STUN"},
++               "second":{"skillCode":"second","skillType":"BUFF","buffFactorType":"ATK"}}
++        result=skill(parent,9,index)
++        self.assertEqual([x["effectCode"] for x in result["effects"]],
++                         ["SKILLEFF_DMG","SKILLEFF_BUFF-ATK","SKILLEFF_STUN"])
++        self.assertEqual(result["icon"],"skill.png")
++        self.assertEqual(parent["subSkills"]," second,first ")
++
++    def test_missing_subskill_refuses_a_partial_result(self):
++        with self.assertRaisesRegex(ValueError,"Missing official sub-skill"):
++            skill({"skillCode":"parent","subSkills":"missing"},9,{})
++
++    def test_raw_children_cannot_be_silently_discarded(self):
++        with self.assertRaisesRegex(ValueError,"require a V2 skill index"):
++            skill({"skillCode":"parent","subSkills":"child"},9)
++
++    def test_ability_backspace_reference_is_removed(self):
++        row={"code":"ability","abilityType":"ABILITY","descriptionCode":"desc_\bfire",
++             "actionType":"NONE","aptitudeType":"NONE","activeProbability":1}
++        result=compile_abilities([row],[])
++        self.assertEqual(result[0]["descriptionKey"],"ABILITY:desc_fire")
++
++    def test_bloodlust_does_not_use_the_unrelated_post_death_template(self):
++        row={"code":"ab231_bloodlust","abilityType":"ABILITY",
++             "nameCode":"ab231_bloodlust_nm","actionType":"BLOODLUST",
++             "aptitudeType":"NONE","buffFactor":.5,"subBuffFactor":10,"activeProbability":1}
++        result=compile_abilities([row],[])
++        self.assertEqual(result[0]["triggerEffects"][0]["effectKey"],
++                         "ABILITY:ab231_bloodlust_nm")
++
++    def test_spec_native_duration_is_not_the_main_factor(self):
++        result=_spec({"EQUIP:desc":"Change element for {$4f}s"},
++            {"specialDescLangCode":"desc","equipTalentCode":"group"},
++            {},{"group":[{},{"buffFactorMin":1,"buffFactorMax":1,
++                 "subBuffFactorMin":1.5,"subBuffFactorMax":2}]},{},set())
++        option=result["specialOptions"][0]
++        self.assertEqual(option["descriptionBindings"]["$4f"],
++                         {"min":1.5,"max":2,"unit":"SECOND"})
++        self.assertEqual(option["effect"]["magnitudeRange"]["min"],1)
++
++    def test_major_talent_preserves_additional_condition(self):
++        custom={"ABILITY_CONDITION_TYPE_CATEGORY":{},"CATEGORY_INT":{},
++                "V2_ABILITY_CONDITION_JOIN":{}}
++        talent=_talent({"talentGroup":"g"},{"g":{"talentCodeStep1":"t"}},
++            {"t":{"talentType":"MAJOR","majorTalentAbilityCode":"a"}},
++            {"a":{"activeCondition1Type":"CATEGORY","activeCondition1Value":"INT"}},
++            custom)
++        self.assertEqual(talent["major"]["additionalConditions"][0]["kind"],"CATEGORY")
++        self.assertEqual(talent["major"]["additionalConditions"][0]["value"],"INT")
++
++    def test_berserk_speed_matches_official_increase(self):
++        from scripts.v2.raw_abilities import _effect
++        result=_effect({"code":"ab231_bloodlust_c","actionType":"BUFF",
++                        "buffFactorType":"ATKSPD","buffFactor":2},
++                       {"BUFF_FACTOR_TYPE_ATKSPD":{}})
++        self.assertEqual(result["args"][1],100)
++
++    def test_skillplus_add_uses_official_upgrade_not_range_minimum(self):
++        from scripts.v2_preview.normalize import skill_plus
++        result=skill_plus({"minValue":20,"maxValue":50,"skillFactorApplyType":"ADD",
++            "groups":[{"skillType":"STUN","targetFactorType":"MAIN"}]},3)
++        self.assertEqual(result[0]["range"]["min"],20)
++        self.assertEqual(result[0]["upgradeStep"],3)
++
++    def test_spec_condition_percentage_and_range_are_preserved(self):
++        result=_spec({},{"equipTalentCode":"g"},{},
++             {"g":[{"targetAbilityCode":"trigger","buffFactorMin":.5,"buffFactorMax":.7}]},
++             {"trigger":{"aptitudeType":"TLT_SKILLATTACK_HP_OVER"}},set(),
++             [{"key":"TALENT_TEXT_TLT_SKILLATTACK_HP_OVER","zh_TW":"HP %d%"}])
++        args=result["specialOptions"][0]["conditionKeys"][0]["args"]
++        self.assertEqual(args,[{"min":50,"max":70,"unit":"PERCENT"}])
++
++
++if __name__=="__main__":
++    unittest.main()
+--- a/scripts/v2/test_standalone.py
++++ b/scripts/v2/test_standalone.py
+@@ -9,0 +10,2 @@
++from scripts.v2.release import output_dir
++OUTPUT=output_dir()
+@@ -62 +64 @@
+-        actual=json.loads((ROOT/"data/v2/equipment-effects.json").read_text())
++        actual=json.loads((OUTPUT/"equipment-effects.json").read_text())
+@@ -66 +68 @@
+-        actual_resources=json.loads((ROOT/"data/v2/resources.json").read_text())
++        actual_resources=json.loads((OUTPUT/"resources.json").read_text())
+@@ -77 +79 @@
+-        published=json.loads((ROOT/"data/v2/abilities.json").read_text())["abilities"]
++        published=json.loads((OUTPUT/"abilities.json").read_text())["abilities"]
+@@ -88 +90 @@
+-        output=ROOT/"data/v2"
++        output=OUTPUT
+@@ -116 +118 @@
+-        output=ROOT/"data/v2"
++        output=OUTPUT
+@@ -172 +174 @@
+-        published=json.loads((ROOT/"data/v2/stages/labyrinth.json").read_text())["stages"]
++        published=json.loads((OUTPUT/"stages/labyrinth.json").read_text())["stages"]
+@@ -189 +191 @@
+-        published=json.loads((ROOT/"data/v2/stages/endless.json").read_text())["stages"]
++        published=json.loads((OUTPUT/"stages/endless.json").read_text())["stages"]
+@@ -208 +210 @@
+-        published=json.loads((ROOT/"data/v2/stages/extreme.json").read_text())["stages"]
++        published=json.loads((OUTPUT/"stages/extreme.json").read_text())["stages"]
+@@ -236 +238 @@
+-        published=json.loads((ROOT/"data/v2/stages/hard.json").read_text())["stages"]
++        published=json.loads((OUTPUT/"stages/hard.json").read_text())["stages"]
+@@ -249 +251 @@
+-            json.loads((ROOT/"data/v2/manifest.json").read_text())["datasetLineage"]["stages/hard"].split(";")[0],
++            json.loads((OUTPUT/"manifest.json").read_text())["datasetLineage"]["stages/hard"].split(";")[0],
+@@ -257 +259 @@
+-        published=ROOT/"data/v2/enemies"
++        published=OUTPUT/"enemies"
+@@ -297 +299 @@
+-        folder=ROOT/"data/v2/locales"
++        folder=OUTPUT/"locales"
+@@ -302 +304 @@
+-            for row in rows[:300]:
++            for row in rows:
+--- /dev/null
++++ b/scripts/v2/validate.py
+@@ -0,0 +1,111 @@
++"""Validate the supported schema contract and all text bindings before promotion."""
++import argparse
++import hashlib
++import json
++import math
++from pathlib import Path
++from scripts.v2.audit import audit
++
++LANGUAGES=('zh_TW','en','th','jp')
++DATASETS={
++ 'rangers':'rangers','ranger-index':'rangers','equipment':'equipment',
++ 'equipment-name-index':'equipment','equipment-effects':'effects',
++ 'abilities':'abilities','labyrinth-artifacts':'artifacts','projectiles':'units',
++ 'resources':'assets',**{'enemies/'+x:'enemies' for x in ('hard','extreme','endless','event','advent','labyrinth')},
++ **{'stages/'+x:'stages' for x in ('hard','extreme','endless','labyrinth')}}
++FILES={x+'.json' for x in DATASETS}|{'manifest.json','translation-audit.json',
++ 'locales/official.json','locales/custom.json','locales/ui.json'}
++SCHEMA=Path(__file__).with_name('schemas')/'v2.json'
++
++
++def check(value,schema,defs,path='$'):
++    """Small explicit JSON Schema subset; unsupported keywords fail closed."""
++    allowed={'$ref','type','required','properties','additionalProperties','items',
++             'anyOf','enum','const','minLength','description'}
++    unknown=set(schema)-allowed
++    if unknown:raise ValueError('Unsupported schema keywords: '+str(sorted(unknown)))
++    if '$ref' in schema:
++        return check(value,defs[schema['$ref'].removeprefix('#/$defs/')],defs,path)
++    if 'anyOf' in schema:
++        for option in schema['anyOf']:
++            try:check(value,option,defs,path);return
++            except ValueError:pass
++        raise ValueError(path+': no schema alternative matched')
++    types=schema.get('type')
++    if types:
++        types=[types] if isinstance(types,str) else types
++        matches={'null':value is None,'string':isinstance(value,str),
++          'boolean':isinstance(value,bool),'integer':isinstance(value,int) and not isinstance(value,bool),
++          'number':isinstance(value,(float,int)) and not isinstance(value,bool) and math.isfinite(value),
++          'object':isinstance(value,dict),'array':isinstance(value,list)}
++        if not any(matches.get(t,False) for t in types):raise ValueError(path+': invalid type')
++    if 'enum' in schema and value not in schema['enum']:raise ValueError(path+': invalid enum')
++    if 'const' in schema and value!=schema['const']:raise ValueError(path+': invalid constant')
++    if isinstance(value,str) and len(value)<schema.get('minLength',0):raise ValueError(path+': empty value')
++    if isinstance(value,dict):
++        missing=set(schema.get('required',[]))-set(value)
++        if missing:raise ValueError(path+': missing fields '+str(sorted(missing)))
++        props=schema.get('properties',{})
++        if schema.get('additionalProperties') is False and set(value)-set(props):raise ValueError(path+': unknown fields')
++        for k,item in value.items():
++            if k in props:check(item,props[k],defs,path+'.'+k)
++            elif isinstance(schema.get('additionalProperties'),dict):check(item,schema['additionalProperties'],defs,path+'.'+k)
++    if isinstance(value,list) and 'items' in schema:
++        for i,item in enumerate(value):check(item,schema['items'],defs,f'{path}[{i}]')
++
++
++def validate(root,write_report=False):
++    root=Path(root)
++    actual={x.relative_to(root).as_posix() for x in root.rglob('*.json')}
++    if actual!=FILES:raise ValueError('V2 file allowlist mismatch: '+str(sorted(actual^FILES)))
++    spec=json.loads(SCHEMA.read_text(encoding='utf8'))
++    objects={}
++    for name in sorted(actual):
++        obj=json.loads((root/name).read_text(encoding='utf8'),parse_constant=lambda s:(_ for _ in ()).throw(ValueError('Nonfinite JSON '+s)))
++        objects[name]=obj
++        which='locale' if name.startswith('locales/') else 'manifest' if name=='manifest.json' else 'audit' if name=='translation-audit.json' else name.removesuffix('.json')
++        check(obj,spec['datasets'][which],spec['$defs'],name)
++    manifest=objects['manifest.json']
++    for name,field in DATASETS.items():
++        count=len(objects[name+'.json'][field])
++        if manifest['datasets'].get(name)!=count:raise ValueError('Manifest count mismatch: '+name)
++        identities={'rangers':('rangerCode',),'ranger-index':('rangerCode',),
++            'equipment':('equipCode',),'equipment-name-index':('equipCode',),
++            'equipment-effects':('attributeId',),'abilities':('abilityCode',),
++            'labyrinth-artifacts':('artifactCode','grade'),'resources':('assetGroup',)}
++        fields=identities.get(name,('enemyCode',) if name.startswith('enemies/') else
++                              ('stageId',) if name.startswith('stages/') else None)
++        if fields:
++            ids=[tuple(row.get(f) for f in fields) for row in objects[name+'.json'][field]]
++            if len(ids)!=len(set(ids)):raise ValueError('Duplicate V2 record identity: '+name)
++    result=audit(root)
++    # Missing source text remains explicit. It does not justify hiding a broken
++    # compiler binding, missing custom key, or untranslated semantic condition.
++    blocking=[f for f in result['findings'] if f['kind'] not in
++              ('empty_referenced_translation','control_character_key')]
++    if blocking:raise ValueError('V2 text/semantic binding failures: '+json.dumps(blocking[:8],ensure_ascii=False))
++    for kind in ('custom','ui'):
++        if any(result['catalogs'][kind]['missing'].values()):raise ValueError('Incomplete authored four-language '+kind+' catalog')
++    for kind in ('official','custom','ui'):
++        rows=objects['locales/'+kind+'.json']
++        expected={'total':len(rows),'withEnglish':sum(bool(r['en'].strip()) for r in rows),
++                  'withThai':sum(bool(r['th'].strip()) for r in rows),'withJapanese':sum(bool(r['jp'].strip()) for r in rows)}
++        if manifest['languageCatalogs'].get(kind)!=expected:raise ValueError('Manifest locale count mismatch: '+kind)
++    digest=hashlib.sha256()
++    for name in sorted(actual):
++        digest.update(name.encode());digest.update((root/name).read_bytes())
++    report={'status':'validated_with_explicit_official_gaps' if result['emptyReferencedKeys'] else 'validated',
++            'fileCount':len(actual),'contentSha256':digest.hexdigest(),
++            'translationCounts':result['catalogs'],'officialEmptyReferencedKeys':len(result['emptyReferencedKeys']),
++            'textBindingErrors':len(blocking)}
++    if write_report:
++        # Receipt is outside the public JSON allowlist, never a competing catalog.
++        (root/'.validated-release').write_text(json.dumps(report,ensure_ascii=False)+'\n')
++    return report
++
++
++def main():
++    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True)
++    args=p.parse_args();print(json.dumps(validate(args.root,True),ensure_ascii=False,indent=2))
++
++if __name__=='__main__':main()
+--- a/scripts/v2_preview/normalize.py
++++ b/scripts/v2_preview/normalize.py
+@@ -77 +77 @@
+-def skill(record,star_grade):
++def skill(record,star_grade,skill_by_code=None):
+@@ -79 +79,12 @@
+-    components=[record]+[x for x in (record.get("subSkills") or []) if isinstance(x,dict)]
++    children=record.get("subSkills") or []
++    if isinstance(children,str):
++        names=[x.strip() for x in children.split(",") if x.strip()]
++        if names and skill_by_code is None:
++            raise ValueError("Official subSkills require a V2 skill index: "+code)
++        missing=[name for name in names if name not in (skill_by_code or {})]
++        if missing:
++            raise ValueError("Missing official sub-skill for "+code+": "+", ".join(missing))
++        children=[skill_by_code[name] for name in names]
++    if not isinstance(children,list) or any(not isinstance(x,dict) for x in children):
++        raise ValueError("Invalid official subSkills shape: "+code)
++    components=[record,*children]
+@@ -86,0 +98 @@
++            "icon":record.get("iconResourcePath"),
+@@ -108,3 +120,3 @@
+-        # The legacy Skill+ ADD branch displays minValue as upgradeStep.
+-        # Preserve it for parity; do not silently replace with source upgrade amount.
+-        legacy_step=lo if main and not pct else float(upgrade or 0)*scale
++        # The official upgrade table is the semantic increment. V1's ADD
++        # display incorrectly reused the lower bound; V2 preserves source data.
++        upgrade_step=float(upgrade or 0)*scale
+@@ -114 +126 @@
+-            "upgradeStep":_n(legacy_step,1)})
++            "upgradeStep":_n(upgrade_step,1)})
+--- a/scripts/v2_preview/test_normalize.py
++++ b/scripts/v2_preview/test_normalize.py
+@@ -33 +33 @@
+-    def test_skill_plus_add_preserves_legacy_upgrade_rule(self):
++    def test_skill_plus_add_uses_official_upgrade_amount(self):
+@@ -36 +36 @@
+-        self.assertEqual(r[0]["upgradeStep"],1.5)
++        self.assertEqual(r[0]["upgradeStep"],0.2)
+--- a/update_all_v2.py
++++ b/update_all_v2.py
+@@ -10,0 +11,2 @@
++import shutil
++import tempfile
+@@ -11,0 +14 @@
++from scripts.v2.release import update_lock,promote
+@@ -18,0 +22,6 @@
++ "unit_reinforce_rate.json","awake_ability_group.json","tlnt.json",
++ "game_item_equip.json","unit_eqip_attr.json","unit_eqip_skl_plus_attr.json",
++ "eqip_skl_plus_grp.json","eqip_skl_plus_upgrd.json","eqip_tlnt_attr.json",
++ "stage_ai.json","stage_productline.json","endless_floor_renewal.json",
++ "endless_product_line.json","labyrinth_map.json","labyrinth_battle_stage.json",
++ "labyrinth_ai.json","labyrinth_prdn_line.json",
+@@ -21 +30 @@
+-def run(command: list[str]) -> None:
++def run(command: list[str], *, output=None) -> None:
+@@ -23,2 +32,3 @@
+-    subprocess.run(command, cwd=ROOT, check=True, env={**os.environ,
+-        "RANGER_CLIENT_VERSION_STATE":str(ROOT/"state/client_version.json")})
++    env={**os.environ,"RANGER_CLIENT_VERSION_STATE":str(ROOT/"state/client_version.json")}
++    if output is not None:env["RANGERBOOK_V2_OUTPUT_DIR"]=str(output)
++    subprocess.run(command, cwd=ROOT, check=True, env=env)
+@@ -28 +38,2 @@
+-        if not (ROOT/"data/raw"/f).is_file():
++        path=ROOT/"data/raw"/f
++        if not path.is_file():
+@@ -29,0 +41,2 @@
++        if not path.resolve().is_relative_to((ROOT/"data/raw").resolve()):
++            raise RuntimeError("V2 raw input points outside its own directory: "+f)
+@@ -42,7 +55,3 @@
+-def main() -> None:
+-    parser=argparse.ArgumentParser()
+-    parser.add_argument("--skip-fetch",action="store_true",help="Regenerate from V2-owned official DB snapshot only")
+-    parser.add_argument("--fetch-only",action="store_true")
+-    parser.add_argument("--force-full-manifest",action="store_true")
+-    parser.add_argument("--no-publish",action="store_true",help="Default; explicitly publish via publish_v2.py")
+-    args=parser.parse_args()
++def execute(args) -> None:
++    # All output compilation, catalogs and validation happen outside the
++    # previous successful release. No publisher is invoked here.
+@@ -58,6 +67,29 @@
+-    calculate()
+-    run([PYTHON,"-m","unittest","scripts.v2.test_semantic","scripts.v2_preview.test_normalize","-q"])
+-    run([PYTHON,"-m","scripts.v2.build_all"])
+-    run([PYTHON,"-m","scripts.v2.locale_catalog"])
+-    run([PYTHON,"-m","unittest","scripts.v2.test_standalone","-q"])
+-    print("[v2] standalone generation and validation completed")
++    run([PYTHON,"-m","unittest","scripts.v2.test_semantic",
++         "scripts.v2_preview.test_normalize","scripts.v2.test_semantic_audit","-q"])
++    (ROOT/"data").mkdir(exist_ok=True)
++    candidate=Path(tempfile.mkdtemp(prefix=".v2-candidate-",dir=ROOT/"data"))
++    try:
++        run([PYTHON,"-m","scripts.v2.build_all"],output=candidate)
++        run([PYTHON,"-m","scripts.v2.locale_catalog"],output=candidate)
++        run([PYTHON,"-m","unittest","scripts.v2.test_standalone","-q"],output=candidate)
++        run([PYTHON,"-m","scripts.v2.validate","--root",str(candidate)],output=candidate)
++        date_input=candidate/".release-date-input"
++        date_content=date_input.read_bytes()
++        date_input.unlink()
++        promote(candidate,ROOT/"data/v2",metadata=(ROOT/"data/metadata/release-dates.json",date_content))
++    finally:
++        if candidate.exists():shutil.rmtree(candidate)
++        for suffix in ("-next","-previous"):
++            folder=candidate.parent/(candidate.name+suffix)
++            if folder.exists():shutil.rmtree(folder)
++    print("[v2] validated standalone generation promoted successfully")
++
++
++def main() -> None:
++    parser=argparse.ArgumentParser()
++    parser.add_argument("--skip-fetch",action="store_true",help="Regenerate from V2-owned official DB snapshot only")
++    parser.add_argument("--fetch-only",action="store_true")
++    parser.add_argument("--force-full-manifest",action="store_true")
++    parser.add_argument("--no-publish",action="store_true",help="Default; explicitly publish via publish_v2.py")
++    args=parser.parse_args()
++    with update_lock(ROOT):execute(args)

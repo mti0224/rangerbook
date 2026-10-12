@@ -6,7 +6,14 @@
   const labels = {
     "rangers":"v2.rangers", "equipment":"v2.equipment",
     "abilities":"v2.abilities", "stages/extreme":"v2.extreme",
-    "stages/endless":"v2.endless"
+    "stages/endless":"v2.endless","stages/hard":"copy.hard.stages",
+    "stages/labyrinth":"copy.labyrinth.stages",
+    "enemies/hard":"copy.hard.stage.enemies","enemies/extreme":"copy.extreme.mode.enemies",
+    "enemies/endless":"copy.endless.tower.enemies","enemies/event":"home.event.desc",
+    "enemies/advent":"home.advent.desc","enemies/labyrinth":"copy.labyrinth.enemies",
+    "labyrinth-artifacts":"copy.labyrinth.artifacts","projectiles":"v2.projectiles",
+    "resources":"v2.resources","ranger-index":"v2.rangerIndex",
+    "equipment-name-index":"v2.equipmentIndex","equipment-effects":"v2.equipmentEffects"
   };
   const state = {locale:"zh_TW",dataset:"rangers",catalog:new Map(),dataCache:new Map(),
                  rows:[],version:0,missing:0};
@@ -30,21 +37,38 @@
   function resolveArg(value) {
     if (value === null || value === undefined) return "";
     if (typeof value === "object" && !Array.isArray(value)) {
-      if (typeof value.key === "string") return local(value.key).text;
+      if (typeof value.min==="number" && typeof value.max==="number")
+        return value.min===value.max?num(value.min):num(value.min)+" ~ "+num(value.max);
+      if (typeof value.key === "string") return renderText(value).text;
       if ("templateKey" in value || "parts" in value) return renderText(value).text;
     }
     return num(value);
   }
   function fill(source,values) {
     let sequential=0;
-    return source.replace(/%(?:N[0-9]+|d[12]?|N|s|n)/g, token => {
-      const index=/^%N[0-9]+$/.test(token) ? Number(token.slice(2))-1 : sequential++;
-      return resolveArg(values[index]) || "";
+    return source.replace(/%(?:N[0-9]+|d[0-9]+|N|d|s|n)/g, token => {
+      const index=/^%[Nd][0-9]+$/.test(token) ? Number(token.slice(2))-1 : sequential++;
+      if (index<0 || index>=values.length || values[index]===null || values[index]===undefined) return token;
+      return resolveArg(values[index]);
     });
   }
   function renderText(node) {
     if (node === null || node === undefined || node === "") return {text:"",missing:false};
-    if (typeof node === "string") return local(node);
+    if (typeof node === "string") return /^(CUSTOM|UI|UNIT|SKILL|ABILITY|EQUIP|V2):/.test(node)?
+      local(node):{text:node,missing:false};
+    if (typeof node === "object" && typeof node.key === "string") {
+      const result=local(node.key);
+      if (!node.bindings) return result;
+      let missing=result.missing;
+      const text=result.text.replace(/\{\$(\d+[pf])\}/g,(token,code)=>{
+        const value=node.bindings["$"+code];
+        if (!value || value.min===null || value.max===null ||
+            value.min===undefined || value.max===undefined) {missing=true;return token;}
+        const range=value.min===value.max?num(value.min):num(value.min)+" ~ "+num(value.max);
+        return range+(code.endsWith("p")?"%":"");
+      }).replace(/<#(?:[0-9a-f]+)>|<->/gi,"");
+      return {text,missing};
+    }
     if (typeof node === "object" && Array.isArray(node.parts)) {
       const parts=node.parts.map(renderText);
       return {text:parts.map(x=>x.text).join(""),missing:parts.some(x=>x.missing)};
@@ -52,8 +76,10 @@
     if (typeof node === "object" && typeof node.templateKey === "string") {
       const template=local(node.templateKey);
       const args=node.args || [];
-      const nestedMissing=args.some(v=>v && typeof v==="object" && v.key && local(v.key).missing);
-      return {text:fill(template.text,args),missing:template.missing || nestedMissing};
+      const nestedMissing=args.some(v=>v && typeof v==="object" && renderText(v).missing);
+      const text=fill(template.text,args);
+      const unresolved=/%(?:N[0-9]*|d[0-9]*|s|n)/.test(text);
+      return {text,missing:template.missing || nestedMissing || unresolved};
     }
     return {text:String(node),missing:false};
   }
@@ -74,7 +100,7 @@
       ["title","v2.title","V2 多語系資料預覽"],["subtitle","v2.subtitle",""],
       ["localeLabel","v2.language","顯示語言"],["datasetLabel","v2.dataset","資料類型"],
       ["searchLabel","v2.search","搜尋代碼或名稱"],["notice","v2.notice",""],
-      ["backLink","v2.back","返回資料站"]]) {
+      ["backLink","v2.back","返回資料站"],["footer","v2.footer",""]]) {
       if ($(id)) $(id).textContent=(id==="backLink"?"← ":"")+ui(key,fallback);
     }
     for (const option of $("dataset").options)
@@ -86,9 +112,9 @@
   }
   function detailRecord(x) {
     const data=state.dataset;
-    if (data==="rangers") {
+    if (data==="rangers" || data.startsWith("enemies/")) {
       const v=x.stats || {};
-      const skills=(x.skillSet || []).map(sk => {
+      const skills=(x.skillSet || x.skills || []).map(sk => {
         const effects=(sk.effects||[]).map(ef => showText("CUSTOM:"+ef.effectCode)+
           (ef.magnitude? " · "+escapeHtml(JSON.stringify(ef.magnitude)):"")+
           (ef.duration? " · "+escapeHtml(JSON.stringify(ef.duration)):"")).join("<hr>");
@@ -105,7 +131,8 @@
       const sp=x.specPlus;
       let spec="";
       if (sp) spec=showText(sp.nameKey)+ "<div>"+(sp.specialOptions||[]).map(s=>
-        valueLine("",showText(s.descriptionKey))+
+        valueLine("",showText(s.descriptionBindings ?
+          {key:s.descriptionKey,bindings:s.descriptionBindings}:s.descriptionKey))+
         (s.conditionKeys||[]).map(c=>valueLine("",showText(c))).join("")
       ).join("</div><div>")+"</div>";
       return valueLine(ui("v2.effects","效果"),opts+advanced+skills)+valueLine(ui("v2.specPlus","Spec+"),spec);
@@ -117,14 +144,23 @@
         valueLine("",showText(e.additionalConditionKey))
       ).join("");
     }
+    if (data==="labyrinth-artifacts") {
+      return showText({templateKey:x.effect.effectKey,args:x.effect.effectArgs})+
+        valueLine(ui("v2.stats","數據"),escapeHtml(JSON.stringify(x.pointsByTarget)));
+    }
+    if (data==="projectiles" || data==="resources" || data==="equipment-effects") {
+      return valueLine(ui("v2.stats","數據"),escapeHtml(JSON.stringify(
+        x.attackChannels || x.movement || x)));
+    }
     const gimmicks=x.gimmicks || [...(x.passiveGimmicks || []),...(x.activeGimmicks || [])];
     return gimmicks.map(g=>
       valueLine("",showText(g.nameKey)+showText(
           g.descriptionArgs ? {templateKey:g.descriptionKey,args:g.descriptionArgs}:g.descriptionKey))
     ).join("");
   }
-  function idFor(x) {return x.rangerCode || x.equipCode || x.abilityCode || x.stageId || ""; }
-  function nameFor(x) {return x.nameKey || x.stageId || "";}
+  function idFor(x) {return x.rangerCode || x.equipCode || x.abilityCode || x.enemyCode ||
+    x.stageId || x.unitCode || x.artifactCode || x.assetGroup || String(x.attributeId ?? ""); }
+  function nameFor(x) {return x.nameKey || x.optionKey || x.stageId || "";}
   function card(x) {
     const id=idFor(x);
     const name=showText(nameFor(x));
@@ -166,8 +202,11 @@
         state.dataCache.set(dataset,data);
       }
       if (sequence!==state.version) return;
-      const kind=dataset.startsWith("stages/")?"stages":dataset;
-      state.rows=Array.isArray(data[kind])?data[kind]:[];
+      const kind=dataset.startsWith("stages/")?"stages":dataset.startsWith("enemies/")?"enemies":
+        ({"ranger-index":"rangers","equipment-name-index":"equipment","equipment-effects":"effects",
+          "labyrinth-artifacts":"artifacts","resources":"assets","projectiles":"units"}[dataset] || dataset);
+      state.rows=Array.isArray(data[kind])?data[kind]:
+        (kind==="units" && data.units && typeof data.units==="object")?Object.values(data.units):[];
       render();
     } catch (error) {
       if (sequence!==state.version) return;
@@ -192,9 +231,9 @@
   $("dataset").addEventListener("change",event=>{
     state.dataset=event.target.value;
     $("search").value="";
-    load();
+    return load();
   });
   $("search").addEventListener("input",render);
   window.RangerbookV2LocalePreview={fill,renderText,local};
-  start().catch(error=>{$("status").textContent=String(error);});
+  window.RangerbookV2LocalePreview.ready=start().catch(error=>{$("status").textContent=String(error);});
 })();
