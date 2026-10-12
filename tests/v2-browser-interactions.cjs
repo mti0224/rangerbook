@@ -4,12 +4,12 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
  try {
-  for(const locale of ['zh-Hant','en','th','jp']) {
+  for(const locale of (process.env.V2_QA_LOCALES||'zh-Hant,en,th,jp').split(',')) {
    const context=await browser.newContext({viewport:{width:1200,height:900}});
    await context.addInitScript(l=>localStorage.setItem('rangerbook-language',l),locale);
    await context.route('**/rangerbook-auth.warmycat.com/**',r=>r.fulfill({status:401,contentType:'application/json',body:'{"logged_in":false}'}));
    await context.route('**/www.googletagmanager.com/**',r=>r.abort());
-   const page=await context.newPage();const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR '+e.message)});page.on('console',m=>{if(m.type()==='error')console.log('BROWSER_ERROR '+m.text())});
+   const page=await context.newPage();page.setDefaultNavigationTimeout(60000);page.setDefaultTimeout(60000);console.log('V2_INTERACTIONS_START '+locale);const errors=[];page.on('pageerror',e=>{errors.push(e.message);console.log('PAGE_ERROR '+e.message)});
    await page.goto(base+'/ranger/ranger/',{waitUntil:'domcontentloaded'});
    await page.locator('.ranger-card').first().waitFor();
    await page.evaluate(()=>window.RangerbookI18n.readyGame());

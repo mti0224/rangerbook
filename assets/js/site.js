@@ -218,7 +218,9 @@
   }
 
   function updateDetailTitle() {
-    const title = desiredDetailTitle();
+    // The HTML title getter collapses whitespace. Official names can contain
+    // newlines; compare the same normalized value to avoid an observer loop.
+    const title = desiredDetailTitle().replace(/\s+/g, " ").trim();
     if (title && document.title !== title) document.title = title;
   }
 
@@ -331,7 +333,7 @@
   if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
     const script = document.createElement("script");
     script.dataset.rangerbookI18n = "true";
-    script.src = rootPrefix + "assets/js/i18n.js";
+    script.src = rootPrefix + "assets/js/i18n.js?v=20261012-v2";
     document.head.appendChild(script);
   }
 

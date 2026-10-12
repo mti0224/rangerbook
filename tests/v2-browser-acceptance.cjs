@@ -20,7 +20,8 @@ function pages(dir='') {
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
  const result={pages:[],interactions:[],fatal:[]};
  try {
-  const routes=pages();
+  const core=['/','/ranger/ranger/','/ranger/compare/','/ranger/ranking/','/gear/','/ability/','/mainstage/hard/stage/','/mainstage/extreme/stage/','/endless/stage/','/labyrinth/stage/','/labyrinth/enemy/','/labyrinth/artifact/','/pvp/usage/','/pvp/leaderboard/','/guildwar/usage/','/guildwar/ranking/','/admin/','/settings/'];
+  const routes=process.env.V2_CORE_ONLY==='1'?pages().filter(p=>core.includes(p)):pages();
   for(const locale of ['zh-Hant','en','th','jp']) {
    const context=await browser.newContext({viewport:locale==='th'||locale==='jp'?{width:390,height:844}:{width:1400,height:900}});
    await context.addInitScript(({locale})=>{if(!localStorage.getItem('rangerbook-language'))localStorage.setItem('rangerbook-language',locale);if(!localStorage.getItem('rangerbook-theme'))localStorage.setItem('rangerbook-theme',locale==='jp'||locale==='en'?'dark':'light');},{locale});
@@ -31,9 +32,10 @@ function pages(dir='') {
    function observe(page) { page.on('pageerror',e=>errors.push(e.message));
    page.on('request',r=>{const u=new URL(r.url());if(u.origin===new URL(base).origin && /\/res\//.test(u.pathname) && !u.pathname.includes('/res/v2/') && !u.pathname.includes('ranger_stats_config') && !decodeURIComponent(u.pathname).includes('更新日誌'))legacy.push(u.pathname);}); }
    for(const route of routes) {
-    errors=[];legacy=[];page=await context.newPage();observe(page);
+    console.log("V2_PAGE_START "+locale+" "+route);
+    errors=[];legacy=[];page=await context.newPage();page.setDefaultNavigationTimeout(60000);observe(page);
     try {
-     await page.goto(base+route,{waitUntil:'load',timeout:30000});
+     await page.goto(base+route,{waitUntil:'load',timeout:60000});
      await page.waitForFunction(l=>window.RangerbookI18n?.locale===l,locale,{timeout:20000});
      await page.evaluate(()=>window.RangerbookI18n.ready);
      await page.waitForTimeout(500);

@@ -1,8 +1,10 @@
 # V2 correction package
 
-This PR contains public data, the independent preview, the public-data auditor, authored catalogs and a semantic patch. The review branch also integrates the V2 adapter with the existing website. Production activation requires the complete backend package and the acceptance gates in docs/v2-audit/rollout-and-acceptance.md.
+This PR contains the complete 23-file backend patch, source/input hashes, authored catalogs, public data and the existing website's V2 adapter. `complete-v2-changes.patch` includes the entry point, publisher, compilers, release recovery, tests and `scripts/v2/schemas/v2.json`. Use the complete patch for activation; `semantic-fixes.patch` is only a subset.
 
-The complete EC2 entry-point/publisher changes and source hashes are retained in the private correction bundle. Apply those together with the semantic patch; applying only the catalog files or only the generated JSON is insufficient.
+Production was backed up and activated from commit `ca50d6048997a35a1f70d3c30ed4fcec52e37bc7` on 2026-10-12. Source hashes match `deployment-plan.json`. The initial schema-omitting candidate rolled back automatically; the complete package then fetched the official API, compiled, validated and published. The unchanged timer completed its scheduled update at 22:04:22 Asia/Taipei. All 56 checked V1 files are unchanged; free disk after the scheduled run was 3.64 GiB. No large production clone or browser installation was added.
+
+For future activation, back up the existing scripts, state, data and runner; verify before/after hashes, preserve the runner lock descriptor and retain at least 3 GiB free throughout. Source, schema and authored inputs must be installed together. Generated JSON alone is insufficient. Acceptance status is recorded in `docs/v2-audit/current-status-20261012.md`.
 
 ## Isolated verification
 
