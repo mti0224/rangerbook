@@ -1,0 +1,146 @@
+--- a/scripts/v2/raw_abilities.py
++++ b/scripts/v2/raw_abilities.py
+@@ -109,7 +109,7 @@
+         prepared[parent]={
+             "abilityCode":parent,
+             "nameKey":"ABILITY:"+row["nameCode"] if row.get("nameCode") else None,
+-            "descriptionKey":"ABILITY:"+row["descriptionCode"].replace("\\b","") if row.get("descriptionCode") else None,
++            "descriptionKey":"ABILITY:"+row["descriptionCode"].replace("\b","") if row.get("descriptionCode") else None,
+             "icon":row.get("iconResourcePath"),
+             "tags":{"awakening":parent.startswith("aab"),
+                 "enemy":parent.startswith(("ab0","ab4")),
+--- a/scripts/v2/raw_enemies.py
++++ b/scripts/v2/raw_enemies.py
+@@ -68,7 +68,9 @@
+ def _skills(unit,by_code):
+     grade=int(unit.get("grade") or 0)
+     codes=[unit.get("skillCode"),unit.get("skillCode2") or unit.get("skillCode3")]
+-    return [skill(by_code[code],grade) for code in codes if code in by_code]
++    missing=[code for code in codes if code and code not in by_code]
++    if missing:raise ValueError("Missing official enemy skill: "+", ".join(missing))
++    return [skill(by_code[code],grade,by_code) for code in codes if code]
+ 
+ def compile_enemies(units,skills,kind):
+     by_code={s["skillCode"]:s for s in skills if s.get("skillCode")}
+--- a/scripts/v2/raw_rangers.py
++++ b/scripts/v2/raw_rangers.py
+@@ -110,7 +110,7 @@
+             major={
+                 "talentCode":code,
+                 "abilityCode":ab_code,
+-                "descriptionKey":("ABILITY:"+str(ab["descriptionCode"]).replace("\\b","")) if ab.get("descriptionCode") else None,
++                "descriptionKey":("ABILITY:"+str(ab["descriptionCode"]).replace("\b","")) if ab.get("descriptionCode") else None,
+                 "activationChancePercent":percent(ab,"activeProbability"),
+                 "activationConditionCode":ab.get("aptitudeType"),
+                 "activationConditionKey":_render_template(
+@@ -158,7 +158,9 @@
+         rate=rates.get(code)
+         if rate is None:raise ValueError("Missing official reinforcement row for "+code)
+         skill_codes=(unit.get("skillCode"),unit.get("skillCode2") or unit.get("skillCode3"))
+-        skill_set=[skill(by_skill[k],int(unit.get("grade") or 0)) for k in skill_codes if k and k in by_skill]
++        missing_skills=[k for k in skill_codes if k and k not in by_skill]
++        if missing_skills:raise ValueError("Missing official skill for "+code+": "+", ".join(missing_skills))
++        skill_set=[skill(by_skill[k],int(unit.get("grade") or 0),by_skill) for k in skill_codes if k]
+         name=unit.get("unitNameCode")
+         desc=unit.get("unitDescriptionCode")
+         out.append({
+--- a/scripts/v2/semantic.py
++++ b/scripts/v2/semantic.py
+@@ -300,7 +300,7 @@
+         source=(raw_by_code or {}).get(code,{})
+         name_code=source.get("nameCode")
+         desc_code=source.get("descriptionCode")
+-        if isinstance(desc_code,str):desc_code=desc_code.replace("\\b","")
++        if isinstance(desc_code,str):desc_code=desc_code.replace("\b","")
+         effects=[]
+         for k,x in v.items():
+             if not re.fullmatch(r"觸發效果[0-9]*",k) or not isinstance(x,dict):continue
+@@ -351,6 +351,8 @@
+                     "effectKey":"CUSTOM:LABYRINTH_"+("BUFF" if category=="BUFF" else "DEBUFF")+"_EFFECT_"+str(typecode),
+                     "direction": "INCREASE" if category=="BUFF" else "DECREASE",
+                     "operation":entry.get("buffApplyType"),
++                    "effectArgs":[(round(abs((float(entry.get("buffFactor") or 0)-1)*100),2) if entry.get("buffApplyType")=="MUL"
++                                  else round(float(entry.get("buffFactor") or 0)*100,2))],
+                     "percent":(round(abs((float(entry.get("buffFactor") or 0)-1)*100),2) if entry.get("buffApplyType")=="MUL"
+                                else round(float(entry.get("buffFactor") or 0)*100,2)),
+                 },
+@@ -377,7 +379,7 @@
+             if not s or s not in skill_by_code:continue
+             if key=="skillCode3" and raw.get("skillCode2"):continue
+             from scripts.v2_preview.normalize import skill
+-            primary.append(skill(skill_by_code[s],int(raw.get("grade") or 0)))
++            primary.append(skill(skill_by_code[s],int(raw.get("grade") or 0),skill_by_code))
+         if not primary:
+             for key in ("技能1","技能2"):
+                 val=row.get(key)
+--- a/scripts/v2/test_semantic_audit.py
++++ b/scripts/v2/test_semantic_audit.py
+@@ -0,0 +1,35 @@
++"""Regression tests use official-style facts, not recompiling an expected copy."""
++import unittest
++from scripts.v2_preview.normalize import skill
++from scripts.v2.raw_abilities import compile_abilities
++
++
++class SemanticAuditTests(unittest.TestCase):
++    def test_raw_subskills_expand_in_source_order_without_mutation(self):
++        parent={"skillCode":"parent","skillType":"DMG","subSkills":" second,first ",
++                "iconResourcePath":"skill.png"}
++        index={"parent":parent,"first":{"skillCode":"first","skillType":"STUN"},
++               "second":{"skillCode":"second","skillType":"BUFF","buffFactorType":"ATK"}}
++        result=skill(parent,9,index)
++        self.assertEqual([x["effectCode"] for x in result["effects"]],
++                         ["SKILLEFF_DMG","SKILLEFF_BUFF-ATK","SKILLEFF_STUN"])
++        self.assertEqual(result["icon"],"skill.png")
++        self.assertEqual(parent["subSkills"]," second,first ")
++
++    def test_missing_subskill_refuses_a_partial_result(self):
++        with self.assertRaisesRegex(ValueError,"Missing official sub-skill"):
++            skill({"skillCode":"parent","subSkills":"missing"},9,{})
++
++    def test_raw_children_cannot_be_silently_discarded(self):
++        with self.assertRaisesRegex(ValueError,"require a V2 skill index"):
++            skill({"skillCode":"parent","subSkills":"child"},9)
++
++    def test_ability_backspace_reference_is_removed(self):
++        row={"code":"ability","abilityType":"ABILITY","descriptionCode":"desc_\bfire",
++             "actionType":"NONE","aptitudeType":"NONE"}
++        result=compile_abilities([row],[])
++        self.assertEqual(result[0]["descriptionKey"],"ABILITY:desc_fire")
++
++
++if __name__=="__main__":
++    unittest.main()
+--- a/scripts/v2_preview/normalize.py
++++ b/scripts/v2_preview/normalize.py
+@@ -74,9 +74,20 @@
+             "duration":duration,"rangePoints":_n(row.get("range")),
+             "availableIn":{"events":bool(row.get("affectEventStage")),"guardian":bool(row.get("affectGuardian"))}}
+ 
+-def skill(record,star_grade):
++def skill(record,star_grade,skill_by_code=None):
+     code=record.get("skillCode") or ""
+-    components=[record]+[x for x in (record.get("subSkills") or []) if isinstance(x,dict)]
++    children=record.get("subSkills") or []
++    if isinstance(children,str):
++        names=[x.strip() for x in children.split(",") if x.strip()]
++        if names and skill_by_code is None:
++            raise ValueError("Official subSkills require a V2 skill index: "+code)
++        missing=[name for name in names if name not in (skill_by_code or {})]
++        if missing:
++            raise ValueError("Missing official sub-skill for "+code+": "+", ".join(missing))
++        children=[skill_by_code[name] for name in names]
++    if not isinstance(children,list) or any(not isinstance(x,dict) for x in children):
++        raise ValueError("Invalid official subSkills shape: "+code)
++    components=[record,*children]
+     return {"skillCode":code,
+             "nameKey":("SKILL:"+str(record["nameCode"])) if record.get("nameCode") else None,
+             "descriptionKey":("SKILL:"+str(record["descriptionCode"])) if record.get("descriptionCode") else None,
+@@ -84,6 +95,7 @@
+                        **({"searchRatio":_n(record.get("rsearchRatio"))} if record.get("targetType")=="RSEARCH" else {})},
+             "activationRate":_n(float(record.get("probability") or 0)*100,1),
+             "cooldownSeconds":_n(record.get("skillDelayTime")),
++            "icon":record.get("iconResourcePath"),
+             "effects":[effect(x,star_grade) for x in components]}
+ 
+ def gear_option(row):
