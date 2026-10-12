@@ -26,7 +26,16 @@ const load=n=>JSON.parse(fs.readFileSync(path.join(root,'res/v2',n+'.json'),'utf
     for(let i=0;i<source.length;i++)assert.equal(Object.values(result[i]).filter(v=>v && Array.isArray(v['技能組'])).reduce((n,v)=>n+v['技能組'].length,0),
       source[i].skillSet.reduce((n,s)=>n+s.effects.length,0),'all child effects '+source[i].rangerCode);
    }
-   if(name==='裝備資料庫.json') {assert.equal(result.length,951);assert.ok(result.find(x=>x['Spec+']['特殊效果']));}
+   if(name==='裝備資料庫.json') {
+    assert.equal(result.length,951);assert.ok(result.find(x=>x['Spec+']['特殊效果']));
+    const conditions={STR:'力量型Ranger',AGI:'敏捷型Ranger',INT:'智慧型Ranger',FIRE:'火屬性Ranger',WATER:'水屬性Ranger',TREE:'木屬性Ranger',LIGHT:'光屬性Ranger',DARK:'暗屬性Ranger'};
+    const kinds={ACC:'飾品',ARMOR:'防具',WEAPON:'武器'};
+    for(const source of load('equipment').equipment) {
+     const adapted=result.find(x=>x.id===source.equipCode);
+     assert.equal(adapted['裝備種類'],kinds[source.equipType],'canonical equipment category '+source.equipCode);
+     if(source.highLevelOptions)assert.equal(adapted['高級效果']['觸發條件'],conditions[source.highLevelOptions.targetCondition.value],'role/element equipment target '+source.equipCode);
+    }
+   }
    if(name==='projectile_data.json') {assert.equal(result.unitCount,3140);assert.equal(result.units['g001-ssonya'].normal.start.x,270);}
    if(name==='困難關卡生產線.json') {assert.equal(Object.keys(result).length,240);assert.equal(result['困難關卡1關']['敵人生產線']['遊戲開始後0秒'][0]['詳細資訊']['體力'],116301155);}
    if(name==='迷宮關卡生產線.json') {assert.equal(Object.keys(result).length,40);assert.equal(Object.keys(result['1-1']).length,6);}
