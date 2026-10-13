@@ -58,12 +58,14 @@ const fixtures = {
       await assertText(page.locator('.ranger-detail-back-link'), get('action.backToRangers', locale));
       await assertText(page.locator('.ranger-level-label'), get('copy.level.2', locale) + '1/240');
       await assertText(page.locator('[data-i18n="stats.respawn"]'), get('stats.respawn', locale));
+      const desktopLabel = await page.locator('[data-i18n="stats.respawn"]').evaluate(x => ({width:x.clientWidth, scroll:x.scrollWidth}));
+      assert.ok(desktopLabel.width >= desktopLabel.scroll - 1, 'Production label must fit the desktop card');
       await assertText(page.locator('#rangerModalContent .detail-section').nth(3).locator('.empty-state'), get('empty.awakenedAbilities', locale));
       await page.locator('#rangerLevelRange').fill('180');
       await assertText(page.locator('.ranger-level-output'), '180/240');
       await page.setViewportSize({width:390,height:844});
-      const label = await page.locator('[data-i18n="stats.respawn"]').evaluate(x => ({height:x.clientHeight, scroll:x.scrollHeight}));
-      assert.ok(label.height >= label.scroll - 1, 'Thai production label must fit by wrapping');
+      const label = await page.locator('[data-i18n="stats.respawn"]').evaluate(x => ({height:x.clientHeight, scroll:x.scrollHeight, width:x.clientWidth, scrollWidth:x.scrollWidth}));
+      assert.ok(label.height >= label.scroll - 1 && label.width >= label.scrollWidth - 1, 'Thai production label must fit by wrapping');
       await page.setViewportSize({width:1140,height:900});
       await go('/pvp/leaderboard/');
       await page.locator('.pvp-player-row').first().click();
