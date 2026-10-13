@@ -4,13 +4,8 @@
   <meta charset="utf-8">
   <script>
     (() => {
-      let saved;try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
-      saved=({zh_TW:"zh-Hant",ja:"jp"})[saved] || saved;
-      if (!["zh-Hant","en","th","jp"].includes(saved))
-        saved=document.cookie.split("; ").find(x=>x.startsWith("rangerbook-language="))?.split("=")[1];
-      const locale=["zh-Hant","en","th","jp"].includes(saved)?saved:"zh-Hant";
-      document.documentElement.lang=locale==="jp"?"ja":locale;
-      if(locale!=="zh-Hant")document.documentElement.dataset.rbLocalizing="true";
+      const root = location.pathname.startsWith("/rangerbook/") ? "/rangerbook/" : "/";
+      document.write('<script src="' + root + 'assets/js/visitor-region.js?v=20261013-region1"><\/script>');
     })();
   </script>
   <style>html[data-rb-localizing] body{visibility:hidden}html[data-rb-localizing]::after{content:"Loading…";position:fixed;inset:45% 0;text-align:center;font:16px sans-serif}</style>
@@ -67,8 +62,8 @@
     </div>
   </div>
 
-  <script src="../../../assets/js/v2-data.js?v=20261013-v2.5"></script>
-  <script src="../../../assets/js/site.js?v=20261013-nav1"></script>
+  <script src="../../../assets/js/v2-data.js?v=20261013-region1"></script>
+  <script src="../../../assets/js/site.js?v=20261013-region1"></script>
   <script>window.__mainstageStageMode = 'hard';</script>
   <script src="../../../assets/js/mainstage-stage-adapter.js?v=20261013-v2.5"></script>
   <script src="../../../assets/js/hs-stage.js?v=20261013-v2.5"></script>

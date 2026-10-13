@@ -13,6 +13,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         const ctx = await browser.newContext({ viewport: {width:1440,height:900} });
         await ctx.addInitScript(value => { localStorage.setItem("rangerbook-theme",value); },mode);
         const page = await ctx.newPage();
+        await require("./region-fixture.cjs").mockTaiwan(page);
         let siteAllowed = false;
         const pending = [];
         await page.route(url=>url.pathname.endsWith("/assets/js/site.js"),async route=>{

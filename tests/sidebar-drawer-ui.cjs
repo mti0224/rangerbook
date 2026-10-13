@@ -10,6 +10,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         const ctx=await browser.newContext({viewport:{width,height:840},reducedMotion:"reduce"});
         await ctx.addInitScript(value=>localStorage.setItem("rangerbook-theme",value),theme);
         const page=await ctx.newPage();
+        await require("./region-fixture.cjs").mockTaiwan(page);
         await page.route("https://rangerbook-auth.warmycat.com/**", async route=>{
           const path=new URL(route.request().url()).pathname;
           const body=path==="/auth/me"

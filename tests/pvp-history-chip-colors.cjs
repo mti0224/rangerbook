@@ -16,6 +16,7 @@ function rgb(hex) {
       for (const width of [390, 1440]) {
         const context = await browser.newContext({viewport:{width,height:900}});
         const page = await context.newPage();
+        await require("./region-fixture.cjs").mockTaiwan(page);
         await page.addInitScript(value => { localStorage.setItem("rangerbook-theme", value); }, theme);
         await page.goto(base + "/pvp/usage-history/",{waitUntil:"domcontentloaded",timeout:20000});
         await page.waitForFunction(() => [...document.styleSheets].some(

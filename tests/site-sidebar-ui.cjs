@@ -20,6 +20,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
     for(const {role, page:pathname} of scenarios){
       const context=await browser.newContext({viewport:{width:1180,height:860}});
       const page=await context.newPage();
+      await require("./region-fixture.cjs").mockTaiwan(page);
       let sessionChecks=0;
       await page.route("https://rangerbook-auth.warmycat.com/**", async route => {
         const path=new URL(route.request().url()).pathname;

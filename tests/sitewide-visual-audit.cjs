@@ -32,6 +32,7 @@ async function recordOne(browser, pathname, mode, viewport) {
     colorScheme: mode
   });
   const page = await context.newPage();
+  await require("./region-fixture.cjs").mockTaiwan(page);
   // Site shell queries the public Auth session only to reveal the footer link.
   // Keep the visual audit fully offline and anonymous (no production API traffic).
   await page.route("https://rangerbook-auth.warmycat.com/auth/me", route =>

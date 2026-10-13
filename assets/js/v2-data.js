@@ -10,7 +10,10 @@
   let saved; try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
   if (!language[saved] && typeof document!=="undefined")
     saved=document.cookie.split("; ").find(x=>x.startsWith("rangerbook-language="))?.split("=")[1];
-  const locale = language[saved] || "zh_TW";
+  let locale = language[saved] || language[window.RangerbookVisitor?.locale] || "zh_TW";
+  const localeReady = window.RangerbookVisitor
+    ? window.RangerbookVisitor.ready.then(value => { locale = language[value] || "en"; })
+    : Promise.resolve();
   const cache = new Map(), catalog = new Map(), phrases = new Map(), ambiguous = new Set(), priorities = new Map();
   const normalized = s => String(s || "").replace(/\\+n/g," ").replace(/\s+/g," ").trim();
   const types = {STR:"力量型",AGI:"敏捷型",INT:"智慧型"};
@@ -74,6 +77,7 @@
     const r=await nativeFetch(root+"res/v2/locales/"+name+".json?v=20261013-v2.5");
     if (!r.ok) throw new Error("V2 catalog unavailable: "+name);
     const rows=await r.json();
+    await localeReady;
     if (!Array.isArray(rows)) throw new Error("Invalid V2 catalog: "+name);
     for (const row of rows) {
       if (catalog.has(row.key)) throw new Error("Duplicate V2 key: "+row.key);
@@ -336,6 +340,6 @@
       return new Response(JSON.stringify(await viewCache.get(path)),{status:200,headers:{"Content-Type":"application/json","X-Rangerbook-Source":"v2"}});
     }catch(e){viewCache.delete(path);console.error("V2 view failed",path,e);return new Response(JSON.stringify({error:"V2 unavailable"}),{status:503,headers:{"Content-Type":"application/json"}});}
   };
-  window.RangerbookV2={ready:catalogsReady,locale,data,render,text,catalog,
+  window.RangerbookV2={ready:catalogsReady,get locale(){return locale;},data,render,text,catalog,
     translateText:s=>phrases.get(normalized(s))||s,source:"v2",routes:Object.keys(routes)};
 })();
