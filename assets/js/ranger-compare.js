@@ -8,7 +8,6 @@
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
   const TLT_ICON = (index) => `${ROOT}assets/tlt_icon/tlt${index}.png`;
   const ABILITY_ICON = (icon) => `https://rangers.lerico.net/res/ability_icon/${encodeURIComponent(icon)}`;
-  const MAX_SUGGESTIONS = 8;
 
   const state = {
     index: [],
@@ -40,6 +39,8 @@
 
   const raw = (value) => value === null || value === undefined ? "" : String(value);
   const text = (value) => raw(value).replaceAll("\\n", "\n").trim();
+  const localize = (value) => window.RangerbookI18n?.uiText(text(value)) || text(value);
+  const searchText = (value) => text(value).normalize("NFKC").replace(/\s+/g, " ").toLowerCase();
   const html = (value) => raw(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -70,13 +71,14 @@
   function parseIndexRow(row) {
     const item = {
       id: text(row.id || row.ranger_id || row.unitCode),
-      name: text(row.name || row["Ranger名稱"]),
+      name: text(row.localizedName || row.name || row["Ranger名稱"]).replace(/\s+/g, " "),
       star: text(row.star || row["Ranger星數"]),
       type: text(row.type || row["類型"]),
-      element: text(row.element || row["屬性"])
+      element: text(row.element || row["屬性"]),
+      tags: Array.isArray(row.localizedTags) ? row.localizedTags.map(text) : null
     };
-    item.search = [item.id, item.name, item.star, item.type, item.element].map(raw).join(" ").toLowerCase();
-    item.meta = [item.star, item.type, item.element, item.id].filter(Boolean).join(" / ");
+    item.names = [...new Set([item.name, row.name, ...(Array.isArray(row.nameAliases) ? row.nameAliases : [])]
+      .filter(Boolean).map(searchText))];
     return item;
   }
 
@@ -413,7 +415,8 @@
   }
 
   function suggestionItem(item, side) {
-    return `<button class="compare-suggestion compare-suggestion-text" type="button" data-id="${html(item.id)}" data-side="${side}"><div><div class="compare-suggestion-name">${html(item.name)}</div><div class="compare-suggestion-meta">${html(item.meta)}</div></div></button>`;
+    const meta = item.meta;
+    return `<button class="compare-suggestion compare-suggestion-text" type="button" data-id="${html(item.id)}" data-side="${side}"><div><div class="compare-suggestion-name">${html(item.name)}</div><div class="compare-suggestion-meta">${html(meta)}</div></div></button>`;
   }
 
   async function loadIndex() {
@@ -473,16 +476,26 @@
   }
 
   function filterRows(query) {
-    const q = query.trim().toLowerCase();
+    const q = searchText(query).trim();
     if (!q) return [];
+    const tokens = q.split(" ");
     const exact = [];
     const partial = [];
+    const locale = window.RangerbookI18n?.locale || "";
     for (const item of state.index) {
-      if (item.id.toLowerCase() === q || item.name.toLowerCase() === q) exact.push(item);
-      else if (item.search.includes(q)) partial.push(item);
-      if (exact.length + partial.length >= MAX_SUGGESTIONS) break;
+      if (!item.search || item.searchLocale !== locale) {
+        // Compose independently localized tags rather than translating the
+        // combined "超進化8星 / 力量型 / 火" string as a single label.
+        item.meta = (item.tags || [item.star, item.type, item.element].map(localize)).filter(Boolean).join(" / ");
+        item.search = [...item.names, item.id, item.star, item.type, item.element, item.meta].map(searchText).join(" ");
+        item.searchLocale = locale;
+      }
+      if (searchText(item.id) === q || item.names.includes(q)) exact.push(item);
+      else if (tokens.every(token => item.search.includes(token))) partial.push(item);
     }
-    return [...exact, ...partial].slice(0, MAX_SUGGESTIONS);
+    // Scan the entire index before ranking exact matches. Keep every match in
+    // the existing scrollable list so older/evolved variants remain reachable.
+    return [...exact, ...partial];
   }
 
   async function renderSuggestions(side) {
@@ -497,6 +510,7 @@
       return;
     }
     const loaded = await loadIndex();
+    await window.RangerbookI18n?.ready;
     // An asynchronous index response must not reopen a cleared search.
     if (!input.value.trim()) {
       container.replaceChildren();
@@ -527,7 +541,7 @@
     state[side] = ranger;
     const input = side === "left" ? els.leftInput : els.rightInput;
     const suggestions = side === "left" ? els.leftSuggestions : els.rightSuggestions;
-    input.value = getName(ranger);
+    input.value = state.index.find(item => item.id === id)?.name || localize(getName(ranger));
     suggestions.innerHTML = "";
     suggestions.hidden = true;
     renderResult();
@@ -549,6 +563,10 @@
 
   bindInput(els.leftInput, "left");
   bindInput(els.rightInput, "right");
+  window.addEventListener("rangerbook:locale-ready", () => {
+    renderSuggestions("left");
+    renderSuggestions("right");
+  });
   renderResult();
   loadIndex();
 })();
