@@ -12,6 +12,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         const context = await browser.newContext({viewport:{width,height:900}});
         await context.addInitScript(value => localStorage.setItem("rangerbook-theme",value),theme);
         const page = await context.newPage();
+        await require("./region-fixture.cjs").mockTaiwan(page);
         let mode = "ready";
         const ranges = [];
         await page.route("https://rangerbook-auth.warmycat.com/**", async route => {

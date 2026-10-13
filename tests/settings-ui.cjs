@@ -9,6 +9,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
     for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 }]) {
       const context = await browser.newContext({viewport});
       const page = await context.newPage();
+      await require("./region-fixture.cjs").mockTaiwan(page);
       page.setDefaultNavigationTimeout(60000);
       await page.route("https://rangerbook-auth.warmycat.com/**", route => route.fulfill({
         status:401,contentType:"application/json",body:'{"logged_in":false}'

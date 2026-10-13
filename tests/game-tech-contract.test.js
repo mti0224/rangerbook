@@ -247,7 +247,8 @@ test("About and Sponsor copy, payment and contributor links match approved conte
   assert.match(about,/<a href="https:\/\/line-ranger-kiwi\.vercel\.app\/"[^>]*>LINE Rangers Kiwi<\/a>/);
   assert.match(sponsor,/這個網站不會放送任何廣告/);
   assert.match(sponsor,/支持本站維護與資料整理/);
-  assert.match(sponsor,/<a href="https:\/\/payment\.ecpay\.com\.tw\/QuickCollect\/PayData\?Fd%2bEMYTkwnRiExHKdQxQGH9fNPwDXXGr5xI6v5pYOuo%3d"[^>]*>贊助蚯蚓貓<\/a>/);
+  assert.match(sponsor,/<a\b[^>]*data-region-sponsor[^>]*href="https:\/\/www\.paypal\.com\/ncp\/payment\/SPHZE8H6CQYXW"[^>]*>贊助蚯蚓貓<\/a>/);
+  assert.ok(read("assets/js/visitor-region.js").includes("https://payment.ecpay.com.tw/QuickCollect/PayData?Fd%2bEMYTkwnRiExHKdQxQGH9fNPwDXXGr5xI6v5pYOuo%3d"));
   assert.doesNotMatch(about,/https:\/\/p\.ecpay\.com\.tw\/CF7F86A/);
 });
 

@@ -12,9 +12,20 @@
   if (!supported.includes(saved)) {
     saved=document.cookie.split("; ").find(x=>x.startsWith(storageKey+"="))?.split("=")[1];
   }
-  let locale = supported.includes(saved) ? saved : "zh-Hant";
+  const visitor = window.RangerbookVisitor;
+  let locale = supported.includes(saved) ? saved : visitor?.locale || "zh-Hant";
+  let localeInitialized = !visitor || visitor.hasSavedLanguage;
   document.documentElement.lang=locale === "jp" ? "ja" : locale;
-  document.cookie=storageKey+"="+locale+"; Path=/; Max-Age=31536000; SameSite=Lax";
+  function persistLocaleCookie() {
+    document.cookie=storageKey+"="+locale+"; Path=/; Max-Age=31536000; SameSite=Lax";
+  }
+  if (localeInitialized) persistLocaleCookie();
+  const localeReady = visitor ? visitor.ready.then(value => {
+    locale = supported.includes(value) ? value : "en";
+    localeInitialized = true;
+    document.documentElement.lang=locale === "jp" ? "ja" : locale;
+    persistLocaleCookie();
+  }) : Promise.resolve();
   let dictionary = {};
   let englishByChinese = new Map();
   let gameTermsByChinese = new Map();
@@ -110,6 +121,7 @@
   const uiAttrNames = ["placeholder", "title", "aria-label", "alt"];
   function uiText(original) {
     if (typeof original !== "string") return original;
+    if (!localeInitialized) return original;
     original = displayBreaks(original);
     if (locale === "zh-Hant") return original;
     const exact = window.RangerbookV2?.translateText(original);
@@ -188,6 +200,7 @@
     });
   }
   function translate(rootNode) {
+    if (!localeInitialized) return;
     if (!rootNode || !rootNode.querySelectorAll) return;
     const found = [];
     if (rootNode.nodeType === 1 && rootNode.matches("[data-i18n],[data-i18n-placeholder],[data-i18n-aria-label]")) found.push(rootNode);
@@ -232,7 +245,8 @@
     translate(document);
     window.dispatchEvent(new CustomEvent("rangerbook:locale-ready", {detail:{locale}}));
   }
-  function readyGame() {
+  async function readyGame() {
+    await localeReady;
     if (locale === "zh-Hant") return Promise.resolve(null);
     const selected = locale;
     if (!gamePromises[selected]) {
@@ -302,7 +316,7 @@
     unitDescription(id, original) { return lookup("UNIT", id + "_desc", original); }
   };
   window.RangerbookI18n = api;
-  api.ready = Promise.all([loadUi(locale),loadGameTerms()]).finally(() => {
+  api.ready = localeReady.then(() => Promise.all([loadUi(locale),loadGameTerms()])).finally(() => {
     delete document.documentElement.dataset.rbLocalizing;
   }).then(() => null);
   function refreshSavedLocale() {

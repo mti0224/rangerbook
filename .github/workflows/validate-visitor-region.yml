@@ -1,0 +1,33 @@
+name: Validate regional language and sponsor defaults
+on:
+  pull_request:
+    paths:
+      - "assets/js/visitor-region.js"
+      - "assets/js/i18n.js"
+      - "assets/js/v2-data.js"
+      - "assets/js/site.js"
+      - "**/*.html"
+      - "tests/visitor-region-ui.cjs"
+      - ".github/workflows/validate-visitor-region.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visitor-region:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate shared bootstrap syntax
+        run: node --check assets/js/visitor-region.js && node --check assets/js/i18n.js && node --check assets/js/v2-data.js
+      - run: npm install --no-save --package-lock=false playwright && npx playwright install --with-deps chromium
+      - name: Verify regional defaults and saved preferences
+        run: |
+          python3 -m http.server 4173 >/tmp/rangerbook-visitor-region.log 2>&1 &
+          rangerbook_server_pid=$!
+          trap 'kill "$rangerbook_server_pid"' EXIT
+          node tests/visitor-region-ui.cjs
+          node tests/settings-ui.cjs
+          node tests/compare-search-locales.cjs

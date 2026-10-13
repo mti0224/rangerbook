@@ -7,6 +7,7 @@ const roles = ["guest","user","admin","super_admin"];
   const browser = await chromium.launch({headless:true});
   for (const role of roles) {
     const page = await browser.newPage({ viewport: { width: 1080, height: 800 } });
+    await require("./region-fixture.cjs").mockTaiwan(page);
     const protectedPaths=[];
     await page.route("https://rangerbook-auth.warmycat.com/**", async route => {
       const pathname=new URL(route.request().url()).pathname;
