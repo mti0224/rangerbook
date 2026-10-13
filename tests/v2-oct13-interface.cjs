@@ -2,7 +2,7 @@
  * Private admin/statistics APIs are fixtures; no real accounts or writes. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright');
-const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4187';
+const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
 const root=path.join(__dirname,'..');
 const uiRows=JSON.parse(fs.readFileSync(path.join(root,'res/v2/locales/ui.json')));
 const custom=JSON.parse(fs.readFileSync(path.join(root,'res/v2/locales/custom.json')));

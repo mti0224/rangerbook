@@ -79,6 +79,8 @@ jobs:
         run: node tests/ui-i18n-page-audit.cjs
       - name: Verify October 13 controls and layout in all four languages
         run: node tests/v2-oct13-interface.cjs
+        env:
+          AUDIT_BASE_URL: http://127.0.0.1:4173
       - name: Save screenshots and issue report
         if: always()
         uses: actions/upload-artifact@v4
