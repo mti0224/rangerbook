@@ -293,11 +293,14 @@
   loadStylesheet("theme-toggle.css", "20260525a");
   loadStylesheet("game-tech.css", "20261013-v2.5");
   loadStylesheet("game-tech-controls.css", "20261010a");
-  loadStylesheet("sidebar-drawer.css", "20261011a");
+  loadStylesheet("sidebar-drawer.css", "20261013b");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
       <div class="header-inner header-inner-left">
+        <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
         <a class="site-home-link" href="${rootPrefix}" data-i18n="nav.home">首頁</a>
         <nav class="site-nav" aria-label="主要導覽">
           <a href="${rootPrefix}ranger/" data-i18n="nav.rangers">Rangers</a>
@@ -317,9 +320,6 @@
           <a class="site-settings site-settings-toggle" href="${rootPrefix}settings/" aria-label="開啟設定" data-i18n-aria-label="settings.open" title="設定">
             <img class="site-settings-icon" src="${getStoredTheme() === "dark" ? SETTING_ICON_DARK : SETTING_ICON_LIGHT}" alt="" aria-hidden="true" loading="eager">
           </a>
-          <button class="site-menu-toggle" type="button" aria-label="開啟選單" aria-expanded="false">
-            <span></span><span></span><span></span>
-          </button>
         </div>
       </div>
     </header>
@@ -338,7 +338,7 @@
   }
 
   // Presentation shell only: clone public links, do not touch authentication.
-  // In particular never add /admin/ or /pvp/search/ to the public nav.
+  // Protected shortcuts stay hidden until the existing session confirms a role.
   const gtSidebar = document.createElement("aside");
   gtSidebar.className = "gt-sidebar";
   gtSidebar.id = "gt-site-drawer";
@@ -372,13 +372,101 @@
   gtNav.className = "gt-sidebar-nav";
   gtNav.setAttribute("aria-label", "資料站主要連結");
   const gtPath = window.location.pathname.replace(/\/index\.html$/, "/");
+  // Reuse the hub destinations and existing localization keys. Submenu links
+  // always navigate; only the top-level hub link has expand-then-navigate behavior.
+  const hubChildren = {
+    rangers: [
+      ["ranger/ranger/", "ranger.title", "Rangers數據"],
+      ["ranger/compare/", "ranger.hub.compare", "Rangers比對"],
+      ["ranger/stats/", "ranger.hub.stats", "統計資料"],
+      ["ranger/ranking/", "ranger.hub.rank", "數據排名"]
+    ],
+    pvp: [
+      ["pvp/leaderboard/", "copy.leaderboard", "排行榜"],
+      ["pvp/usage/", "copy.ranger.usage", "角色使用率"],
+      ["pvp/usage-history/", "copy.ranger.usage.history", "角色使用率變化"],
+      ["pvp/search/", "copy.player.team.search", "查詢玩家隊伍", ["super_admin"]]
+    ],
+    guildwar: [
+      ["guildwar/ranking/", "copy.guild.rankings", "公會排名"],
+      ["guildwar/usage/", "copy.ranger.usage", "角色使用率", ["admin", "super_admin"]]
+    ],
+    mainstage: [
+      ["mainstage/hard/", "copy.hard.mode", "困難模式"],
+      ["mainstage/extreme/", "copy.extreme.mode", "極限模式"]
+    ],
+    endless: [
+      ["endless/enemy/", "copy.enemy.details", "敵人資訊"],
+      ["endless/stage/", "copy.stage.details", "關卡資訊"]
+    ],
+    labyrinth: [
+      ["labyrinth/enemy/", "copy.enemy.details", "敵人資訊"],
+      ["labyrinth/stage/", "copy.stage.details", "關卡資訊"],
+      ["labyrinth/artifact/", "copy.artifact.details", "遺物資訊"]
+    ]
+  };
+  const gtGroups = [];
+  const gtProtectedLinks = [];
+  function expandGroup(selected) {
+    gtGroups.forEach(({ group, link, panel }) => {
+      const open = group === selected;
+      group.classList.toggle("gt-nav-expanded", open);
+      link.setAttribute("aria-expanded", String(open));
+      panel.inert = !open;
+      panel.setAttribute("aria-hidden", String(!open));
+    });
+  }
+  [...gtNav.children].forEach(link => {
+    const key = link.dataset.i18n?.replace(/^nav\./, "");
+    const children = hubChildren[key];
+    if (!children) return;
+    const group = document.createElement("div");
+    group.className = "gt-nav-group";
+    const panel = document.createElement("div");
+    panel.className = "gt-nav-submenu";
+    panel.id = `gt-submenu-${key}`;
+    panel.inert = true;
+    panel.setAttribute("aria-hidden", "true");
+    const content = document.createElement("div");
+    content.className = "gt-nav-submenu-content";
+    children.forEach(([path, translationKey, label, roles]) => {
+      const child = document.createElement("a");
+      child.href = rootPrefix + path;
+      child.dataset.i18n = translationKey;
+      child.textContent = label;
+      if (roles) {
+        child.hidden = true;
+        gtProtectedLinks.push({ link: child, roles });
+      }
+      content.append(child);
+    });
+    panel.append(content);
+    link.classList.add("gt-nav-hub");
+    link.setAttribute("aria-expanded", "false");
+    link.setAttribute("aria-controls", panel.id);
+    link.replaceWith(group);
+    group.append(link, panel);
+    gtGroups.push({ group, link, panel });
+    link.addEventListener("click", event => {
+      // Preserve open-in-new-tab/window and modifier-click link behavior.
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      if (group.classList.contains("gt-nav-expanded")) return;
+      event.preventDefault();
+      expandGroup(group);
+    });
+  });
   gtNav.querySelectorAll("a").forEach((a) => {
     const target = new URL(a.href, window.location.href).pathname;
     const targetPath = target.endsWith("/") ? target : target + "/";
     const isCurrent = targetPath === rootPrefix
       ? gtPath === rootPrefix
       : gtPath.startsWith(targetPath);
-    if (isCurrent) a.setAttribute("aria-current", "page");
+    if (isCurrent) {
+      a.setAttribute("aria-current", gtPath === targetPath ? "page" : "location");
+      const group = a.closest(".gt-nav-group");
+      // Restore context on a child page, but a hub itself starts collapsed.
+      if (group && !a.classList.contains("gt-nav-hub")) expandGroup(group);
+    }
   });
   const gtFoot = document.createElement("div");
   gtFoot.className = "gt-sidebar-bottom";
@@ -402,6 +490,9 @@
   // Verify the existing server-side session. Protected APIs still enforce roles.
   function setAdminLinkVisibility(user) {
     gtAdminLink.hidden = !(user?.logged_in && (user.role === "admin" || user.role === "super_admin"));
+    gtProtectedLinks.forEach(({ link, roles }) => {
+      link.hidden = !(user?.logged_in && roles.includes(user.role));
+    });
   }
   window.addEventListener("rangerbook:auth-changed", event => {
     setAdminLinkVisibility(event.detail);
@@ -421,7 +512,7 @@
   }
   const gtDrawerBackdrop = document.createElement("div");
   gtDrawerBackdrop.className = "gt-drawer-backdrop";
-  gtDrawerBackdrop.hidden = true;
+  gtDrawerBackdrop.inert = true;
   gtDrawerBackdrop.setAttribute("aria-hidden", "true");
   mount.append(gtDrawerBackdrop, gtSidebar);
   document.body.classList.add("gt-app");
@@ -435,7 +526,8 @@
     document.body.classList.toggle("gt-drawer-active", shouldOpen);
     gtSidebar.inert = compactSidebar.matches && !shouldOpen;
     gtSidebar.setAttribute("aria-hidden", compactSidebar.matches && !shouldOpen ? "true" : "false");
-    gtDrawerBackdrop.hidden = !shouldOpen;
+    gtDrawerBackdrop.classList.toggle("gt-backdrop-open", shouldOpen);
+    gtDrawerBackdrop.inert = !shouldOpen;
     header.classList.remove("menu-open"); // Keep the legacy dropdown closed.
     toggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
     toggle.setAttribute("aria-label", shouldOpen ? "關閉選單" : "開啟選單");
@@ -471,7 +563,9 @@
   gtDrawerClose.addEventListener("click", () => setOpen(false, true));
   gtDrawerBackdrop.addEventListener("click", () => setOpen(false, true));
   gtNav.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => setOpen(false));
+    link.addEventListener("click", event => {
+      if (!event.defaultPrevented) setOpen(false);
+    });
   });
   gtBrand.addEventListener("click", () => setOpen(false));
   document.addEventListener("keydown", event => {
@@ -481,7 +575,7 @@
     }
     if (event.key !== "Tab" || !gtSidebar.classList.contains("gt-drawer-open")) return;
     const targets = [...gtSidebar.querySelectorAll("a[href], button:not([disabled])")]
-      .filter(node => !node.hidden && node.getClientRects().length);
+      .filter(node => !node.hidden && !node.closest("[inert]") && node.getClientRects().length);
     if (!targets.length) return;
     if (event.shiftKey && document.activeElement === targets[0]) {
       event.preventDefault();

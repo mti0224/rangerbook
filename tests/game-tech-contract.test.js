@@ -270,11 +270,11 @@ test("shared navigation puts admin after Sponsor and gates it by AWS session",()
 test("responsive sidebar uses a single accessible drawer, not a second dropdown",()=>{
  const shell=read("assets/js/site.js");
  const css=read("assets/css/sidebar-drawer.css");
- assert.match(shell,/loadStylesheet\("sidebar-drawer\.css", "20261011a"\)/);
+ assert.match(shell,/loadStylesheet\("sidebar-drawer\.css", "20261013b"\)/);
  assert.match(shell,/gtSidebar\.id = "gt-site-drawer"/);
  assert.match(shell,/toggle\.setAttribute\("aria-controls", gtSidebar\.id\)/);
  assert.match(shell,/gtSidebar\.inert = compactSidebar\.matches && !shouldOpen/);
- assert.match(shell,/gtDrawerBackdrop\.hidden = !shouldOpen/);
+ assert.match(shell,/gtDrawerBackdrop\.classList\.toggle\("gt-backdrop-open", shouldOpen\)/);
  assert.match(shell,/gtDrawerClose\.addEventListener\("click"/);
  assert.match(shell,/gtDrawerBackdrop\.addEventListener\("click"/);
  assert.match(shell,/event\.key === "Escape"/);
