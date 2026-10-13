@@ -312,7 +312,7 @@
     const iconHtml = icon
       ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" decoding="async" onerror="this.remove();">`
       : `<span class="pvp-player-extra-icon pvp-player-extra-icon-empty" aria-hidden="true">${esc(badge || "—")}</span>`;
-    return `<div class="pvp-player-extra-item">${iconHtml}<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div></div>`;
+    return `<div class="pvp-player-extra-item" data-detail-label="${esc(label)}">${iconHtml}<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div></div>`;
   }
 
   function renderUnitDetail(unit) {
