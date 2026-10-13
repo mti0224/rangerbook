@@ -3,9 +3,13 @@ on:
   pull_request:
     paths:
       - "assets/css/game-tech.css"
+      - "assets/css/sidebar-drawer.css"
       - "assets/js/site.js"
       - "index.html"
       - "tests/game-tech-contract.test.js"
+      - "tests/sidebar-navigation-ux.cjs"
+      - "tests/sidebar-drawer-ui.cjs"
+      - "tests/site-sidebar-ui.cjs"
       - ".github/workflows/validate-game-tech.yml"
   workflow_dispatch:
 
@@ -24,3 +28,19 @@ jobs:
         run: node --check assets/js/site.js
       - name: Verify theme, routes, modal and permissions contracts
         run: node --test tests/game-tech-contract.test.js
+  navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser test runtime
+        run: npm install --no-save --package-lock=false playwright && npx playwright install --with-deps chromium
+      - name: Verify sidebar navigation and animation
+        run: |
+          python3 -m http.server 4173 >/tmp/rangerbook-ui-server.log 2>&1 &
+          trap 'kill $!' EXIT
+          node tests/sidebar-navigation-ux.cjs
+          node tests/sidebar-drawer-ui.cjs
+          node tests/site-sidebar-ui.cjs

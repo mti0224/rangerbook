@@ -6,7 +6,62 @@
 body.gt-app .gt-drawer-close,
 body.gt-app .gt-drawer-backdrop { display: none; }
 
+/* One expandable hub at a time. Grid rows animate actual content height. */
+body.gt-app .gt-nav-hub::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-left: auto;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .24s ease;
+}
+body.gt-app .gt-nav-expanded > .gt-nav-hub::after { transform: rotate(45deg); }
+body.gt-app .gt-sidebar-nav a[aria-current="location"] {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+body.gt-app .gt-nav-submenu {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows .26s ease, opacity .2s ease, visibility 0s linear .26s;
+}
+body.gt-app .gt-nav-expanded > .gt-nav-submenu {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition: grid-template-rows .26s ease, opacity .2s ease, visibility 0s;
+}
+body.gt-app .gt-nav-submenu-content {
+  min-height: 0;
+  overflow: hidden;
+  padding-inline: 1rem .2rem;
+}
+body.gt-app .gt-nav-submenu a {
+  gap: .45rem;
+  padding: .55rem .65rem;
+  font-size: .8rem;
+  font-weight: 550;
+}
+body.gt-app .gt-nav-submenu a::before { content: "·"; width: .55rem; }
+
 @media (max-width: 1120px) {
+  /* The drawer starts at the same edge as its opener; settings stays right. */
+  body.gt-app .site-header .header-inner {
+    justify-content: flex-start;
+    gap: .6rem;
+  }
+  body.gt-app .site-header .site-menu-toggle {
+    margin-left: 0;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+  }
+  body.gt-app .site-header .site-settings-toggle { width: 44px; height: 44px; }
+  body.gt-app .site-header .site-actions { margin-left: auto; }
   body.gt-app .gt-sidebar {
     display: flex;
     width: min(292px, calc(100vw - 44px));
@@ -16,22 +71,32 @@ body.gt-app .gt-drawer-backdrop { display: none; }
     visibility: hidden;
     pointer-events: none;
     box-shadow: 12px 0 36px rgba(0, 0, 0, .16);
-    transition: transform .24s ease, visibility 0s linear .24s;
+    transition: transform .3s cubic-bezier(.22, .61, .36, 1), visibility 0s linear .3s;
     overscroll-behavior: contain;
   }
   body.gt-app .gt-sidebar.gt-drawer-open {
     transform: translateX(0);
     visibility: visible;
     pointer-events: auto;
-    transition: transform .24s ease, visibility 0s;
+    transition: transform .3s cubic-bezier(.22, .61, .36, 1), visibility 0s;
   }
-  body.gt-app .gt-drawer-backdrop:not([hidden]) {
+  body.gt-app .gt-drawer-backdrop {
     position: fixed;
     inset: 0;
     z-index: 2001;
     display: block;
     background: rgba(7, 18, 27, .64);
     backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .3s ease, visibility 0s linear .3s;
+  }
+  body.gt-app .gt-drawer-backdrop.gt-backdrop-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity .3s ease, visibility 0s;
   }
   body.gt-app.gt-drawer-active { overflow: hidden; }
 
@@ -74,5 +139,8 @@ body.gt-app .gt-drawer-backdrop { display: none; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  body.gt-app .gt-sidebar { transition: none !important; }
+  body.gt-app :is(.gt-sidebar,.gt-drawer-backdrop,.gt-nav-submenu),
+  body.gt-app .gt-nav-hub::after {
+    transition: none !important;
+  }
 }
