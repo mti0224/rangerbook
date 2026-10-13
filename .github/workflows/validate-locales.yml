@@ -7,6 +7,8 @@ on:
       - "assets/css/settings-page.css"
       - "assets/js/i18n.js"
       - "assets/locales/**"
+      - "deploy/aws/v2/locales/ui.json"
+      - ".github/workflows/validate-locales.yml"
       - "tests/test_ui_locale_coverage.py"
       - "tests/test_i18n_detail_tables.py"
       - "assets/js/gear-detail.js"
@@ -30,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Preview authored V2 UI catalog in the isolated checkout
+        run: cp deploy/aws/v2/locales/ui.json res/v2/locales/ui.json
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
