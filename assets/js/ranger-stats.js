@@ -1,4 +1,6 @@
 (() => {
+  const ui = value => window.RangerbookI18n?.uiText(String(value)) || String(value);
+  const f = (key,args,fallback) => window.RangerbookI18n?.format(key,args,fallback) || fallback;
   const DATA_URL = "../../res/Rangers_data.json";
   const CONFIG_URL = "../../res/ranger_stats_config.json";
   const TYPES = ["力量", "敏捷", "智慧"];
@@ -259,7 +261,7 @@
     const current = els.trendSelect.value;
     els.trendSelect.innerHTML = trendOptions().map(({ bucket, stat }) => {
       const value = `${bucket.key}::${stat.key}`;
-      return `<option value="${html(value)}">${html(bucket.label)}｜${html(stat.label)}</option>`;
+      return `<option value="${html(value)}">${html(ui(bucket.label))}｜${html(ui(stat.label))}</option>`;
     }).join("");
     if (current && [...els.trendSelect.options].some((option) => option.value === current)) els.trendSelect.value = current;
   }
@@ -329,7 +331,7 @@
     const { bucket, stat } = selectedTrendOption();
     const startText = points[0]?.label || "-";
     const endText = points[points.length - 1]?.label || "-";
-    els.trendRange.textContent = `${bucket.label}｜${state.selectedType}｜${stat.label}｜${startText} ～ ${endText}（每月資料集：該月往前 ${WINDOW_MONTHS} 個月）`;
+    els.trendRange.textContent = f("stats.trendRange", [ui(bucket.label),ui(state.selectedType),ui(stat.label),startText,endText,WINDOW_MONTHS], `${bucket.label}｜${state.selectedType}｜${stat.label}｜${startText} ～ ${endText}（每月資料集：該月往前 ${WINDOW_MONTHS} 個月）`);
     if (!valid.length) return;
 
     const { ctx, width, height } = setupCanvas(els.trendCanvas);
@@ -421,7 +423,7 @@
       });
     });
 
-    els.trendLegend.innerHTML = LINE_DEFS.map((line, index) => `<span><i style="background:${lineColors[index]}"></i>${html(line.label)}</span>`).join("");
+    els.trendLegend.innerHTML = LINE_DEFS.map((line, index) => `<span><i style="background:${lineColors[index]}"></i>${html(ui(line.label))}</span>`).join("");
   }
 
   function setActiveType(type) {
@@ -469,6 +471,7 @@
         const config = await configRes.json();
         state.config = config && typeof config === "object" ? config : state.config;
       }
+      await window.RangerbookI18n?.ready;
       renderTrendOptions();
       render();
     } catch (error) {

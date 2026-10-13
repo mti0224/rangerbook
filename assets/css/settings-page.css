@@ -28,3 +28,5 @@ html[data-theme=dark] .rb-choice:has(input:checked){border-color:#60a5fa}
 html[data-theme=dark] .rb-choice:hover{border-color:#60a5fa}
 @media(max-width:560px){.rb-choice-group{grid-template-columns:1fr}.rb-settings-section-head{align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){.rb-choice{transition:none}}
+
+html:is([lang="en"],[lang="th"]) .rb-settings-language-icon{font-size:.82rem;line-height:1}

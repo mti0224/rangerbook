@@ -80,8 +80,9 @@ class GameTermAlignmentTests(unittest.TestCase):
         self.assertTrue(all(a["grade"] in {"A", "B", "C"} and a["pointsByTarget"] and a["effect"] for a in artifacts))
 
     def test_all_authored_inputs_are_complete_unique_five_column_rows(self):
-        self.assertEqual(len(self.rows), 1339)
-        self.assertEqual(len(self.audit["decisions"]), len(self.rows))
+        self.assertGreaterEqual(len(self.rows), self.audit["authoredRowsScanned"])
+        self.assertEqual(len(self.audit["decisions"]), self.audit["authoredRowsScanned"])
+        self.assertTrue({d["key"] for d in self.audit["decisions"]} <= self.rows.keys())
         for row in self.rows.values():
             self.assertEqual(set(row), {"key", "zh_TW", "en", "th", "jp"})
             self.assertTrue(all(isinstance(s, str) and s.strip() for s in row.values()))

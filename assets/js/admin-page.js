@@ -1,4 +1,6 @@
 (() => {
+  const ui = value => window.RangerbookI18n?.uiText(String(value)) || String(value);
+  const formatUi = (key,args,fallback) => window.RangerbookI18n?.format(key,args,fallback) || fallback;
   const auth = window.RangerbookAuth;
   if (!auth) return;
 
@@ -138,6 +140,8 @@
 
   async function loadTraffic() {
     if (!auth.isAdmin()) return;
+    await window.RangerbookI18n?.ready;
+    if (!auth.isAdmin()) return;
     const requestId = ++trafficRequestId;
     const status = $("trafficStatus");
     const days = Number($("trafficDays").value);
@@ -152,16 +156,16 @@
         return;
       }
       const numeric = value => Number(value || 0).toLocaleString("zh-TW");
-      status.textContent = "最新更新：" + formatTrafficUpdatedAt(data.updatedAt);
+      status.textContent = formatUi("traffic.latestUpdated", [formatTrafficUpdatedAt(data.updatedAt)], "最新更新：" + formatTrafficUpdatedAt(data.updatedAt));
       $("trafficSummary").replaceChildren();
       Object.entries(data.summary || {}).forEach(([key, value]) => {
         const card = document.createElement("div");
         const label = document.createElement("span");
         const number = document.createElement("strong");
-        label.textContent = ({
+        label.textContent = ui(({
           users: "使用者", views: "瀏覽次數",
           sessions: "工作階段", engagedSessions: "互動工作階段"
-        })[key] || key;
+        })[key] || key);
         number.textContent = numeric(value);
         card.append(label, number);
         $("trafficSummary").append(card);
@@ -247,14 +251,14 @@
       const deletedCount = Number(batch?.deletedCount || 0);
       const detectedAt = formatDate(batch?.detectedAt);
       const meta = [
-        `${count} 個檔案`,
+        formatUi("dynamic.files", [count], `${count} 個檔案`),
         dbCount ? `DB/NDB ${dbCount}` : "",
         deletedCount ? `刪除 ${deletedCount}` : ""
       ].filter(Boolean).join(" · ");
 
       return `
         <details class="admin-update-batch">
-          <summary>
+          <summary data-expand-text="${escapeHtml(ui("展開"))}" data-collapse-text="${escapeHtml(ui("收合"))}">
             <span class="admin-update-batch-title">
               <strong>${escapeHtml(detectedAt)}</strong>
               <small>${escapeHtml(meta)}</small>
@@ -269,6 +273,8 @@
 
   async function loadResourceUpdates() {
     if (!auth.isAdmin() || !resourceUpdatesCard) return;
+    await window.RangerbookI18n?.ready;
+    if (!auth.isAdmin()) return;
     if (resourceUpdatesSummary) resourceUpdatesSummary.textContent = "載入中…";
     if (resourceUpdatesList) resourceUpdatesList.innerHTML = '<div class="admin-empty">載入中…</div>';
 

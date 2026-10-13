@@ -456,14 +456,14 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
 }
 
 .admin-update-batch summary::after {
-  content: "展開";
+  content: attr(data-expand-text);
   flex: 0 0 auto;
   color: var(--muted);
   font-size: 0.82rem;
 }
 
 .admin-update-batch[open] summary::after {
-  content: "收合";
+  content: attr(data-collapse-text);
 }
 
 .admin-update-batch-title {

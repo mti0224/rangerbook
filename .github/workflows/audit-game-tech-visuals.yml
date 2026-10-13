@@ -18,6 +18,8 @@ on:
       - "**/*.html"
       - "tests/game-tech-contract.test.js"
       - "tests/first-paint.cjs"
+      - "tests/v2-oct13-interface.cjs"
+      - "deploy/aws/v2/locales/**"
       - "tests/pvp-history-chip-colors.cjs"
       - "tests/sitewide-visual-audit.cjs"
       - "backend/rangerbook_auth/**"
@@ -33,6 +35,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Preview authored V2 UI catalog in the isolated checkout
+        run: cp deploy/aws/v2/locales/ui.json res/v2/locales/ui.json
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -53,6 +57,10 @@ jobs:
         run: |
           bash -n backend/rangerbook_auth/setup_google_wif.sh
           python3 -m py_compile backend/rangerbook_auth/traffic_collector.py
+      - name: Verify October 13 controls and layout in all four languages
+        run: node tests/v2-oct13-interface.cjs
+        env:
+          AUDIT_BASE_URL: http://127.0.0.1:4173
       - name: Render public pages in dark/light desktop/mobile
         run: node tests/sitewide-visual-audit.cjs
         env:

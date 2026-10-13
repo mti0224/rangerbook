@@ -1,6 +1,10 @@
 (() => {
   "use strict";
   // Self-contained SVG charts: no third-party scripts or extra requests.
+  const ui = value => window.RangerbookI18n?.uiText(String(value)) || String(value);
+  const f = (key,args,fallback) => window.RangerbookI18n?.format(key,args,fallback) || fallback;
+  const views = value => f("traffic.viewCount",[format(value)],format(value)+" 次瀏覽");
+  const sessions = value => f("traffic.sessionCount",[format(value)],format(value)+" 次工作階段");
   const NS = "http://www.w3.org/2000/svg";
   const colors = ["#2563eb", "#16a34a", "#9333ea", "#ea580c", "#db2777", "#0891b2", "#ca8a04", "#64748b"];
   const format = n => Number(n).toLocaleString("zh-TW");
@@ -41,10 +45,10 @@
     wrapper.className = "traffic-line-interactive";
     const svg = node("svg", {
       class: "traffic-line-svg", viewBox: "0 0 " + width + " " + height,
-      role: "img", "aria-label": "每日瀏覽次數折線圖，共 " + points.length + " 天",
+      role: "img", "aria-label": f("traffic.dailyChart",[points.length],"每日瀏覽次數折線圖，共 " + points.length + " 天"),
       preserveAspectRatio: "xMidYMid meet"
     });
-    svg.append(node("title", {}, "每日瀏覽次數趨勢"));
+    svg.append(node("title", {}, ui("每日瀏覽次數趨勢")));
     for (let i = 0; i <= 4; i++) {
       const value = limit * i / 4;
       const position = y(value);
@@ -74,9 +78,9 @@
       const marker = node("circle", {
         cx: x(i).toFixed(2), cy: y(point.value).toFixed(2), r: points.length > 35 ? 2.8 : 4,
         class: "traffic-chart-point", tabindex: "0",
-        "aria-label": point.label + "，" + format(point.value) + " 次瀏覽"
+        "aria-label": point.label + " · " + views(point.value)
       });
-      marker.append(node("title", {}, point.label + "：" + format(point.value) + " 次瀏覽"));
+      marker.append(node("title", {}, point.label + ": " + views(point.value)));
       marker.addEventListener("focus", () => showPoint(i));
       marker.addEventListener("blur", hidePoint);
       svg.append(marker);
@@ -102,7 +106,7 @@
       highlighted.setAttribute("cy", y(point.value));
       highlighted.setAttribute("visibility", "visible");
       tooltipDate.textContent = point.label;
-      tooltipValue.textContent = format(point.value) + " 次瀏覽";
+      tooltipValue.textContent = views(point.value);
       tooltip.hidden = false;
       const scaledWidth = wrapper.getBoundingClientRect().width;
       const factor = scaledWidth / width;
@@ -148,9 +152,9 @@
     wrapper.className = "traffic-pie-layout";
     const svg = node("svg", {
       class: "traffic-pie-svg", viewBox: "0 0 280 280", role: "img",
-      "aria-label": "流量來源圓餅圖，共 " + items.length + " 個分類，" + format(total) + " 個工作階段"
+      "aria-label": f("traffic.sourceChart",[items.length,format(total)],"流量來源圓餅圖，共 " + items.length + " 個分類，" + format(total) + " 個工作階段")
     });
-    svg.append(node("title", {}, "流量來源佔比"));
+    svg.append(node("title", {}, ui("流量來源佔比")));
     let current = -Math.PI / 2;
     items.forEach((item, i) => {
       const fraction = item.value / total;
@@ -168,8 +172,8 @@
         shape = node("path", { d, fill: colors[i] });
       }
       shape.classList.add("traffic-pie-slice");
-      shape.append(node("title", {}, item.label + "：" + format(item.value) + " 個工作階段（" +
-        (fraction * 100).toFixed(1) + "%）"));
+      shape.append(node("title", {}, ui(item.label) + ": " + sessions(item.value) + " (" +
+        (fraction * 100).toFixed(1) + "%)"));
       svg.append(shape);
       current = next;
     });
@@ -183,11 +187,11 @@
       swatch.style.backgroundColor = colors[i];
       const name = document.createElement("span");
       name.className = "traffic-pie-name";
-      name.textContent = item.label;
+      name.textContent = ui(item.label);
       const count = document.createElement("strong");
       count.textContent = (100 * item.value / total).toFixed(1) + "%";
       const detail = document.createElement("small");
-      detail.textContent = format(item.value) + " 次工作階段";
+      detail.textContent = sessions(item.value);
       line.append(swatch, name, count, detail);
       legend.append(line);
     });

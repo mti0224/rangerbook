@@ -809,7 +809,8 @@
     const link = document.createElement("a");
     link.className = "ranger-detail-link";
     link.href = detailUrl(id);
-    link.textContent = "查看詳細資料";
+    link.dataset.i18n = "action.viewDetails";
+    link.textContent = window.RangerbookI18n?.t("action.viewDetails", "查看詳細資訊") || "查看詳細資訊";
     lastLine.appendChild(link);
   }
 
