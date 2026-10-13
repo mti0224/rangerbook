@@ -24,6 +24,8 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         await page.goto(base+"/sponsor/",{waitUntil:"domcontentloaded",timeout:20000});
         await page.waitForFunction(()=>[...document.styleSheets]
           .some(sheet=>sheet.href?.includes("sidebar-drawer.css")),null,{timeout:13000});
+        await page.waitForFunction(() => window.RangerbookI18n?.ready);
+        await page.evaluate(() => window.RangerbookI18n.ready);
         const nav=page.locator(".gt-sidebar-nav");
         const admin=nav.locator(".gt-sidebar-admin-entry");
         await page.waitForFunction(()=>document.querySelector(".gt-sidebar-admin-entry")?.hidden === false,
