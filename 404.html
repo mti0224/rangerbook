@@ -55,7 +55,7 @@
             ? 'endless-stage'
             : 'unknown';
 
-      ['style.css','ranger.css','ranger-ability-effect-merge.css','hsEnemy.css','card-tag-colors.css','endless.css','hs-stage.css','header-responsive.css?v=20260429c','mobile-interaction-fix.css?v=20260430c','theme-toggle.css?v=20260525a','game-tech.css?v=20261010b','game-tech-controls.css?v=20261010a'].forEach(function (file) {
+      ['style.css','ranger.css','ranger-ability-effect-merge.css','hsEnemy.css','card-tag-colors.css','endless.css','hs-stage.css','header-responsive.css?v=20260429c','mobile-interaction-fix.css?v=20260430c','theme-toggle.css?v=20260525a','game-tech.css?v=20261013-v2.5','game-tech-controls.css?v=20261010a'].forEach(function (file) {
         document.write('<link rel="stylesheet" href="' + root + 'assets/css/' + file + '">');
       });
     })();
@@ -144,13 +144,13 @@
           : root + 'mainstage/hard/stage/';
       }
 
-      document.write('<script src="' + root + 'assets/js/v2-data.js?v=20261013-v2.4"><\/script>');
-      document.write('<script src="' + root + 'assets/js/site.js?v=20261013-v2.4"><\/script>');
+      document.write('<script src="' + root + 'assets/js/v2-data.js?v=20261013-v2.5"><\/script>');
+      document.write('<script src="' + root + 'assets/js/site.js?v=20261013-v2.5"><\/script>');
       if (kind === 'endless-stage') {
         document.write('<script src="' + root + 'assets/js/endless-stage.js"><\/script>');
       } else if (kind === 'mainstage-hard-stage' || kind === 'mainstage-extreme-stage') {
-        document.write('<script src="' + root + 'assets/js/mainstage-stage-adapter.js?v=20261013-v2.4"><\/script>');
-        document.write('<script src="' + root + 'assets/js/hs-stage.js?v=20261013-v2.4"><\/script>');
+        document.write('<script src="' + root + 'assets/js/mainstage-stage-adapter.js?v=20261013-v2.5"><\/script>');
+        document.write('<script src="' + root + 'assets/js/hs-stage.js?v=20261013-v2.5"><\/script>');
       }
       document.write('<script src="' + root + 'assets/js/card-tag-colors.js"><\/script>');
     })();

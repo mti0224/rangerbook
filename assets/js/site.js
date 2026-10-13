@@ -291,7 +291,7 @@
   loadStylesheet("header-responsive.css", "20260429c");
   loadStylesheet("mobile-interaction-fix.css", "20260430c");
   loadStylesheet("theme-toggle.css", "20260525a");
-  loadStylesheet("game-tech.css", "20261010b");
+  loadStylesheet("game-tech.css", "20261013-v2.5");
   loadStylesheet("game-tech-controls.css", "20261010a");
   loadStylesheet("sidebar-drawer.css", "20261011a");
 
@@ -333,7 +333,7 @@
   if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
     const script = document.createElement("script");
     script.dataset.rangerbookI18n = "true";
-    script.src = rootPrefix + "assets/js/i18n.js?v=20261013-v2.4";
+    script.src = rootPrefix + "assets/js/i18n.js?v=20261013-v2.5";
     document.head.appendChild(script);
   }
 

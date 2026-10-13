@@ -21,7 +21,8 @@
   let gameTermsByKey = new Map();
   let officialByChinese = new Map();
   let parameterTerms = [];
-  const normalize = value => String(value || "").replace(/\s+/g, " ").trim();
+  const displayBreaks = value => String(value ?? "").replace(/\\+n|\/n/g, " ");
+  const normalize = value => displayBreaks(value).replace(/\s+/g, " ").trim();
   function compileTermTemplate(source, english, key) {
     if (!/%(?:[Nd]\d*|s|n)/.test(source)) return null;
     const tokens = /%(?:[Nd]\d*|s|n)/g, slots=[];
@@ -41,15 +42,15 @@
     for (const item of rows || []) {
       if (!item || typeof item.zh_TW !== "string" || typeof item[locale] !== "string" || !item[locale].trim()) continue;
       const source = normalize(item.zh_TW);
-      if (typeof item.key === "string") keys.set(item.key, item[locale]);
-      if (map.has(source) && map.get(source) !== item[locale]) ambiguous.add(source);
-      else map.set(source, item[locale]);
+      if (typeof item.key === "string") keys.set(item.key, displayBreaks(item[locale]));
+      if (map.has(source) && map.get(source) !== displayBreaks(item[locale])) ambiguous.add(source);
+      else map.set(source, displayBreaks(item[locale]));
       // Generic semantic templates require explicit Key/args bindings. Their
       // adjacent text slots must never infer matches from arbitrary DOM text.
       const literal=source.replace(/%(?:[Nd]\d*|s|n)/g, "").replace(/[\s%():：（）]/g, "");
       const contextual=literal.length>=2 && !/%(?:[Nd]\d*|s|n)%(?:[Nd]\d*|s|n)/.test(source);
       const template = String(item.key).startsWith("UI:") || contextual
-        ? compileTermTemplate(source, item[locale], item.key) : null;
+        ? compileTermTemplate(source, displayBreaks(item[locale]), item.key) : null;
       if (template) templates.push(template);
     }
     ambiguous.forEach(source => map.delete(source));
@@ -108,7 +109,9 @@
   ];
   const uiAttrNames = ["placeholder", "title", "aria-label", "alt"];
   function uiText(original) {
-    if (locale === "zh-Hant" || typeof original !== "string") return original;
+    if (typeof original !== "string") return original;
+    original = displayBreaks(original);
+    if (locale === "zh-Hant") return original;
     const exact = window.RangerbookV2?.translateText(original);
     if (exact && exact !== original) return exact;
     const cleaned = original.replace(/\s+/g, " ").trim();
@@ -159,7 +162,6 @@
     translatedNodes.set(node, node.nodeValue);
   }
   function autoTranslate(rootNode) {
-    if (locale === "zh-Hant") return;
     const elements = [];
     if (rootNode.nodeType === 1) elements.push(rootNode);
     rootNode.querySelectorAll?.("*").forEach(el => elements.push(el));
@@ -212,14 +214,15 @@
       const all = await json(root + "assets/locales/ui.json");
       if (selected !== locale) return;
       const baseline = all["zh-Hant"] || {};
-      dictionary = Object.assign({}, baseline, all[selected] || {});
+      dictionary = Object.fromEntries(Object.entries(Object.assign({}, baseline, all[selected] || {}))
+        .map(([key,value]) => [key,displayBreaks(value).replace(/[\r\n]+/g," ")]));
       englishByChinese = new Map();
       if (selected !== "zh-Hant") {
         for (const [key, original] of Object.entries(baseline)) {
           const translated = all[selected]?.[key];
           if (typeof original !== "string" || !translated || translated === original) continue;
           const normalized = original.replace(/\s+/g, " ").trim();
-          if (normalized && !englishByChinese.has(normalized)) englishByChinese.set(normalized, translated);
+          if (normalized && !englishByChinese.has(normalized)) englishByChinese.set(normalized, displayBreaks(translated));
         }
       }
     } catch (error) {
@@ -281,6 +284,16 @@
   const api = {
     supported, setLocale, get locale() { return locale; },
     translate, uiText, t(key, fallback = "") { return dictionary[key] || fallback || key; },
+    format(key, args = [], fallback = "") {
+      let sequential=0;
+      const template=dictionary[key] || fallback || key;
+      return displayBreaks(template).replace(/%(?:N\d*|d\d*|s|n)/g, token => {
+        const index=/^%[Nd]\d+$/.test(token)?Number(token.slice(2))-1:sequential++;
+        if(index<0 || index>=args.length || args[index]===undefined || args[index]===null)
+          throw new Error("Unbound UI template argument " + key + " " + token);
+        return displayBreaks(args[index]);
+      });
+    },
     readyGame, lookup, matchOfficial,
     custom(key, original) {
       return gameTermsByKey.get(key) || gameData[locale]?.custom?.[key] || original;
@@ -312,7 +325,7 @@
     for (const node of batch) {
       if (!node.isConnected) continue;
       if (node.nodeType === 1) translate(node);
-      else if (node.nodeType === 3 && locale !== "zh-Hant") translateTextNode(node);
+      else if (node.nodeType === 3) translateTextNode(node);
     }
   }
   const observer = new MutationObserver(mutations => {

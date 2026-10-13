@@ -1,4 +1,12 @@
 (() => {
+  const ui = value => window.RangerbookI18n?.uiText(String(value ?? "")) || String(value ?? "");
+  const f = (key,args,fallback) => window.RangerbookI18n?.format(key,args,fallback) || fallback;
+  function rangerMeta(row) {
+    const type={力量:"STR",力量型:"STR",敏捷:"AGI",敏捷型:"AGI",智慧:"INT",智慧型:"INT"}[row.type];
+    const element={無:"NONE",火:"fire",水:"water",木:"tree",光:"light",暗:"dark",闇:"dark"}[row.element];
+    const render = (key,fallback) => window.RangerbookV2?.render(key,window.RangerbookV2.locale) || ui(fallback);
+    return [ui(row.star),type?render("CUSTOM:CATEGORY_"+type,row.type):ui(row.type),element?render("CUSTOM:ELEMENT_"+element,row.element):ui(row.element)].filter(Boolean).join(" · ");
+  }
   const DATA_URLS = {
     LEGEND: "https://pvp-data.warmycat.com/guildwar_data_LEGEND.json",
     LEGEND_20: "https://pvp-data.warmycat.com/guildwar_data_LEGEND.json",
@@ -51,7 +59,7 @@
     if (!select) return;
     const prev = select.value;
     const vals = [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,"zh-Hant"));
-    select.innerHTML = `<option value="">${esc(label)}</option>` + vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+    select.innerHTML = `<option value="">${esc(label)}</option>` + vals.map(v=>`<option value="${esc(v)}">${esc(select===els.type ? rangerMeta({type:v}).trim() : ui(v))}</option>`).join("");
     if (vals.includes(prev)) select.value = prev;
   }
 
@@ -146,7 +154,7 @@
   function render() {
     const q=(els.search?.value||"").trim().toLowerCase(), type=els.type?.value||"", element=els.element?.value||"";
     const list=rows.filter(r=>(!type||r.type===type)&&(!element||r.element===element)&&(!q||[r.name,r.rangerId,r.star,r.type,r.element].some(v=>String(v||"").toLowerCase().includes(q))));
-    els.body.innerHTML=list.length?list.map(r=>{const rate=Math.max(0,Math.min(100,Number(r.usageRate)||0));return `<tr><td class="pvp-rank-cell"><span class="pvp-rank-medal">${r.rank}</span></td><td><button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${esc(r.rangerId)}"><img class="pvp-ranger-thumb" src="${RANGER_IMAGE(r.rangerId)}" alt="" loading="lazy" onerror="this.remove();"><span><span class="pvp-ranger-name">${esc(r.name)}</span><span class="pvp-ranger-sub">${esc([r.star,r.type,r.element].filter(Boolean).join(" · "))}</span></span></button></td><td>${num(r.playerCount)}</td><td class="pvp-usage-cell"><div class="pvp-usage-number"><strong>${num(rate)}%</strong><span>${num(r.playerCount)} 人</span></div><div class="pvp-usage-bar"><span style="--usage-rate:${rate}%"></span></div></td><td><strong>${num(r.guildUsageRate)}%</strong><span class="pvp-rank-delta">${num(r.guildUsageCount)} 個公會</span></td></tr>`}).join(""):`<tr class="pvp-empty-row"><td colspan="5">找不到符合條件的角色。</td></tr>`;
+    els.body.innerHTML=list.length?list.map(r=>{const rate=Math.max(0,Math.min(100,Number(r.usageRate)||0));return `<tr><td class="pvp-rank-cell"><span class="pvp-rank-medal">${r.rank}</span></td><td><button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${esc(r.rangerId)}"><img class="pvp-ranger-thumb" src="${RANGER_IMAGE(r.rangerId)}" alt="" loading="lazy" onerror="this.remove();"><span><span class="pvp-ranger-name">${esc(r.name)}</span><span class="pvp-ranger-sub">${esc(rangerMeta(r))}</span></span></button></td><td>${num(r.playerCount)}</td><td class="pvp-usage-cell"><div class="pvp-usage-number"><strong>${num(rate)}%</strong><span>${esc(f("units.people",[num(r.playerCount)],num(r.playerCount)+" 人"))}</span></div><div class="pvp-usage-bar"><span style="--usage-rate:${rate}%"></span></div></td><td><strong>${num(r.guildUsageRate)}%</strong><span class="pvp-rank-delta">${esc(f("dynamic.guildCount",[num(r.guildUsageCount)],num(r.guildUsageCount)+" 個公會"))}</span></td></tr>`}).join(""):`<tr class="pvp-empty-row"><td colspan="5">找不到符合條件的角色。</td></tr>`;
   }
 
   function gearCode(unit,slot){const v=unit?.equipMap?.[slot];if(typeof v==="string")return v;if(v&&typeof v==="object")return String(v.equipItemCode||v.itemCode||v.code||"");return "";}
@@ -193,7 +201,7 @@
     try {
       await ensureDetailData();
       const d=buildDetail(row.rangerId),common=(d.coOccurrence||[]).slice(0,5).map(x=>`<span>${esc(infoFor(x.unitCode).name)} ${num(x.rate)}%</span>`).join("");
-      els.modalContent.innerHTML=`<header class="pvp-modal-ranger-header"><img class="pvp-modal-ranger-image" src="${RANGER_IMAGE(row.rangerId)}" alt=""><div class="pvp-modal-ranger-copy"><h2 id="guildUsageModalTitle">${esc(row.name)}</h2><p>${esc([row.star,row.type,row.element].filter(Boolean).join(" · "))}</p><div class="pvp-modal-summary"><span><strong>${num(row.usageRate)}%</strong> 使用率</span><span><strong>${num(row.playerCount)}</strong> 名玩家</span><span><strong>${num(row.guildUsageRate)}%</strong> 公會普及率</span></div></div><a class="pvp-modal-detail-link" href="${RANGER_DETAIL(row.rangerId)}">查看角色詳細資料</a></header><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>配裝情況</h3></div><div class="pvp-equipment-grid">${SLOTS.map(s=>gearCard(d,s)).join("")}</div></section>${comboSection(d)}<section class="pvp-modal-section pvp-modal-section--no-divider"><div class="pvp-modal-section-heading"><h3>覺醒能力使用情況</h3></div>${optionList(d.awakeningUsage,"ability")}</section><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>才能解放狀態</h3></div>${optionList(d.talentUsage,"talent")}</section>${common?`<section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>常見搭配角色</h3></div><div class="pvp-modal-summary">${common}</div></section>`:""}`;
+      els.modalContent.innerHTML=`<header class="pvp-modal-ranger-header"><img class="pvp-modal-ranger-image" src="${RANGER_IMAGE(row.rangerId)}" alt=""><div class="pvp-modal-ranger-copy"><h2 id="guildUsageModalTitle">${esc(row.name)}</h2><p>${esc(rangerMeta(row))}</p><div class="pvp-modal-summary"><span><strong>${num(row.usageRate)}%</strong> 使用率</span><span><strong>${num(row.playerCount)}</strong> 名玩家</span><span><strong>${num(row.guildUsageRate)}%</strong> 公會普及率</span></div></div><a class="pvp-modal-detail-link" href="${RANGER_DETAIL(row.rangerId)}">查看角色詳細資料</a></header><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>配裝情況</h3></div><div class="pvp-equipment-grid">${SLOTS.map(s=>gearCard(d,s)).join("")}</div></section>${comboSection(d)}<section class="pvp-modal-section pvp-modal-section--no-divider"><div class="pvp-modal-section-heading"><h3>覺醒能力使用情況</h3></div>${optionList(d.awakeningUsage,"ability")}</section><section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>才能解放狀態</h3></div>${optionList(d.talentUsage,"talent")}</section>${common?`<section class="pvp-modal-section"><div class="pvp-modal-section-heading"><h3>常見搭配角色</h3></div><div class="pvp-modal-summary">${common}</div></section>`:""}`;
     } catch (error) {
       console.error(error);
       els.modalContent.innerHTML=`<div class="pvp-modal-empty">角色詳細統計目前無法載入。</div>`;
@@ -209,6 +217,7 @@
     status("公會戰角色使用率資料載入中…");
     try {
       await loadSupport();
+      await window.RangerbookI18n?.ready;
       if (tier !== "LEGEND_20" && INDEX_URLS[tier]) {
         try {
           const res = await fetch(INDEX_URLS[tier]);
