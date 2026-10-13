@@ -1,0 +1,32 @@
+name: Validate multilingual Ranger comparison search
+on:
+  pull_request:
+    paths:
+      - "assets/js/ranger-compare*.js"
+      - "assets/js/v2-data.js"
+      - "assets/js/i18n.js"
+      - "ranger/compare/index.html"
+      - "res/v2/ranger-index.json"
+      - "res/v2/rangers.json"
+      - "res/v2/locales/**"
+      - "tests/compare-search-locales.cjs"
+      - ".github/workflows/validate-compare-search.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare-search:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check assets/js/ranger-compare.js && node --check assets/js/v2-data.js
+      - run: npm install --no-save --package-lock=false playwright && npx playwright install --with-deps chromium
+      - name: Verify all four languages and full search coverage
+        run: |
+          python3 -m http.server 4173 >/tmp/rangerbook-compare-server.log 2>&1 &
+          rangerbook_server_pid=$!
+          trap 'kill "$rangerbook_server_pid"' EXIT
+          node tests/compare-search-locales.cjs

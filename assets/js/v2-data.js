@@ -183,6 +183,13 @@
     return out;
   }
   function stars(x) {return (x.evolution==="HYPER"?"超進化":x.evolution==="ULTRA"?"究極進化":"")+x.starGrade+"星";}
+  function localizedRangerTags(x) {
+    const starKey=x.evolution==="HYPER"?"hyper":x.evolution==="ULTRA"?"ultra":"stars";
+    const element=x.elementType==="TREE"?"wood":x.elementType.toLowerCase();
+    return [render({templateKey:"UI:dynamic."+starKey,args:[x.starGrade]},locale),
+      render("UI:tag."+x.roleType.toLowerCase(),locale),
+      render("UI:"+(x.elementType==="NONE"?"copy.none":"tag."+element),locale)];
+  }
   async function actors(name) {
     const d=await data(name), aa=await abilityMap(), enemy=name.startsWith("enemies/");
     return (d.rangers||d.enemies).map(x=>{
@@ -296,7 +303,12 @@
     "困難關卡生產線.json":()=>stages("hard"),"極限關卡生產線.json":()=>stages("extreme"),
     "無限之塔敵人生產線.json":()=>stages("endless"),"迷宮關卡生產線.json":()=>stages("labyrinth"),
     "迷宮遺物.json":artifacts,"projectile_data.json":projectiles,
-    "Ranger_index.json":async()=>(await data("ranger-index")).rangers.map(x=>({id:x.rangerCode,name:text(x.nameKey),star:stars(x),type:types[x.roleType],element:elements[x.elementType]})),
+    "Ranger_index.json":async()=>(await data("ranger-index")).rangers.map(x=>({
+      id:x.rangerCode,name:text(x.nameKey),localizedName:render(x.nameKey,locale),
+      nameAliases:[...new Set(["zh_TW","en","th","jp"].map(lang=>render(x.nameKey,lang)))],
+      localizedTags:localizedRangerTags(x),
+      star:stars(x),type:types[x.roleType],element:elements[x.elementType]
+    })),
     "id_dict.json":async()=>Object.fromEntries((await equipment()).map(x=>[x["裝備名稱"],x.id])),
     "effect_dict.json":async()=>(await data("equipment-effects")).effects.map(x=>({attrNo:x.attributeId,"效果名稱":text(x.optionKey)}))};
   for(const [old,mode] of Object.entries({hsEnemy:"hard",extremeEnemy:"extreme",infEnemy:"endless",eventStageEnemy:"event",adventEnemy:"advent",labyrinthEnemy:"labyrinth"}))
