@@ -113,7 +113,7 @@
     original = displayBreaks(original);
     if (locale === "zh-Hant") return original;
     const exact = window.RangerbookV2?.translateText(original);
-    if (exact && exact !== original) return exact;
+    if (exact && exact !== original) return displayBreaks(exact);
     const cleaned = original.replace(/\s+/g, " ").trim();
     if (!cleaned) return original;
     // User-specified evolution naming takes precedence over old generic UI copies.
@@ -124,7 +124,7 @@
     const direct = englishByChinese.get(cleaned);
     if (direct) return direct;
     const gameTerm = gameTermsByChinese.get(cleaned) || officialByChinese.get(cleaned);
-    if (gameTerm) return gameTerm;
+    if (gameTerm) return displayBreaks(gameTerm);
     if (/[一-鿿]/.test(cleaned)) {
       for (const item of parameterTerms) {
         if (item.prefix && !cleaned.startsWith(item.prefix)) continue;

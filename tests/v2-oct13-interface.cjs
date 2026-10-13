@@ -74,7 +74,8 @@ const traffic={status:'ready',updatedAt:'2026-10-13T00:00:00Z',summary:{users:30
    await go('/about/');const spaces=await p.locator('.about-link-space').evaluateAll(xs=>xs.map(x=>({text:x.textContent,display:getComputedStyle(x).display})));
    assert.equal(spaces.length,2);assert.ok(spaces.every(x=>x.text===' '&&(locale==='zh-Hant'?x.display==='none':x.display!=='none')));
    await go('/labyrinth/');const grid=await p.locator('.labyrinth-entry-grid').evaluate(x=>getComputedStyle(x).gridTemplateColumns.split(' ').length);assert.equal(grid,2);
-   const tops=await p.locator('.labyrinth-entry-card').evaluateAll(xs=>xs.map(x=>x.getBoundingClientRect().top));assert.equal(tops[0],tops[1]);assert.ok(tops[2]>tops[0]);
+   // Compare layout positions, excluding the hover transform/transition.
+   const tops=await p.locator('.labyrinth-entry-card').evaluateAll(xs=>xs.map(x=>x.offsetTop));assert.equal(tops[0],tops[1]);assert.ok(tops[2]>tops[0]);
    await go('/');await p.locator('.home-update-list li').first().waitFor();assert.equal(await p.locator('.gt-home-characters img').count(),0);
    assert.equal(await p.locator('.home-update-date').innerText(),'2026-10-13');
    assert.deepEqual(await p.locator('.home-update-list li').allTextContents(),[get('update.log.2026-10-13.1',locale),get('update.log.2026-10-13.2',locale)]);
@@ -90,6 +91,10 @@ const traffic={status:'ready',updatedAt:'2026-10-13T00:00:00Z',summary:{users:30
     const holder=document.createElement('p');holder.id='qa-escaped-text';holder.textContent='a\\n b/n c';document.body.append(holder);
     window.RangerbookI18n.translate(holder);return holder.textContent;
    });assert.ok(!/\\n|\/n/.test(tokens),tokens);
+   // Official terminology can itself contain literal newline markers. Clean
+   // the translated result as well as an already-localized input string.
+   const mineral=await p.evaluate(()=>window.RangerbookI18n.uiText('生產礦物費用'));
+   assert.ok(!/\\n|\/n/.test(mineral),mineral);
    assert.deepEqual(legacy,[]);assert.deepEqual(errors,[]);console.log('OCT13_OK '+locale+' all requested UI, controls, dates, counts, layout and escaping');
    await ctx.close();
   }
