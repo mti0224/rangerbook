@@ -19,6 +19,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from player_query import query_player_teams, search_players
+from popular_pages import build_popular_report
 
 APP_ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("RANGERBOOK_AUTH_DB", APP_ROOT / "rangerbook_auth.db")).resolve()
@@ -649,8 +650,26 @@ def bootstrap_super_admin(account: str, password: str) -> dict[str, Any]:
     return public_user(row)
 
 # Traffic reports are prepared by a separate read-only GA4 collector.
-# Cached aggregated statistics are never copied into the public website.
+# Full admin reports remain private; a separate cache contains only three
+# allowlisted public data pages for the homepage.
 TRAFFIC_CACHE_DIR = Path(os.getenv("RANGERBOOK_TRAFFIC_CACHE_DIR", "/home/ubuntu/rangerbook-auth/traffic-cache")).resolve()
+
+@app.get("/public/popular-pages")
+def popular_pages(response: Response) -> dict[str, Any]:
+    response.headers["Cache-Control"] = "public, max-age=300, stale-while-revalidate=3600"
+    file = TRAFFIC_CACHE_DIR / "popular-pages.json"
+    if not file.is_file():
+        return {"status": "unconfigured", "days": 7, "updatedAt": None, "pages": []}
+    try:
+        content = json.loads(file.read_text(encoding="utf-8"))
+        if (not isinstance(content, dict) or content.get("status") != "ready"
+                or content.get("days") != 7 or not isinstance(content.get("pages"), list)
+                or not isinstance(content.get("updatedAt"), str)):
+            raise ValueError("Invalid ranking cache")
+        # Reproject even a valid cache; never expose unexpected/private fields.
+        return build_popular_report(content["pages"], content["updatedAt"])
+    except (OSError, ValueError, TypeError):
+        raise HTTPException(status_code=503, detail="Popular pages unavailable")
 
 @app.get("/admin/traffic")
 @app.get("/super-admin/traffic", include_in_schema=False)  # Backward-compatible read-only alias.

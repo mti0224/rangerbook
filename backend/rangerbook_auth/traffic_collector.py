@@ -8,7 +8,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
-from google.analytics.data_v1beta.types import DateRange, Dimension, Metric, RunReportRequest
+from google.analytics.data_v1beta.types import DateRange, Dimension, Filter, FilterExpression, Metric, OrderBy, RunReportRequest
+from popular_pages import build_popular_report
 
 PROPERTY = os.getenv("RANGERBOOK_GA4_PROPERTY_ID", "").strip()
 CACHE = Path(os.getenv("RANGERBOOK_TRAFFIC_CACHE_DIR", "/home/ubuntu/rangerbook-auth/traffic-cache"))
@@ -53,6 +54,40 @@ def generate(client, days):
         ][:20],
     }
 
+def generate_popular(client):
+    # Read all rows before canonicalizing aliases, rather than ranking a truncated
+    # admin report. Only production hosts and navigable leaf pages are eligible.
+    pages, offset = [], 0
+    while True:
+        response = client.run_report(RunReportRequest(
+            property="properties/" + PROPERTY,
+            date_ranges=[DateRange(start_date="6daysAgo", end_date="today")],
+            dimensions=[Dimension(name="pagePath")],
+            metrics=[Metric(name="screenPageViews")],
+            dimension_filter=FilterExpression(filter=Filter(
+                field_name="hostName", in_list_filter=Filter.InListFilter(
+                    values=["rangerbook.warmycat.com", "mti0224.github.io"]))),
+            order_bys=[OrderBy(metric=OrderBy.MetricOrderBy(metric_name="screenPageViews"), desc=True)],
+            limit=10000, offset=offset,
+        ))
+        pages.extend({"path": row.dimension_values[0].value,
+                      "views": int(float(row.metric_values[0].value))} for row in response.rows)
+        offset += len(response.rows)
+        if not response.rows or offset >= response.row_count:
+            break
+    return build_popular_report(pages, datetime.now(timezone.utc).isoformat())
+
+def write_cache(name, report):
+    fd, temporary = tempfile.mkstemp(prefix=".traffic-", dir=CACHE)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(report, handle, ensure_ascii=False)
+        os.chmod(temporary, 0o600)
+        os.replace(temporary, CACHE / name)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
 def main():
     if not PROPERTY.isdigit():
         raise SystemExit("Missing numeric RANGERBOOK_GA4_PROPERTY_ID")
@@ -60,16 +95,10 @@ def main():
     CACHE.mkdir(parents=True, exist_ok=True)
     for days in (7, 30, 90):
         report = generate(client, days)
-        fd, temporary = tempfile.mkstemp(prefix=".traffic-", dir=CACHE)
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                json.dump(report, handle, ensure_ascii=False)
-            os.chmod(temporary, 0o600)
-            os.replace(temporary, CACHE / f"report-{days}.json")
-        finally:
-            if os.path.exists(temporary):
-                os.unlink(temporary)
+        write_cache(f"report-{days}.json", report)
         print(f"GA4 report updated: {days} days")
+    write_cache("popular-pages.json", generate_popular(client))
+    print("GA4 public leaf-page ranking updated: 7 days")
 
 if __name__ == "__main__":
     main()

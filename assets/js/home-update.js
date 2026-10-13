@@ -29,7 +29,7 @@
 
   function renderLatest(entry) {
     if (!entry) {
-      mount.innerHTML = `<p class="home-update-error">目前沒有更新日誌。</p>`;
+      mount.innerHTML = `<p class="home-update-error" data-i18n="home.updates.empty">目前沒有更新日誌。</p>`;
       return;
     }
 
@@ -53,7 +53,7 @@
       renderLatest(sortByDateDesc(Array.isArray(logs) ? logs : [])[0]);
     } catch (error) {
       console.error(error);
-      mount.innerHTML = `<p class="home-update-error">更新日誌載入失敗。</p>`;
+      mount.innerHTML = `<p class="home-update-error" data-i18n="home.updates.error">更新日誌載入失敗。</p>`;
     }
   }
 

@@ -1,0 +1,112 @@
+{
+  "/ranger/ranger/": {
+    "titleKey": "ranger.title",
+    "label": "Rangers數據",
+    "icon": "rangerIcon.png"
+  },
+  "/ranger/compare/": {
+    "titleKey": "ranger.hub.compare",
+    "label": "Rangers比對",
+    "icon": "rangerIcon.png"
+  },
+  "/ranger/ranking/": {
+    "titleKey": "copy.ranger.stat.rankings",
+    "label": "Rangers數據排名",
+    "icon": "rangerIcon.png"
+  },
+  "/ranger/stats/": {
+    "titleKey": "copy.ranger.statistics",
+    "label": "Rangers統計資料",
+    "icon": "rangerIcon.png"
+  },
+  "/pvp/usage/": {
+    "titleKey": "home.popular.pvpUsage",
+    "label": "PvP 角色使用率",
+    "icon": "pvpicon.png"
+  },
+  "/pvp/leaderboard/": {
+    "titleKey": "home.popular.pvpLeaderboard",
+    "label": "PvP 排行榜",
+    "icon": "pvpicon.png"
+  },
+  "/pvp/usage-history/": {
+    "titleKey": "home.popular.pvpHistory",
+    "label": "PvP 角色使用率變化",
+    "icon": "pvpicon.png"
+  },
+  "/gear/": {
+    "titleKey": "gear.title",
+    "label": "裝備",
+    "icon": "gearIcon.png"
+  },
+  "/ability/": {
+    "titleKey": "ability.title",
+    "label": "能力",
+    "icon": "abilityIcon.png"
+  },
+  "/guildwar/ranking/": {
+    "titleKey": "copy.guild.rankings",
+    "label": "公會排名",
+    "icon": "guildIcon.png"
+  },
+  "/guildwar/usage/": {
+    "titleKey": "home.popular.guildUsage",
+    "label": "公會角色使用率",
+    "icon": "guildIcon.png"
+  },
+  "/mainstage/hard/stage/": {
+    "titleKey": "copy.hard.stage.details",
+    "label": "困難關卡資訊",
+    "icon": "hsIcon.png"
+  },
+  "/mainstage/hard/enemy/": {
+    "titleKey": "copy.hard.stage.enemies",
+    "label": "困難關卡敵人資訊",
+    "icon": "hsIcon.png"
+  },
+  "/mainstage/extreme/stage/": {
+    "titleKey": "copy.extreme.mode.stages",
+    "label": "極限模式關卡資訊",
+    "icon": "hsIcon.png"
+  },
+  "/mainstage/extreme/enemy/": {
+    "titleKey": "copy.extreme.mode.enemies",
+    "label": "極限模式敵人資訊",
+    "icon": "hsIcon.png"
+  },
+  "/endless/stage/": {
+    "titleKey": "copy.endless.tower.stages",
+    "label": "無限之塔關卡資訊",
+    "icon": "infIcon.png"
+  },
+  "/endless/enemy/": {
+    "titleKey": "copy.endless.tower.enemies",
+    "label": "無限之塔敵人資訊",
+    "icon": "infIcon.png"
+  },
+  "/eventStageEnemy/": {
+    "titleKey": "table.eventStage",
+    "label": "活動關卡",
+    "icon": "eventStageIcon.png"
+  },
+  "/adventEnemy/": {
+    "titleKey": "nav.advent",
+    "label": "降臨關卡",
+    "icon": "adventIcon.png"
+  },
+  "/labyrinth/stage/": {
+    "titleKey": "copy.labyrinth.stages",
+    "label": "迷宮關卡資訊",
+    "icon": "labyrinthIcon.png"
+  },
+  "/labyrinth/enemy/": {
+    "titleKey": "copy.labyrinth.enemies",
+    "label": "迷宮敵人資訊",
+    "icon": "labyrinthIcon.png"
+  },
+  "/labyrinth/artifact/": {
+    "titleKey": "copy.labyrinth.artifacts",
+    "label": "迷宮遺物資訊",
+    "icon": "labyrinthIcon.png"
+  }
+}
