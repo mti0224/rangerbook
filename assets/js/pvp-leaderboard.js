@@ -272,7 +272,7 @@
     const iconHtml = icon
       ? `<img class="pvp-player-extra-icon" src="${icon}" alt="" decoding="async" onerror="this.remove();">`
       : `<span class="pvp-player-extra-icon pvp-player-extra-icon-empty" aria-hidden="true">${escapeHtml(badge || "—")}</span>`;
-    return `<div class="pvp-player-extra-item">${iconHtml}<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div></div>`;
+    return `<div class="pvp-player-extra-item" data-detail-label="${escapeHtml(label)}">${iconHtml}<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div></div>`;
   }
 
   function hideEffect(item) {
@@ -358,7 +358,7 @@
     const player = modalState.player;
     const options = TEAM_OPTIONS.map(([value, label]) => `<option value="${value}" ${value === modalState.teamKey ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
     elements.modalContent.innerHTML = `
-      <header class="pvp-player-team-header">
+      <header class="pvp-player-team-header" data-player-rank="${escapeHtml(player.rank)}">
         <h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2>
         <p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p>
         <div class="pvp-player-team-toolbar"><label><span>顯示隊伍</span><select id="pvpPlayerTeamSelect">${options}</select></label></div>
@@ -450,7 +450,7 @@
       await loadSupportData();
       const detail = findPlayerDetail(player);
       if (!detail) {
-        elements.modalContent.innerHTML = `<header class="pvp-player-team-header"><h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2><p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p></header><div class="pvp-player-unit-detail-empty">這名玩家的隊伍詳細資料尚未產生，請等待下一次完整 PvP 資料更新。</div>`;
+        elements.modalContent.innerHTML = `<header class="pvp-player-team-header" data-player-rank="${escapeHtml(player.rank)}"><h2 id="pvpPlayerTeamModalTitle">${escapeHtml(playerName(player))}</h2><p>排名 #${escapeHtml(player.rank)} · ${escapeHtml(formatNumber(player.score))} 分</p></header><div class="pvp-player-unit-detail-empty">這名玩家的隊伍詳細資料尚未產生，請等待下一次完整 PvP 資料更新。</div>`;
         return;
       }
       modalState.detail = detail;

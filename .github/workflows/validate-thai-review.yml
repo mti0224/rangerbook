@@ -1,0 +1,36 @@
+name: Validate Thai review fixes
+on:
+  pull_request:
+    paths:
+      - "assets/js/pvp-player*.js"
+      - "assets/js/pvp-leaderboard.js"
+      - "assets/js/guildwar-ranking.js"
+      - "assets/js/v2-data.js"
+      - "deploy/aws/v2/locales/ui.json"
+      - "res/v2/locales/ui.json"
+      - "tests/thai-review-ui.cjs"
+      - ".github/workflows/validate-thai-review.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  thai-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install browser
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Preview authored catalog
+        run: cp deploy/aws/v2/locales/ui.json res/v2/locales/ui.json
+      - name: Verify four-language Thai review, filters, levels and PvP teams
+        run: QA_LOCAL_FILES=1 node tests/thai-review-ui.cjs
+      - name: Verify V2 data contracts
+        run: |
+          node tests/v2-site-adapter.cjs
+          python -m unittest discover -s tests -p test_v2_audit.py

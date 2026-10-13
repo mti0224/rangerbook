@@ -164,6 +164,8 @@
   }
 
   function currentRank() {
+    const rank = Number(modalContent?.querySelector(".pvp-player-team-header")?.dataset.playerRank);
+    if (rank) return rank;
     const text = modalContent?.querySelector(".pvp-player-team-header > p")?.textContent || "";
     return Number(text.match(/排名\s*#\s*(\d+)/)?.[1] || 0);
   }

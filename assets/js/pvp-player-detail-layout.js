@@ -10,7 +10,7 @@
   let currentPlayerRank = 0;
 
   function itemLabel(item) {
-    return item?.querySelector(":scope > div > span")?.textContent?.trim() || "";
+    return item?.dataset.detailLabel || item?.querySelector(":scope > div > span")?.textContent?.trim() || "";
   }
 
   function addTalentToName(headCopy, talentItem, removeTalentItem = false) {
@@ -130,6 +130,8 @@
   }
 
   function currentRank() {
+    const rank = Number(pvpContent?.querySelector(".pvp-player-team-header")?.dataset.playerRank);
+    if (rank) return rank;
     if (currentPlayerRank) return currentPlayerRank;
     const text = pvpContent?.querySelector(".pvp-player-team-header > p")?.textContent || "";
     const match = text.match(/排名\s*#\s*(\d+)/);
