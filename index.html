@@ -39,6 +39,7 @@
   <link rel="stylesheet" href="./assets/css/game-tech.css?v=20261013-v2.5">
   <link rel="stylesheet" href="./assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="./assets/css/sidebar-drawer.css?v=20261013b">
+  <link rel="stylesheet" href="./assets/css/home-popular.css?v=20261013-popular1">
 </head>
 <body class="gt-app">
   <div id="site-header"></div>
@@ -50,11 +51,22 @@
       <p class="hero-text" data-i18n="home.intro">提供 LINE Rangers 的角色、裝備、能力、主要關卡、無限之塔、活動關卡、降臨關卡、迷宮、PvP 與公會戰資料查詢，方便快速查看各項詳細數據。</p>
     </section>
 
+    <div class="home-feature-grid">
+    <section class="home-popular-card" aria-labelledby="homePopularTitle">
+      <div class="home-popular-heading">
+        <h2 id="homePopularTitle" data-i18n="home.popular.title">大家都在找…</h2>
+        <p data-i18n="home.popular.period">最近 7 天熱門頁面</p>
+      </div>
+      <div id="homePopularPages" class="home-popular-pages" aria-live="polite" aria-busy="true">
+        <p class="home-popular-status" data-i18n="home.popular.loading">熱門頁面載入中…</p>
+      </div>
+    </section>
     <section class="home-update-card" aria-labelledby="homeUpdateTitle">
       <div class="home-update-heading"><h2 id="homeUpdateTitle" data-i18n="home.updates">更新日誌</h2></div>
-      <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite"><p class="home-update-loading">更新日誌載入中...</p></div>
+      <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite"><p class="home-update-loading" data-i18n="home.updates.loading">更新日誌載入中...</p></div>
       <a class="home-update-more" href="./update/" data-i18n="home.more">查看更多...</a>
     </section>
+    </div>
 
     <section class="home-tool-grid" aria-label="資料查詢入口">
       <a class="home-tool-card" href="./ranger/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/rangerIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2 data-i18n="home.rangers">Rangers角色</h2><p data-i18n="home.rangers.desc">查詢每隻角色的詳細數據</p></div></a>
@@ -76,6 +88,7 @@
   <script src="./assets/js/v2-data.js?v=20261013-thai1"></script>
   <script src="./assets/js/i18n.js?v=20261013-region1"></script>
   <script src="./assets/js/site.js?v=20261013-region1"></script>
-  <script src="./assets/js/home-update.js?v=20261013-v2.5"></script>
+  <script src="./assets/js/home-update.js?v=20261013-popular1"></script>
+  <script src="./assets/js/home-popular.js?v=20261013-popular1"></script>
 </body>
 </html>
