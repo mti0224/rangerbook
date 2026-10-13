@@ -50,6 +50,10 @@
 | `admin-traffic-ui.cjs` | 兩種管理員 × 明暗色系 × 手機／桌面，共 8 組；30／7／90 天、空資料及提示操作通過 |
 | `scripts.v2.audit.audit(res/v2)` | 0 阻斷文字／語意綁定錯誤 |
 | `git diff --check` | 通過 |
+| `node --test tests/game-tech-contract.test.js` | 19 通過；移除首頁角色圖片後保留入口卡片原圖與結構 |
+| `node tests/i18n-contract.cjs`、`test_game_locale_export.py` | 通過；Python 1 項 |
+| `first-paint.cjs` | 7 頁 × 明暗，共 14 組；延遲有快取參數的 site.js 時首屏版面仍正確 |
+| `ui-i18n-page-audit.cjs` | 17 頁英語動態介面通過；測試期望跟隨已核對官方術語 Factor／Splash Radius／Agility Type |
 
 重現瀏覽器測試：在網站根目錄啟動 HTTP server，設定 `AUDIT_BASE_URL`，安裝 Playwright／Chromium 後執行 `node tests/<測試檔>.cjs`。
 
@@ -64,3 +68,9 @@
 AWS 不安裝瀏覽器、不建立 Git clone 或下載大型測試資料；編譯及發布時保留至少 3 GiB 可用空間。部署失敗使用備份回復本地 V2；GitHub 發布沿用已驗證的重試機制。正式部署與下一次排程執行結果記錄於 PR。
 
 限制：本次管理端測試驗證前端登入權限與已授權 API 行為，未對正式帳號執行密碼／角色／管理資料寫入。
+
+部署備份：`/home/ubuntu/rangerbook-v2/backups/v2-interface-20261013-retry/v2-before.tar.gz`（1,990,505 bytes）。AWS 24 檔驗證通過、文字綁定錯誤 0、後端 23 檔及 V1／服務 38 檔雜湊不變、歷史登場日期不變。最低可用 3.5777 GiB，完成時 3.6006 GiB。資料發布 commit：`8a7f919814b1e05d6419c16cacc3e29c7104518c`。
+
+部署紀錄第一次以 root 讀取 ubuntu Git checkout 被 Git 擁有者檢查拒絕，本地 V2 自動回復；改用 ubuntu 讀取後重新部署成功，未變更 Git 安全設定。CI 的首屏測試修正為依 URL pathname 攔截 site.js，避免快取參數導致測試未實際延遲腳本。CI 在獨立 checkout 使用 authored UI catalog，無正式 `res/v2` 人工提交。
+
+下一次排程驗證：Asia/Taipei 10/13 10:14:21 V2 更新成功（exit 0），UI 輸入及輸出仍是 SHA-256 `23bd0f11a0900021b9550769b67b0b227e9c2d8067455ec6b895471620aa33ae`；V1 10:12:09 更新成功。兩個 timer 均 active，38 個受保護檔案及登場日期仍未變；驗證時可用空間 3.6077 GiB。

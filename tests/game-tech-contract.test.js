@@ -10,7 +10,7 @@ const homepage = read("index.html");
 test("shared shell preserves light/dark choice and public nav", () => {
   assert.match(shell,/const THEME_KEY = "rangerbook-theme"/);
   assert.match(shell,/document\.documentElement\.dataset\.theme = theme/);
-  assert.match(shell,/loadStylesheet\("game-tech\.css", "20261010b"\)/);
+  assert.match(shell,/loadStylesheet\("game-tech\.css", "20261013-v2\.5"\)/);
   assert.match(shell,/nav\.cloneNode\(true\)/);
   assert.match(theme,/html\[data-theme="dark"\] body\.gt-app/);
   assert.match(theme,/max-width: 1120px/);
@@ -19,7 +19,7 @@ test("home tool cards retain left-image/right-text structure and original image 
   assert.match(homepage,/class="home-tool-image-wrap"/);
   assert.match(homepage,/class="home-tool-content"/);
   assert.match(homepage,/assets\/main_icon\/pvpicon\.png/);
-  assert.match(homepage,/rangerbook_res\/main\/u1134e-brown/);
+  assert.doesNotMatch(homepage,/class="gt-home-characters"/);
   assert.match(theme,/\.home-tool-card\s*\{[\s\S]*grid-template-columns:/);
 });
 test("ranger and equipment retain modal-to-detail links",()=>{
@@ -86,7 +86,7 @@ test("site-wide control layer loads after Game-Tech and preserves thematic reset
  const shell=read("assets/js/site.js"),theme=read("assets/css/theme-toggle.css");
  const ctrl=read("assets/css/game-tech-controls.css");
  assert.match(shell,/loadStylesheet\("game-tech-controls\.css", "20261010a"\)/);
- assert.ok(shell.indexOf('game-tech.css", "20261010b"') < shell.indexOf('game-tech-controls.css", "20261010a"'));
+ assert.ok(shell.indexOf('game-tech.css", "20261013-v2.5"') < shell.indexOf('game-tech-controls.css", "20261010a"'));
  assert.doesNotMatch(theme,/html\[data-theme="dark"\] button:hover\s*\{/);
  assert.match(ctrl,/\.gear-mode-switch button\.active/);
  assert.match(ctrl,/\.pvp-player-unit-button/);
@@ -205,7 +205,7 @@ test("GA4 traffic charts have no CDN dependencies and preserve role-protected da
   assert.match(html,/id="trafficDaily" class="traffic-chart-scroll"/);
   assert.match(html,/id="trafficPages" class="traffic-scroll-list"/);
   assert.match(html,/id="trafficSources" class="traffic-source-chart"/);
-  assert.match(html,/admin-traffic-charts\.js\?v=20261011c/);
+  assert.match(html,/admin-traffic-charts\.js\?v=20261013-v2\.5/);
   assert.match(js,/RangerbookTrafficCharts\.renderDaily/);
   assert.match(js,/RangerbookTrafficCharts\.renderSources/);
   assert.ok(js.includes("traffic: auth.isAdmin()"));

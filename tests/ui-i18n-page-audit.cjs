@@ -69,10 +69,10 @@ const paths = [
           });
           await page.waitForFunction(() => {
             const root = document.getElementById("detail-i18n-regression");
-            return root?.querySelector('th[data-i18n="table.coefficient"]')?.textContent === "Multiplier";
+            return root?.querySelector('th[data-i18n="table.coefficient"]')?.textContent === "Factor";
           });
           const labels = await page.locator("#detail-i18n-regression th, #detail-i18n-regression .ranger-stat span").allTextContents();
-          assert.deepEqual(labels, ["Skill Effect", "Multiplier", "Duration", "Range", "Mineral Cost", "Splash Range"]);
+          assert.deepEqual(labels.map(s=>s.replace(/\s+/g," ")), ["Skill Effect", "Factor", "Duration", "Range", "Mineral Production cost", "Splash Radius"]);
           assert.equal(await page.locator("#detail-i18n-regression strong").getAttribute("data-raw-stat"),"生產礦物費用");
         }
 
@@ -82,7 +82,7 @@ const paths = [
             return translation === "Ancient King's Sword";
           }, null, {timeout:10000});
           assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText("Ranger的攻擊力提升10.0%")), "Rangers' ATK +10.0%");
-          assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText("敏捷型")), "Agility");
+          assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText("敏捷型")), "Agility Type");
         }
         if (path === "/") {
           const node = await page.evaluate(() => {
@@ -98,9 +98,9 @@ const paths = [
             document.body.appendChild(root);
             return root.id;
           });
-          await page.waitForFunction(() => document.querySelector("#audit-game-specific-terms span")?.textContent === "Hyper 8 Stars");
+          await page.waitForFunction(() => document.querySelector("#audit-game-specific-terms span")?.textContent === "8-Star Hyper Evolution");
           const labels = await page.locator("#audit-game-specific-terms span").allTextContents();
-          assert.deepEqual(labels, ["Hyper 8 Stars", "Ultra 9 Stars", "15 pt/sec", "1.5 sec/attack", "Rank #12 · 31 / 50 members"]);
+          assert.deepEqual(labels, ["8-Star Hyper Evolution", "Ultra 9 Stars", "15 pt/sec", "1.5 sec/attack", "Rank #12 · 31 / 50 members"]);
         }
         if(path==="/settings/"){
           assert.equal(await page.locator('input[name="language"]:checked').inputValue(),"en");

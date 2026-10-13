@@ -15,7 +15,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         const page = await ctx.newPage();
         let siteAllowed = false;
         const pending = [];
-        await page.route("**/assets/js/site.js",async route=>{
+        await page.route(url=>url.pathname.endsWith("/assets/js/site.js"),async route=>{
           // Parser waits for the footer script; theme and new layout must exist already.
           await new Promise(resolve=>pending.push(resolve));
           siteAllowed = true;
