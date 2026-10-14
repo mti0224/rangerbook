@@ -48,6 +48,12 @@ const details={...report,pages:[
       await page.evaluate(()=>window.RangerbookI18n.ready);
       await page.locator('.home-popular-link').nth(2).waitFor();
       assert.equal(await page.locator('#homePopularTitle').textContent(),t('home.popular.title',locale));
+      assert.equal(await page.locator('#homeAllPagesTitle').textContent(),t('home.allPages',locale));
+      assert.equal(await page.locator('.home-popular-card #homePopularTitle, .home-update-card #homeUpdateTitle').count(),0);
+      const allPagesStyle=await page.locator('.home-all-pages').evaluate(el=>{
+        const css=getComputedStyle(el);return {background:css.backgroundColor,border:css.borderTopWidth};
+      });
+      assert.deepEqual(allPagesStyle,{background:'rgba(0, 0, 0, 0)',border:'0px'});
       assert.equal(await page.locator('.home-popular-name').first().textContent(),t('home.popular.pvpUsage',locale));
       assert.equal(await page.locator('.home-popular-rank').first().textContent(),fill('home.popular.rank',locale,1));
       assert.equal(await page.locator('.home-popular-views').first().textContent(),fill('home.popular.views',locale,(11414).toLocaleString(locale==='jp'?'ja':locale)));
@@ -57,6 +63,12 @@ const details={...report,pages:[
         const popular = await page.locator('.home-popular-card').boundingBox();
         const updates = await page.locator('.home-update-card').boundingBox();
         const tools = await page.locator('.home-tool-grid').boundingBox();
+        for(const [titleId,card] of [['homePopularTitle',popular],['homeUpdateTitle',updates],['homeAllPagesTitle',tools]]) {
+          const title=await page.locator('#'+titleId).boundingBox();
+          assert.ok(title.y+title.height<=card.y+1,'Section title must sit outside and above its card');
+          assert.ok(Math.abs(title.x-card.x)<1,'Section title must align with the left edge');
+          assert.equal(await page.locator('#'+titleId).evaluate(el=>getComputedStyle(el).textAlign),'left');
+        }
         const boxes = await page.locator('.home-popular-link').evaluateAll(links=>links.map(a=>{
           const b=a.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height};
         }));

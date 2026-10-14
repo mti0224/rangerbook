@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="./assets/css/game-tech.css?v=20261013-v2.5">
   <link rel="stylesheet" href="./assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="./assets/css/sidebar-drawer.css?v=20261013b">
-  <link rel="stylesheet" href="./assets/css/home-popular.css?v=20261013-popular1">
+  <link rel="stylesheet" href="./assets/css/home-popular.css?v=20261014-headings1">
 </head>
 <body class="gt-app">
   <div id="site-header"></div>
@@ -52,23 +52,27 @@
     </section>
 
     <div class="home-feature-grid">
-    <section class="home-popular-card" aria-labelledby="homePopularTitle">
-      <div class="home-popular-heading">
-        <h2 id="homePopularTitle" data-i18n="home.popular.title">大家都在找…</h2>
-        <p data-i18n="home.popular.period">最近 7 天熱門頁面</p>
-      </div>
-      <div id="homePopularPages" class="home-popular-pages" aria-live="polite" aria-busy="true">
-        <p class="home-popular-status" data-i18n="home.popular.loading">熱門頁面載入中…</p>
-      </div>
-    </section>
-    <section class="home-update-card" aria-labelledby="homeUpdateTitle">
-      <div class="home-update-heading"><h2 id="homeUpdateTitle" data-i18n="home.updates">更新日誌</h2></div>
-      <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite"><p class="home-update-loading" data-i18n="home.updates.loading">更新日誌載入中...</p></div>
-      <a class="home-update-more" href="./update/" data-i18n="home.more">查看更多...</a>
-    </section>
+      <section class="home-feature-section" aria-labelledby="homePopularTitle">
+        <h2 id="homePopularTitle" class="home-section-title" data-i18n="home.popular.title">大家都在找…</h2>
+        <div class="home-popular-card">
+          <p class="home-popular-period" data-i18n="home.popular.period">最近 7 天熱門頁面</p>
+          <div id="homePopularPages" class="home-popular-pages" aria-live="polite" aria-busy="true">
+            <p class="home-popular-status" data-i18n="home.popular.loading">熱門頁面載入中…</p>
+          </div>
+        </div>
+      </section>
+      <section class="home-feature-section" aria-labelledby="homeUpdateTitle">
+        <h2 id="homeUpdateTitle" class="home-section-title" data-i18n="home.updates">更新日誌</h2>
+        <div class="home-update-card">
+          <div id="homeUpdateLatest" class="home-update-latest" aria-live="polite"><p class="home-update-loading" data-i18n="home.updates.loading">更新日誌載入中...</p></div>
+          <a class="home-update-more" href="./update/" data-i18n="home.more">查看更多...</a>
+        </div>
+      </section>
     </div>
 
-    <section class="home-tool-grid" aria-label="資料查詢入口">
+    <section class="home-all-pages" aria-labelledby="homeAllPagesTitle">
+      <h2 id="homeAllPagesTitle" class="home-section-title" data-i18n="home.allPages">所有頁面</h2>
+      <div class="home-tool-grid">
       <a class="home-tool-card" href="./ranger/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/rangerIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2 data-i18n="home.rangers">Rangers角色</h2><p data-i18n="home.rangers.desc">查詢每隻角色的詳細數據</p></div></a>
 
       <a class="home-tool-card" href="./pvp/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/pvpicon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>PvP</h2><p data-i18n="home.pvp.desc">查看 PvP 排行榜與角色使用率</p></div></a>
@@ -82,6 +86,7 @@
       <a class="home-tool-card" href="./eventStageEnemy/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/eventStageIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>活動關卡</h2><p data-i18n="home.event.desc">查詢活動關卡中敵人的詳細數據</p></div></a>
       <a class="home-tool-card" href="./adventEnemy/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/adventIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>降臨關卡</h2><p data-i18n="home.advent.desc">查詢降臨關卡中敵人的詳細數據</p></div></a>
       <a class="home-tool-card" href="./labyrinth/"><div class="home-tool-image-wrap"><img class="home-tool-image" src="./assets/main_icon/labyrinthIcon.png" alt="" loading="lazy"></div><div class="home-tool-content"><h2>迷宮</h2><p data-i18n="home.labyrinth.desc">查詢迷宮敵人、關卡與遺物資訊</p></div></a>
+      </div>
     </section>
   </main>
 

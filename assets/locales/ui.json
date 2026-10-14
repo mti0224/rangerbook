@@ -721,7 +721,8 @@
     "home.updates.error": "更新日誌載入失敗。",
     "home.popular.hardStage": "困難關卡第 %N1 關",
     "home.popular.extremeStage": "極限關卡第 %N1 關",
-    "home.popular.endlessStage": "無限之塔第 %N1 層"
+    "home.popular.endlessStage": "無限之塔第 %N1 層",
+    "home.allPages": "所有頁面"
   },
   "en": {
     "nav.home": "Home",
@@ -1445,6 +1446,7 @@
     "home.updates.error": "Unable to load updates.",
     "home.popular.hardStage": "Hard Stage %N1",
     "home.popular.extremeStage": "Extreme Stage %N1",
-    "home.popular.endlessStage": "Endless Tower Floor %N1"
+    "home.popular.endlessStage": "Endless Tower Floor %N1",
+    "home.allPages": "All pages"
   }
 }

@@ -96,12 +96,12 @@
   },
   "inputSha256": {
     "locales/custom.json": "fcf516752e8b280d013fd657551c28ceeb9a34afdf6bed861294e2a74e3c876c",
-    "locales/ui.json": "edb69b9ab5cd9845a15fe7d5138a03aa24cd7a5b6736b45ea8730cf677ddef21",
+    "locales/ui.json": "51ab6c358a64512c01159206c957f4760d9d89a03e2a7e548cc93106894a0e0f",
     "metadata/release-dates.json": "a6ec58748dab4fa6e0ce4329047ca63d0eeda979f830618c9d3f312f31888265"
   },
   "patchSha256": "74a1ad6b04cb4319b0708885e74982a5bae7d0fa07dc124f0114352f3cee889f",
   "minimumDiskReserveGiB": 3,
   "dateSeedPolicy": "create_only_if_absent",
   "outputSource": "independent_official_api",
-  "authoredCatalogRevision": "20261013-home-popular1"
+  "authoredCatalogRevision": "20261014-home-headings1"
 }
