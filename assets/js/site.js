@@ -293,7 +293,7 @@
   loadStylesheet("theme-toggle.css", "20260525a");
   loadStylesheet("game-tech.css", "20261013-v2.5");
   loadStylesheet("game-tech-controls.css", "20261010a");
-  loadStylesheet("sidebar-drawer.css", "20261013b");
+  loadStylesheet("sidebar-drawer.css", "20261014-toggle1");
 
   mount.innerHTML = `
     <header class="site-header nav-collapsed">
@@ -372,8 +372,7 @@
   gtNav.className = "gt-sidebar-nav";
   gtNav.setAttribute("aria-label", "資料站主要連結");
   const gtPath = window.location.pathname.replace(/\/index\.html$/, "/");
-  // Reuse the hub destinations and existing localization keys. Submenu links
-  // always navigate; only the top-level hub link has expand-then-navigate behavior.
+  // Parent items are disclosure buttons; only their child links navigate.
   const hubChildren = {
     rangers: [
       ["ranger/ranger/", "ranger.title", "Rangers數據"],
@@ -416,10 +415,16 @@
       panel.setAttribute("aria-hidden", String(!open));
     });
   }
-  [...gtNav.children].forEach(link => {
-    const key = link.dataset.i18n?.replace(/^nav\./, "");
+  [...gtNav.children].forEach(sourceLink => {
+    const key = sourceLink.dataset.i18n?.replace(/^nav\./, "");
     const children = hubChildren[key];
     if (!children) return;
+    const link = document.createElement("button");
+    link.type = "button";
+    link.className = sourceLink.className;
+    link.dataset.i18n = sourceLink.dataset.i18n;
+    link.append(...sourceLink.childNodes);
+    const hubPath = new URL(sourceLink.href, window.location.href).pathname;
     const group = document.createElement("div");
     group.className = "gt-nav-group";
     const panel = document.createElement("div");
@@ -444,15 +449,14 @@
     link.classList.add("gt-nav-hub");
     link.setAttribute("aria-expanded", "false");
     link.setAttribute("aria-controls", panel.id);
-    link.replaceWith(group);
+    sourceLink.replaceWith(group);
     group.append(link, panel);
     gtGroups.push({ group, link, panel });
-    link.addEventListener("click", event => {
-      // Preserve open-in-new-tab/window and modifier-click link behavior.
-      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
-      if (group.classList.contains("gt-nav-expanded")) return;
-      event.preventDefault();
-      expandGroup(group);
+    if (gtPath.startsWith(hubPath)) {
+      link.setAttribute("aria-current", gtPath === hubPath ? "page" : "location");
+    }
+    link.addEventListener("click", () => {
+      expandGroup(group.classList.contains("gt-nav-expanded") ? null : group);
     });
   });
   gtNav.querySelectorAll("a").forEach((a) => {
