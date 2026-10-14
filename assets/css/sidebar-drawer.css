@@ -18,7 +18,7 @@ body.gt-app .gt-nav-hub::after {
   transition: transform .24s ease;
 }
 body.gt-app .gt-nav-expanded > .gt-nav-hub::after { transform: rotate(45deg); }
-body.gt-app .gt-sidebar-nav a[aria-current="location"] {
+body.gt-app .gt-sidebar-nav :is(a,button)[aria-current="location"] {
   background: var(--soft);
   color: var(--primary-dark);
 }
@@ -144,3 +144,43 @@ body.gt-app .gt-nav-submenu a::before { content: "·"; width: .55rem; }
     transition: none !important;
   }
 }
+
+/* Parent categories disclose children and have no navigation destination. */
+body.gt-app .gt-sidebar-nav button.gt-nav-hub {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  width: 100%;
+  margin: 0;
+  padding: .75rem .85rem;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: .86rem;
+  font-weight: 680;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background .16s, color .16s;
+}
+body.gt-app .gt-sidebar-nav button.gt-nav-hub::before {
+  content: "◇";
+  display: inline-block;
+  width: 1.1rem;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 400;
+}
+body.gt-app .gt-sidebar-nav button.gt-nav-hub:is(:hover,:focus-visible,[aria-current]) {
+  background: var(--soft);
+  color: var(--primary-dark);
+}
+body.gt-app .gt-sidebar-nav button.gt-nav-hub:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+body.gt-app .gt-sidebar-nav button.gt-nav-hub[aria-current="page"] { box-shadow: inset 2px 0 var(--primary); }
+body.gt-app .gt-sidebar-nav button.gt-nav-hub[aria-current="page"]::before { color: var(--primary); }
