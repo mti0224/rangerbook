@@ -150,7 +150,7 @@
     if (!body || !text) return;
     const effect = document.createElement("span");
     effect.className = "pvp-player-equipment-effect";
-    effect.textContent = `高級效果：${text}`;
+    effect.textContent = `${window.RangerbookPlayerEquipment.label()}：${text}`;
     effect.style.display = "block";
     effect.style.marginTop = "0.2rem";
     effect.style.fontSize = "0.78rem";
@@ -213,9 +213,8 @@
     const items = [...item.parentElement.querySelectorAll(":scope > .pvp-player-equipment-item")];
     const slot = EQUIP_SLOTS[items.indexOf(item)];
     if (!slot) return;
-    const code = advancedEffectCode(await unitLoader(), slot);
-    if (!code) return hideEffect(item);
-    const name = effectName(await loadEffectDict(), code);
+    const equipment = equipmentObject(await unitLoader(), slot);
+    const name = window.RangerbookPlayerEquipment.effectText(equipment, await loadEffectDict());
     if (name) showEffect(item, name);
   }
 

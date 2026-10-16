@@ -379,6 +379,10 @@ html[data-theme="dark"] .pvp-player-unit-button.is-selected {
   font-size: 0.86rem;
 }
 
+.pvp-player-equipment-effect {
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 900px) {
   .pvp-player-team-layout {
     grid-template-columns: 1fr;

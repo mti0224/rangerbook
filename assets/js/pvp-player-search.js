@@ -194,14 +194,7 @@
   }
 
   function advancedEffectName(unit, slot) {
-    const attr4No = equipmentObject(unit, slot)?.attr4No;
-    if (attr4No === undefined || attr4No === null || attr4No === "") return "";
-    const value = effectMap[String(attr4No)];
-    if (typeof value === "string") return value;
-    if (value && typeof value === "object") {
-      return String(value["效果名稱"] || value["名稱"] || value.name || value.label || "");
-    }
-    return "";
+    return window.RangerbookPlayerEquipment.effectText(equipmentObject(unit, slot), effectMap);
   }
 
   function equipmentItem(unit, slot) {
@@ -339,7 +332,7 @@
 
     const effect = document.createElement("span");
     effect.className = "pvp-player-equipment-effect";
-    effect.textContent = `高級效果：${text}`;
+    effect.textContent = `${window.RangerbookPlayerEquipment.label()}：${text}`;
     effect.style.display = "block";
     effect.style.marginTop = "0.2rem";
     effect.style.fontSize = "0.78rem";

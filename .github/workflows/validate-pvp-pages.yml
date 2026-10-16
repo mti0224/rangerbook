@@ -4,10 +4,18 @@ on:
   pull_request:
     paths:
       - "pvp/leaderboard/**"
+      - "pvp/search/**"
       - "pvp/usage/**"
       - "guildwar/**"
       - "assets/js/pvp-*.js"
+      - "assets/js/player-equipment-effects.js"
       - "assets/js/guildwar-*.js"
+      - "assets/css/pvp-player-teams.css"
+      - "backend/rangerbook_auth/equipment_effects.py"
+      - "backend/rangerbook_auth/player_query.py"
+      - "deploy/aws/install_player_equipment_values.py"
+      - "tests/player-equipment-values.cjs"
+      - "tests/test_player_equipment_values.py"
       - "assets/css/pvp-data.css"
       - "assets/css/pvp-usage-fixes.css"
       - ".github/workflows/validate-pvp-pages.yml"
@@ -21,12 +29,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - name: Validate JavaScript syntax
         run: |
           node --check assets/js/pvp-leaderboard.js
           node --check assets/js/pvp-usage.js
           node --check assets/js/guildwar-ranking.js
           node --check assets/js/guildwar-usage.js
+          node --check assets/js/player-equipment-effects.js
+          node --check assets/js/pvp-player-search.js
+      - name: Verify actual player equipment values and collector installation
+        run: |
+          pip install requests
+          python -m unittest discover -s tests -p test_player_equipment_values.py -v
+      - name: Verify four languages, player search, leagues and guild teams
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node tests/player-equipment-values.cjs
       - name: Validate page references
         run: |
           grep -q 'assets/js/pvp-leaderboard.js' pvp/leaderboard/index.html

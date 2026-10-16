@@ -244,21 +244,12 @@
     return `<span class="pvp-player-unit-equipment-slot" title="${esc(SLOT_LABELS[slot])}：${esc(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
   }
 
-  function effectName(code) {
-    if (code === undefined || code === null || code === "") return "";
-    const value = effectMap[String(code)];
-    if (typeof value === "string") return value;
-    if (value && typeof value === "object") {
-      return String(value["效果名稱"] || value["名稱"] || value.name || value.label || "");
-    }
-    return "";
-  }
 
   function equipmentItem(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
     const name = isNone ? "未裝備" : (gearNames[code] || code);
-    const effect = isNone ? "" : effectName(equipmentObject(unit, slot)?.attr4No);
+    const effect = isNone ? "" : window.RangerbookPlayerEquipment.effectText(equipmentObject(unit, slot), effectMap);
     const icon = isNone
       ? `<span class="pvp-player-equipment-empty-icon" aria-hidden="true">—</span>`
       : `<img src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
@@ -280,7 +271,7 @@
     if (!body) return;
     const effect = document.createElement("span");
     effect.className = "pvp-player-equipment-effect";
-    effect.textContent = `高級效果：${text}`;
+    effect.textContent = `${window.RangerbookPlayerEquipment.label()}：${text}`;
     effect.style.display = "block";
     effect.style.marginTop = "0.2rem";
     effect.style.fontSize = "0.78rem";
