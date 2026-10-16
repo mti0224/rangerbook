@@ -56,6 +56,12 @@
       return [...(ranger.abilityCodes || []),unit.awakeAbilityCode].filter(Boolean)
         .some(code => abilities.get(code)?.triggerEffects?.some(e => e.aptitudeCode === 'FLIGHT'));
     }
+    function eligibleFor(unit, ranger, metric) {
+      // Unknown Rangers remain pending in the radar rather than disappearing.
+      if (!ranger) return true;
+      if (['surehit','element'].includes(metric) && isFlyer(unit,ranger)) return false;
+      return metric !== 'element' || ['INT','AGI'].includes(ranger.roleType);
+    }
     function basicOptions(unit,slot) {
       const {actual,definition} = slotInfo(unit,slot);
       if (!actual) return [];
@@ -80,7 +86,7 @@
     }
     function unitMetrics(unit,ranger) {
       return metrics.map(metric => {
-        if (metric.id === 'element' && !['INT','AGI'].includes(ranger.roleType)) return undefined;
+        if (!eligibleFor(unit,ranger,metric.id)) return undefined;
         let total = metric.stat ? Number(ranger.stats?.[metric.stat] ?? 0) : 0;
         let complete = Number.isFinite(total);
         for (const slot of slots) {
@@ -116,7 +122,7 @@
       const members = units.map((unit,index) => ({unit,index,ranger:rangers.get(unit.unitCode)}));
       const values = members.map(m => m.ranger ? unitMetrics(m.unit,m.ranger) : metrics.map(() => null));
       const radar = metrics.map((metric,i) => {
-        const eligible = members.filter(m => metric.id !== 'element' || !m.ranger || ['INT','AGI'].includes(m.ranger.roleType));
+        const eligible = members.filter(m => eligibleFor(m.unit,m.ranger,metric.id));
         const numbers = eligible.map(m => values[m.index][i]);
         const complete = numbers.every(finite);
         const average = numbers.length && complete ? numbers.reduce((a,b) => a+b,0)/numbers.length : null;
@@ -127,7 +133,7 @@
         const categories = slots.includes(tab) ? [...elements,...roles] : tab === 'surehit' ? roles : elements;
         return categories.map((category,order) => {
           const eligible = members.filter(({unit,ranger}) => ranger && (roles.includes(category) ? ranger.roleType === category : ranger.elementType === category)
-            && (tab !== 'surehit' || !isFlyer(unit,ranger)) && (tab !== 'element' || ['INT','AGI'].includes(ranger.roleType)));
+            && eligibleFor(unit,ranger,tab));
           const entries = eligible.map(m => ({...m,...(slots.includes(tab) ? advanced(m.unit,tab,m.ranger) : tab === 'surehit' ? surehit(m.unit,m.ranger) : elemental(m.unit,m.ranger))}));
           const numerator = entries.filter(e => e.ok).length;
           return {category,order,entries,numerator,denominator:entries.length,ratio:entries.length ? numerator/entries.length : null};

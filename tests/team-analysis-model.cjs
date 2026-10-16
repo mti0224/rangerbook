@@ -56,7 +56,31 @@ assert.equal(run([units[0]],noHigh).tabs.ARMOR.find(r=>r.category==='FIRE').entr
 const fly=clone(catalogs);fly.rangers[0].abilityCodes=['fixture-flight'];
 r=run(units,fly);assert.equal(r.tabs.surehit.find(r=>r.category==='INT').denominator,1);
 assert.equal(r.tabs.WEAPON.find(r=>r.category==='INT').denominator,2);
-assert.equal(r.tabs.element.find(r=>r.category==='FIRE').denominator,1);
+assert.deepEqual([r.tabs.element.find(r=>r.category==='FIRE').numerator,r.tabs.element.find(r=>r.category==='FIRE').denominator],[0,0]);
+assert.equal(r.radar[4].count,5);
+assert.equal(r.radar[5].count,3);
+assert.equal(r.radar[5].average,250/3);
+assert.ok(r.tabs.surehit.every(row=>row.entries.every(e=>e.unit.unitCode!=='A')));
+assert.ok(r.tabs.element.every(row=>row.entries.every(e=>e.unit.unitCode!=='A')));
+// Exclude actual values as well as denominators, including awakened FLIGHT.
+const flyingUnits=clone(units);
+flyingUnits[0].equipMap.WEAPON.normalOptions.find(o=>o.optionKey===key('CLN_SKLAVD_PROB_MUL')).value=20;
+for(const source of ['native','awakened']) {
+ const flightCatalog=clone(catalogs),flightUnits=clone(flyingUnits);
+ if(source==='native') flightCatalog.rangers[0].abilityCodes=['fixture-flight'];
+ else flightUnits[0].awakeAbilityCode='fixture-flight';
+ const actual=run(flightUnits,flightCatalog);
+ assert.equal(actual.radar[4].average,4,source+' flight surehit value is excluded');
+ assert.equal(actual.radar[5].average,250/3,source+' flight element value is excluded');
+ const counts=rows=>rows.map(({category,numerator,denominator,ratio,entries})=>({category,numerator,denominator,ratio,entries:entries.map(({index,ok,reason})=>({index,ok,reason}))}));
+ for(const tab of ['WEAPON','ARMOR','ACC']) assert.deepEqual(counts(actual.tabs[tab]),counts(result.tabs[tab]),source+' does not exclude slot analysis');
+ for(const id of ['evade','resistance','mineral','respawn']) assert.deepEqual(actual.radar.find(m=>m.id===id),result.radar.find(m=>m.id===id));
+ const onlyFlyer=run([flightUnits[0]],flightCatalog);
+ for(const metric of onlyFlyer.radar.filter(m=>['surehit','element'].includes(m.id))) {
+  assert.equal(metric.average,null); assert.equal(metric.count,0); assert.equal(metric.pending,false);
+ }
+ for(const tab of ['surehit','element']) assert.ok(onlyFlyer.tabs[tab].every(row=>row.denominator===0&&row.numerator===0&&row.ratio===null&&row.entries.length===0));
+}
 assert.equal(run([units[2]]).radar[5].average,null);
 assert.ok(run([]).radar.every(m=>m.average===null&&!m.pending));
 assert.ok(Object.values(run([]).tabs).flat().every(r=>r.ratio===null&&r.denominator===0));

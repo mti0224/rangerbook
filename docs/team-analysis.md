@@ -7,8 +7,11 @@ localized labels never determine game logic. Only this page gains the analysis U
 `team-analysis-model.js` is the shared, pure calculation engine. Slot tabs count
 Rangers, with each Ranger included in both their element and role. Surehit uses
 `CLN_SKLAVD_PROB_MUL`, not `ANTI_SKLAVD_PROB_MUL` (Skill Hit Rate), and excludes
-abilities with native `FLIGHT` aptitude. Elemental Prowess uses `EATK_MUL`, counts
-a Ranger once in the bars, sums active values in the radar, and excludes STR.
+abilities with native `FLIGHT` aptitude. Both the radar and equipment tabs exclude
+FLIGHT Rangers from Surehit and Elemental Prowess, including their denominators
+and result cards. Native and awakened abilities use the same eligibility rule.
+Elemental Prowess uses `EATK_MUL`, counts a Ranger once in the bars, sums active
+values in the radar, and also excludes STR.
 
 The Auth equipment serializer adds `normalOptions` (actual rolled and enchanted
 values), `attr4OptionKey`, and `attr4Condition` from official V2 raw attributes.
