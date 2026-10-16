@@ -34,8 +34,8 @@ def _roll(definition: dict, grade: Any) -> Decimal | None:
 def analysis_values(equipment: dict[str, Any]) -> dict[str, Any]:
     """Only public combat attributes; never return inventory/account identifiers.
 
-    Basic enchant uses the official item's attrNProb per upgrade, matched by
-    attribute ID because the player's three slots can be in a different order.
+    Basic enchant uses the existing equipment-detail rule: rolled value times
+    (currentEnchant + 1). attrNProb is not a stat enhancement multiplier.
     Missing rolls remain unknown; they are never substituted with max rolls.
     """
     try:
@@ -59,7 +59,7 @@ def analysis_values(equipment: dict[str, Any]) -> dict[str, Any]:
             value = _roll(attr, equipment.get(f"attr{i}ValueGrade"))
             fields = [f"attr{n}" for n in range(1, 4) if str(item.get(f"attr{n}")) == attr_id]
             if value is not None and enchant is not None and len(fields) == 1:
-                value *= 1 + Decimal(str(item[fields[0] + "Prob"])) / 100 * enchant
+                value *= enchant + 1
                 if option["unit"] == "PERCENT":
                     value *= 100
                 if value.is_finite():

@@ -82,6 +82,9 @@ for(const g of catalogs.equipment) {
     assert.equal(await page.locator('.ta-member').count(),0);
    } else assert.equal(await page.locator('.ta-metric-list dd').nth(4).innerText(),'4%');
   }
+  // The outer wrapper is transparent; each rounded panel owns its background.
+  assert.equal(await page.locator('#pvpPlayerSearchResult').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
+  assert.equal(await page.locator('.ta-panel').first().evaluate(e=>getComputedStyle(e).overflow),'clip');
   // Equal-width panels on desktop, stacked on narrow devices, and both theme colors.
   const panels=page.locator('.ta-panel');let p=await panels.evaluateAll(a=>a.map(e=>({x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y,width:e.getBoundingClientRect().width})));
   assert.ok(Math.abs(p[0].width-p[1].width)<1);assert.equal(p[0].y,p[1].y);
@@ -93,6 +96,7 @@ for(const g of catalogs.equipment) {
     p=await panels.evaluateAll(a=>a.map(e=>({y:e.getBoundingClientRect().y})));
     assert.ok(p[1].y>p[0].y);
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${locale} ${theme} ${width} overflow`);
+    assert.equal(await page.locator('#pvpPlayerSearchResult').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
     assert.notEqual(await page.locator('.ta-pass').first().evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('.ta-fail').first().evaluate(e=>getComputedStyle(e).backgroundColor));
    }
   }

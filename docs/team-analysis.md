@@ -13,7 +13,8 @@ a Ranger once in the bars, sums active values in the radar, and excludes STR.
 The Auth equipment serializer adds `normalOptions` (actual rolled and enchanted
 values), `attr4OptionKey`, and `attr4Condition` from official V2 raw attributes.
 Basic rolls use `min + (max-min) * grade/(divisions-1)` (one division uses min),
-then the official item's `attrNProb` times the player's `currentEnchant`. Matching
+then multiply by `(currentEnchant + 1)`, matching the existing equipment-detail
+page's basic-option enhancement rule. `attrNProb` is not a stat multiplier. Matching
 by attribute ID handles reordered player slots. Selected advanced-option values
 continue to use the existing resolver. No inventory/account IDs are added.
 
