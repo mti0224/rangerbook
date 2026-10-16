@@ -44,6 +44,7 @@
 
   let searchTimer = 0;
   let searchSequence = 0;
+  let playerQuerySequence = 0;
   let activeSuggestion = -1;
   let searchItems = [];
   let selectedPlayer = null;
@@ -286,6 +287,7 @@
   function renderTeam() {
     const key = teamSelect.value || "pvpteam";
     const units = currentUnits();
+    window.RangerbookTeamAnalysis?.setUnits(units);
     teamTitle.textContent = TEAM_LABELS[key] || key;
     selectedUnitIndex = -1;
 
@@ -415,9 +417,11 @@
 
   async function selectPlayer(item) {
     if (!item?.uid) return;
+    const querySequence = ++playerQuerySequence;
 
     selectedPlayer = item;
     playerPayload = null;
+    window.RangerbookTeamAnalysis?.clear();
     input.value = item.name || "";
     closeSuggestions();
 
@@ -438,12 +442,12 @@
         }),
         loadSupportData(),
       ]);
-      if (!selectedPlayer || selectedPlayer.uid !== item.uid) return;
+      if (querySequence !== playerQuerySequence || !selectedPlayer || selectedPlayer.uid !== item.uid) return;
       playerPayload = payload;
       renderTeam();
       setStatus("隊伍資料已更新。", "success");
     } catch (error) {
-      if (!selectedPlayer || selectedPlayer.uid !== item.uid) return;
+      if (querySequence !== playerQuerySequence || !selectedPlayer || selectedPlayer.uid !== item.uid) return;
       teamGrid.innerHTML = '<div class="pvp-player-team-empty">無法取得玩家隊伍資料。</div>';
       renderUnitDetail(null);
       setStatus(error.message, "error");
@@ -454,7 +458,9 @@
     const currentName = selectedPlayer?.name || "";
     if (selectedPlayer && input.value !== currentName) {
       selectedPlayer = null;
+      playerQuerySequence++;
       playerPayload = null;
+      window.RangerbookTeamAnalysis?.clear();
       selection.hidden = true;
       result.hidden = true;
     }

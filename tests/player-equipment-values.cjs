@@ -25,7 +25,7 @@ const fixtures = {
 (async () => {
   for (const locale of ['zh-Hant','en','th','jp']) {
   const browser = await chromium.launch({headless:true, executablePath:process.env.QA_CHROME || undefined,
-    args:process.env.QA_CHROME ? ['--no-sandbox','--single-process','--no-zygote'] : []});
+    args:process.env.QA_CHROME ? ['--no-sandbox','--single-process','--no-zygote','--disable-gpu','--disable-software-rasterizer'] : []});
   try {
       const context = await browser.newContext({viewport:{width:1100,height:900}});
       await context.addInitScript(l => localStorage.setItem('rangerbook-language',l), locale);

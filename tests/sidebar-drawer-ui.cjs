@@ -45,6 +45,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
           assert.equal(await backdrop.isVisible(),false);
           assert.equal(await admin.isVisible(),true);
         } else {
+          // site.js can append responsive styles asynchronously. Wait for the
+          // rendered opener rather than asserting during its initial hidden frame.
+          await toggle.waitFor({state:"visible",timeout:7000});
           assert.equal(await toggle.isVisible(),true,"menu button must appear at "+width);
           assert.equal(await drawer.isVisible(),false,"drawer starts closed at "+width);
           assert.equal(await backdrop.isVisible(),false);
