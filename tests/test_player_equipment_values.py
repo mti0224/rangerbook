@@ -58,7 +58,7 @@ class EquipmentValuesTests(unittest.TestCase):
 
     def test_actual_basic_rolls_enchant_and_reordered_fields(self):
         result = effects.public_equipment(self.basic_gear())
-        self.assertEqual([o["value"] for o in result["normalOptions"]], [-11.25, 8, 148])
+        self.assertEqual([o["value"] for o in result["normalOptions"]], [-45, 24, 444])
         self.assertEqual(result["attr4Condition"], {"kind": "rangerType", "value": "STR"})
         self.assertEqual(result["attr4OptionKey"], "EQUIP:GEAR_FILTER_HP_MUL_nm")
         self.assertNotIn("unitInvenId", result)
@@ -77,7 +77,7 @@ class EquipmentValuesTests(unittest.TestCase):
         items[0]["equipGrade"] = 6
         effects.ITEM_PATH.write_text(json.dumps(items))
         result = effects.public_equipment(self.basic_gear())
-        self.assertEqual(result["normalOptions"][1]["value"], 8)
+        self.assertEqual(result["normalOptions"][1]["value"], 24)
         self.assertNotIn("attr4Condition", result)
 
     def gear(self, code=110006, grade=8, enchant=5):

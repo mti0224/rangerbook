@@ -1,8 +1,10 @@
+/* The result is a layout wrapper; only its rounded inner panels paint a card. */
+body.gt-app #pvpPlayerSearchResult { background:transparent !important; }
 .team-analysis { margin-top:1.5rem; color:var(--text); overflow-anchor:none; }
 .team-analysis[hidden] { display:none; }
 .team-analysis > h2 { font-size:1.25rem; margin:0 0 .8rem; }
 .ta-columns { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; align-items:start; }
-.ta-panel { min-width:0; padding:1.15rem; border:1px solid var(--line); border-radius:1rem; background:var(--panel); box-shadow:var(--shadow); }
+.ta-panel { min-width:0; padding:1.15rem; border:1px solid var(--line); border-radius:1rem; background:var(--panel); background-clip:padding-box; overflow:clip; box-shadow:var(--shadow); }
 .ta-panel h3 { margin:0 0 .8rem; font-size:1rem; }
 .ta-radar { display:block; width:100%; max-width:480px; margin:auto; overflow:visible; }
 .ta-radar-ring { fill:none; stroke:var(--line); stroke-width:1; }
@@ -34,7 +36,7 @@
 .ta-pass-label:before,.ta-fail-label:before { content:''; display:inline-block; width:.6rem; height:.6rem; margin-inline-end:.3rem; border-radius:50%; }
 .ta-pass-label:before { background:#59a674; }.ta-fail-label:before { background:#cc7580; }
 .ta-member-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:.5rem; }
-.team-analysis .ta-member.pvp-player-unit-button { min-width:0; width:100%; height:auto; grid-template-rows:64px auto auto; padding:.5rem; gap:.35rem; }
+.team-analysis .ta-member.pvp-player-unit-button { min-width:0; width:100%; height:auto; grid-template-rows:64px auto auto; padding:.5rem; gap:.35rem; overflow:hidden; }
 .ta-member .pvp-player-unit-image-wrap { width:64px; height:64px; margin:auto; }
 .ta-member .pvp-player-unit-name { grid-row:2; }
 .ta-member small { font-size:.67rem; line-height:1.4; overflow-wrap:anywhere; }
