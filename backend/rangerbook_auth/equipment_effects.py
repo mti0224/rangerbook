@@ -14,6 +14,67 @@ from typing import Any
 
 ATTR_PATH = Path(os.getenv("RANGERBOOK_EQUIPMENT_ATTRIBUTES", "/home/ubuntu/rangerbook-v2/data/raw/unit_eqip_attr.json"))
 CATALOG_PATH = Path(os.getenv("RANGERBOOK_EQUIPMENT_CATALOG", "/home/ubuntu/rangerbook-v2/data/v2/equipment.json"))
+ITEM_PATH = Path(os.getenv("RANGERBOOK_EQUIPMENT_ITEMS", "/home/ubuntu/rangerbook-v2/data/raw/game_item_equip.json"))
+
+
+@lru_cache(maxsize=2)
+def _items(path: str, mtime: int):
+    return {str(row["itemCode"]): row for row in json.loads(Path(path).read_text())}
+
+
+def _roll(definition: dict, grade: Any) -> Decimal | None:
+    divisions = _integer(definition.get("valueDivideGrades"))
+    grade = _integer(grade)
+    if divisions is None or divisions < 1 or grade is None or not 0 <= grade < divisions:
+        return None
+    low, high = (Decimal(str(definition[k])) for k in ("minValue", "maxValue"))
+    return low if divisions == 1 else low + (high - low) * grade / (divisions - 1)
+
+
+def analysis_values(equipment: dict[str, Any]) -> dict[str, Any]:
+    """Only public combat attributes; never return inventory/account identifiers.
+
+    Basic enchant uses the official item's attrNProb per upgrade, matched by
+    attribute ID because the player's three slots can be in a different order.
+    Missing rolls remain unknown; they are never substituted with max rolls.
+    """
+    try:
+        attrs, _ = _definitions(str(ATTR_PATH), ATTR_PATH.stat().st_mtime_ns,
+                                str(CATALOG_PATH), CATALOG_PATH.stat().st_mtime_ns)
+        items = _items(str(ITEM_PATH), ITEM_PATH.stat().st_mtime_ns)
+        item = items.get(equipment["itemCode"])
+        if not item:
+            return {}
+        output = {"normalOptions": []}
+        enchant = _integer(equipment.get("currentEnchant"))
+        if enchant is not None and not 0 <= enchant <= int(item.get("maxEnchant", 0)):
+            enchant = None
+        for i in range(1, 4):
+            attr_id = str(equipment.get(f"attr{i}No", ""))
+            attr = attrs.get(attr_id)
+            if not attr:
+                continue
+            option = {"optionKey": "EQUIP:GEAR_FILTER_" + attr["reinforceType"] + "_nm",
+                      "value": None, "unit": "PERCENT" if attr["reinforceType"].endswith("_MUL") else "FLAT"}
+            value = _roll(attr, equipment.get(f"attr{i}ValueGrade"))
+            fields = [f"attr{n}" for n in range(1, 4) if str(item.get(f"attr{n}")) == attr_id]
+            if value is not None and enchant is not None and len(fields) == 1:
+                value *= 1 + Decimal(str(item[fields[0] + "Prob"])) / 100 * enchant
+                if option["unit"] == "PERCENT":
+                    value *= 100
+                if value.is_finite():
+                    option["value"] = float(round(value, 6))
+            output["normalOptions"].append(option)
+        if int(item.get("equipGrade", 0)) >= 7:
+            attr = attrs.get(str(equipment.get("attr4No")))
+            if attr:
+                output["attr4OptionKey"] = "EQUIP:GEAR_FILTER_" + attr["reinforceType"] + "_nm"
+                condition = attr.get("unitEquipRandOptTrigType")
+                output["attr4Condition"] = ({"kind": "rangerType", "value": condition}
+                                              if condition not in (None, "", "NONE") else {"kind": "always"})
+        return output
+    except (OSError, ValueError, KeyError, TypeError, InvalidOperation):
+        return {}
 
 
 @lru_cache(maxsize=2)
@@ -77,8 +138,10 @@ def public_equipment(value: Any) -> dict[str, Any] | None:
     if not code:
         return None
     output: dict[str, Any] = {"itemCode": code}
-    for key in ("attr4No", "attr4ValueGrade", "currentAdvancedEnchant"):
+    for key in ("attr4No", "attr4ValueGrade", "currentAdvancedEnchant", "currentEnchant",
+                *(f"attr{i}{suffix}" for i in range(1, 4) for suffix in ("No", "ValueGrade"))):
         if value.get(key) not in (None, ""):
             output[key] = value[key]
     output.update(advanced_value(output))
+    output.update(analysis_values(output))
     return output

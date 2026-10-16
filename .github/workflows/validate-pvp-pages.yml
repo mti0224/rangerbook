@@ -9,6 +9,9 @@ on:
       - "guildwar/**"
       - "assets/js/pvp-*.js"
       - "assets/js/player-equipment-effects.js"
+      - "assets/js/team-analysis*.js"
+      - "assets/css/team-analysis.css"
+      - "tests/team-analysis*.cjs"
       - "assets/js/guildwar-*.js"
       - "assets/css/pvp-player-teams.css"
       - "backend/rangerbook_auth/equipment_effects.py"
@@ -43,6 +46,9 @@ jobs:
           node --check assets/js/guildwar-usage.js
           node --check assets/js/player-equipment-effects.js
           node --check assets/js/pvp-player-search.js
+          node --check assets/js/team-analysis-model.js
+          node --check assets/js/team-analysis.js
+          node tests/team-analysis-model.cjs
       - name: Verify actual player equipment values and collector installation
         run: |
           pip install requests
@@ -52,6 +58,7 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
           node tests/player-equipment-values.cjs
+          node tests/team-analysis-browser.cjs
       - name: Validate page references
         run: |
           grep -q 'assets/js/pvp-leaderboard.js' pvp/leaderboard/index.html
