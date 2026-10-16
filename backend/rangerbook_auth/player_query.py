@@ -12,6 +12,8 @@ from typing import Any
 
 import requests
 
+from equipment_effects import public_equipment
+
 CORE_PATH = Path(os.getenv("RANGERBOOK_GUILDWAR_CORE", "/home/ubuntu/rangerbook-scripts/collect_guildwar_usage.py"))
 PLAYER_INDEX_PATH = Path(os.getenv("RANGERBOOK_PLAYER_INDEX", "/home/ubuntu/rangerbook-data/player_index.json"))
 PLAYER_CACHE_PATH = Path(os.getenv("RANGERBOOK_PLAYER_QUERY_CACHE", "/home/ubuntu/rangerbook-auth/player_lookup_cache.json"))
@@ -143,22 +145,7 @@ def _team_no_from_record(record: dict[str, Any]) -> int | None:
 
 
 def _public_equipment(value: Any) -> dict[str, Any] | None:
-    if isinstance(value, str):
-        code = value.strip()
-        return {"itemCode": code} if code else None
-
-    if not isinstance(value, dict):
-        return None
-
-    code = str(value.get("equipItemCode") or value.get("itemCode") or value.get("code") or "").strip()
-    if not code:
-        return None
-
-    output: dict[str, Any] = {"itemCode": code}
-    attr4_no = value.get("attr4No")
-    if attr4_no not in (None, ""):
-        output["attr4No"] = attr4_no
-    return output
+    return public_equipment(value)
 
 
 def _public_unit_record(record: dict[str, Any]) -> dict[str, Any] | None:
