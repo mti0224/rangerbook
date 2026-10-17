@@ -292,6 +292,12 @@ def set_user_role(user_id: str, role: Literal["user", "admin"], actor_account: s
     now = isoformat()
     with db() as connection:
         if role == "admin":
+            if REGISTER_EMAIL_REQUIRED:
+                target = connection.execute(
+                    "SELECT email_verified_at FROM users WHERE id=?", (user_id,)
+                ).fetchone()
+                if not target or not target["email_verified_at"]:
+                    raise HTTPException(status_code=409, detail="此帳號尚未完成電子郵件驗證。")
             connection.execute(
                 """
                 UPDATE users
