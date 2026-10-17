@@ -107,6 +107,7 @@
       <div id="adminWorkspace" class="admin-card admin-workspace" hidden>
         <div id="adminWorkspaceTabs" class="admin-workspace-tabs" role="tablist" aria-label="管理員功能分頁">
           <button id="adminPersonalTab" type="button" role="tab" data-admin-section="personal" aria-controls="adminPersonalPanel" aria-selected="true" tabindex="0">個人隊伍</button>
+          <button id="adminPersonalTeamsTab" type="button" role="tab" data-admin-section="personal" aria-controls="adminPersonalTeamsPanel" aria-selected="true" tabindex="0">個人隊伍</button>
           <button id="adminPasswordTab" type="button" role="tab" data-admin-section="password" aria-controls="adminPasswordCard" aria-selected="false" tabindex="-1">更改密碼</button>
           <button id="adminResourcesTab" type="button" role="tab" data-admin-section="resources" aria-controls="adminResourceUpdatesCard" aria-selected="false" tabindex="-1">數據更新追蹤</button>
           <button id="adminTrafficTab" type="button" role="tab" data-admin-section="traffic" aria-controls="adminTrafficPanel" aria-selected="false" tabindex="-1" hidden>網站流量</button>
@@ -161,6 +162,36 @@
         </div>
       </section>
 
+      <section id="adminPersonalTeamsPanel" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminPersonalTeamsTab" tabindex="0" hidden>
+        <h2>個人隊伍</h2>
+        <p class="admin-muted">驗證 LINE Rangers 遊戲帳號後，即可匯入及查看自己的第 1～5 隊（A、B 隊）。目前僅開放管理員以上權限測試。</p>
+        <div id="rbPersonalStatus" class="admin-message" role="status" aria-live="polite"></div>
+        <div id="rbPersonalUnbound" hidden>
+          <div class="rb-personal-empty">尚未匯入任何隊伍，請先以遊戲內名稱搜尋玩家並完成所有權驗證。</div>
+          <form id="rbPersonalSearchForm" class="admin-form">
+            <label><span>遊戲內玩家名稱</span><input id="rbPersonalSearchInput" type="search" maxlength="64" minlength="2" placeholder="輸入至少 2 個字元" autocomplete="off" required></label>
+            <div class="admin-actions"><button class="primary" type="submit">搜尋玩家</button></div>
+          </form>
+          <div id="rbPersonalCandidates" class="rb-personal-list" aria-live="polite"></div>
+          <form id="rbPersonalMedalForm" class="admin-form" hidden>
+            <p id="rbPersonalSelected"></p>
+            <p class="admin-muted">步驟 1/2：請輸入你在遊戲內持有的「公會獎牌」數量（使用半形數字）。</p>
+            <label><span>公會獎牌數量</span><input id="rbPersonalMedalInput" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="12" placeholder="例如：125" required autocomplete="off"></label>
+            <div class="admin-actions"><button class="primary" type="submit">確認並繼續</button><button class="secondary" id="rbPersonalChooseAgain" type="button">重新選擇</button></div>
+          </form>
+          <div id="rbPersonalChallenge" hidden>
+            <h3>步驟 2/2：交換指定 Ranger 位置</h3>
+            <p id="rbPersonalChallengeText"></p>
+            <p class="admin-muted">請先在遊戲中完成交換並儲存隊伍，再回來驗證。驗證成功後建議將原隊伍位置恢復，再匯入。</p>
+            <div class="admin-actions"><button id="rbPersonalVerify" class="primary" type="button">我已完成交換，開始驗證</button><button id="rbPersonalRestart" class="secondary" type="button">重新開始</button></div>
+          </div>
+        </div>
+        <div id="rbPersonalBound" hidden>
+          <div id="rbPersonalAccount" class="rb-personal-bound"></div>
+          <div class="admin-actions"><button id="rbPersonalImport" class="primary" type="button">匯入／更新我的隊伍</button><button id="rbPersonalRefresh" class="secondary" type="button">重新整理</button></div>
+          <div id="rbPersonalTeams" class="rb-personal-teams"></div>
+        </div>
+      </section>
       <section id="adminPasswordCard" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminPasswordTab" tabindex="0" hidden>
         <h2>變更自己的密碼</h2>
         <p class="admin-muted">所有管理員階級都可以隨時變更自己的登入密碼。更新成功後，其他裝置上的登入狀態會立即失效。</p>
@@ -258,6 +289,7 @@
   <script src="../assets/js/admin-traffic-charts.js?v=20261013-v2.5"></script>
   <script src="../assets/js/admin-page.js?v=20261017-personal1"></script>
   <script src="../assets/js/admin-personal-teams.js?v=20261017-personal1"></script>
+  <script src="../assets/js/admin-personal-teams.js?v=20261017a"></script>
   <script src="../assets/js/admin-password.js?v=20261010a"></script>
 </body>
 </html>
