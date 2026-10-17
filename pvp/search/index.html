@@ -19,6 +19,13 @@
       document.documentElement.dataset.theme = "light";
     }
   </script>
+  <script>
+    // Mark the embedded personal-team viewer before CSS is evaluated.
+    // Do not reserve another copy of the site's sidebar or header.
+    if (new URLSearchParams(window.location.search).get("personal") === "1") {
+      document.documentElement.classList.add("rb-personal-embed");
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>查詢玩家隊伍｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../../assets/main_icon/icon.png">
@@ -32,7 +39,7 @@
   <link rel="stylesheet" href="../../assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="../../assets/css/sidebar-drawer.css?v=20261014-toggle1">
   <link rel="stylesheet" href="../../assets/css/team-analysis.css?v=20261017-help1">
-  <link rel="stylesheet" href="../../assets/css/personal-team-viewer.css?v=20261017-personal2">
+  <link rel="stylesheet" href="../../assets/css/personal-team-viewer.css?v=20261017-layout3">
 </head>
 <body class="gt-app">
   <div id="site-header"></div>
