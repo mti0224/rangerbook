@@ -19,6 +19,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from player_query import query_player_teams, search_players
+from game_binding import init_tables as init_game_binding_tables, register_routes as register_game_binding_routes
 from popular_pages import build_popular_report
 
 APP_ROOT = Path(__file__).resolve().parent
@@ -140,6 +141,7 @@ def init_db() -> None:
 @app.on_event("startup")
 def startup() -> None:
     init_db()
+    init_game_binding_tables(db)
     cleanup_expired_sessions()
 
 
@@ -689,3 +691,7 @@ def traffic_report(
     if not isinstance(content, dict) or content.get("days") != days or content.get("status") != "ready":
         raise HTTPException(status_code=503, detail="流量快取內容無效")
     return content
+
+
+# Register administrator-only personal team and ownership verification endpoints.
+register_game_binding_routes(app, db, require_admin, require_trusted_origin)
