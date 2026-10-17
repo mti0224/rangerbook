@@ -185,7 +185,9 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(payload["source"], "official_api")
         self.assertNotIn("player", payload)
         self.assertNotIn("guildWarMedal", json.dumps(payload))
-        self.assertEqual(len(payload["teams"]), 5)
+        self.assertEqual(len(payload["teams"]), 7)
+        self.assertEqual(payload["teams"]["pvpteam"], [])
+        self.assertEqual(payload["teams"]["guildwar"], [])
         self.assertEqual(self.call("/admin/personal-teams")["teams"], payload["teams"])
 
     def test_no_cross_user_binding(self):
@@ -229,6 +231,47 @@ class VerificationTests(unittest.TestCase):
     def test_candidate_does_not_reveal_uid(self):
         item = self.call("/admin/game-players/search")["items"][0]
         self.assertNotIn(self.uid, json.dumps(item, ensure_ascii=False))
+
+
+    def test_import_pvp_and_guildwar_without_player_wallet(self):
+        self.current["player"]["gem"] = 99999
+        self.current["playerUnitTeamGroupMap"]["pvpteam"] = {
+            "1": [{"unitCode": "u101e", "unitLevel": 180, "slot": 0, "equipMap": {}}],
+            "2": [{"unitCode": "u102e", "unitLevel": 160, "slot": 0, "equipMap": {}}]
+        }
+        self.current["playerUnitTeamGroupMap"]["guildwar"] = {
+            "1": [{"unitCode": "u103e", "unitLevel": 200, "slot": 0, "equipMap": {}}]
+        }
+        output = self.gb.normalize_personal_teams(self.current)
+        self.assertEqual([x["unitCode"] for x in output["pvpteam"]], ["u101e", "u102e"])
+        self.assertEqual(len(output["guildwar"]), 1)
+        self.assertNotIn("gem", json.dumps(output))
+        self.assertEqual(len(output), 7)
+
+    def test_unbind_requires_password_deletes_private_import(self):
+        password = "test-unbind-password"
+        hashed = self.app_module.PASSWORD_HASHER.hash(password)
+        self.user["password_hash"] = hashed
+        with self.app_module.db() as conn:
+            conn.execute("UPDATE users SET password_hash=? WHERE id=?", (hashed, self.user_id))
+        challenge = self.started()
+        self.swap(challenge)
+        self.call("/admin/game-binding/verify",
+                  self.gb.VerifyRequest(challengeId=challenge["challengeId"]))
+        self.call("/admin/personal-teams/import")
+        private_path = self.gb.private_path(self.user_id)
+        self.assertTrue(private_path.exists())
+        with self.assertRaises(HTTPException) as incorrect:
+            self.call("/admin/game-binding/unbind", self.gb.UnbindRequest(password="invalid"))
+        self.assertEqual(incorrect.exception.status_code, 403)
+        self.assertTrue(private_path.exists())
+        result = self.call("/admin/game-binding/unbind", self.gb.UnbindRequest(password=password))
+        self.assertTrue(result["ok"])
+        self.assertFalse(private_path.exists())
+        self.assertFalse(self.call("/admin/game-binding/status")["bound"])
+        with self.assertRaises(HTTPException) as no_binding:
+            self.call("/admin/personal-teams/import")
+        self.assertEqual(no_binding.exception.status_code, 403)
 
 
 if __name__ == "__main__":
