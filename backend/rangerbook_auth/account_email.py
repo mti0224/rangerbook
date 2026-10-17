@@ -12,7 +12,6 @@ import secrets
 import sqlite3
 import time
 from datetime import datetime, timezone
-from email.utils import formataddr
 
 from email_validator import EmailNotValidError, validate_email
 from fastapi import Depends, HTTPException, Request, status
@@ -303,9 +302,9 @@ def install_email_routes(
         require_mail_configured()
         validate_password(payload.new_password)
         with db() as conn:
+            conn.execute("BEGIN IMMEDIATE")
             if not _limit(conn, "reset_ip", _client_ip(request), 20):
                 raise HTTPException(429, "請求過於頻繁。")
-            conn.execute("BEGIN IMMEDIATE")
             record = conn.execute(
                 "SELECT * FROM email_action_tokens WHERE token_hash=? AND purpose='reset'",
                 (token_hash(payload.token),),
