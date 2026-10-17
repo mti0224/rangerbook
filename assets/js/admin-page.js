@@ -12,7 +12,7 @@
   const workspaceTabs = $("adminWorkspaceTabs");
   const passwordCard = $("adminPasswordCard");
   const workspacePanels = {
-    personal: { button: $("adminPersonalTeamsTab"), panel: $("adminPersonalTeamsPanel") },
+    personal: { button: $("adminPersonalTeamsTab"), panel: $("adminPersonalPanel") },
     personal: { button: $("adminPersonalTab"), panel: $("adminPersonalPanel") },
     password: { button: $("adminPasswordTab"), panel: passwordCard },
     resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
