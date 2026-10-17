@@ -23,7 +23,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261017-personal1">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261017-personal2">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -117,7 +117,7 @@
         <div class="admin-session-head">
           <div>
             <h2>個人隊伍</h2>
-            <p class="admin-muted">綁定自己的 LINE Rangers 遊戲帳號後，即可匯入並更新一般隊伍 1～5（A／B 隊）。</p>
+            <p class="admin-muted">綁定自己的 LINE Rangers 遊戲帳號後，可匯入一般隊伍 1～5、PvP 防守及公會戰進攻隊伍，並檢視隊伍分析。</p>
           </div>
         </div>
         <div id="adminPersonalStatus" class="admin-message" role="status" aria-live="polite"></div>
@@ -155,9 +155,23 @@
           <p id="adminPersonalBoundLabel" class="admin-muted"></p>
           <div class="admin-actions">
             <button id="adminPersonalImport" class="primary" type="button">匯入／更新我的隊伍</button>
+            <button id="adminPersonalUnbind" class="secondary" type="button">解除遊戲帳號綁定</button>
           </div>
           <p id="adminPersonalLastImported" class="admin-muted"></p>
-          <div id="adminPersonalTeams" class="personal-team-grid"></div>
+          <form id="adminPersonalUnbindForm" class="admin-form personal-unbind-form" hidden>
+            <h4>確認解除綁定</h4>
+            <p class="admin-muted">解除後此帳號已匯入的個人隊伍將刪除。公開排名不受影響；之後可重新驗證其他遊戲帳號。</p>
+            <label>請輸入目前資料站帳號密碼
+              <input id="adminPersonalUnbindPassword" type="password" autocomplete="current-password" maxlength="128" required>
+            </label>
+            <div class="admin-actions">
+              <button type="submit" class="danger">確認解除綁定</button>
+              <button id="adminPersonalUnbindCancel" type="button" class="secondary">取消</button>
+            </div>
+          </form>
+          <div id="adminPersonalTeams" class="personal-team-viewer">
+            <iframe id="adminPersonalViewer" title="我的 LINE Rangers 隊伍與隊伍分析" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+          </div>
         </div>
       </section>
 
@@ -257,7 +271,7 @@
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-traffic-charts.js?v=20261013-v2.5"></script>
   <script src="../assets/js/admin-page.js?v=20261017-personal1"></script>
-  <script src="../assets/js/admin-personal-teams.js?v=20261017-personal1"></script>
+  <script src="../assets/js/admin-personal-teams.js?v=20261017-personal2"></script>
   <script src="../assets/js/admin-password.js?v=20261010a"></script>
 </body>
 </html>
