@@ -106,7 +106,7 @@
       } else if (info.challenge) {
         showChallenge(info.challenge);
       }
-      if (!status.textContent) setStatus("");
+      if (status.textContent === "讀取個人隊伍狀態中…") setStatus("");
     } catch (error) {
       if (id === version && adminAllowed()) setStatus(error.message || "載入失敗", true);
     }
