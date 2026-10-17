@@ -91,6 +91,8 @@ class VerificationTests(unittest.TestCase):
         if payload is None:
             if path.endswith("/search"):
                 return endpoint(q="Test", request=self.request, user=user or self.user)
+            if path.endswith("/import"):
+                return endpoint(request=self.request, user=user or self.user)
             return endpoint(user=user or self.user)
         return endpoint(payload=payload, request=self.request, user=user or self.user)
 
