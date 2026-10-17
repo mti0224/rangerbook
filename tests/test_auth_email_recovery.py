@@ -39,7 +39,7 @@ class AccountEmailRecoveryTests(unittest.TestCase):
             sent.append((address, purpose, token))
 
         with patch.object(account_email, "_send_email", fake_send):
-            with TestClient(app) as client:
+            with TestClient(app, base_url="https://testserver") as client:
                 bootstrap_super_admin("rootowner", "a-strong-super-admin-password")
                 register = client.post(
                     "/auth/register", headers=ORIGIN,
