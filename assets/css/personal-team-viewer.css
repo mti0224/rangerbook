@@ -1,0 +1,23 @@
+/* Embedded personal-team viewer shares the exact card and analysis component with search. */
+body.personal-embedded #site-header {display:none!important}
+body.personal-embedded #pvpPlayerSearchPage {
+  padding: 0 2px 16px!important;
+  margin: 0 auto!important;
+  min-height: 0!important;
+  width: 100%;
+  max-width: none;
+}
+body.personal-embedded .page-title,
+body.personal-embedded .pvp-search-card {display:none!important}
+body.personal-embedded #pvpPlayerSearchResult {margin-top: 0}
+body.personal-embedded .pvp-personal-side-heading {
+  grid-column: 1/-1;
+  margin: 8px 0 4px;
+  padding: 8px 12px;
+  font-weight: 700;
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+}
+body.personal-embedded #pvpPlayerSearchTeamGrid {min-width:0}
+body.personal-embedded .pvp-player-team-layout {min-width:0}
+body.personal-embedded #pvpPlayerSearchStatus {margin:0 0 10px}

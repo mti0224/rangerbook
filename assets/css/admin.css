@@ -792,3 +792,14 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
 #adminPersonalSelected,#adminPersonalChallenge,#adminPersonalBound {min-width:0}
 #adminPersonalStatus {overflow-wrap:anywhere}
 @media(max-width:640px){.personal-primary{width:100%}.personal-ranger{flex-wrap:wrap}}
+
+/* Share the PvP query team card + analysis layout through an isolated personal iframe. */
+.personal-team-viewer { width:100%; margin-top:16px; min-width:0; }
+#adminPersonalViewer { display:block; width:100%; height:950px; min-height:360px; box-sizing:border-box; border:0; background:transparent; }
+#adminPersonalViewer[hidden] { display:none!important; }
+.personal-unbind-form { margin-top:16px; border:1px solid var(--line); border-radius:14px; padding:16px; background:var(--soft); max-width:520px; }
+.personal-unbind-form[hidden] { display:none!important; }
+.personal-unbind-form h4 { margin:0; }
+.personal-unbind-form .danger { border:0; background:#b42332; color:#fff; padding:10px 16px; border-radius:10px; cursor:pointer; font:inherit; font-weight:700; }
+#adminPersonalBound .admin-actions { align-items:center; gap:12px; flex-wrap:wrap; }
+@media (max-width:650px) {#adminPersonalPanel {padding:0} #adminPersonalViewer {min-height:460px;} .personal-unbind-form {padding:12px;} }

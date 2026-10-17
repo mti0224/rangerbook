@@ -694,4 +694,4 @@ def traffic_report(
 
 
 # Register administrator-only personal team and ownership verification endpoints.
-register_game_binding_routes(app, db, require_admin, require_trusted_origin)
+register_game_binding_routes(app, db, require_admin, require_trusted_origin, PASSWORD_HASHER)
