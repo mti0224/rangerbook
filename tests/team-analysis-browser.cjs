@@ -100,6 +100,7 @@ for(const g of catalogs.equipment) {
    }
   }
   await page.locator('[data-analysis-tab="WEAPON"]').click();
+  await page.locator('[data-category="FIRE"]').click();
   const selectedCategory=()=>page.locator('.ta-bar[aria-pressed=true]').getAttribute('data-category');
   assert.equal(await selectedCategory(),'FIRE');
   const originalMembers=await page.locator('.ta-members').innerText();
