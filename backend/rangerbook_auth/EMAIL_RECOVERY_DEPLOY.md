@@ -21,8 +21,12 @@ Changes:
 1. Verify the SES domain identity for warmycat.com. Retrieve DKIM CNAME records using
    GetEmailIdentity and add them at the existing DNS provider. Route 53 does not host
    this account's zones.
-2. Request SES production access for transactional account emails; the account is
-   currently in sandbox. Wait for Amazon approval.
+2. SES production access was requested on 2026-10-17. AWS GetAccount currently returns
+   ProductionAccessEnabled=false and ReviewDetails.Status=DENIED. The account remains
+   sandboxed; **do not enable public registration email delivery**. The owner must inspect
+   the AWS Support Center case and request a secondary review, citing the verified
+   identity and transactional-only anti-abuse controls. Do not resubmit PutAccountDetails
+   while ReviewDetails.Status is DENIED.
 3. Grant the EC2 role minimal SES SendEmail permission scoped to the verified SES
    identity. A permissions simulation currently returns implicitDeny. Use deterministic
    IAM policy tooling and review generated permissions. For source-code IAM analysis:
@@ -69,5 +73,7 @@ Revert backend source if needed and check /health. New nullable SQLite columns a
 tables may remain during source rollback; restore the backed-up DB only if needed.
 If reverting permanently, remove unneeded SES role permission.
 
-A live email delivery cannot be validated before SES DNS verification, sending
-approval and required IAM permission.
+All three DKIM CNAME records resolve to the correct Amazon SES destinations, but
+SES identity validation can lag behind public DNS propagation. A live email delivery
+cannot be validated for arbitrary recipients before SES identity verification,
+production sending approval, and required IAM permission.
