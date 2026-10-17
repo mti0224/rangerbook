@@ -29,15 +29,15 @@ body.gt-app #pvpPlayerSearchResult { background:transparent !important; }
 .ta-bar-heading { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.35rem; font-size:.8rem; margin-bottom:.35rem; }
 .ta-bar-heading > span { color:var(--muted); font-variant-numeric:tabular-nums; }
 /* Touch devices keep :hover after a tap. Override the global bright button
-   hover here so selected categories and tabs keep readable dark-mode colors. */
-html[data-theme=dark] #pvpPlayerTeamAnalysis .ta-bar:is([aria-pressed=true],:hover,:focus-visible,:active),
-html[data-theme=dark] #pvpPlayerTeamAnalysis .ta-tabs button:is([aria-selected=true],:hover,:focus-visible,:active) {
+   hover here so selected categories and tabs stay readable in both themes. */
+#pvpPlayerTeamAnalysis .ta-bar:is([aria-pressed=true],:hover,:focus-visible,:active),
+#pvpPlayerTeamAnalysis .ta-tabs button:is([aria-selected=true],:hover,:focus-visible,:active) {
   background:var(--gt-control-selected) !important;
   color:var(--text) !important;
   border-color:var(--gt-control-border) !important;
   -webkit-tap-highlight-color:transparent;
 }
-html[data-theme=dark] #pvpPlayerTeamAnalysis .ta-bar:is([aria-pressed=true],:hover,:focus-visible,:active) .ta-bar-heading > span { color:var(--text); }
+#pvpPlayerTeamAnalysis .ta-bar:is([aria-pressed=true],:hover,:focus-visible,:active) .ta-bar-heading > span { color:var(--text); }
 .ta-bar-track { display:block; height:.45rem; border-radius:1rem; overflow:hidden; background:var(--line); }
 .ta-bar-track > span { display:block; height:100%; border-radius:inherit; background:var(--primary); }
 .ta-members { margin-top:1rem; border-top:1px solid var(--line); padding-top:.7rem; }

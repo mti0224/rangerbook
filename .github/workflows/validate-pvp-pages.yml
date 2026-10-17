@@ -60,6 +60,7 @@ jobs:
           npx playwright install --with-deps chromium
           node tests/player-equipment-values.cjs
           node tests/team-analysis-browser.cjs
+          QA_TOUCH=1 QA_LOCALE=en node tests/team-analysis-browser.cjs
       - name: Validate page references
         run: |
           grep -q 'assets/js/pvp-leaderboard.js' pvp/leaderboard/index.html

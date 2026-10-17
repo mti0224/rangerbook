@@ -19,7 +19,9 @@ for(const g of catalogs.equipment) {
  for(const locale of (process.env.QA_LOCALE ? [process.env.QA_LOCALE] : ['zh-Hant','en','th','jp'])) {
  const browser=await chromium.launch({headless:true,executablePath:process.env.QA_CHROME||undefined,args:process.env.QA_CHROME?['--no-sandbox','--single-process','--no-zygote','--disable-gpu','--disable-software-rasterizer']:[]});
  try {
-  const context=await browser.newContext({viewport:{width:1280,height:1000}});
+  const context=await browser.newContext(process.env.QA_TOUCH
+    ? {viewport:{width:390,height:844},isMobile:true,hasTouch:true}
+    : {viewport:{width:1280,height:1000}});
   await context.addInitScript(l=>{localStorage.setItem('rangerbook-language',l);localStorage.setItem('rangerbook-theme','light');},locale);
   const errors=[];let playerCalls=0;
   await context.route(base+'/**',r=>{
@@ -52,6 +54,38 @@ for(const g of catalogs.equipment) {
   }
   await page.locator('#pvpPlayerSearchInput').fill('QA');await page.locator('.pvp-search-suggestion').first().click();
   await page.locator('.ta-bar').first().waitFor();
+  if(process.env.QA_TOUCH) {
+   assert.ok(await page.evaluate(()=>matchMedia('(hover: none) and (pointer: coarse)').matches));
+   for(const theme of ['light','dark']) for(const width of [390,320]) {
+    await page.evaluate(v=>document.documentElement.dataset.theme=v,theme);
+    await page.setViewportSize({width,height:844});
+    for(const tab of Object.keys(expected)) {
+     await page.locator(`[data-analysis-tab="${tab}"]`).tap();
+     await page.locator('.ta-bar').first().tap();
+     const contrast=await page.evaluate(()=>{
+      const luminance=color=>{
+       const rgb=color.match(/[\d.]+/g).slice(0,3).map(v=>Number(v)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
+       return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+      };
+      const ratio=(a,b)=>{a=luminance(a);b=luminance(b);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);};
+      const row=document.querySelector('.ta-bar[aria-pressed=true]'),tab=document.querySelector('[data-analysis-tab][aria-selected=true]');
+      const background=getComputedStyle(row).backgroundColor;
+      return {
+       label:ratio(getComputedStyle(row.querySelector('strong')).color,background),
+       count:ratio(getComputedStyle(row.querySelector('.ta-bar-heading > span')).color,background),
+       tab:ratio(getComputedStyle(tab).color,getComputedStyle(tab).backgroundColor),
+       bar:ratio(getComputedStyle(row.querySelector('.ta-bar-track > span')).backgroundColor,background)
+      };
+     });
+     for(const part of ['label','count','tab']) assert.ok(contrast[part]>=4.5,`${locale} ${theme} ${width} ${tab} ${part}: ${contrast[part]}`);
+     assert.ok(contrast.bar>=3,`${locale} ${theme} ${width} ${tab} bar: ${contrast.bar}`);
+     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    }
+    if(width===390) await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:`/tmp/team-analysis-touch-${theme}.png`});
+   }
+   assert.equal(errors.length,0,errors.join('\n'));
+   await context.close();console.log('TEAM_ANALYSIS_TOUCH_CONTRAST_OK',locale);continue;
+  }
   assert.equal(await page.locator('.ta-metric-list dd').nth(4).innerText(),'4%');
   assert.equal(await page.locator('.ta-metric-list dd').nth(5).innerText(),'125%');
   for(const [tab,counts] of Object.entries(expected)) {
