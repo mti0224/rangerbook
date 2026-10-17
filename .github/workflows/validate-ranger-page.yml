@@ -7,6 +7,9 @@ on:
     paths:
       - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
+      - "assets/js/ranger-animation-gif*.js"
+      - "assets/css/ranger-animation-viewer.css"
+      - "assets/vendor/gifenc/**"
       - "assets/js/ranger-animation-horizontal-projectile-rule.js"
       - "assets/js/ranger-animation-projectile-data.js"
       - "assets/js/ranger-animation-projectile-engine.js"
@@ -25,6 +28,7 @@ on:
       - "tests/ranger-animation-horizontal-projectile-rule.test.js"
       - "tests/ranger-animation-simulation-bridge.test.js"
       - "tests/ranger-animation-hit-effect-timing.test.js"
+      - "tests/ranger-animation-gif.cjs"
       - "ranger/ranger/index.html"
       - "ranger/ranking/index.html"
       - ".github/workflows/validate-ranger-page.yml"
@@ -38,10 +42,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - name: Validate JavaScript
         run: |
           node --check assets/js/ranger.js
           node --check assets/js/ranger-animation-viewer.js
+          node --check assets/js/ranger-animation-gif.js
+          node --check assets/js/ranger-animation-gif-worker.js
           node --check assets/js/ranger-animation-horizontal-projectile-rule.js
           node --check assets/js/ranger-animation-projectile-data.js
           node --check assets/js/ranger-animation-projectile-engine.js
@@ -60,6 +69,13 @@ jobs:
           node --test tests/ranger-animation-projectile-*.test.js
           node --test tests/ranger-animation-horizontal-projectile-rule.test.js
           node --test tests/ranger-animation-simulation-bridge.test.js tests/ranger-animation-hit-effect-timing.test.js
+      - name: Validate GIF download in browser (pull requests)
+        if: github.event_name == 'pull_request'
+        run: |
+          npm install --prefix "$RUNNER_TEMP/gif-qa" playwright@1.56.1
+          "$RUNNER_TEMP/gif-qa/node_modules/.bin/playwright" install --with-deps chromium
+          python -m pip install 'Pillow>=11,<13'
+          NODE_PATH="$RUNNER_TEMP/gif-qa/node_modules" node tests/ranger-animation-gif.cjs
       - name: Validate hit effect assets
         run: |
           python3 - <<'PY'
