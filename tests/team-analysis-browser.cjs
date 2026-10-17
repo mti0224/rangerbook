@@ -118,7 +118,7 @@ for(const g of catalogs.equipment) {
   await page.keyboard.press('Enter');
   assert.equal(await selectedCategory(),'FIRE','keyboard activation selects a category');
   assert.equal(await page.locator('.ta-member').count(),2);
-  await page.locator('.ta-radar-target[data-metric="4"]').hover();
+  await page.locator('.ta-radar-target[data-metric="4"] .ta-radar-hit').hover();
   assert.ok((await page.locator('.ta-radar-tooltip').innerText()).includes('4%'));
   await page.locator('.ta-member').first().click();
   assert.equal(await page.locator('#pvpPlayerSearchUnitDetail .pvp-player-unit-detail-card').count(),1);
