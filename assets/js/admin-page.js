@@ -12,12 +12,13 @@
   const workspaceTabs = $("adminWorkspaceTabs");
   const passwordCard = $("adminPasswordCard");
   const workspacePanels = {
+    personal: { button: $("adminPersonalTab"), panel: $("adminPersonalPanel") },
     password: { button: $("adminPasswordTab"), panel: passwordCard },
     resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
     accounts: { button: $("adminAccountsTab"), panel: superAdminPanel },
     traffic: { button: $("adminTrafficTab"), panel: $("adminTrafficPanel") }
   };
-  let activeWorkspaceSection = "password";
+  let activeWorkspaceSection = "personal";
   const loginPanel = $("adminLoginPanel");
   const registerPanel = $("adminRegisterPanel");
   const loginTab = $("adminLoginTab");
@@ -83,6 +84,7 @@
   // Changing tabs affects visibility, not RangerbookAuth / AWS permissions.
   function allowedWorkspaceSections() {
     return {
+      personal: auth.isAdmin(),
       password: auth.isAdmin(),
       resources: auth.isAdmin(),
       accounts: auth.isSuperAdmin(),
@@ -94,7 +96,7 @@
     const allowed = allowedWorkspaceSections();
     const hasAccess = auth.isAdmin();
     if (workspace) workspace.hidden = !hasAccess;
-    if (!allowed[activeWorkspaceSection]) activeWorkspaceSection = "password";
+    if (!allowed[activeWorkspaceSection]) activeWorkspaceSection = "personal";
 
     Object.entries(workspacePanels).forEach(([key, { button, panel }]) => {
       const accessible = Boolean(allowed[key]);
@@ -114,6 +116,7 @@
     activeWorkspaceSection = section;
     renderWorkspaceTabs();
     if (section === "traffic") loadTraffic();
+    if (section === "personal") window.RangerbookPersonalTeams?.refresh();
     if (focus) workspacePanels[section].button?.focus();
   }
 
