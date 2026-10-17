@@ -1,23 +1,109 @@
-/* Embedded personal-team viewer shares the exact card and analysis component with search. */
-body.personal-embedded #site-header {display:none!important}
-body.personal-embedded #pvpPlayerSearchPage {
-  padding: 0 2px 16px!important;
-  margin: 0 auto!important;
-  min-height: 0!important;
-  width: 100%;
-  max-width: none;
+/*
+ * Private team viewer only.  The normal /pvp/search/ page retains its
+ * ordinary sidebar/header and its original two-column layout.
+ * :root receives rb-personal-embed before any styles paint.
+ */
+html.rb-personal-embed {
+  scrollbar-gutter: auto;
 }
-body.personal-embedded .page-title,
-body.personal-embedded .pvp-search-card {display:none!important}
-body.personal-embedded #pvpPlayerSearchResult {margin-top: 0}
-body.personal-embedded .pvp-personal-side-heading {
-  grid-column: 1/-1;
-  margin: 8px 0 4px;
-  padding: 8px 12px;
-  font-weight: 700;
-  color: var(--text);
+html.rb-personal-embed body.gt-app {
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+  background: transparent;
+  box-sizing: border-box;
+}
+html.rb-personal-embed body.gt-app :is(#site-header, #gt-site-drawer, .gt-sidebar, .gt-drawer-backdrop),
+html.rb-personal-embed body.gt-app .site-header {
+  display: none !important;
+}
+html.rb-personal-embed body.gt-app #pvpPlayerSearchPage {
+  display: block;
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 0 12px !important;
+}
+html.rb-personal-embed body.gt-app :is(.page-title, .pvp-search-card) {
+  display: none !important;
+}
+html.rb-personal-embed body.gt-app #pvpPlayerSearchResult {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+}
+html.rb-personal-embed body.gt-app .pvp-search-selection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px !important;
+  padding: 12px 16px !important;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+html.rb-personal-embed body.gt-app #pvpPlayerSearchStatus:empty {
+  display: none !important;
+}
+html.rb-personal-embed body.gt-app .pvp-player-team-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 0 !important;
+  gap: 14px;
+  min-width: 0;
+}
+html.rb-personal-embed body.gt-app :is(.pvp-player-team-pane, .pvp-player-unit-detail) {
+  min-width: 0;
+  padding: clamp(12px, 1.6vw, 20px);
+}
+html.rb-personal-embed body.gt-app .pvp-player-team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: auto !important;
+  gap: clamp(6px, .9vw, 12px);
+  min-width: 0;
+}
+html.rb-personal-embed body.gt-app .pvp-personal-side-heading {
+  grid-column: 1 / -1;
+  align-self: end;
+  margin: 10px 0 0 !important;
+  padding: 4px 0 9px;
+  border: 0;
   border-bottom: 1px solid var(--line);
+  color: var(--text);
+  font-size: .95rem;
+  font-weight: 750;
 }
-body.personal-embedded #pvpPlayerSearchTeamGrid {min-width:0}
-body.personal-embedded .pvp-player-team-layout {min-width:0}
-body.personal-embedded #pvpPlayerSearchStatus {margin:0 0 10px}
+html.rb-personal-embed body.gt-app .pvp-player-unit-button {
+  min-width: 0;
+  max-width: 100%;
+}
+html.rb-personal-embed body.gt-app .team-analysis {
+  min-width: 0;
+  margin-top: 18px;
+}
+@media (max-width: 740px) {
+  html.rb-personal-embed body.gt-app .pvp-search-selection {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  html.rb-personal-embed body.gt-app .pvp-player-team-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 460px) {
+  html.rb-personal-embed body.gt-app .pvp-player-team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  html.rb-personal-embed body.gt-app .pvp-search-selection {
+    padding: 12px !important;
+  }
+}
