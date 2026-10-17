@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+  <script>
+    // Consume bearer tokens before other scripts, including analytics, initialize.
+    (() => {
+      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+      const action = params.get("email-action");
+      const token = params.get("token");
+      if ((action === "verify" || action === "reset") && token && token.length >= 32) {
+        window.RANGERBOOK_EMAIL_ACTION = { action, token };
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+    })();
+  </script>
   <meta charset="utf-8">
   <script>
     (() => {
