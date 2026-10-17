@@ -251,6 +251,7 @@
     }
     if (adminAllowed()) refresh();
   });
+  window.addEventListener("rangerbook:personal-teams-open", () => { if (adminAllowed()) refresh(); });
   window.RangerbookPersonalTeams = { refresh };
   auth.ready().then(() => { if (adminAllowed()) refresh(); });
 })();
