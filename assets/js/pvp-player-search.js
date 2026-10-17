@@ -1,6 +1,8 @@
 (() => {
   const auth = window.RangerbookAuth;
   if (!auth) return;
+  // Only authenticated admins can load their own imported data in this mode.
+  const personalMode = new URLSearchParams(window.location.search).get("personal") === "1";
 
   const $ = (id) => document.getElementById(id);
   const page = $("pvpPlayerSearchPage");
@@ -281,7 +283,12 @@
   function currentUnits() {
     const teams = playerPayload?.teams;
     const key = teamSelect.value || "pvpteam";
-    return Array.isArray(teams?.[key]) ? teams[key] : [];
+    const value = teams?.[key];
+    if (Array.isArray(value)) return value;
+    if (personalMode && value && typeof value === "object") {
+      return [...(Array.isArray(value.A) ? value.A : []), ...(Array.isArray(value.B) ? value.B : [])];
+    }
+    return [];
   }
 
   function renderTeam() {
@@ -300,7 +307,12 @@
     teamGrid.innerHTML = units.map((unit, index) => {
       const code = String(unit?.unitCode || "");
       const rangerStar = rangerStarLayer(rangerStarByCode[code]);
-      return `<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
+      const personalTeam = personalMode && /^team[1-5]$/.test(key);
+      const aCount = Array.isArray(playerPayload?.teams?.[key]?.A) ? playerPayload.teams[key].A.length : 0;
+      const sideHeading = personalTeam && (index === 0 || index === aCount)
+        ? `<h4 class="pvp-personal-side-heading">${index < aCount ? "A" : "B"} 隊</h4>`
+        : "";
+      return `${sideHeading}<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
         <span class="pvp-player-unit-image-wrap">
           <img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
           ${unitTalentCorner(unit)}
@@ -540,7 +552,65 @@
     showEffect(item);
   });
 
-  auth.ready().then(() => {
+  async function loadPersonalTeams() {
+    const sequence = ++playerQuerySequence;
+    selectedPlayer = null;
+    playerPayload = null;
+    result.hidden = false;
+    teamGrid.innerHTML = '<div class="pvp-search-loading">正在載入已匯入的隊伍…</div>';
+    window.RangerbookTeamAnalysis?.clear();
+    try {
+      const [payload] = await Promise.all([
+        auth.api("/admin/personal-teams"),
+        loadSupportData()
+      ]);
+      if (sequence !== playerQuerySequence || !auth.isAdmin()) return;
+      playerPayload = payload?.bound ? { teams: payload.teams || {} } : null;
+      if (!playerPayload) {
+        result.hidden = true;
+        return;
+      }
+      selectedName.textContent = "我的隊伍";
+      selectedMeta.textContent = "管理員私人匯入資料";
+      teamSelect.value = TEAM_LABELS[teamSelect.value] ? teamSelect.value : "team1";
+      selection.hidden = false;
+      result.hidden = false;
+      renderTeam();
+      setStatus("");
+    } catch (error) {
+      if (sequence !== playerQuerySequence) return;
+      playerPayload = null;
+      window.RangerbookTeamAnalysis?.clear();
+      teamGrid.innerHTML = '<div class="pvp-player-team-empty">無法讀取個人隊伍。</div>';
+      setStatus(error.message, "error");
+    }
+  }
+
+  function reportPersonalHeight() {
+    if (!personalMode || window.parent === window) return;
+    window.requestAnimationFrame(() => {
+      const height = Math.min(9000, Math.max(320, Math.ceil(document.documentElement.scrollHeight + 12)));
+      window.parent.postMessage({ type: "rangerbook-personal-viewer-height", height }, window.location.origin);
+    });
+  }
+
+  auth.ready().then(async () => {
+    if (personalMode) {
+      document.body.classList.add("personal-embedded");
+      page.querySelector(".page-title")?.setAttribute("hidden", "");
+      page.querySelector(".pvp-search-card")?.setAttribute("hidden", "");
+      if (!auth.isAdmin()) { page.hidden = true; return; }
+      page.hidden = false;
+      teamSelect.value = "team1";
+      selection.hidden = true;
+      result.hidden = true;
+      // Search is intentionally disabled in this mode; all data is fetched
+      // for the current authenticated user's own binding.
+      await loadPersonalTeams();
+      new ResizeObserver(reportPersonalHeight).observe(page);
+      reportPersonalHeight();
+      return;
+    }
     if (!auth.isSuperAdmin()) {
       window.location.replace("../");
       return;
@@ -549,9 +619,28 @@
     input.focus();
   });
 
-  window.addEventListener("rangerbook:auth-changed", () => {
-    if (!auth.isSuperAdmin()) {
-      window.location.replace("../");
+  window.addEventListener("message", (event) => {
+    if (!personalMode || event.origin !== window.location.origin || event.source !== window.parent) return;
+    if (event.data?.type === "rangerbook-personal-refresh" && auth.isAdmin()) loadPersonalTeams();
+    if (event.data?.type === "rangerbook-personal-clear") {
+      playerQuerySequence++;
+      playerPayload = null;
+      window.RangerbookTeamAnalysis?.clear();
+      teamGrid.replaceChildren();
+      result.hidden = true;
     }
+  });
+
+  window.addEventListener("rangerbook:auth-changed", () => {
+    if (personalMode) {
+      if (!auth.isAdmin()) {
+        playerQuerySequence++;
+        playerPayload = null;
+        result.hidden = true;
+        window.RangerbookTeamAnalysis?.clear();
+      }
+      return;
+    }
+    if (!auth.isSuperAdmin()) window.location.replace("../");
   });
 })();
