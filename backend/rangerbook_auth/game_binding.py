@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
 
 import player_query as pq
 
-PRIVATE_DIR = Path(os.getenv("RANGERBOOK_PRIVATE_TEAM_DIR", "/home/ubuntu/rangerbook-private/teams"))
+PRIVATE_DIR = Path(os.getenv("RANGERBOOK_PRIVATE_TEAM_DIR", "/home/ubuntu/rangerbook-auth/private/teams"))
 TEAM_KEYS = tuple(f"team{i}" for i in range(1, 6))
 NUMERIC = re.compile(r"^[0-9]{1,12}$")
 PRIVATE_USER_ID = re.compile(r"^usr_[A-Za-z0-9_-]{12,64}$")
