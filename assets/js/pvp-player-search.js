@@ -599,6 +599,9 @@
       document.body.classList.add("personal-embedded");
       page.querySelector(".page-title")?.setAttribute("hidden", "");
       page.querySelector(".pvp-search-card")?.setAttribute("hidden", "");
+      // Move the existing team picker out of the hidden name-search card.
+      // This retains the same 7-team navigation without exposing player search.
+      result.prepend(selection);
       if (!auth.isAdmin()) { page.hidden = true; return; }
       page.hidden = false;
       teamSelect.value = "team1";
