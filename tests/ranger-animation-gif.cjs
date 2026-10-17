@@ -9,7 +9,7 @@ const {execFileSync} = require('node:child_process');
 const {chromium} = require('playwright');
 const root = path.resolve(__dirname, '..');
 const out = fs.mkdtempSync(path.join(os.tmpdir(), 'ranger-gif-'));
-const ui = JSON.parse(fs.readFileSync(path.join(root, 'res/v2/locales/ui.json')));
+const ui = JSON.parse(fs.readFileSync(path.join(root, 'deploy/aws/v2/locales/ui.json')));
 const png = color => execFileSync('python', ['-c', `from PIL import Image;import sys;Image.new('RGBA',(80,80),${color}).save(sys.stdout.buffer,format='PNG')`]);
 const images = {'body.png': png('(255,0,0,255)'), 'bullet.png': png('(0,0,255,255)'), 'target.png': png('(0,255,0,255)')};
 function part(png, names) {
