@@ -7,6 +7,37 @@
   const t = id => window.RangerbookI18n?.t('analysis.'+id) || id;
   const percent = value => `${Number(value.toFixed(2))}%`;
   let modelPromise, sequence = 0, result, tab = 'WEAPON', category;
+  let helpDialog;
+  function closeHelp() {
+    if (helpDialog?.open) helpDialog.close();
+  }
+  function openHelp() {
+    if (!helpDialog) {
+      helpDialog = document.createElement('dialog');
+      helpDialog.className = 'ta-help-dialog';
+      helpDialog.setAttribute('aria-labelledby','taEquipmentHelpTitle');
+      helpDialog.innerHTML = `<header class="ta-help-header"><h2 id="taEquipmentHelpTitle">${escape(t('help.title'))}</h2>
+        <button type="button" class="ta-help-close" aria-label="${escape(window.RangerbookI18n.t('copy.close','關閉'))}">×</button></header>
+        <div class="ta-help-content">
+          <section><h3>${escape(t('help.gearTitle'))}</h3><p>${escape(t('help.gearBody'))}</p></section>
+          <section><h3>${escape(t('tab.surehit'))}</h3><p>${escape(t('help.surehitBody'))}</p>
+            <ul>${['int','agi','str'].map(role => `<li>${escape(t('help.'+role))}</li>`).join('')}</ul></section>
+          <section><h3>${escape(t('tab.element'))}</h3><p>${escape(t('help.elementBody'))}</p></section>
+        </div>`;
+      helpDialog.querySelector('.ta-help-close').addEventListener('click',closeHelp);
+      helpDialog.addEventListener('close',() => document.documentElement.classList.remove('ta-help-open'));
+      helpDialog.addEventListener('click',event => {
+        if (event.target !== helpDialog) return;
+        const bounds = helpDialog.getBoundingClientRect();
+        if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) closeHelp();
+      });
+      document.body.appendChild(helpDialog);
+    }
+    if (!helpDialog.open) {
+      helpDialog.showModal();
+      document.documentElement.classList.add('ta-help-open');
+    }
+  }
   const image = code => `https://rangers.lerico.net/res/${encodeURIComponent(code)}/${encodeURIComponent(code)}-thum.png`;
   async function model() {
     if (!modelPromise) modelPromise = (async () => {
@@ -74,7 +105,8 @@
     host.setAttribute('aria-label',t('title'));
     host.innerHTML = `<h2>${escape(t('title'))}</h2><div class="ta-columns">
       <section class="ta-panel"><h3>${escape(t('radar'))}</h3>${radar()}</section>
-      <section class="ta-panel"><h3>${escape(t('equipment'))}</h3>
+      <section class="ta-panel"><div class="ta-panel-heading"><h3>${escape(t('equipment'))}</h3>
+        <button type="button" class="ta-help-button" data-equipment-help aria-haspopup="dialog" aria-label="${escape(t('help.open'))}"><span aria-hidden="true">?</span></button></div>
         <div class="ta-tabs" role="tablist" aria-label="${escape(t('equipment'))}">${['WEAPON','ARMOR','ACC','surehit','element'].map(id => `<button type="button" id="taTab-${id}" role="tab" data-analysis-tab="${id}" aria-controls="taTabPanel">${escape(t('tab.'+id))}</button>`).join('')}</div>
         <div class="ta-tab-panel" id="taTabPanel" role="tabpanel"><p class="ta-note">${escape(t('barHint'))}</p><div class="ta-bars"></div><div id="taMembers" class="ta-members" aria-live="polite"></div></div>
       </section></div>`;
@@ -94,6 +126,7 @@
   host.addEventListener('pointermove',e => { if (e.pointerType !== 'touch') activateCategory(e.target); });
   host.addEventListener('focusin',e => activateCategory(e.target));
   host.addEventListener('click',e => {
+    if (e.target.closest('[data-equipment-help]')) {openHelp(); return;}
     const button=e.target.closest('[data-analysis-tab]');
     if (button) {tab=button.dataset.analysisTab; bars(); return;}
     activateCategory(e.target);
@@ -109,8 +142,9 @@
     tab=tabs[next].dataset.analysisTab; bars(); tabs[next].focus();
   });
   window.RangerbookTeamAnalysis = {
-    clear() {sequence++; result=null;host.hidden=true;host.replaceChildren();},
+    clear() {closeHelp();sequence++; result=null;host.hidden=true;host.replaceChildren();},
     async setUnits(units) {
+      closeHelp();
       const request=++sequence;
       host.hidden=false;
       host.textContent=t('loading');

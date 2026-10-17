@@ -723,7 +723,16 @@
     "home.popular.extremeStage": "極限關卡第 %N1 關",
     "home.popular.endlessStage": "無限之塔第 %N1 層",
     "home.allPages": "所有頁面",
-    "gear.playerValuePending": "數值待更新"
+    "gear.playerValuePending": "數值待更新",
+    "analysis.help.open": "查看裝備分析說明",
+    "analysis.help.title": "裝備分析說明",
+    "analysis.help.gearTitle": "武器／防具／飾品",
+    "analysis.help.gearBody": "依 Rangers 的類型與屬性分組，統計隊伍中各組 Rangers 的裝備高級效果觸發比例。",
+    "analysis.help.surehitBody": "統計隊伍中，持有同時具備「減少 Ranger 再生產時間」與「技能必中率」效果，且符合以下條件之武器的 Rangers 比例。不計入飛翔 Rangers。",
+    "analysis.help.int": "智慧型：武器須具備「總攻擊力」效果。",
+    "analysis.help.agi": "敏捷型：武器須具備「總攻擊力」或「物理攻擊力」效果。",
+    "analysis.help.str": "力量型：武器須具備「體力」效果。",
+    "analysis.help.elementBody": "統計隊伍中，裝備高級效果具有「屬性強化」且可觸發的 Rangers 比例。僅計算智慧型與敏捷型 Rangers，不計入飛翔 Rangers。"
   },
   "en": {
     "nav.home": "Home",
@@ -1449,6 +1458,15 @@
     "home.popular.extremeStage": "Extreme Stage %N1",
     "home.popular.endlessStage": "Endless Tower Floor %N1",
     "home.allPages": "All pages",
-    "gear.playerValuePending": "Value pending update"
+    "gear.playerValuePending": "Value pending update",
+    "analysis.help.open": "About equipment analysis",
+    "analysis.help.title": "Equipment analysis guide",
+    "analysis.help.gearTitle": "Weapon / Armor / Accessory",
+    "analysis.help.gearBody": "Groups Rangers by type and element, then shows the proportion whose equipment high-level option can activate.",
+    "analysis.help.surehitBody": "Shows the proportion of Rangers with a weapon that has both reduced Ranger regeneration time and Skill Surehit Rate, plus the stat required for their type below. Flying Rangers are excluded.",
+    "analysis.help.int": "Intelligence: the weapon must include Overall ATK.",
+    "analysis.help.agi": "Agility: the weapon must include Overall ATK or Physical ATK.",
+    "analysis.help.str": "Strength: the weapon must include HP.",
+    "analysis.help.elementBody": "Shows the proportion of Rangers whose equipment has an active Elemental Prowess high-level option. Only Intelligence and Agility Rangers are counted; flying Rangers are excluded."
   }
 }
