@@ -6,6 +6,35 @@ body.gt-app #pvpPlayerSearchResult { background:transparent !important; }
 .ta-columns { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; align-items:start; }
 .ta-panel { min-width:0; padding:1.15rem; border:1px solid var(--line); border-radius:1rem; background:var(--panel); background-clip:padding-box; overflow:clip; box-shadow:var(--shadow); }
 .ta-panel h3 { margin:0 0 .8rem; font-size:1rem; }
+.ta-panel-heading { display:flex; align-items:center; gap:.3rem; margin-bottom:.8rem; }
+.ta-panel .ta-panel-heading h3 { margin:0; }
+#pvpPlayerTeamAnalysis .ta-help-button {
+  display:inline-flex; align-items:center; justify-content:center; flex:none;
+  width:1.8rem; height:1.8rem; padding:0; border:0 !important; border-radius:50%;
+  background:transparent !important; color:var(--muted) !important; box-shadow:none !important; cursor:pointer;
+}
+.ta-help-button > span { display:grid; place-items:center; width:1.05rem; height:1.05rem; border:1px solid currentColor; border-radius:50%; font:700 .75rem/1 system-ui,sans-serif; }
+#pvpPlayerTeamAnalysis .ta-help-button:is(:hover,:active) { background:var(--gt-control-selected,var(--soft)) !important; color:var(--text) !important; }
+html.ta-help-open,html.ta-help-open body { overflow:hidden; }
+.ta-help-dialog {
+  width:min(36rem,calc(100% - 2rem)); max-width:none; max-height:calc(100dvh - 2rem);
+  margin:auto; padding:0; overflow:auto; overscroll-behavior:contain;
+  border:1px solid var(--line); border-radius:1rem; background:var(--panel); color:var(--text);
+  box-shadow:0 24px 80px rgba(0,0,0,.3);
+}
+.ta-help-dialog::backdrop { background:rgba(10,18,32,.65); }
+.ta-help-header { position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 1.15rem; border-bottom:1px solid var(--line); background:var(--panel); }
+.ta-help-header h2 { margin:0; font-size:1.1rem; line-height:1.5; }
+.ta-help-dialog .ta-help-close { display:grid; place-items:center; flex:none; width:2rem; height:2rem; padding:0; border:1px solid var(--line); border-radius:50%; background:var(--soft) !important; color:var(--text) !important; font:400 1.4rem/1 system-ui,sans-serif; cursor:pointer; }
+.ta-help-dialog .ta-help-close:is(:hover,:active) { background:var(--gt-control-selected,var(--soft)) !important; }
+.ta-help-dialog .ta-help-close:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
+.ta-help-content { padding:.1rem 1.15rem 1.15rem; overflow-wrap:anywhere; }
+.ta-help-content section { padding-top:1rem; }
+.ta-help-content section + section { margin-top:1rem; border-top:1px solid var(--line); }
+.ta-help-content h3 { margin:0 0 .4rem; font-size:.95rem; }
+.ta-help-content p,.ta-help-content ul { margin:.4rem 0 0; font-size:.88rem; line-height:1.8; }
+.ta-help-content ul { padding-inline-start:1.25rem; }
+.ta-help-content li + li { margin-top:.35rem; }
 .ta-radar { display:block; width:100%; max-width:480px; margin:auto; overflow:visible; }
 .ta-radar-ring { fill:none; stroke:var(--line); stroke-width:1; }
 .ta-radar-axis { stroke:var(--line); }
