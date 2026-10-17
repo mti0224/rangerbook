@@ -78,10 +78,10 @@
     return { ...currentUser };
   }
 
-  async function register(account, password) {
+  async function register(account, password, email) {
     return api("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ account, password })
+      body: JSON.stringify({ account, password, email })
     });
   }
 

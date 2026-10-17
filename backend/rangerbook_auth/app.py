@@ -19,13 +19,15 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from player_query import query_player_teams, search_players
+from account_email import (migrate_email_schema, start_verification, normalize_email,
+                           require_mail_configured, install_email_routes)
 from popular_pages import build_popular_report
 
 APP_ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("RANGERBOOK_AUTH_DB", APP_ROOT / "rangerbook_auth.db")).resolve()
 SESSION_COOKIE = os.getenv("RANGERBOOK_SESSION_COOKIE", "__Host-rangerbook_session")
 SESSION_DAYS = int(os.getenv("RANGERBOOK_SESSION_DAYS", "7"))
-RESET_PASSWORD = "qwer1234"
+REGISTER_EMAIL_REQUIRED = os.getenv("RANGERBOOK_EMAIL_REQUIRED", "0") == "1"
 ALLOWED_ORIGINS = {
     origin.strip().rstrip("/")
     for origin in os.getenv(
@@ -64,6 +66,10 @@ app.add_middleware(
 class Credentials(BaseModel):
     account: str = Field(min_length=3, max_length=32)
     password: str = Field(min_length=1, max_length=128)
+
+
+class RegisterCredentials(Credentials):
+    email: str | None = Field(default=None, max_length=254)
 
 
 class RoleUpdate(BaseModel):
@@ -135,6 +141,7 @@ def init_db() -> None:
                 ON users(admin_application_status, role);
             """
         )
+        migrate_email_schema(connection)
 
 
 @app.on_event("startup")
@@ -285,6 +292,12 @@ def set_user_role(user_id: str, role: Literal["user", "admin"], actor_account: s
     now = isoformat()
     with db() as connection:
         if role == "admin":
+            if REGISTER_EMAIL_REQUIRED:
+                target = connection.execute(
+                    "SELECT email_verified_at FROM users WHERE id=?", (user_id,)
+                ).fetchone()
+                if not target or not target["email_verified_at"]:
+                    raise HTTPException(status_code=409, detail="此帳號尚未完成電子郵件驗證。")
             connection.execute(
                 """
                 UPDATE users
@@ -315,10 +328,15 @@ def health() -> dict[str, str]:
 
 
 @app.post("/auth/register")
-def register(credentials: Credentials, request: Request) -> dict[str, Any]:
+def register(credentials: RegisterCredentials, request: Request) -> dict[str, Any]:
     require_trusted_origin(request)
     account = normalize_account(credentials.account)
     validate_password(credentials.password)
+    if REGISTER_EMAIL_REQUIRED and not credentials.email:
+        raise HTTPException(status_code=422, detail="請填寫電子郵件以完成帳號驗證。")
+    if credentials.email:
+        require_mail_configured()
+        normalize_email(credentials.email)
 
     user_id = f"usr_{secrets.token_hex(12)}"
     password_hash = PASSWORD_HASHER.hash(credentials.password)
@@ -338,11 +356,21 @@ def register(credentials: Credentials, request: Request) -> dict[str, Any]:
     except sqlite3.IntegrityError as error:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="此帳號已存在。") from error
 
+    if credentials.email:
+        try:
+            start_verification(db, user_id, credentials.email, request=request)
+        except Exception:
+            # Registration must not strand an account if its first verification email fails.
+            with db() as connection:
+                connection.execute("DELETE FROM users WHERE id=?", (user_id,))
+            raise
+
     return {
         "ok": True,
         "account": account,
         "role": "user",
         "admin_application_status": "pending",
+        "email_verification_required": bool(credentials.email),
     }
 
 
@@ -481,25 +509,6 @@ def change_user_role(
     find_mutable_user(user_id)
     updated = set_user_role(user_id, payload.role, actor["account"])
     return {"ok": True, "user": public_user(updated)}
-
-
-@app.post("/admin/users/{user_id}/reset-password")
-def reset_user_password(
-    user_id: str,
-    request: Request,
-    _: sqlite3.Row = Depends(require_super_admin),
-) -> dict[str, Any]:
-    require_trusted_origin(request)
-    target = find_mutable_user(user_id)
-    password_hash = PASSWORD_HASHER.hash(RESET_PASSWORD)
-    with db() as connection:
-        connection.execute("UPDATE users SET password_hash = ? WHERE id = ?", (password_hash, user_id))
-        connection.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
-    return {
-        "ok": True,
-        "account": target["account"],
-        "reset_password": RESET_PASSWORD,
-    }
 
 
 @app.post("/admin/users/{user_id}/delete")
@@ -689,3 +698,9 @@ def traffic_report(
     if not isinstance(content, dict) or content.get("days") != days or content.get("status") != "ready":
         raise HTTPException(status_code=503, detail="流量快取內容無效")
     return content
+
+
+install_email_routes(
+    app, db, require_user, require_super_admin, require_trusted_origin,
+    PASSWORD_HASHER, validate_password,
+)
