@@ -59,7 +59,7 @@ html.ta-help-open,html.ta-help-open body { overflow:hidden; }
 .ta-bar-heading > span { color:var(--muted); font-variant-numeric:tabular-nums; }
 /* Touch devices keep :hover after a tap. Override the global bright button
    hover here so selected categories and tabs stay readable in both themes. */
-#pvpPlayerTeamAnalysis .ta-bar:is([aria-pressed=true],:focus-visible,:active),
+#pvpPlayerTeamAnalysis .ta-bar[aria-pressed=true],
 #pvpPlayerTeamAnalysis .ta-tabs button:is([aria-selected=true],:hover,:focus-visible,:active) {
   background:var(--gt-control-selected) !important;
   color:var(--text) !important;
@@ -67,7 +67,7 @@ html.ta-help-open,html.ta-help-open body { overflow:hidden; }
   -webkit-tap-highlight-color:transparent;
 }
 /* Hover is only a subtle affordance, not the same highlight as selection. */
-#pvpPlayerTeamAnalysis .ta-bar:not([aria-pressed=true]):hover {
+#pvpPlayerTeamAnalysis .ta-bar:not([aria-pressed=true]):is(:hover,:focus-visible,:active) {
   background:var(--bg) !important;
   color:var(--text) !important;
   border-color:var(--line) !important;
