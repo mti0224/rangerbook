@@ -40,6 +40,7 @@
   const sceneBridge = sharedBridge("RangerAnimationSceneBridge");
   const targetBridge = sharedBridge("RangerAnimationTargetBridge");
   const playbackBridge = sharedBridge("RangerAnimationPlaybackBridge");
+  const scriptBase = new URL(".", document.currentScript.src);
 
   const CLIPS = [
     { key: "idle", label: "待機", body: ["idle", "wait"] },
@@ -747,8 +748,8 @@
     return positiveNumber(bodyPart?.canvas?.h, 240);
   }
 
-  function selectedTargetProfile(bodyPart) {
-    const profile = targetBridge.get(state.activeSection);
+  function selectedTargetProfile(bodyPart, layout) {
+    const profile = layout?.targetProfile ?? targetBridge.get(state.activeSection);
     return {
       contentHeight: positiveNumber(profile?.contentHeight, syntheticTargetContentHeight(bodyPart)),
       contentWidth: positiveNumber(profile?.contentWidth, positiveNumber(bodyPart?.canvas?.w, 0)),
@@ -757,7 +758,7 @@
   }
 
   function selectedTargetAnchor(layout) {
-    const profile = targetBridge.get(state.activeSection);
+    const profile = layout.targetProfile ?? targetBridge.get(state.activeSection);
     return {
       x: finiteNumber(profile?.anchorX, finiteNumber(profile?.targetX, layout.targetX)),
       baseY: finiteNumber(profile?.anchorBaseY, finiteNumber(profile?.targetBaseY, layout.targetBaseY)),
@@ -814,7 +815,7 @@
 
   function resolveOutboundEnd(projectile, bodyPart, layout, sceneScale) {
     const baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);
-    const targetHeight = selectedTargetProfile(bodyPart).contentHeight;
+    const targetHeight = selectedTargetProfile(bodyPart, layout).contentHeight;
     const targetHitHeight = targetHeight * finiteNumber(projectile.hitPointRate, 0);
     return {
       x: baseEnd.x,
@@ -1512,6 +1513,39 @@ sceneScale,
     }
   }
 
+  // Offline renderer: uses the same SAM frames and projectile paths as playback,
+  // with a frozen, canonical layout. It never composites target/hit-effect layers
+  // or the preview's ground line, zoom and pan into the exported animation.
+  window.RangerAnimationExport = {
+    createJob(section) {
+      if (section !== state.activeSection || !state.activeMeta) throw new Error("animation-unavailable");
+      const meta = state.activeMeta;
+      const track = buildTrack(meta, state.activeClip);
+      const layout = referenceLayout(attackRangeForMeta(meta));
+      layout.targetProfile = selectedTargetProfile(meta.parts.body);
+      return {
+        unitId: section.dataset.animationUnitId,
+        clipKey: track.key,
+        duration: track.duration,
+        async render(context, elapsed) {
+          const time = Math.floor(elapsed * NATIVE_ACTION_FPS) / NATIVE_ACTION_FPS;
+          for (const segment of track.segments) {
+            const start = segment.start || 0;
+            const end = start + Math.max(segment.duration || 0, segment.bodyDuration || 0, 1);
+            if (time < start || time >= end) continue;
+            await drawSegment(context, context, meta, segment, time - start, layout, layout.sceneScale);
+          }
+        },
+      };
+    },
+  };
+  if (!document.querySelector("script[data-ranger-animation-gif]")) {
+    const script = document.createElement("script");
+    script.src = new URL("ranger-animation-gif.js?v=20261017-gif1", scriptBase).href;
+    script.dataset.rangerAnimationGif = "";
+    document.head.appendChild(script);
+  }
+
   function playbackPlanForTrack(track) {
   const attackSegment = (track?.segments || []).find(
     (segment) => segment.clipKey === "attack" && Number.isFinite(segment.impactTime)
@@ -1620,6 +1654,7 @@ function publishPlaybackPlan(section, track) {
     });
     if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
     startPlayback(section);
+    section.dispatchEvent(new CustomEvent("ranger-animation-ready", { bubbles: true }));
   }
 
   async function patchModal() {

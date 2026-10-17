@@ -64,6 +64,45 @@
   min-height: 36px;
 }
 
+.ranger-animation-gif-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ranger-animation-gif-actions[hidden],
+.ranger-animation-gif-actions button[hidden] {
+  display: none !important;
+}
+
+.ranger-animation-gif-actions button {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid var(--line, #64748b);
+  border-radius: 8px;
+  background: var(--panel, #fff);
+  color: var(--text, #1f2937);
+  cursor: pointer;
+}
+
+.ranger-animation-gif-actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.ranger-animation-gif-hint,
+.ranger-animation-gif-status {
+  font-size: 0.9rem;
+  color: var(--muted, #64748b);
+}
+
+.ranger-animation-gif-status {
+  flex-basis: 100%;
+  overflow-wrap: anywhere;
+}
+
 .ranger-animation-zoom-percent {
   font-weight: 600;
 }
