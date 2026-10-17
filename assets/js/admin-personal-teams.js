@@ -37,7 +37,10 @@
     boundPanel.hidden = true;
     unboundPanel.hidden = false;
     candidatesPanel.replaceChildren();
-    get("adminPersonalTeams").replaceChildren();
+    const viewer = get("adminPersonalViewer");
+    if (viewer) { viewer.hidden = true; viewer.removeAttribute("src"); }
+    get("adminPersonalUnbindForm").hidden = true;
+    get("adminPersonalUnbindPassword").value = "";
     get("adminPersonalMedal").value = "";
     setStatus();
   }
@@ -58,46 +61,20 @@
     get("adminPersonalVerify").dataset.challengeId = challenge.challengeId;
   }
 
-  function addTeamUnit(container, record) {
-    const item = document.createElement("div");
-    item.className = "personal-ranger";
-    const name = document.createElement("strong");
-    name.textContent = record.unitCode || "未知 Ranger";
-    const detail = document.createElement("span");
-    detail.textContent = "位置 " + (Number(record.slot) + 1) +
-      (record.level ? " · Lv." + record.level : "");
-    item.append(name, detail);
-    container.append(item);
-  }
-
   function drawTeams(teams) {
-    const grid = get("adminPersonalTeams");
-    grid.replaceChildren();
-    for (let i = 1; i <= 5; i++) {
-      const card = document.createElement("section");
-      card.className = "personal-team-card";
-      const title = document.createElement("h4");
-      title.textContent = "隊伍 " + i;
-      card.append(title);
-      const team = teams?.["team" + i] || {};
-      for (const side of ["A", "B"]) {
-        const subtitle = document.createElement("h5");
-        subtitle.textContent = side + " 隊";
-        card.append(subtitle);
-        const units = document.createElement("div");
-        units.className = "personal-team-units";
-        const data = Array.isArray(team[side]) ? team[side] : [];
-        if (!data.length) {
-          const empty = document.createElement("span");
-          empty.className = "admin-muted";
-          empty.textContent = "尚未配置";
-          units.append(empty);
-        } else {
-          data.forEach(record => addTeamUnit(units, record));
-        }
-        card.append(units);
-      }
-      grid.append(card);
+    const viewer = get("adminPersonalViewer");
+    if (!viewer) return;
+    const populated = ["team1","team2","team3","team4","team5","pvpteam","guildwar"].some(key => {
+      const value = teams?.[key];
+      return Array.isArray(value) ? value.length > 0 :
+        Boolean(value && (value.A?.length || value.B?.length));
+    });
+    viewer.hidden = !populated;
+    if (populated) {
+      // Own authenticated API is queried by the embedded existing search renderer.
+      viewer.src = "../pvp/search/?personal=1";
+    } else {
+      viewer.removeAttribute("src");
     }
   }
 
@@ -120,13 +97,16 @@
         const privateInfo = await auth.api("/admin/personal-teams");
         if (id !== version || !adminAllowed()) return;
         drawTeams(privateInfo.teams);
+        if (privateInfo.teams && (!Array.isArray(privateInfo.teams.pvpteam) || !Array.isArray(privateInfo.teams.guildwar))) {
+          setStatus("已新增 PvP 防守與公會戰進攻隊伍，請按「匯入／更新我的隊伍」取得完整隊伍資料。");
+        }
         get("adminPersonalLastImported").textContent =
           player.last_imported_at ? "最後匯入：" + new Date(player.last_imported_at).toLocaleString("zh-TW", { hour12: false }) :
             "尚未匯入隊伍。完成驗證後，請先恢復原本配置再匯入。";
       } else if (info.challenge) {
         showChallenge(info.challenge);
       }
-      setStatus("");
+      if (!status.textContent) setStatus("");
     } catch (error) {
       if (id === version && adminAllowed()) setStatus(error.message || "載入失敗", true);
     }
@@ -240,6 +220,48 @@
       if (id === version && adminAllowed()) setStatus(error.message || "匯入失敗", true);
     } finally {
       requestBusy(false);
+    }
+  });
+
+  get("adminPersonalUnbind").addEventListener("click", () => {
+    if (!adminAllowed() || busy) return;
+    get("adminPersonalUnbindForm").hidden = false;
+    get("adminPersonalUnbindPassword").focus();
+  });
+  get("adminPersonalUnbindCancel").addEventListener("click", () => {
+    get("adminPersonalUnbindForm").hidden = true;
+    get("adminPersonalUnbindPassword").value = "";
+  });
+  get("adminPersonalUnbindForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!adminAllowed() || busy) return;
+    const password = get("adminPersonalUnbindPassword").value;
+    if (!password) return;
+    const id = version;
+    requestBusy(true);
+    setStatus("正在解除綁定並刪除私人隊伍…");
+    try {
+      await auth.api("/admin/game-binding/unbind", {
+        method: "POST", body: JSON.stringify({ password })
+      });
+      if (id !== version || !adminAllowed()) return;
+      await refresh();
+      setStatus("已解除綁定，可重新搜尋並綁定其他遊戲帳號。");
+    } catch (error) {
+      if (id === version && adminAllowed()) setStatus(error.message || "解除綁定失敗", true);
+    } finally {
+      get("adminPersonalUnbindPassword").value = "";
+      requestBusy(false);
+    }
+  });
+
+  window.addEventListener("message", event => {
+    const viewer = get("adminPersonalViewer");
+    if (!viewer || event.source !== viewer.contentWindow || event.origin !== window.location.origin) return;
+    if (event.data?.type !== "rangerbook-personal-viewer-height") return;
+    const height = Number(event.data.height);
+    if (Number.isFinite(height) && height >= 300 && height <= 9000) {
+      viewer.style.height = Math.ceil(height) + "px";
     }
   });
 
