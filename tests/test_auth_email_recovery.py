@@ -25,7 +25,8 @@ os.environ["RANGERBOOK_SES_FROM"] = "no-reply@warmycat.com"
 
 from fastapi.testclient import TestClient
 import account_email
-from asgi import app, bootstrap_super_admin
+from asgi import app
+from app import bootstrap_super_admin
 
 ORIGIN = {"origin": "https://rangerbook.warmycat.com"}
 
