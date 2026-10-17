@@ -248,7 +248,21 @@ def normalize_personal_teams(result: dict[str, Any]) -> dict[str, Any]:
                     members.append({"slot": slot, **sanitized})
             sides[label] = sorted(members, key=lambda x: x["slot"])
         output[team] = sides
+    # Preserve the exact same public-facing Ranger fields for PvP and Guild War
+    # as the existing player search renderer, without wallet/player metadata.
+    groups = result.get("playerUnitTeamGroupMap")
+    groups = groups if isinstance(groups, dict) else {}
+    for key in ("pvpteam", "guildwar"):
+        output[key] = []
+        for unit in pq._flatten_unit_records(groups.get(key)):
+            public = pq._public_unit_record(unit)
+            if public:
+                output[key].append(public)
     return output
+
+
+class UnbindRequest(BaseModel):
+    password: str = Field(min_length=1, max_length=128)
 
 
 class CandidateStart(BaseModel):
@@ -260,7 +274,7 @@ class VerifyRequest(BaseModel):
     challengeId: str = Field(min_length=16, max_length=128)
 
 
-def register_routes(app: FastAPI, db: Callable, require_admin: Callable, require_trusted_origin: Callable) -> None:
+def register_routes(app: FastAPI, db: Callable, require_admin: Callable, require_trusted_origin: Callable, password_hasher: Any) -> None:
     def user_id(user: Any) -> str:
         return str(user["id"])
 
@@ -397,6 +411,31 @@ def register_routes(app: FastAPI, db: Callable, require_admin: Callable, require
                 fail(409, "遊戲帳號已被綁定，或目前帳號已有綁定。")
             conn.execute("UPDATE game_verification_challenges SET status='passed' WHERE id=?", (row["id"],))
         return {"verified": True, "message": "遊戲帳號已成功綁定，請恢復隊伍原本的位置再匯入。"}
+
+
+    @app.post("/admin/game-binding/unbind")
+    def unbind_game_account(payload: UnbindRequest, request: Request, user: Any = Depends(require_admin)) -> dict[str, Any]:
+        # A valid session alone is not sufficient for a destructive UID switch.
+        require_trusted_origin(request)
+        try:
+            password_hasher.verify(user["password_hash"], payload.password)
+        except Exception:
+            fail(403, "目前帳號密碼不正確。")
+        identity = user_id(user)
+        with db() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            found = conn.execute(
+                "SELECT 1 FROM game_account_bindings WHERE user_id=?", (identity,)
+            ).fetchone()
+            if not found:
+                fail(404, "目前沒有已綁定的遊戲帳號。")
+            # Clear the private import in the same critical section as the
+            # binding removal. A failed deletion rolls back the SQL changes.
+            private_path(identity).unlink(missing_ok=True)
+            conn.execute("DELETE FROM game_verification_challenges WHERE user_id=?", (identity,))
+            conn.execute("DELETE FROM game_player_candidates WHERE user_id=?", (identity,))
+            conn.execute("DELETE FROM game_account_bindings WHERE user_id=?", (identity,))
+        return {"ok": True, "message": "已解除遊戲帳號綁定，私人匯入隊伍已清除。"}
 
     @app.get("/admin/personal-teams")
     def get_personal_teams(user: Any = Depends(require_admin)) -> dict[str, Any]:
