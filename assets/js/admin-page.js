@@ -349,7 +349,7 @@
             <details class="admin-overflow">
               <summary class="admin-overflow-trigger" aria-label="更多帳號操作" title="更多帳號操作">⋯</summary>
               <div class="admin-overflow-menu" role="menu">
-                <button class="warning" type="button" role="menuitem" data-action="reset-password">重置密碼</button>
+                <button class="warning" type="button" role="menuitem" data-action="reset-password">寄送重設連結</button>
                 <button class="danger" type="button" role="menuitem" data-action="delete-user">刪除帳號</button>
               </div>
             </details>
@@ -403,10 +403,9 @@
       options.body = JSON.stringify({ role });
       successMessage = `已將「${account}」權限更改為「${roleLabel}」。`;
     } else if (action === "reset-password") {
-      if (!window.confirm(`確定要重置「${account}」的密碼？`)) return;
-      if (!window.confirm(`再次確認：將「${account}」的密碼重置為 qwer1234？\n重置後該帳號目前所有登入狀態會立即失效。`)) return;
-      endpoint = `/admin/users/${encodeURIComponent(userId)}/reset-password`;
-      successMessage = `已將「${account}」的密碼重置為 qwer1234。`;
+      if (!window.confirm(`確定要將一次性重設連結寄送給「${account}」的已驗證信箱？\n對方原有的密碼不會立即變更。`)) return;
+      endpoint = `/admin/users/${encodeURIComponent(userId)}/send-reset-link`;
+      successMessage = `已寄送「${account}」的密碼重設連結。`;
     } else if (action === "delete-user") {
       if (!window.confirm(`確定要刪除帳號「${account}」？`)) return;
       if (!window.confirm(`再次確認：永久刪除帳號「${account}」？\n此操作無法復原，該帳號所有登入狀態也會立即失效。`)) return;
@@ -473,6 +472,7 @@
     const account = $("adminRegisterAccount").value.trim();
     const password = $("adminRegisterPassword").value;
     const confirmPassword = $("adminRegisterPasswordConfirm").value;
+    const email = $("adminRegisterEmail").value.trim();
 
     if (password !== confirmPassword) {
       setMessage(authMessage, "兩次輸入的密碼不一致。", "error");
@@ -481,10 +481,10 @@
 
     setMessage(authMessage, "建立帳號中…");
     try {
-      await auth.register(account, password);
+      await auth.register(account, password, email);
       registerForm.reset();
       showAuthPanel("login");
-      setMessage(authMessage, "註冊成功，管理員申請已送出。請等待最大管理者審核後再登入查看權限。", "success");
+      setMessage(authMessage, "註冊成功，驗證連結已寄送至電子郵件。請先完成信箱驗證，管理員申請仍須等待審核。", "success");
       $("adminLoginAccount").value = account;
     } catch (error) {
       setMessage(authMessage, error.message, "error");
