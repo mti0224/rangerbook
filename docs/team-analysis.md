@@ -37,7 +37,7 @@ or silently excluded from the denominator. Empty eligible groups show no data.
 
 Every team change refreshes both views; every new player query clears them.
 Request sequence tokens prevent older player/data requests from restoring stale
-results. Categories support hover, click, touch, and keyboard focus; tab arrow
+results. Categories switch only on click, touch tap, or keyboard activation (Enter/Space), never on hover or focus; tab arrow
 keys, Home and End are supported. A result card opens the existing Ranger detail.
 
 ## Validation

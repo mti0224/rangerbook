@@ -100,8 +100,26 @@ for(const g of catalogs.equipment) {
    }
   }
   await page.locator('[data-analysis-tab="WEAPON"]').click();
-  await page.locator('[data-category="FIRE"]').hover();
+  await page.locator('[data-category="FIRE"]').click();
+  const selectedCategory=()=>page.locator('.ta-bar[aria-pressed=true]').getAttribute('data-category');
+  assert.equal(await selectedCategory(),'FIRE');
+  const originalMembers=await page.locator('.ta-members').innerText();
+  await page.locator('[data-category="TREE"]').hover();
+  assert.equal(await selectedCategory(),'FIRE','hover must not switch categories');
+  assert.equal(await page.locator('.ta-members').innerText(),originalMembers);
+  await page.locator('[data-category="TREE"]').focus();
+  assert.equal(await selectedCategory(),'FIRE','focus alone must not switch categories');
+  await page.locator('[data-category="TREE"]').click();
+  assert.equal(await selectedCategory(),'TREE');
+  assert.equal(await page.locator('.ta-member').count(),1);
+  await page.locator('[data-category="WATER"]').hover();
+  assert.equal(await selectedCategory(),'TREE','hover must preserve the clicked selection');
+  await page.locator('[data-category="FIRE"]').focus();
+  await page.keyboard.press('Enter');
+  assert.equal(await selectedCategory(),'FIRE','keyboard activation selects a category');
   assert.equal(await page.locator('.ta-member').count(),2);
+  await page.locator('.ta-radar-target[data-metric="4"] .ta-radar-hit').hover();
+  assert.ok((await page.locator('.ta-radar-tooltip').innerText()).includes('4%'));
   await page.locator('.ta-member').first().click();
   assert.equal(await page.locator('#pvpPlayerSearchUnitDetail .pvp-player-unit-detail-card').count(),1);
   await page.locator('.ta-metric-list > div').nth(4).focus();

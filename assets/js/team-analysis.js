@@ -112,24 +112,27 @@
       </section></div>`;
     bars();
   }
-  function activateCategory(target) {
+  function selectCategory(target) {
     const button = target.closest('[data-category]');
     if (button && button.dataset.category !== category) {category = button.dataset.category; memberList();}
+  }
+  function showRadarMetric(target) {
     const metric = target.closest('[data-metric]');
     if (metric) {
       const m = result.radar[Number(metric.dataset.metric)];
       host.querySelector('.ta-radar-tooltip').textContent = `${t('metric.'+m.id)}: ${metricText(m)}`;
     }
   }
-  // Only physical pointer movement previews a row. A changing result-panel
-  // height can move another row underneath a stationary pointer after a click.
-  host.addEventListener('pointermove',e => { if (e.pointerType !== 'touch') activateCategory(e.target); });
-  host.addEventListener('focusin',e => activateCategory(e.target));
+  // Hover and focus only preview radar values. Category selection must be
+  // explicitly activated by click, tap or keyboard (native button click).
+  host.addEventListener('pointermove',e => { if (e.pointerType !== 'touch') showRadarMetric(e.target); });
+  host.addEventListener('focusin',e => showRadarMetric(e.target));
   host.addEventListener('click',e => {
     if (e.target.closest('[data-equipment-help]')) {openHelp(); return;}
     const button=e.target.closest('[data-analysis-tab]');
     if (button) {tab=button.dataset.analysisTab; bars(); return;}
-    activateCategory(e.target);
+    selectCategory(e.target);
+    showRadarMetric(e.target);
     const member=e.target.closest('[data-analysis-unit]');
     if (member) document.querySelector(`#pvpPlayerSearchTeamGrid [data-unit-index="${member.dataset.analysisUnit}"]`)?.click();
   });
