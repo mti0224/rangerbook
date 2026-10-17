@@ -131,9 +131,10 @@
     }
   });
 
-  const fragment = new URLSearchParams(window.location.hash.replace(/^#/, ""));
-  const action = fragment.get("email-action");
-  const token = fragment.get("token");
+  const linkPayload = window.RANGERBOOK_EMAIL_ACTION || {};
+  delete window.RANGERBOOK_EMAIL_ACTION;
+  const action = linkPayload.action;
+  const token = linkPayload.token;
   if ((action === "verify" || action === "reset") && token && token.length >= 32) {
     // Strip the bearer token before analytics or any subsequent page navigation.
     history.replaceState(null, "", location.pathname + location.search);
