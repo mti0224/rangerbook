@@ -202,5 +202,34 @@ class VerificationTests(unittest.TestCase):
                 )
 
 
+    def test_all_new_routes_require_admin(self):
+        paths = [route for route in self.app_module.app.routes
+                 if getattr(route, "path", "").startswith("/admin/game-") or
+                    getattr(route, "path", "").startswith("/admin/personal-teams")]
+        self.assertGreaterEqual(len(paths), 6)
+        for route in paths:
+            self.assertIn(self.app_module.require_admin,
+                          [item.call for item in route.dependant.dependencies], route.path)
+
+    def test_swap_has_to_preserve_every_other_position(self):
+        baseline = self.gb.subgroup_slots(fake_result(), "team2", "1")
+        changed = copy.deepcopy(baseline)
+        changed["0"], changed["1"] = changed["1"], changed["0"]
+        changed["2"], changed["3"] = changed["3"], changed["2"]
+        self.assertFalse(self.gb.is_exact_swap(baseline, changed, 0, 1))
+        changed = copy.deepcopy(baseline)
+        changed["0"], changed["1"] = changed["1"], changed["0"]
+        self.assertTrue(self.gb.is_exact_swap(baseline, changed, 0, 1))
+
+    def test_import_not_available_before_binding(self):
+        with self.assertRaises(HTTPException) as e:
+            self.call("/admin/personal-teams/import")
+        self.assertEqual(e.exception.status_code, 403)
+
+    def test_candidate_does_not_reveal_uid(self):
+        item = self.call("/admin/game-players/search")["items"][0]
+        self.assertNotIn(self.uid, json.dumps(item, ensure_ascii=False))
+
+
 if __name__ == "__main__":
     unittest.main()
