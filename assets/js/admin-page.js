@@ -12,6 +12,7 @@
   const workspaceTabs = $("adminWorkspaceTabs");
   const passwordCard = $("adminPasswordCard");
   const workspacePanels = {
+    personal: { button: $("adminPersonalTeamsTab"), panel: $("adminPersonalTeamsPanel") },
     personal: { button: $("adminPersonalTab"), panel: $("adminPersonalPanel") },
     password: { button: $("adminPasswordTab"), panel: passwordCard },
     resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
@@ -116,6 +117,7 @@
     activeWorkspaceSection = section;
     renderWorkspaceTabs();
     if (section === "traffic") loadTraffic();
+    if (section === "personal") window.dispatchEvent(new Event("rangerbook:personal-teams-open"));
     if (section === "personal") window.RangerbookPersonalTeams?.refresh();
     if (focus) workspacePanels[section].button?.focus();
   }
