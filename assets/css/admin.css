@@ -770,3 +770,25 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
   .traffic-scroll-list { padding-right: 16px; }
 }
 
+
+
+/* Personal team ownership verification — scoped to admin UI */
+.personal-verify {display:grid;gap:14px;max-width:720px}
+.personal-primary {width:fit-content;border:0;border-radius:12px;padding:11px 18px;background:#1f6feb;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.personal-primary:disabled {opacity:.55;cursor:not-allowed}
+.personal-candidates {display:grid;gap:8px;max-height:290px;overflow-y:auto}
+.personal-candidate {display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;background:var(--soft);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;font:inherit}
+.personal-candidate:hover,.personal-candidate:focus-visible {border-color:var(--primary);outline-offset:2px}
+.personal-candidate span {font-size:.85rem;color:var(--muted)}
+.personal-instruction {padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--text);font-weight:700;line-height:1.7}
+.personal-team-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:20px}
+.personal-team-card {border:1px solid var(--line);background:var(--soft);border-radius:14px;padding:15px;min-width:0}
+.personal-team-card h4 {margin:0 0 12px}
+.personal-team-card h5 {margin:12px 0 7px;color:var(--muted)}
+.personal-team-units {display:grid;gap:5px}
+.personal-ranger {display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px;border:1px solid var(--line);border-radius:8px;color:var(--text);overflow-wrap:anywhere}
+.personal-ranger strong {font-size:.83rem}
+.personal-ranger span {color:var(--muted);white-space:nowrap;font-size:.75rem}
+#adminPersonalSelected,#adminPersonalChallenge,#adminPersonalBound {min-width:0}
+#adminPersonalStatus {overflow-wrap:anywhere}
+@media(max-width:640px){.personal-primary{width:100%}.personal-ranger{flex-wrap:wrap}}
