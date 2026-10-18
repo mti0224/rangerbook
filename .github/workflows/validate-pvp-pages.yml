@@ -48,8 +48,10 @@ jobs:
           node --check assets/js/player-equipment-effects.js
           node --check assets/js/pvp-player-search.js
           node --check assets/js/team-analysis-model.js
+          node --check assets/js/team-analysis-overview-model.js
           node --check assets/js/team-analysis.js
           node tests/team-analysis-model.cjs
+          node tests/team-analysis-overview-model.cjs
       - name: Verify actual player equipment values and collector installation
         run: |
           pip install requests
