@@ -81,6 +81,32 @@ for(const source of ['native','awakened']) {
  }
  for(const tab of ['surehit','element']) assert.ok(onlyFlyer.tabs[tab].every(row=>row.denominator===0&&row.numerator===0&&row.ratio===null&&row.entries.length===0));
 }
+// Only SKILLEFF_DMG qualifies as single-hit (not its extra-damage variants).
+const skillRules = clone(catalogs), skillUnits = clone(units);
+skillRules.rangers[0].skillSet = [{effects:[{effectCode:'SKILLEFF_DMG_NORMAL'}]}];
+skillRules.rangers[1].skillSet = []; // AGI without a single-hit skill
+skillRules.rangers[3].skillSet = [{effects:[{effectCode:'SKILLEFF_DMG_SKILL'}]}];
+skillUnits[0].equipMap.WEAPON.normalOptions[0].optionKey = key('HP_MUL');
+skillUnits[1].equipMap.WEAPON.normalOptions[0].optionKey = key('HP_MUL');
+const skillResult = run(skillUnits, skillRules);
+assert.deepEqual([skillResult.tabs.element.find(r=>r.category==='FIRE').numerator,skillResult.tabs.element.find(r=>r.category==='FIRE').denominator],[0,0],
+  'INT Ranger without SKILLEFF_DMG is excluded from elemental bars');
+assert.deepEqual([skillResult.tabs.element.find(r=>r.category==='WATER').numerator,skillResult.tabs.element.find(r=>r.category==='WATER').denominator],[0,0],
+  'other non-single-hit INT Rangers are excluded from elemental bars');
+assert.equal(skillResult.radar.find(m=>m.id==='element').count,1,
+  'elemental radar average has only AGI/INT Rangers with the exact single-hit code');
+assert.equal(skillResult.tabs.surehit.find(r=>r.category==='INT').entries.find(e=>e.unit.unitCode==='A').ok,true,
+  'INT without SKILLEFF_DMG may use HP with both required surehit stats');
+assert.equal(skillResult.tabs.surehit.find(r=>r.category==='AGI').entries.find(e=>e.unit.unitCode==='B').ok,true,
+  'AGI without SKILLEFF_DMG may use HP with both required surehit stats');
+const skillPresent = clone(skillRules);
+skillPresent.rangers[0].skillSet=[{effects:[{effectCode:'SKILLEFF_DMG'}]}];
+skillPresent.rangers[1].skillSet=[{effects:[{effectCode:'SKILLEFF_DMG'}]}];
+const strict = run(skillUnits,skillPresent);
+assert.equal(strict.tabs.surehit.find(r=>r.category==='INT').entries.find(e=>e.unit.unitCode==='A').ok,false,
+  'INT with single-hit still requires ALL_ATK');
+assert.equal(strict.tabs.surehit.find(r=>r.category==='AGI').entries.find(e=>e.unit.unitCode==='B').ok,false,
+  'AGI with single-hit still requires ALL_ATK or GATK');
 assert.equal(run([units[2]]).radar[5].average,null);
 assert.ok(run([]).radar.every(m=>m.average===null&&!m.pending));
 assert.ok(Object.values(run([]).tabs).flat().every(r=>r.ratio===null&&r.denominator===0));
