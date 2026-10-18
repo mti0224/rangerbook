@@ -38,3 +38,17 @@ test('personal viewer uses full-width unit detail below cards without changing s
   assert.match(personalJs, /if \(personalMode\)/);
   assert.match(personalJs, /RangerbookTeamAnalysis\?\.setUnits\(units\)/);
 });
+
+
+test("mobile personal-team panel maintains insets on every side", () => {
+  assert.match(admin, /@media\s*\(max-width:\s*650px\)\s*\{[\s\S]*?#adminPersonalPanel\s*\{\s*padding:\s*16px;/);
+  assert.doesNotMatch(admin, /#adminPersonalPanel\s*\{\s*padding:\s*0(?:px)?\s*\}/);
+});
+
+test("admin workspace tabs scroll horizontally only", () => {
+  const tabs = admin.match(/\.admin-workspace-tabs\s*\{([^}]+)\}/)?.[1];
+  assert.ok(tabs, "workspace tabs CSS rule exists");
+  assert.match(tabs, /overflow-x:\s*auto\s*;/);
+  assert.match(tabs, /overflow-y:\s*hidden\s*;/);
+  assert.match(tabs, /touch-action:\s*pan-x\s*;/);
+});
