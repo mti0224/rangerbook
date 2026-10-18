@@ -86,6 +86,14 @@ for(const g of catalogs.equipment) {
    assert.equal(errors.length,0,errors.join('\n'));
    await context.close();console.log('TEAM_ANALYSIS_TOUCH_CONTRAST_OK',locale);continue;
   }
+  assert.equal(await page.locator('.ta-panel').count(),4,'four cards share the same renderer');
+  assert.equal(await page.locator('.ta-dist-track').count(),6,'six team distributions');
+  assert.equal(await page.locator('.ta-role-stat').count(),10,'role averages contain ten requested metrics');
+  await page.locator('[data-role="AGI"]').click();
+  assert.equal(await page.locator('[data-role="AGI"]').getAttribute('aria-selected'),'true');
+  assert.equal(await page.locator('.ta-role-stat').count(),10);
+  await page.locator('[data-role="INT"]').click();
+  assert.equal(await page.locator('.ta-role-stat').count(),10);
   assert.equal(await page.locator('.ta-metric-list dd').nth(4).innerText(),'4%');
   assert.equal(await page.locator('.ta-metric-list dd').nth(5).innerText(),'125%');
   for(const [tab,counts] of Object.entries(expected)) {
@@ -140,13 +148,18 @@ for(const g of catalogs.equipment) {
   // Equal-width panels on desktop, stacked on narrow devices, and both theme colors.
   const panels=page.locator('.ta-panel');let p=await panels.evaluateAll(a=>a.map(e=>({x:e.getBoundingClientRect().x,y:e.getBoundingClientRect().y,width:e.getBoundingClientRect().width})));
   assert.ok(Math.abs(p[0].width-p[1].width)<1);assert.equal(p[0].y,p[1].y);
+  assert.ok(p[2].y>p[0].y && p[2].y===p[3].y,'two rows, two columns'); 
+  await page.waitForFunction(()=>{
+    const a=document.querySelector('.ta-radar-panel'),b=document.querySelector('.ta-overview-panel');
+    return Math.abs(a.getBoundingClientRect().height-b.getBoundingClientRect().height)<2;
+  });
   for(const theme of ['light','dark']) {
    await page.evaluate(v=>document.documentElement.dataset.theme=v,theme);
    for(const width of [390,320]) {
     await page.setViewportSize({width,height:844});
     await page.locator('[data-analysis-tab="WEAPON"]').click();await page.locator('[data-category="FIRE"]').click();
     p=await panels.evaluateAll(a=>a.map(e=>({y:e.getBoundingClientRect().y})));
-    assert.ok(p[1].y>p[0].y);
+    assert.ok(p[1].y>p[0].y && p[2].y>p[1].y && p[3].y>p[2].y, 'mobile panels stack');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${locale} ${theme} ${width} overflow`);
     assert.equal(await page.locator('#pvpPlayerSearchResult').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
     assert.notEqual(await page.locator('.ta-pass').first().evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('.ta-fail').first().evaluate(e=>getComputedStyle(e).backgroundColor));

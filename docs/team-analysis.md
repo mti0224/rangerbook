@@ -1,8 +1,12 @@
 # Search-team analysis
 
-`/pvp/search/` adds a six-axis radar and five equipment tabs below the existing
-team/detail area. Native V2 IDs drive all classification and effect matching;
-localized labels never determine game logic. Only this page gains the analysis UI.
+`/pvp/search/` provides the shared PvP and admin private-team analysis renderer.
+It preserves the six-axis radar and five equipment tabs, arranged with a new
+team-distribution overview and INT/AGI/STR Ranger averages in four panels.
+The top-right overview matches the radar panel's measured height on desktop,
+scrolls internally if needed, and expands normally on mobile. The bottom panels
+size independently. Native V2 IDs drive classification and effect matching;
+localized labels never determine game logic.
 
 `team-analysis-model.js` is the shared, pure calculation engine. Slot tabs count
 Rangers, with each Ranger included in both their element and role. Surehit uses
@@ -44,6 +48,30 @@ Request sequence tokens prevent older player/data requests from restoring stale
 results. Categories switch only on click, touch tap, or keyboard activation (Enter/Space), never on hover or focus; tab arrow
 keys, Home and End are supported. A result card opens the existing Ranger detail.
 
+## Four-panel overview and role averages
+
+Six distributions count Rangers by star/evolution, role, element and unlocked talent
+stage, and **equipped items** by star and selected high-level trigger condition.
+Unverified equipment conditions remain unknown; unequipped slots are not counted.
+
+The role breakdown calculates each Ranger at their **own recorded level** using
+`rankUpStatIncrease` up to the regular level cap and `rankUpStatIncreaseMax`
+afterward, matching the Ranger detail page. Attack is the sum of physical
+and magical attacks after their own relevant gear/talent percentages.
+Percentage contributions from basic rolls, activated high-level effects and
+unlocked enhancement talents are **added before multiplying once**.
+
+Mean effective mineral and respawn values use the same additive gear/talent
+semantics. The per-level respawn reduction and 1.3-second minimum match the
+Ranger detail page. Missing actual rolls, unknown Ranger definitions or invalid
+recorded levels remain unavailable: catalog maximums are never substituted.
+
+The official V2 equipment-option table does not currently expose separately
+confirmed persistent codes for **skill attack nullification** or **skill
+penetration**. Both start at zero; speculative mappings to unrelated effects
+are forbidden. Skill sure-hit also starts at zero using its existing native code.
+
+Both public PvP and admin personal teams embed this same analysis renderer.
 ## Validation
 
 ```sh

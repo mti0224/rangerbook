@@ -3,7 +3,48 @@ body.gt-app #pvpPlayerSearchResult { background:transparent !important; }
 .team-analysis { margin-top:1.5rem; color:var(--text); overflow-anchor:none; }
 .team-analysis[hidden] { display:none; }
 .team-analysis > h2 { font-size:1.25rem; margin:0 0 .8rem; }
-.ta-columns { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; align-items:start; }
+.ta-columns {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-areas:"radar overview" "role equipment";
+  grid-template-rows:auto auto;
+  align-items:start;
+  gap:1rem;
+}
+.ta-radar-panel { grid-area:radar; }
+.ta-overview-panel { grid-area:overview; display:flex; flex-direction:column; overflow:hidden; min-height:0; }
+.ta-role-panel { grid-area:role; }
+.ta-equipment-panel { grid-area:equipment; }
+.ta-overview-panel > h3 { flex:none; }
+.ta-overview-inner { flex:1; min-height:0; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; padding-inline-end:.2rem; }
+.ta-overview-inner > h4 { margin:.75rem 0 .5rem; font-size:.85rem; }
+.ta-overview-inner > h4:first-child { margin-top:0; }
+.ta-distribution-item { margin-bottom:.7rem; min-width:0; }
+.ta-dist-heading { display:flex; justify-content:space-between; gap:.7rem; font-size:.81rem; margin-bottom:.3rem; }
+.ta-dist-heading small { color:var(--muted); font-variant-numeric:tabular-nums; }
+.ta-dist-track { display:flex; overflow:hidden; width:100%; height:1.75rem; border-radius:.5rem; background:var(--bg);
+  border:1px solid var(--line); }
+.ta-dist-segment { display:flex; justify-content:center; align-items:center; min-width:0; overflow:hidden;
+  border-inline-end:1px solid color-mix(in srgb,var(--panel) 45%,transparent);
+  color:var(--text); font-size:.65rem; font-weight:750; white-space:nowrap; }
+.ta-dist-segment > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 .2rem; }
+.ta-dist-shade-0 { background:color-mix(in srgb,var(--primary) 65%,var(--panel)); }
+.ta-dist-shade-1 { background:color-mix(in srgb,var(--primary) 44%,var(--panel)); }
+.ta-dist-shade-2 { background:color-mix(in srgb,var(--primary) 30%,var(--panel)); }
+.ta-dist-shade-3 { background:color-mix(in srgb,var(--primary) 20%,var(--panel)); }
+.ta-dist-shade-4 { background:color-mix(in srgb,var(--primary) 12%,var(--panel)); }
+.ta-overview-production-title { border-top:1px solid var(--line); padding-top:.75rem; }
+.ta-production-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+.ta-production-grid > div { border:1px solid var(--line); border-radius:.55rem; padding:.6rem .55rem; min-width:0; background:var(--bg); }
+.ta-production-grid span { display:block; font-size:.75rem; color:var(--muted); }
+.ta-production-grid strong { display:block; margin-top:.4rem; font-size:1.15rem; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.ta-role-body { border-top:1px solid var(--line); padding-top:.5rem; }
+.ta-role-metrics { display:grid; gap:.45rem; }
+.ta-role-stat { display:flex; align-items:center; justify-content:space-between; gap:.65rem; min-width:0;
+  padding:.5rem .65rem; border-radius:.6rem; background:var(--bg); border:1px solid var(--line); }
+.ta-role-stat span { font-size:.83rem; min-width:0; }
+.ta-role-stat strong { font-size:.88rem; text-align:end; white-space:nowrap; font-variant-numeric:tabular-nums; }
+
 .ta-panel { min-width:0; padding:1.15rem; border:1px solid var(--line); border-radius:1rem; background:var(--panel); background-clip:padding-box; overflow:clip; box-shadow:var(--shadow); }
 .ta-panel h3 { margin:0 0 .8rem; font-size:1rem; }
 .ta-panel-heading { display:flex; align-items:center; gap:.3rem; margin-bottom:.8rem; }
@@ -90,4 +131,11 @@ html.ta-help-open,html.ta-help-open body { overflow:hidden; }
 html[data-theme=dark] #pvpPlayerTeamAnalysis .ta-member.ta-pass { background:#213d30 !important; border-color:#47785b !important; color:#cce9d5 !important; }
 html[data-theme=dark] #pvpPlayerTeamAnalysis .ta-member.ta-fail { background:#462b33 !important; border-color:#87545f !important; color:#f3d0d6 !important; }
 .team-analysis button:focus-visible,.ta-metric-list > div:focus-visible,.ta-radar-target:focus-visible { outline:2px solid var(--primary); outline-offset:3px; }
-@media(max-width:760px) { .ta-columns { grid-template-columns:minmax(0,1fr); }.ta-panel { padding:.9rem; } }
+@media(max-width:760px) {
+  .ta-columns { grid-template-columns:minmax(0,1fr);
+    grid-template-areas:"radar" "overview" "role" "equipment"; }
+  .ta-overview-panel { height:auto !important; }
+  .ta-overview-inner { max-height:none; overflow:visible; }
+  .ta-panel { padding:.9rem; }
+}
+
