@@ -3,9 +3,11 @@
 `/pvp/search/` provides the shared PvP and admin private-team analysis renderer.
 It preserves the six-axis radar and five equipment tabs, arranged with a new
 team-distribution overview and INT/AGI/STR Ranger averages in four panels.
-The top-right overview matches the radar panel's measured height on desktop,
-scrolls internally if needed, and expands normally on mobile. The bottom panels
-size independently. Native V2 IDs drive classification and effect matching;
+The top-right "Team overview" matches the radar panel's measured height on
+desktop, scrolls internally if needed, and expands normally on mobile. Its six
+distributions display one horizontal bar per category with category name,
+count / total and percentage, rather than a single multi-segment bar. The
+bottom panels size independently. Native V2 IDs drive classification and effect matching;
 localized labels never determine game logic.
 
 `team-analysis-model.js` is the shared, pure calculation engine. Slot tabs count
