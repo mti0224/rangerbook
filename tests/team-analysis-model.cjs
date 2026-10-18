@@ -131,7 +131,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const source = p => fs.readFileSync(path.resolve(__dirname, '..', p), 'utf8');
 const uiCatalog = JSON.parse(source('assets/locales/ui.json'));
-const publicV2 = JSON.parse(source('res/v2/locales/ui.json'));
+const publishedV2 = JSON.parse(source('res/v2/locales/ui.json'));
+const authoredOverrides = JSON.parse(source('assets/locales/personal-analysis-overrides.json'));
+const publicV2 = [...new Map([...publishedV2,...authoredOverrides].map(row=>[row.key,row])).values()];
 const backendV2 = JSON.parse(source('deploy/aws/v2/locales/ui.json'));
 const adminHtml = source('admin/index.html');
 const adminJs = source('assets/js/admin-personal-teams.js');
@@ -173,3 +175,17 @@ assert.ok(adminHtml.includes('data-i18n-placeholder="admin.personal.search.place
 assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
 assert.match(adminJs, /serverErrorKeys/);
 console.log('PERSONAL_I18N_OK: four locale catalogs and UI bindings are complete');
+
+const overrideKeys = new Set(authoredOverrides.map(row=>row.key));
+assert.equal(overrideKeys.size, authoredOverrides.length, 'unique authored overlay keys');
+for(const key of ['UI:analysis.help.int','UI:analysis.help.agi','UI:analysis.help.elementBody','UI:admin.personal.heading','UI:admin.personal.viewer.level']) {
+ assert.ok(overrideKeys.has(key), key+' survives the V2 updater');
+}
+for (const row of authoredOverrides) {
+ assert.ok(row.key.startsWith('UI:admin.personal.') || ['UI:analysis.help.int','UI:analysis.help.agi','UI:analysis.help.elementBody'].includes(row.key));
+ for (const language of ['zh_TW','en','th','jp']) assert.ok(row[language]?.trim(), row.key+' '+language);
+}
+const adapterSource = require('node:fs').readFileSync(require('node:path').resolve(__dirname,'../assets/js/v2-data.js'),'utf8');
+assert.match(adapterSource,/personal-analysis-overrides\.json/);
+assert.match(adapterSource,/effectiveRows=\[\.\.\.new Map\(\[\.\.\.rows,\.\.\.overrides\]/);
+console.log('V2_UI_OVERLAY_OK: authored UI remains present after scheduled V2 publishing');

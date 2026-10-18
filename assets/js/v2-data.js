@@ -80,7 +80,18 @@
     const rows=await r.json();
     await localeReady;
     if (!Array.isArray(rows)) throw new Error("Invalid V2 catalog: "+name);
-    for (const row of rows) {
+    // Periodic backend publishing may use an older UI snapshot. Keep the
+    // authored personal-team copy and single-hit analysis help authoritative.
+    let effectiveRows=rows;
+    if (name==="ui") {
+      const overrideResponse=await nativeFetch(root+"assets/locales/personal-analysis-overrides.json?v=20261018-1");
+      if (!overrideResponse.ok) throw new Error("Personal-team UI overrides unavailable");
+      const overrides=await overrideResponse.json();
+      if (!Array.isArray(overrides) || overrides.some(row=>!row?.key?.startsWith("UI:")))
+        throw new Error("Invalid personal-team UI overrides");
+      effectiveRows=[...new Map([...rows,...overrides].map(row=>[row.key,row])).values()];
+    }
+    for (const row of effectiveRows) {
       if (catalog.has(row.key)) throw new Error("Duplicate V2 key: "+row.key);
       catalog.set(row.key,row);pair(row.zh_TW,row[locale],/^EQUIP:GEAR_ATTR_.*_nm$/.test(row.key)?4:/^ABILITY:.*_nm$/.test(row.key)?3:0);
     }
