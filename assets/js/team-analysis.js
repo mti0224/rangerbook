@@ -107,7 +107,6 @@
     const data=result.overview;
     const groups=['star','role','element','talent','gearStar','condition'];
     return '<div class="ta-overview-inner" tabindex="0">'+
-      '<h4>'+escape(t('overview.title'))+'</h4>'+
       (data.membersCount?groups.map(k=>distributionBar(k,data.distribution[k])).join(''):
         '<p class="ta-note">'+escape(t('overview.none'))+'</p>')+
       '<h4 class="ta-overview-production-title">'+escape(t('overview.production'))+'</h4>'+
