@@ -92,7 +92,8 @@ for(const g of catalogs.equipment) {
   assert.equal(await page.locator('.ta-dist-track').count(),await page.locator('.ta-dist-row').count(),
     'every distribution category must have exactly one track');
   assert.equal(await page.locator('.ta-dist-segment').count(),0,'no single multi-segment stacked distribution bars');
-  assert.ok((await page.locator('.ta-overview-panel > h3').innerText()).length>0);
+  assert.equal((await page.locator('.ta-overview-panel > h3').innerText()).trim(),
+    ({'zh-Hant':'隊伍總覽',en:'Team overview',th:'ภาพรวมทีม',jp:'チーム概要'})[locale]);
   assert.ok((await page.locator('.ta-dist-row').first().innerText()).includes('%'),
     'each category shows its count and percentage');
   assert.equal(await page.locator('.ta-role-stat').count(),10,'role averages contain ten requested metrics');
