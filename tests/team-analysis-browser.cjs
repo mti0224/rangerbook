@@ -87,7 +87,14 @@ for(const g of catalogs.equipment) {
    await context.close();console.log('TEAM_ANALYSIS_TOUCH_CONTRAST_OK',locale);continue;
   }
   assert.equal(await page.locator('.ta-panel').count(),4,'four cards share the same renderer');
-  assert.equal(await page.locator('.ta-dist-track').count(),6,'six team distributions');
+  assert.equal(await page.locator('.ta-distribution-item').count(),6,'six team distributions');
+  assert.ok(await page.locator('.ta-dist-row').count()>6,'each distribution category gets its own horizontal bar');
+  assert.equal(await page.locator('.ta-dist-track').count(),await page.locator('.ta-dist-row').count(),
+    'every distribution category must have exactly one track');
+  assert.equal(await page.locator('.ta-dist-segment').count(),0,'no single multi-segment stacked distribution bars');
+  assert.ok((await page.locator('.ta-overview-panel > h3').innerText()).length>0);
+  assert.ok((await page.locator('.ta-dist-row').first().innerText()).includes('%'),
+    'each category shows its count and percentage');
   assert.equal(await page.locator('.ta-role-stat').count(),10,'role averages contain ten requested metrics');
   await page.locator('[data-role="AGI"]').click();
   assert.equal(await page.locator('[data-role="AGI"]').getAttribute('aria-selected'),'true');
@@ -160,6 +167,7 @@ for(const g of catalogs.equipment) {
     await page.locator('[data-analysis-tab="WEAPON"]').click();await page.locator('[data-category="FIRE"]').click();
     p=await panels.evaluateAll(a=>a.map(e=>({y:e.getBoundingClientRect().y})));
     assert.ok(p[1].y>p[0].y && p[2].y>p[1].y && p[3].y>p[2].y, 'mobile panels stack');
+    assert.ok(await page.locator('.ta-dist-track').count()>6,'mobile individual distribution bars');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${locale} ${theme} ${width} overflow`);
     assert.equal(await page.locator('#pvpPlayerSearchResult').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
     assert.notEqual(await page.locator('.ta-pass').first().evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('.ta-fail').first().evaluate(e=>getComputedStyle(e).backgroundColor));
