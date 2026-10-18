@@ -44,7 +44,7 @@ assert.equal(data.overall.mineral,900);
 assert.equal(data.overall.respawn,8);
 assert.deepEqual(data.distribution.role.map(x=>[x.key,x.count]),[['INT',1]]);
 assert.deepEqual(data.distribution.gearStar.map(x=>[x.key,x.count]),[['7',1],['6',1]]);
-assert.deepEqual(data.distribution.condition.map(x=>[x.key,x.count]),[['always',1],['none',1]]);
+assert.deepEqual(data.distribution.condition.map(x=>[x.key,x.count]),[['none',1],['always',1]]);
 assert.equal(data.distribution.star[0].key,'9');
 assert.equal(data.distribution.talent[0].key,'4');
 const noGear=model.summarize([{unitCode:'test-int',level:10,talentGrade:0}]);
