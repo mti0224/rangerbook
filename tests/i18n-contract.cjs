@@ -39,8 +39,11 @@ for (const part of ['name="theme" value="light"','name="theme" value="dark"','na
 assert.match(logic, /rangerbook-theme/);
 assert.match(logic, /setLocale/);
 const ui = json("assets/locales/ui.json");
-assert.deepEqual(Object.keys(ui).sort(),["en","zh-Hant"]);
-assert.deepEqual(Object.keys(ui.en).sort(),Object.keys(ui["zh-Hant"]).sort());
+assert.deepEqual(Object.keys(ui).sort(),["en","jp","th","zh-Hant"]);
+for (const locale of ["en","th","jp"]) {
+  assert.deepEqual(Object.keys(ui[locale]).sort(),Object.keys(ui["zh-Hant"]).sort(),locale+" UI key parity");
+  assert.ok(Object.values(ui[locale]).every(x=>typeof x==="string"&&x.trim()),locale+" UI text coverage");
+}
 assert.ok(Object.keys(ui.en).length >= 550);
 assert.equal(ui.en["nav.home"],"Home");
 assert.match(runtime,/assets\/locales\/ui\.json/);
