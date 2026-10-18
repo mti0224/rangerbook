@@ -826,7 +826,9 @@
     "admin.personal.error.linkedElsewhere": "遊戲帳號已被綁定，或目前帳號已有綁定。",
     "admin.personal.error.badPassword": "目前帳號密碼不正確。",
     "admin.personal.error.notLinked": "目前沒有已綁定的遊戲帳號。",
-    "admin.personal.error.needVerification": "請先完成遊戲帳號驗證。"
+    "admin.personal.error.needVerification": "請先完成遊戲帳號驗證。",
+    "admin.personal.search.candidatesLabel": "玩家搜尋候選名單",
+    "admin.personal.viewer.iframeTitle": "我的 LINE Rangers 隊伍與隊伍分析"
   },
   "en": {
     "nav.home": "Home",
@@ -1655,7 +1657,9 @@
     "admin.personal.error.linkedElsewhere": "The game account is linked elsewhere, or your site account is already linked.",
     "admin.personal.error.badPassword": "Incorrect account password.",
     "admin.personal.error.notLinked": "No game account is currently linked.",
-    "admin.personal.error.needVerification": "Verify your game account first."
+    "admin.personal.error.needVerification": "Verify your game account first.",
+    "admin.personal.search.candidatesLabel": "Player search results",
+    "admin.personal.viewer.iframeTitle": "My LINE Rangers teams and analysis"
   },
   "th": {
     "nav.home": "หน้าหลัก",
@@ -2484,7 +2488,9 @@
     "admin.personal.error.linkedElsewhere": "บัญชีเกมถูกเชื่อมแล้ว หรือบัญชีเว็บไซต์ของคุณมีการเชื่อมอยู่แล้ว",
     "admin.personal.error.badPassword": "รหัสผ่านบัญชีปัจจุบันไม่ถูกต้อง",
     "admin.personal.error.notLinked": "ขณะนี้ไม่มีบัญชีเกมที่เชื่อมอยู่",
-    "admin.personal.error.needVerification": "โปรดยืนยันบัญชีเกมก่อน"
+    "admin.personal.error.needVerification": "โปรดยืนยันบัญชีเกมก่อน",
+    "admin.personal.search.candidatesLabel": "ผลการค้นหาผู้เล่น",
+    "admin.personal.viewer.iframeTitle": "ทีม LINE Rangers และการวิเคราะห์ทีมของฉัน"
   },
   "jp": {
     "nav.home": "ホーム",
@@ -3313,6 +3319,8 @@
     "admin.personal.error.linkedElsewhere": "ゲームアカウントが連携済みか、現在のサイトアカウントに別の連携があります。",
     "admin.personal.error.badPassword": "現在のアカウントのパスワードが正しくありません。",
     "admin.personal.error.notLinked": "現在連携されているゲームアカウントはありません。",
-    "admin.personal.error.needVerification": "先にゲームアカウントの認証を完了してください。"
+    "admin.personal.error.needVerification": "先にゲームアカウントの認証を完了してください。",
+    "admin.personal.search.candidatesLabel": "プレイヤー検索候補",
+    "admin.personal.viewer.iframeTitle": "自分のLINE Rangersチームとチーム分析"
   }
 }
