@@ -156,6 +156,12 @@
     return window.RangerbookI18n?.unitName(code, fallback) || fallback;
   }
 
+  function equipmentName(code, isNone) {
+    if (isNone) return personalMode ? pt("noEquipment","未裝備") : "未裝備";
+    const fallback = gearNameByCode[code] || code;
+    return window.RangerbookI18n?.lookup("EQUIP", code + "_nm", fallback) || fallback;
+  }
+
   function unitLevel(unit) {
     const value = [unit?.level, unit?.unitLevel, unit?.unitLv, unit?.rangerLevel]
       .find((item) => item !== undefined && item !== null && item !== "");
@@ -180,7 +186,7 @@
   function unitTalentCorner(unit) {
     const grade = Number(unit?.talentGrade);
     if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return "";
-    return `<img class="pvp-player-unit-talent-corner" src="${TALENT_ICON(grade)}" alt="" title="才能解放階段 ${grade}" aria-hidden="true" decoding="async" onerror="this.remove();">`;
+    return `<img class="pvp-player-unit-talent-corner" src="${TALENT_ICON(grade)}" alt="" title="${escapeHtml(personalMode ? pf("talentStage",[grade],"才能解放階段 %N1") : "才能解放階段 " + grade)}" aria-hidden="true" decoding="async" onerror="this.remove();">`;
   }
 
   function teamStarImage(src, className) {
@@ -192,12 +198,12 @@
   function teamEquipmentSlot(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
-    const name = isNone ? (personalMode ? pt("noEquipment","未裝備") : "未裝備") : (gearNameByCode[code] || code);
+    const name = equipmentName(code, isNone);
     const starSrc = isNone ? "" : normalStarLayer(gearStarByCode[code]);
     const icon = isNone
       ? '<span class="pvp-player-unit-equipment-image pvp-player-unit-equipment-empty" aria-hidden="true">—</span>'
       : `<img class="pvp-player-unit-equipment-image" src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
-    return `<span class="pvp-player-unit-equipment-slot" title="${escapeHtml(SLOT_LABELS[slot])}：${escapeHtml(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
+    return `<span class="pvp-player-unit-equipment-slot" title="${escapeHtml(localized(SLOT_LABELS[slot]))}：${escapeHtml(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
   }
 
   function advancedEffectName(unit, slot) {
@@ -207,12 +213,12 @@
   function equipmentItem(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
-    const name = isNone ? (personalMode ? pt("noEquipment","未裝備") : "未裝備") : (gearNameByCode[code] || code);
+    const name = equipmentName(code, isNone);
     const effect = isNone ? "" : advancedEffectName(unit, slot);
     const icon = isNone
       ? '<span class="pvp-player-equipment-empty-icon" aria-hidden="true">—</span>'
       : `<img src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
-    return `<div class="pvp-player-equipment-item" data-slot="${slot}" data-effect="${escapeHtml(effect)}">${icon}<div><span>${escapeHtml(SLOT_LABELS[slot])}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
+    return `<div class="pvp-player-equipment-item" data-slot="${slot}" data-effect="${escapeHtml(localized(effect))}">${icon}<div><span>${escapeHtml(localized(SLOT_LABELS[slot]))}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
   }
 
   function abilityInfo(unit) {
@@ -220,7 +226,7 @@
     if (!code) return { name: personalMode ? pt("noAwakened","未設定覺醒能力") : "未設定覺醒能力", icon: "" };
     const info = abilityMap[code] || {};
     return {
-      name: info["名稱"] || code,
+      name: window.RangerbookI18n?.lookup("ABILITY", code + "_nm", info["名稱"] || code) || info["名稱"] || code,
       icon: info.icon || String(unit?.awakeAbilityIcon || "").trim(),
     };
   }
