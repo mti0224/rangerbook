@@ -34,7 +34,6 @@ test('existing five-slot cards and A/B headers have separate row heights', () =>
 
 test('personal viewer uses full-width unit detail below cards without changing standard query mode', () => {
   assert.match(viewer, /grid-template-columns:\s*minmax\(0,\s*1fr\)\s*!important/);
-  assert.match(admin, /admin-page:has\(#adminPersonalPanel:not\(\[hidden\]\)\)/);
   assert.match(personalJs, /if \(personalMode\)/);
   assert.match(personalJs, /RangerbookTeamAnalysis\?\.setUnits\(units\)/);
 });
@@ -51,4 +50,12 @@ test("admin workspace tabs scroll horizontally only", () => {
   assert.match(tabs, /overflow-x:\s*auto\s*;/);
   assert.match(tabs, /overflow-y:\s*hidden\s*;/);
   assert.match(tabs, /touch-action:\s*pan-x\s*;/);
+});
+
+test("all admin tabs share a 980px maximum content width", () => {
+  // These specific selectors must override Game-Tech's later 1180px shell rule.
+  assert.match(admin, /body\\.gt-app main\\.admin-page\\s*\\{[^}]*width:\\s*min\\(980px,\\s*calc\\(100%\\s*-\\s*2rem\\)\\)/);
+  assert.match(admin, /body\\.gt-app \\.admin-page \\.admin-shell\\s*\\{[^}]*width:\\s*100%/);
+  assert.doesNotMatch(admin, /admin-page:has\\(#adminPersonalPanel/);
+  assert.doesNotMatch(admin, /min\\(1420px/);
 });
