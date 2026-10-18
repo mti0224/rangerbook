@@ -520,7 +520,13 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
 .admin-workspace { padding: 0 !important; min-width: 0; }
 .admin-workspace-tabs {
   display: flex; align-items: stretch; gap: .3rem; padding: 1rem 1.25rem 0;
-  border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: thin;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-y: none;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 .admin-workspace-tabs > button[role="tab"] {
   position: relative; flex: 0 0 auto; min-height: 46px; margin-bottom: -1px;
@@ -802,7 +808,12 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
 .personal-unbind-form h4 { margin:0; }
 .personal-unbind-form .danger { border:0; background:#b42332; color:#fff; padding:10px 16px; border-radius:10px; cursor:pointer; font:inherit; font-weight:700; }
 #adminPersonalBound .admin-actions { align-items:center; gap:12px; flex-wrap:wrap; }
-@media (max-width:650px) {#adminPersonalPanel {padding:0} #adminPersonalViewer {min-height:460px;} .personal-unbind-form {padding:12px;} }
+@media (max-width:650px) {
+  /* Preserve comfortable insets on every side of the personal-team panel. */
+  #adminPersonalPanel { padding: 16px; }
+  #adminPersonalViewer { min-height: 460px; }
+  .personal-unbind-form { padding: 12px; }
+}
 
 
 /* Expand only the personal-team workspace; other admin tabs keep their widths. */
