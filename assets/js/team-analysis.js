@@ -95,13 +95,20 @@
   };
   function distributionBar(name,items){
     const total=items.reduce((sum,x)=>sum+x.count,0);
-    const segments=items.length?items.map((item,index)=>{
+    const rows=items.map(item=>{
       const label=labelFor(name,item);
-      return '<span class="ta-dist-segment ta-dist-shade-'+(index%5)+'" style="width:'+ (100*item.ratio)+'%" title="'+escape(label+' '+item.count+'/'+total)+'" aria-label="'+escape(label+': '+formatValue(100*item.ratio,'%'))+'">'+
-        (item.ratio>=.16?'<span>'+escape(label)+' '+formatValue(100*item.ratio,'%')+'</span>':'')+'</span>';
-    }).join(''):'';
+      const pct=total>0?Math.max(0,Math.min(100,100*item.count/total)):0;
+      const percentage=formatValue(Number(pct.toFixed(1)),'%');
+      const value=item.count+' / '+total+' · '+percentage;
+      return '<div class="ta-dist-row">'+
+        '<div class="ta-dist-row-heading"><span class="ta-dist-label">'+escape(label)+'</span>'+
+        '<span class="ta-dist-value">'+escape(value)+'</span></div>'+
+        '<div class="ta-dist-track" role="progressbar" aria-label="'+escape(t('overview.'+name)+' — '+label)+'"'+
+        ' aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Number(pct.toFixed(1))+'">'+
+        '<span class="ta-dist-fill" style="width:'+pct+'%"></span></div></div>';
+    }).join('');
     return '<div class="ta-distribution-item"><div class="ta-dist-heading">'+escape(t('overview.'+name))+
-      '<small>'+total+'</small></div><div class="ta-dist-track" role="img" aria-label="'+escape(t('overview.'+name)+': '+items.map(x=>labelFor(name,x)+ ' '+formatValue(x.ratio*100,'%')).join(', '))+'">'+segments+'</div></div>';
+      '<small>'+total+'</small></div><div class="ta-dist-rows">'+rows+'</div></div>';
   }
   function overview(){
     const data=result.overview;
