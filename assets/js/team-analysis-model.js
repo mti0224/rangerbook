@@ -56,11 +56,16 @@
       return [...(ranger.abilityCodes || []),unit.awakeAbilityCode].filter(Boolean)
         .some(code => abilities.get(code)?.triggerEffects?.some(e => e.aptitudeCode === 'FLIGHT'));
     }
+    // Check the native V2 effect code, not locale-dependent skill descriptions.
+    function hasSingleHitSkill(ranger) {
+      return (ranger.skillSet || ranger.skills || []).some(skill =>
+        (skill.effects || []).some(effect => effect.effectCode === 'SKILLEFF_DMG'));
+    }
     function eligibleFor(unit, ranger, metric) {
       // Unknown Rangers remain pending in the radar rather than disappearing.
       if (!ranger) return true;
       if (['surehit','element'].includes(metric) && isFlyer(unit,ranger)) return false;
-      return metric !== 'element' || ['INT','AGI'].includes(ranger.roleType);
+      return metric !== 'element' || (['INT','AGI'].includes(ranger.roleType) && hasSingleHitSkill(ranger));
     }
     function basicOptions(unit,slot) {
       const {actual,definition} = slotInfo(unit,slot);
@@ -75,7 +80,10 @@
       if (!definition) return {ok:false,reason:'pending'};
       const options = basicOptions(unit,'WEAPON');
       const codes = options.map(o => o.optionKey);
-      const attack = ranger.roleType === 'STR' ? ['HP_MUL'] : ranger.roleType === 'INT' ? ['ALL_ATK_MUL'] : ['ALL_ATK_MUL','GATK_MUL'];
+      const singleHit = hasSingleHitSkill(ranger);
+      const attack = ranger.roleType === 'STR' ? ['HP_MUL']
+        : ranger.roleType === 'INT' ? (singleHit ? ['ALL_ATK_MUL'] : ['ALL_ATK_MUL','HP_MUL'])
+        : singleHit ? ['ALL_ATK_MUL','GATK_MUL'] : ['ALL_ATK_MUL','GATK_MUL','HP_MUL'];
       const ok = codes.length === 3 && codes.includes(key('PRD_SPE_MUL')) && codes.includes(key('CLN_SKLAVD_PROB_MUL')) && attack.some(c => codes.includes(key(c)));
       return {ok,reason:ok ? 'matched' : 'combination'};
     }
