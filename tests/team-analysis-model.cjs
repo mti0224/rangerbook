@@ -152,6 +152,22 @@ for (const k of refs) {
     assert.equal(official[field],authoritative[field],locale+' authored V2 UI differs for '+k);
   }
 }
+
+// Avoid conflicting translations for the same Chinese source; i18n must not
+// silently lose translations on pre-existing public pages (e.g. PvP levels).
+const bySource = new Map();
+for (const row of publicV2) {
+  const source = row.zh_TW;
+  if (!bySource.has(source)) bySource.set(source, []);
+  bySource.get(source).push(row);
+}
+for (const [source, rows] of bySource) {
+  if (rows.length < 2 || !rows.some(row=>row.key.startsWith('UI:admin.personal.'))) continue;
+  for (const language of ['en','th','jp']) {
+    assert.equal(new Set(rows.map(row=>row[language])).size,1,
+      'ambiguous '+language+' phrase for '+source+': '+rows.map(row=>row.key).join(', '));
+  }
+}
 assert.ok(adminHtml.includes('data-i18n="admin.personal.heading"'));
 assert.ok(adminHtml.includes('data-i18n-placeholder="admin.personal.search.placeholder"'));
 assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
