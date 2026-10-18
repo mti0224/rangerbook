@@ -11,7 +11,11 @@ abilities with native `FLIGHT` aptitude. Both the radar and equipment tabs exclu
 FLIGHT Rangers from Surehit and Elemental Prowess, including their denominators
 and result cards. Native and awakened abilities use the same eligibility rule.
 Elemental Prowess uses `EATK_MUL`, counts a Ranger once in the bars, sums active
-values in the radar, and also excludes STR.
+values in the radar, and also excludes STR and any Ranger whose V2 skill effects
+lack exact `SKILLEFF_DMG` (single-hit damage). Those Rangers do not enter the
+numerator, denominator, or radar average. INT/AGI Rangers without single-hit
+may use `HP_MUL` instead of their usual attack stat on Surehit weapons; both
+`PRD_SPE_MUL` and `CLN_SKLAVD_PROB_MUL` remain mandatory.
 
 The Auth equipment serializer adds `normalOptions` (actual rolled and enchanted
 values), `attr4OptionKey`, and `attr4Condition` from official V2 raw attributes.
