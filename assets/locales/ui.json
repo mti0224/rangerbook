@@ -2352,7 +2352,7 @@
     "admin.personal.tab": "ทีมส่วนตัว",
     "admin.personal.heading": "ทีมส่วนตัว",
     "admin.personal.intro": "เชื่อมบัญชีเกม LINE Rangers เพื่อนำเข้าทีม 1–5 ทีมป้องกัน PvP และทีมบุกสงครามกิลด์ พร้อมดูการวิเคราะห์ทีม",
-    "admin.personal.unbound.title": "ยังไม่ได้���ำเข้าทีม",
+    "admin.personal.unbound.title": "ยังไม่ได้นำเข้าทีม",
     "admin.personal.unbound.guide": "ค้นหาชื่อในเกม จากนั้นยืนยันเหรียญกิลด์และสลับตำแหน่งเรนเจอร์ตามที่กำหนด",
     "admin.personal.search.label": "ชื่อในเกม",
     "admin.personal.search.placeholder": "ป้อนอย่างน้อย 2 ตัวอักษร",
