@@ -123,3 +123,37 @@ fewer.equipment.find(g=>g.equipCode==='A-a').normalOptions=fewer.equipment.find(
 fewerUnit.equipMap.ARMOR.normalOptions=fewerUnit.equipMap.ARMOR.normalOptions.slice(0,2);
 assert.equal(run([fewerUnit],fewer).radar[1].average,20,'lower-star gear with two basic effects is included');
 console.log('TEAM_ANALYSIS_MODEL_OK: all A–F counts, sort order, membership, radar and edge cases');
+
+
+// Four-language contract for the analysis guide and admin personal-team UI.
+// Includes dynamically generated text, not just static HTML labels.
+const fs = require('node:fs');
+const path = require('node:path');
+const source = p => fs.readFileSync(path.resolve(__dirname, '..', p), 'utf8');
+const uiCatalog = JSON.parse(source('assets/locales/ui.json'));
+const publicV2 = JSON.parse(source('res/v2/locales/ui.json'));
+const backendV2 = JSON.parse(source('deploy/aws/v2/locales/ui.json'));
+const adminHtml = source('admin/index.html');
+const adminJs = source('assets/js/admin-personal-teams.js');
+const viewerJs = source('assets/js/pvp-player-search.js');
+const refs = new Set(['analysis.help.int','analysis.help.agi','analysis.help.elementBody']);
+for (const match of adminHtml.matchAll(/data-i18n(?:-placeholder)?="(admin\.personal\.[^"]+)"/g)) refs.add(match[1]);
+for (const match of adminJs.matchAll(/\b[tf]\("(status\.[^"]+|challenge\.[^"]+)"/g)) refs.add('admin.personal.'+match[1]);
+for (const match of viewerJs.matchAll(/\bp[tf]\("([^"]+)"/g)) refs.add('admin.personal.viewer.'+match[1]);
+for (const match of Object.keys(uiCatalog.en).filter(k=>k.startsWith('admin.personal.error.'))) refs.add(match);
+assert.ok(refs.size > 65,'cover the UI labels, statuses and API error messages');
+for (const k of refs) {
+  const official = publicV2.find(row=>row.key==='UI:'+k);
+  const authoritative = backendV2.find(row=>row.key==='UI:'+k);
+  assert.ok(official && authoritative, k+' must be included in both V2 catalogs');
+  for (const [locale,field] of [['zh-Hant','zh_TW'],['en','en'],['th','th'],['jp','jp']]) {
+    assert.ok(uiCatalog[locale]?.[k]?.trim(), locale+' missing '+k);
+    assert.equal(uiCatalog[locale][k],official[field],locale+' V2 UI differs for '+k);
+    assert.equal(official[field],authoritative[field],locale+' authored V2 UI differs for '+k);
+  }
+}
+assert.ok(adminHtml.includes('data-i18n="admin.personal.heading"'));
+assert.ok(adminHtml.includes('data-i18n-placeholder="admin.personal.search.placeholder"'));
+assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
+assert.match(adminJs, /serverErrorKeys/);
+console.log('PERSONAL_I18N_OK: four locale catalogs and UI bindings are complete');
