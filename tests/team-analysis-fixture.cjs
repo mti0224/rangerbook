@@ -27,7 +27,7 @@ function fixture() {
     ['F','FIRE','STR','hp','FIRE','healthEvade','STR','SUMMON_ENGY_MUL','WATER','SUMMON_ENGY_MUL']
   ];
   for(const [code,elementType,roleType,w,wt,a,at,ae,ct,ce] of configs) {
-    rangers.push({rangerCode:code,nameKey:'UNIT:'+code+'_nm',starGrade:9,roleType,elementType,stats:{skillDodgeChancePercent:0,skillResistancePercent:0,skillHitChancePercent:80},skillSet:[{effects:[{effectCode:'SKILLEFF_DMG'}]}],abilityCodes:[],talents:null});
+    rangers.push({rangerCode:code,nameKey:'UNIT:'+code+'_nm',starGrade:9,roleType,elementType,stats:{skillDodgeChancePercent:0,skillResistancePercent:0,skillHitChancePercent:80},skillSet:[{skillCode:'fixture-single-hit',nameKey:'SKILL:fixture-single-hit_nm',descriptionKey:'SKILL:fixture-single-hit_desc',trigger:{type:'SELF'},activationRate:0,cooldownSeconds:0,effects:[{effectCode:'SKILLEFF_DMG',magnitude:{kind:'flat',value:10},rangePoints:0,availableIn:{events:true,guardian:true}}]}],abilityCodes:[],talents:null});
     units.push({unitCode:code,level:240,talentGrade:0,equipMap:{WEAPON:gear(code+'-w','WEAPON',w,wt),ARMOR:gear(code+'-a','ARMOR',a,at,ae),ACC:gear(code+'-c','ACC','accessory',ct,ce)}});
   }
   return {units,catalogs:{rangers,equipment:definitions,effects,abilities:[{abilityCode:'fixture-flight',triggerEffects:[{aptitudeCode:'FLIGHT'}]}]}};
