@@ -70,7 +70,10 @@ const fixtures = {
       await go('/pvp/leaderboard/');
       await page.locator('.pvp-player-row').first().click();
       const header = page.locator('.pvp-player-team-header');
-      await assertText(header.locator(':scope > p'), fill('dynamic.pvpRankScore', locale, 1, '3,702'));
+      const rankText = (await header.locator(':scope > p').textContent() || '').trim();
+      const expectedRankText = fill('dynamic.pvpRankScore', locale, 1, '3,702');
+      if (rankText !== expectedRankText) console.error('RANK_TRANSLATION_MISMATCH', JSON.stringify({locale, rankText, expectedRankText}));
+      await assertText(header.locator(':scope > p'), expectedRankText);
       assert.equal(await header.getAttribute('data-player-rank'), '1');
       await page.locator('#pvpPlayerTeamGrid .pvp-player-unit-button').first().click();
       await assertText(page.locator('.pvp-player-unit-detail-head > div > span').first(), fill('dynamic.rangerLevel', locale, 180));
