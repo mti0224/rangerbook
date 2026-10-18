@@ -58,7 +58,7 @@ assert.equal(unlocked.roles.INT.stats.attack,228); // 190 * (1 + 20%)
 const missing=structuredClone(u);
 missing.equipMap.WEAPON.normalOptions=missing.equipMap.WEAPON.normalOptions.slice(0,2);
 assert.equal(model.summarize([missing]).roles.INT.stats.hp,null,'missing actual roll is not replaced by max');
-const capped={...u,level:181};
+const capped={...u,level:161};
 assert.equal(levelStat(r,capped,r.stats.hp,'hpIncreaseAmount'),17100); // 159*100 + 1*200 + 1000
 const invalid={...u,level:9999};
 assert.equal(model.summarize([invalid]).roles.INT.stats.hp,null,'invalid level is not silently normalized');
