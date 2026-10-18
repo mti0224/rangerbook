@@ -1,4 +1,4 @@
-"""Test single-source bilingual UI catalogue coverage without editing original HTML."""
+"""Test single-source four-language UI catalogue coverage without editing original HTML."""
 from __future__ import annotations
 
 from html.parser import HTMLParser
@@ -45,9 +45,13 @@ class UITests(unittest.TestCase):
         cls.catalog = json.loads((ROOT / "assets/locales/ui.json").read_text(encoding="utf-8"))
 
     def test_bilingual_keys_are_complete(self):
-        self.assertEqual(set(self.catalog), {"zh-Hant", "en"})
+        self.assertEqual(set(self.catalog), {"zh-Hant", "en", "th", "jp"})
         source, english = self.catalog["zh-Hant"], self.catalog["en"]
-        self.assertEqual(set(source), set(english))
+        self.assertEqual(set(source), set(self.catalog["en"]))
+        for locale in ("th", "jp"):
+            required = {key for key in source if key.startswith(("admin.personal.", "analysis."))}
+            self.assertEqual(required, set(self.catalog[locale]), locale + " new UI scope")
+            self.assertTrue(all(self.catalog[locale][key].strip() for key in required))
         self.assertGreaterEqual(len(source), 550)
         for key in source:
             self.assertTrue(key.strip())
@@ -55,6 +59,7 @@ class UITests(unittest.TestCase):
             self.assertTrue(source[key].strip())
             self.assertIsInstance(english[key], str)
             self.assertTrue(english[key].strip(), key)
+
 
     def test_all_static_pages_and_accessible_fields_have_english_entries(self):
         source = self.catalog["zh-Hant"]

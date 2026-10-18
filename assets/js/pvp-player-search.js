@@ -3,6 +3,9 @@
   if (!auth) return;
   // Only authenticated admins can load their own imported data in this mode.
   const personalMode = new URLSearchParams(window.location.search).get("personal") === "1";
+  const pt = (key, fallback) => window.RangerbookI18n?.t("admin.personal.viewer." + key, fallback) || fallback;
+  const pf = (key, args, fallback) => window.RangerbookI18n?.format("admin.personal.viewer." + key, args, fallback) || fallback;
+  const localized = value => window.RangerbookI18n?.uiText(String(value)) || String(value);
 
   const $ = (id) => document.getElementById(id);
   const page = $("pvpPlayerSearchPage");
@@ -149,7 +152,14 @@
   }
 
   function rangerName(code) {
-    return rangerNameByCode[code] || code || "未知角色";
+    const fallback = rangerNameByCode[code] || code || (personalMode ? pt("unknownUnit","未知角色") : "未知角色");
+    return window.RangerbookI18n?.unitName(code, fallback) || fallback;
+  }
+
+  function equipmentName(code, isNone) {
+    if (isNone) return personalMode ? pt("noEquipment","未裝備") : "未裝備";
+    const fallback = gearNameByCode[code] || code;
+    return window.RangerbookI18n?.lookup("EQUIP", code + "_nm", fallback) || fallback;
   }
 
   function unitLevel(unit) {
@@ -176,7 +186,7 @@
   function unitTalentCorner(unit) {
     const grade = Number(unit?.talentGrade);
     if (!Number.isInteger(grade) || grade <= 0 || grade > 4) return "";
-    return `<img class="pvp-player-unit-talent-corner" src="${TALENT_ICON(grade)}" alt="" title="才能解放階段 ${grade}" aria-hidden="true" decoding="async" onerror="this.remove();">`;
+    return `<img class="pvp-player-unit-talent-corner" src="${TALENT_ICON(grade)}" alt="" title="${escapeHtml(personalMode ? pf("talentStage",[grade],"才能解放階段 %N1") : "才能解放階段 " + grade)}" aria-hidden="true" decoding="async" onerror="this.remove();">`;
   }
 
   function teamStarImage(src, className) {
@@ -188,12 +198,12 @@
   function teamEquipmentSlot(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
-    const name = isNone ? "未裝備" : (gearNameByCode[code] || code);
+    const name = equipmentName(code, isNone);
     const starSrc = isNone ? "" : normalStarLayer(gearStarByCode[code]);
     const icon = isNone
       ? '<span class="pvp-player-unit-equipment-image pvp-player-unit-equipment-empty" aria-hidden="true">—</span>'
       : `<img class="pvp-player-unit-equipment-image" src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
-    return `<span class="pvp-player-unit-equipment-slot" title="${escapeHtml(SLOT_LABELS[slot])}：${escapeHtml(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
+    return `<span class="pvp-player-unit-equipment-slot" title="${escapeHtml(localized(SLOT_LABELS[slot]))}：${escapeHtml(name)}">${icon}${teamStarImage(starSrc, "pvp-player-unit-equipment-star")}</span>`;
   }
 
   function advancedEffectName(unit, slot) {
@@ -203,20 +213,20 @@
   function equipmentItem(unit, slot) {
     const code = equipmentCode(unit, slot);
     const isNone = !code || code === NONE_CODE;
-    const name = isNone ? "未裝備" : (gearNameByCode[code] || code);
+    const name = equipmentName(code, isNone);
     const effect = isNone ? "" : advancedEffectName(unit, slot);
     const icon = isNone
       ? '<span class="pvp-player-equipment-empty-icon" aria-hidden="true">—</span>'
       : `<img src="${GEAR_ICON(code)}" alt="" decoding="async" onerror="this.remove();">`;
-    return `<div class="pvp-player-equipment-item" data-slot="${slot}" data-effect="${escapeHtml(effect)}">${icon}<div><span>${escapeHtml(SLOT_LABELS[slot])}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
+    return `<div class="pvp-player-equipment-item" data-slot="${slot}" data-effect="${escapeHtml(localized(effect))}">${icon}<div><span>${escapeHtml(localized(SLOT_LABELS[slot]))}</span><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong></div></div>`;
   }
 
   function abilityInfo(unit) {
     const code = String(unit?.awakeAbilityCode || "").trim();
-    if (!code) return { name: "未設定覺醒能力", icon: "" };
+    if (!code) return { name: personalMode ? pt("noAwakened","未設定覺醒能力") : "未設定覺醒能力", icon: "" };
     const info = abilityMap[code] || {};
     return {
-      name: info["名稱"] || code,
+      name: window.RangerbookI18n?.lookup("ABILITY", code + "_nm", info["名稱"] || code) || info["名稱"] || code,
       icon: info.icon || String(unit?.awakeAbilityIcon || "").trim(),
     };
   }
@@ -224,14 +234,15 @@
   function talentInfo(unit) {
     const raw = unit?.talentGrade;
     if (raw === undefined || raw === null || raw === "") {
-      return { name: "才能解放狀態無資料", icon: "", badge: "?" };
+      return { name: personalMode ? pt("talentNoData","才能解放狀態無資料") : "才能解放狀態無資料", icon: "", badge: "?" };
     }
     const grade = Number(raw);
     if (!Number.isInteger(grade) || grade < 0 || grade > 4) {
-      return { name: `才能解放階段 ${raw}`, icon: "", badge: String(raw) };
+      return { name: personalMode ? pf("talentStage", [raw], "才能解放階段 %N1") : `才能解放階段 ${raw}`, icon: "", badge: String(raw) };
     }
     return {
-      name: grade === 0 ? "未解放才能" : `才能解放階段 ${grade}`,
+      name: personalMode ? (grade === 0 ? pt("talentLocked","未解放才能") : pf("talentStage", [grade], "才能解放階段 %N1"))
+        : (grade === 0 ? "未解放才能" : `才能解放階段 ${grade}`),
       icon: grade > 0 ? TALENT_ICON(grade) : "",
       badge: String(grade),
     };
@@ -246,7 +257,9 @@
 
   function renderUnitDetail(unit) {
     if (!unit) {
-      unitDetail.innerHTML = '<div class="pvp-player-unit-detail-empty">點擊左側角色查看等級、Leonard 點數、覺醒能力、解放才能與裝備。</div>';
+      unitDetail.innerHTML = '<div class="pvp-player-unit-detail-empty">' +
+        escapeHtml(personalMode ? pt("chooseUnit","點擊左側角色查看等級、Leonard 點數、覺醒能力、解放才能與裝備。")
+          : "點擊左側角色查看等級、Leonard 點數、覺醒能力、解放才能與裝備。") + '</div>';
       return;
     }
 
@@ -264,13 +277,13 @@
           <img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
           <div>
             <strong>${escapeHtml(rangerName(code))}</strong>
-            <span>等級：Lv. ${escapeHtml(unitLevel(unit))}</span>
+            <span>${escapeHtml(personalMode ? pf("level",[unitLevel(unit)],"等級：Lv. %N1") : "等級：Lv. " + unitLevel(unit))}</span>
           </div>
         </div>
         <div class="pvp-player-extra-list">
-          ${extraDetailItem("Leonard 點數", leonardPoint, "", "L")}
-          ${extraDetailItem("覺醒能力", ability.name, abilityIcon)}
-          ${extraDetailItem("解放才能", talent.name, talent.icon, talent.badge)}
+          ${extraDetailItem(personalMode ? pt("leonard","Leonard 點數") : "Leonard 點數", leonardPoint, "", "L")}
+          ${extraDetailItem(personalMode ? pt("awakened","覺醒能力") : "覺醒能力", ability.name, abilityIcon)}
+          ${extraDetailItem(personalMode ? pt("talent","解放才能") : "解放才能", talent.name, talent.icon, talent.badge)}
         </div>
         <div class="pvp-player-equipment-list">
           ${equipmentItem(unit, "WEAPON")}
@@ -295,11 +308,12 @@
     const key = teamSelect.value || "pvpteam";
     const units = currentUnits();
     window.RangerbookTeamAnalysis?.setUnits(units);
-    teamTitle.textContent = TEAM_LABELS[key] || key;
+    teamTitle.textContent = localized(TEAM_LABELS[key] || key);
     selectedUnitIndex = -1;
 
     if (!units.length) {
-      teamGrid.innerHTML = '<div class="pvp-player-team-empty">這個隊伍目前沒有可顯示的角色資料。</div>';
+      teamGrid.innerHTML = '<div class="pvp-player-team-empty">' + escapeHtml(personalMode ?
+        pt("noUnits","這個隊伍目前沒有可顯示的角色資料。") : "這個隊伍目前沒有可顯示的角色資料。") + '</div>';
       renderUnitDetail(null);
       return;
     }
@@ -310,7 +324,7 @@
       const personalTeam = personalMode && /^team[1-5]$/.test(key);
       const aCount = Array.isArray(playerPayload?.teams?.[key]?.A) ? playerPayload.teams[key].A.length : 0;
       const sideHeading = personalTeam && (index === 0 || index === aCount)
-        ? `<h4 class="pvp-personal-side-heading">${index < aCount ? "A" : "B"} 隊</h4>`
+        ? `<h4 class="pvp-personal-side-heading">${escapeHtml(pf("side",[index < aCount ? "A" : "B"], "%N1 隊"))}</h4>`
         : "";
       return `${sideHeading}<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
         <span class="pvp-player-unit-image-wrap">
@@ -557,12 +571,14 @@
     selectedPlayer = null;
     playerPayload = null;
     result.hidden = false;
-    teamGrid.innerHTML = '<div class="pvp-search-loading">正在載入已匯入的隊伍…</div>';
+    teamGrid.innerHTML = '<div class="pvp-search-loading">' + escapeHtml(pt("loading","正在載入已匯入的隊伍…")) + '</div>';
     window.RangerbookTeamAnalysis?.clear();
     try {
       const [payload] = await Promise.all([
         auth.api("/admin/personal-teams"),
-        loadSupportData()
+        loadSupportData(),
+        window.RangerbookI18n?.ready,
+        window.RangerbookI18n?.readyGame?.()
       ]);
       if (sequence !== playerQuerySequence || !auth.isAdmin()) return;
       playerPayload = payload?.bound ? { teams: payload.teams || {} } : null;
@@ -570,8 +586,8 @@
         result.hidden = true;
         return;
       }
-      selectedName.textContent = "我的隊伍";
-      selectedMeta.textContent = "管理員私人匯入資料";
+      selectedName.textContent = pt("mine","我的隊伍");
+      selectedMeta.textContent = pt("private","管理員私人匯入資料");
       teamSelect.value = TEAM_LABELS[teamSelect.value] ? teamSelect.value : "team1";
       selection.hidden = false;
       result.hidden = false;
@@ -581,7 +597,7 @@
       if (sequence !== playerQuerySequence) return;
       playerPayload = null;
       window.RangerbookTeamAnalysis?.clear();
-      teamGrid.innerHTML = '<div class="pvp-player-team-empty">無法讀取個人隊伍。</div>';
+      teamGrid.innerHTML = '<div class="pvp-player-team-empty">' + escapeHtml(pt("failed","無法讀取個人隊伍。")) + '</div>';
       setStatus(error.message, "error");
     }
   }

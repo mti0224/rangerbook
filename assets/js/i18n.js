@@ -224,7 +224,7 @@
   }
   async function loadUi(selected) {
     try {
-      const all = await json(root + "assets/locales/ui.json");
+      const all = await json(root + "assets/locales/ui.json?v=20261018-singlehit-i18n1");
       if (selected !== locale) return;
       const baseline = all["zh-Hant"] || {};
       dictionary = Object.fromEntries(Object.entries(Object.assign({}, baseline, all[selected] || {}))

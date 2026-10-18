@@ -81,6 +81,32 @@ for(const source of ['native','awakened']) {
  }
  for(const tab of ['surehit','element']) assert.ok(onlyFlyer.tabs[tab].every(row=>row.denominator===0&&row.numerator===0&&row.ratio===null&&row.entries.length===0));
 }
+// Only SKILLEFF_DMG qualifies as single-hit (not its extra-damage variants).
+const skillRules = clone(catalogs), skillUnits = clone(units);
+skillRules.rangers[0].skillSet = [{effects:[{effectCode:'SKILLEFF_DMG_NORMAL'}]}];
+skillRules.rangers[1].skillSet = []; // AGI without a single-hit skill
+skillRules.rangers[3].skillSet = [{effects:[{effectCode:'SKILLEFF_DMG_SKILL'}]}];
+skillUnits[0].equipMap.WEAPON.normalOptions[0].optionKey = key('HP_MUL');
+skillUnits[1].equipMap.WEAPON.normalOptions[0].optionKey = key('HP_MUL');
+const skillResult = run(skillUnits, skillRules);
+assert.deepEqual([skillResult.tabs.element.find(r=>r.category==='FIRE').numerator,skillResult.tabs.element.find(r=>r.category==='FIRE').denominator],[0,0],
+  'INT Ranger without SKILLEFF_DMG is excluded from elemental bars');
+assert.deepEqual([skillResult.tabs.element.find(r=>r.category==='WATER').numerator,skillResult.tabs.element.find(r=>r.category==='WATER').denominator],[0,0],
+  'other non-single-hit INT Rangers are excluded from elemental bars');
+assert.equal(skillResult.radar.find(m=>m.id==='element').count,1,
+  'elemental radar average has only AGI/INT Rangers with the exact single-hit code');
+assert.equal(skillResult.tabs.surehit.find(r=>r.category==='INT').entries.find(e=>e.unit.unitCode==='A').ok,true,
+  'INT without SKILLEFF_DMG may use HP with both required surehit stats');
+assert.equal(skillResult.tabs.surehit.find(r=>r.category==='AGI').entries.find(e=>e.unit.unitCode==='B').ok,true,
+  'AGI without SKILLEFF_DMG may use HP with both required surehit stats');
+const skillPresent = clone(skillRules);
+skillPresent.rangers[0].skillSet=[{effects:[{effectCode:'SKILLEFF_DMG'}]}];
+skillPresent.rangers[1].skillSet=[{effects:[{effectCode:'SKILLEFF_DMG'}]}];
+const strict = run(skillUnits,skillPresent);
+assert.equal(strict.tabs.surehit.find(r=>r.category==='INT').entries.find(e=>e.unit.unitCode==='A').ok,false,
+  'INT with single-hit still requires ALL_ATK');
+assert.equal(strict.tabs.surehit.find(r=>r.category==='AGI').entries.find(e=>e.unit.unitCode==='B').ok,false,
+  'AGI with single-hit still requires ALL_ATK or GATK');
 assert.equal(run([units[2]]).radar[5].average,null);
 assert.ok(run([]).radar.every(m=>m.average===null&&!m.pending));
 assert.ok(Object.values(run([]).tabs).flat().every(r=>r.ratio===null&&r.denominator===0));
@@ -97,3 +123,53 @@ fewer.equipment.find(g=>g.equipCode==='A-a').normalOptions=fewer.equipment.find(
 fewerUnit.equipMap.ARMOR.normalOptions=fewerUnit.equipMap.ARMOR.normalOptions.slice(0,2);
 assert.equal(run([fewerUnit],fewer).radar[1].average,20,'lower-star gear with two basic effects is included');
 console.log('TEAM_ANALYSIS_MODEL_OK: all A–F counts, sort order, membership, radar and edge cases');
+
+
+// Four-language contract for the analysis guide and admin personal-team UI.
+// Includes dynamically generated text, not just static HTML labels.
+const fs = require('node:fs');
+const path = require('node:path');
+const source = p => fs.readFileSync(path.resolve(__dirname, '..', p), 'utf8');
+const uiCatalog = JSON.parse(source('assets/locales/ui.json'));
+const publicV2 = JSON.parse(source('res/v2/locales/ui.json'));
+const backendV2 = JSON.parse(source('deploy/aws/v2/locales/ui.json'));
+const adminHtml = source('admin/index.html');
+const adminJs = source('assets/js/admin-personal-teams.js');
+const viewerJs = source('assets/js/pvp-player-search.js');
+const refs = new Set(['analysis.help.int','analysis.help.agi','analysis.help.elementBody']);
+for (const match of adminHtml.matchAll(/data-i18n(?:-placeholder)?="(admin\.personal\.[^"]+)"/g)) refs.add(match[1]);
+for (const match of adminJs.matchAll(/\b[tf]\("(status\.[^"]+|challenge\.[^"]+)"/g)) refs.add('admin.personal.'+match[1]);
+for (const match of viewerJs.matchAll(/\bp[tf]\("([^"]+)"/g)) refs.add('admin.personal.viewer.'+match[1]);
+for (const match of Object.keys(uiCatalog.en).filter(k=>k.startsWith('admin.personal.error.'))) refs.add(match);
+assert.ok(refs.size > 65,'cover the UI labels, statuses and API error messages');
+for (const k of refs) {
+  const official = publicV2.find(row=>row.key==='UI:'+k);
+  const authoritative = backendV2.find(row=>row.key==='UI:'+k);
+  assert.ok(official && authoritative, k+' must be included in both V2 catalogs');
+  for (const [locale,field] of [['zh-Hant','zh_TW'],['en','en'],['th','th'],['jp','jp']]) {
+    assert.ok(uiCatalog[locale]?.[k]?.trim(), locale+' missing '+k);
+    assert.equal(uiCatalog[locale][k],official[field],locale+' V2 UI differs for '+k);
+    assert.equal(official[field],authoritative[field],locale+' authored V2 UI differs for '+k);
+  }
+}
+
+// Avoid conflicting translations for the same Chinese source; i18n must not
+// silently lose translations on pre-existing public pages (e.g. PvP levels).
+const bySource = new Map();
+for (const row of publicV2) {
+  const source = row.zh_TW;
+  if (!bySource.has(source)) bySource.set(source, []);
+  bySource.get(source).push(row);
+}
+for (const [source, rows] of bySource) {
+  if (rows.length < 2 || !rows.some(row=>row.key.startsWith('UI:admin.personal.'))) continue;
+  for (const language of ['en','th','jp']) {
+    assert.equal(new Set(rows.map(row=>row[language])).size,1,
+      'ambiguous '+language+' phrase for '+source+': '+rows.map(row=>row.key).join(', '));
+  }
+}
+assert.ok(adminHtml.includes('data-i18n="admin.personal.heading"'));
+assert.ok(adminHtml.includes('data-i18n-placeholder="admin.personal.search.placeholder"'));
+assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
+assert.match(adminJs, /serverErrorKeys/);
+console.log('PERSONAL_I18N_OK: four locale catalogs and UI bindings are complete');

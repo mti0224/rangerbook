@@ -2,6 +2,37 @@
   "use strict";
   const auth = window.RangerbookAuth;
   const get = id => document.getElementById(id);
+  const t = (key, fallback) => window.RangerbookI18n?.t("admin.personal." + key, fallback) || fallback;
+  const f = (key, args, fallback) => window.RangerbookI18n?.format("admin.personal." + key, args, fallback) || fallback;
+  const dateLocale = () => ({jp:"ja-JP",th:"th-TH-u-ca-gregory",en:"en-US"})[window.RangerbookI18n?.locale] || "zh-TW";
+  const serverErrorKeys = {
+    "玩家識別碼格式不正確。": "invalidPlayerId",
+    "官方 API 認證尚未設定。": "apiUnconfigured",
+    "官方遊戲資料暫時無法查詢，請稍後重試。": "apiUnavailable",
+    "官方遊戲資料格式不正確。": "apiMalformed",
+    "目前沒有可進行位置交換驗證的隊伍，請先配置至少兩隻不同 Ranger。": "noSwapTeam",
+    "操作過於頻繁，請稍後再試。": "rateLimited",
+    "資料站帳號格式不正確。": "invalidSiteAccount",
+    "玩家索引暫時不可用。": "indexUnavailable",
+    "請輸入半形數字。": "invalidDigits",
+    "此資料站帳號已綁定遊戲帳號。": "alreadyLinked",
+    "搜尋結果已失效，請重新搜尋。": "expiredSearch",
+    "此遊戲帳號已綁定。": "gameLinked",
+    "官方資料沒有有效的公會獎牌數量。": "medalUnavailable",
+    "公會獎牌數量不符，請確認後重試。": "medalMismatch",
+    "驗證任務已結束或過期，請重新開始。": "challengeExpired",
+    "尚未偵測到指定的正確位置交換，請確認遊戲已儲存隊伍。": "swapNotDetected",
+    "驗證任務已失效。": "challengeInvalid",
+    "遊戲帳號已被綁定，或目前帳號已有綁定。": "linkedElsewhere",
+    "目前帳號密碼不正確。": "badPassword",
+    "目前沒有已綁定的遊戲帳號。": "notLinked",
+    "請先完成遊戲帳號驗證。": "needVerification"
+};
+  const serverMessage = (message, fallback) => {
+    if (message && serverErrorKeys[message]) return t("error." + serverErrorKeys[message], message);
+    if (message) return window.RangerbookI18n?.uiText(message) || message;
+    return t(fallback, fallback);
+  };
   if (!auth || !get("adminPersonalPanel")) return;
 
   let selected = null;
@@ -53,11 +84,12 @@
     challengePanel.hidden = false;
     const a = Number(challenge.firstPosition);
     const b = Number(challenge.secondPosition);
-    get("adminPersonalChallengeInstruction").textContent =
-      "請至遊戲「第 " + challenge.team + " 隊」的「" + challenge.side +
-      " 隊」，將第 " + a + " 格與第 " + b + " 格的 Ranger 交換位置。";
-    get("adminPersonalChallengeExpiry").textContent =
-      "驗證期限：" + new Date(challenge.expiresAt).toLocaleString("zh-TW", { hour12: false });
+    get("adminPersonalChallengeInstruction").textContent = f("challenge.instruction",
+      [challenge.team, challenge.side, a, b],
+      "請至遊戲「第 %N1 隊」的「%N2 隊」，將第 %N3 格與第 %N4 格的 Ranger 交換位置。");
+    get("adminPersonalChallengeExpiry").textContent = f("challenge.expiry",
+      [new Date(challenge.expiresAt).toLocaleString(dateLocale(), { hour12: false })],
+      "驗證期限：%N1");
     get("adminPersonalVerify").dataset.challengeId = challenge.challengeId;
   }
 
@@ -84,7 +116,9 @@
     searchForm.hidden = false;
     candidatesPanel.hidden = false;
     if (!adminAllowed()) return;
-    setStatus("讀取個人隊伍狀態中…");
+    await window.RangerbookI18n?.ready;
+    if (id !== version || !adminAllowed()) return;
+    setStatus(t("status.loading", "讀取個人隊伍狀態中…"));
     try {
       const info = await auth.api("/admin/game-binding/status");
       if (id !== version || !adminAllowed()) return;
@@ -92,23 +126,23 @@
         unboundPanel.hidden = true;
         boundPanel.hidden = false;
         const player = info.player || {};
-        get("adminPersonalBoundLabel").textContent = (player.player_name || "未知玩家") +
-          " · " + (player.guild_name || "無公會");
+        get("adminPersonalBoundLabel").textContent = (player.player_name || t("status.unknownPlayer","未知玩家")) +
+          " · " + (player.guild_name || t("status.noGuild","無公會"));
         const privateInfo = await auth.api("/admin/personal-teams");
         if (id !== version || !adminAllowed()) return;
         drawTeams(privateInfo.teams);
         if (privateInfo.teams && (!Array.isArray(privateInfo.teams.pvpteam) || !Array.isArray(privateInfo.teams.guildwar))) {
-          setStatus("已新增 PvP 防守與公會戰進攻隊伍，請按「匯入／更新我的隊伍」取得完整隊伍資料。");
+          setStatus(t("status.migration","已新增 PvP 防守與公會戰進攻隊伍，請按「匯入／更新我的隊伍」取得完整隊伍資料。"));
         }
         get("adminPersonalLastImported").textContent =
-          player.last_imported_at ? "最後匯入：" + new Date(player.last_imported_at).toLocaleString("zh-TW", { hour12: false }) :
-            "尚未匯入隊伍。完成驗證後，請先恢復原本配置再匯入。";
+          player.last_imported_at ? f("status.lastImported", [new Date(player.last_imported_at).toLocaleString(dateLocale(), { hour12: false })], "最後匯入：%N1") :
+            t("status.noImport","尚未匯入隊伍。完成驗證後，請先恢復原本配置再匯入。");
       } else if (info.challenge) {
         showChallenge(info.challenge);
       }
-      if (status.textContent === "讀取個人隊伍狀態中…") setStatus("");
+      if (status.textContent === t("status.loading","讀取個人隊伍狀態中…")) setStatus("");
     } catch (error) {
-      if (id === version && adminAllowed()) setStatus(error.message || "載入失敗", true);
+      if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.loadFailed"), true);
     }
   }
 
@@ -119,7 +153,7 @@
     if (query.length < 2) return;
     const id = version;
     requestBusy(true);
-    setStatus("搜尋玩家中…");
+    setStatus(t("status.searching","搜尋玩家中…"));
     candidatesPanel.replaceChildren();
     selectedPanel.hidden = true;
     selected = null;
@@ -132,22 +166,22 @@
         button.type = "button";
         button.className = "personal-candidate";
         const name = document.createElement("strong");
-        name.textContent = item.name || "未公開名稱";
+        name.textContent = item.name || t("status.unknownName","未公開名稱");
         const guild = document.createElement("span");
-        guild.textContent = "公會：" + (item.guildName || "無");
+        guild.textContent = f("status.guild", [item.guildName || t("status.none","無")], "公會：%N1");
         button.append(name, guild);
         button.addEventListener("click", () => {
           selected = item;
           selectedPanel.hidden = false;
           get("adminPersonalSelectedName").textContent =
-            "已選擇：" + (item.name || "未公開名稱") + " · " + (item.guildName || "無公會");
+            f("status.selected", [item.name || t("status.unknownName","未公開名稱"), item.guildName || t("status.noGuild","無公會")], "已選擇：%N1 · %N2");
           setStatus("");
         });
         candidatesPanel.append(button);
       }
-      setStatus(items.length ? "請從候選名單選擇你的遊戲帳號。" : "找不到符合名稱的玩家。");
+      setStatus(items.length ? t("status.choose","請從候選名單選擇你的遊戲帳號。") : t("status.notFound","找不到符合名稱的玩家。"));
     } catch (error) {
-      if (id === version && adminAllowed()) setStatus(error.message || "搜尋失敗", true);
+      if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.searchFailed"), true);
     } finally {
       requestBusy(false);
     }
@@ -161,21 +195,21 @@
     if (!selected || !adminAllowed() || busy) return;
     const medal = get("adminPersonalMedal").value;
     if (!/^[0-9]{1,12}$/.test(medal)) {
-      setStatus("請使用半形數字輸入公會獎牌數量。", true);
+      setStatus(t("status.badMedal","請使用半形數字輸入公會獎牌數量。"), true);
       return;
     }
     const id = version;
     requestBusy(true);
-    setStatus("正在核對公會獎牌並建立驗證任務…");
+    setStatus(t("status.checkingMedal","正在核對公會獎牌並建立驗證任務…"));
     try {
       const challenge = await auth.api("/admin/game-binding/start", {
         method: "POST", body: JSON.stringify({ candidateId: selected.candidateId, medal })
       });
       if (id !== version || !adminAllowed()) return;
       showChallenge(challenge);
-      setStatus("公會獎牌確認成功，請完成指定的隊伍交換。");
+      setStatus(t("status.medalOk","公會獎牌確認成功，請完成指定的隊伍交換。"));
     } catch (error) {
-      if (id === version && adminAllowed()) setStatus(error.message || "驗證失敗", true);
+      if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.verifyFailed"), true);
     } finally {
       requestBusy(false);
     }
@@ -186,7 +220,7 @@
     if (!challengeId || !adminAllowed() || busy) return;
     const id = version;
     requestBusy(true);
-    setStatus("正在向官方 API 查詢最新隊伍配置…");
+    setStatus(t("status.checkingSwap","正在向官方 API 查詢最新隊伍配置…"));
     try {
       const response = await auth.api("/admin/game-binding/verify", {
         method: "POST", body: JSON.stringify({ challengeId })
@@ -194,12 +228,12 @@
       if (id !== version || !adminAllowed()) return;
       if (response.verified) {
         await refresh();
-        setStatus("驗證成功！請先恢復 Ranger 原本位置，再匯入隊伍。");
+        setStatus(t("status.verified","驗證成功！請先恢復 Ranger 原本位置，再匯入隊伍。"));
       } else {
-        setStatus(response.message || "尚未偵測到指定交換。", true);
+        setStatus(serverMessage(response.message, "status.noSwap"), true);
       }
     } catch (error) {
-      if (id === version && adminAllowed()) setStatus(error.message || "驗證失敗", true);
+      if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.verifyFailed"), true);
     } finally {
       requestBusy(false);
     }
@@ -207,17 +241,17 @@
 
   get("adminPersonalImport").addEventListener("click", async () => {
     if (!adminAllowed() || busy) return;
-    if (!window.confirm("確認已恢復驗證時交換的 Ranger 位置？現在要匯入自己的隊伍嗎？")) return;
+    if (!window.confirm(t("status.confirmImport","確認已恢復驗證時交換的 Ranger 位置？現在要匯入自己的隊伍嗎？"))) return;
     const id = version;
     requestBusy(true);
-    setStatus("正在匯入最新隊伍…");
+    setStatus(t("status.importing","正在匯入最新隊伍…"));
     try {
       await auth.api("/admin/personal-teams/import", { method: "POST" });
       if (id !== version || !adminAllowed()) return;
       await refresh();
-      setStatus("個人隊伍已更新。");
+      setStatus(t("status.imported","個人隊伍已更新。"));
     } catch (error) {
-      if (id === version && adminAllowed()) setStatus(error.message || "匯入失敗", true);
+      if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.importFailed"), true);
     } finally {
       requestBusy(false);
     }
@@ -239,16 +273,16 @@
     if (!password) return;
     const id = version;
     requestBusy(true);
-    setStatus("正在解除綁定並刪除私人隊伍…");
+    setStatus(t("status.unbinding","正在解除綁定並刪除私人隊伍…"));
     try {
       await auth.api("/admin/game-binding/unbind", {
         method: "POST", body: JSON.stringify({ password })
       });
       if (id !== version || !adminAllowed()) return;
       await refresh();
-      setStatus("已解除綁定，可重新搜尋並綁定其他遊戲帳號。");
+      setStatus(t("status.unbound","已解除綁定，可重新搜尋並綁定其他遊戲帳號。"));
     } catch (error) {
-      if (id === version && adminAllowed()) setStatus(error.message || "解除綁定失敗", true);
+      if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.unbindFailed"), true);
     } finally {
       get("adminPersonalUnbindPassword").value = "";
       requestBusy(false);

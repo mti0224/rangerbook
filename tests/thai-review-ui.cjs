@@ -70,10 +70,18 @@ const fixtures = {
       await go('/pvp/leaderboard/');
       await page.locator('.pvp-player-row').first().click();
       const header = page.locator('.pvp-player-team-header');
-      await assertText(header.locator(':scope > p'), fill('dynamic.pvpRankScore', locale, 1, '3,702'));
+      const rankText = (await header.locator(':scope > p').textContent() || '').trim();
+      const expectedRankText = fill('dynamic.pvpRankScore', locale, 1, '3,702');
+      if (rankText !== expectedRankText) console.error('RANK_TRANSLATION_MISMATCH', JSON.stringify({locale, rankText, expectedRankText}));
+      await assertText(header.locator(':scope > p'), expectedRankText);
       assert.equal(await header.getAttribute('data-player-rank'), '1');
       await page.locator('#pvpPlayerTeamGrid .pvp-player-unit-button').first().click();
-      await assertText(page.locator('.pvp-player-unit-detail-head > div > span').first(), fill('dynamic.rangerLevel', locale, 180));
+      const levelText = (await page.locator('.pvp-player-unit-detail-head > div > span').first().textContent() || '').trim();
+      const expectedLevelText = fill('dynamic.rangerLevel', locale, 180);
+      console.log('RANGER_LEVEL_DIAG', JSON.stringify({locale, levelText, expectedLevelText,
+        lookup: await page.evaluate(() => ({locale:window.RangerbookI18n?.locale, v2Locale:window.RangerbookV2?.locale,
+          v2:window.RangerbookV2?.translateText('等級：Lv. 180')}))}));
+      await assertText(page.locator('.pvp-player-unit-detail-head > div > span').first(), expectedLevelText);
       await assertText(page.locator('.pvp-player-leonard-line'), fill('dynamic.leonardPoints', locale, 29));
       assert.equal(await page.locator('.pvp-player-name-with-talent').count(), 1);
       await page.locator('#pvpPlayerTeamSelect').selectOption('team1');
