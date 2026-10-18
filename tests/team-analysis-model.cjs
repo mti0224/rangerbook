@@ -131,7 +131,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const source = p => fs.readFileSync(path.resolve(__dirname, '..', p), 'utf8');
 const uiCatalog = JSON.parse(source('assets/locales/ui.json'));
-const publicV2 = JSON.parse(source('res/v2/locales/ui.json'));
+const publishedV2 = JSON.parse(source('res/v2/locales/ui.json'));
+const authoredOverrides = JSON.parse(source('assets/locales/personal-analysis-overrides.json'));
+const publicV2 = [...new Map([...publishedV2,...authoredOverrides].map(row=>[row.key,row])).values()];
 const backendV2 = JSON.parse(source('deploy/aws/v2/locales/ui.json'));
 const adminHtml = source('admin/index.html');
 const adminJs = source('assets/js/admin-personal-teams.js');
@@ -174,7 +176,6 @@ assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
 assert.match(adminJs, /serverErrorKeys/);
 console.log('PERSONAL_I18N_OK: four locale catalogs and UI bindings are complete');
 
-const authoredOverrides = JSON.parse(require('node:fs').readFileSync(require('node:path').resolve(__dirname,'../assets/locales/personal-analysis-overrides.json'),'utf8'));
 const overrideKeys = new Set(authoredOverrides.map(row=>row.key));
 assert.equal(overrideKeys.size, authoredOverrides.length, 'unique authored overlay keys');
 for(const key of ['UI:analysis.help.int','UI:analysis.help.agi','UI:analysis.help.elementBody','UI:admin.personal.heading','UI:admin.personal.viewer.level']) {
