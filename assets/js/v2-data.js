@@ -84,7 +84,7 @@
     // authored personal-team copy and single-hit analysis help authoritative.
     let effectiveRows=rows;
     if (name==="ui") {
-      const overrideResponse=await nativeFetch(root+"assets/locales/personal-analysis-overrides.json?v=20261018-1");
+      const overrideResponse=await nativeFetch(root+"assets/locales/personal-analysis-overrides.json?v=20261018-2");
       if (!overrideResponse.ok) throw new Error("Personal-team UI overrides unavailable");
       const overrides=await overrideResponse.json();
       if (!Array.isArray(overrides) || overrides.some(row=>!row?.key?.startsWith("UI:")))
