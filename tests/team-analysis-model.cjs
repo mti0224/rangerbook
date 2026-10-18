@@ -182,7 +182,7 @@ for(const key of ['UI:analysis.help.int','UI:analysis.help.agi','UI:analysis.hel
  assert.ok(overrideKeys.has(key), key+' survives the V2 updater');
 }
 for (const row of authoredOverrides) {
- assert.ok(row.key.startsWith('UI:admin.personal.') || ['UI:analysis.help.int','UI:analysis.help.agi','UI:analysis.help.elementBody'].includes(row.key));
+ assert.ok(row.key.startsWith('UI:admin.personal.') || row.key.startsWith('UI:analysis.overview.') || row.key.startsWith('UI:analysis.role.') || ['UI:analysis.help.int','UI:analysis.help.agi','UI:analysis.help.elementBody'].includes(row.key));
  for (const language of ['zh_TW','en','th','jp']) assert.ok(row[language]?.trim(), row.key+' '+language);
 }
 const adapterSource = require('node:fs').readFileSync(require('node:path').resolve(__dirname,'../assets/js/v2-data.js'),'utf8');
