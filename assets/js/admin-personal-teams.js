@@ -5,9 +5,34 @@
   const t = (key, fallback) => window.RangerbookI18n?.t("admin.personal." + key, fallback) || fallback;
   const f = (key, args, fallback) => window.RangerbookI18n?.format("admin.personal." + key, args, fallback) || fallback;
   const dateLocale = () => ({jp:"ja-JP",th:"th-TH-u-ca-gregory",en:"en-US"})[window.RangerbookI18n?.locale] || "zh-TW";
-  const serverMessage = (message, fallback) => message
-    ? window.RangerbookI18n?.uiText(message) || message
-    : t(fallback, fallback);
+  const serverErrorKeys = {
+    "玩家識別碼格式不正確。": "invalidPlayerId",
+    "官方 API 認證尚未設定。": "apiUnconfigured",
+    "官方遊戲資料暫時無法查詢，請稍後重試。": "apiUnavailable",
+    "官方遊戲資料格式不正確。": "apiMalformed",
+    "目前沒有可進行位置交換驗證的隊伍，請先配置至少兩隻不同 Ranger。": "noSwapTeam",
+    "操作過於頻繁，請稍後再試。": "rateLimited",
+    "資料站帳號格式不正確。": "invalidSiteAccount",
+    "玩家索引暫時不可用。": "indexUnavailable",
+    "請輸入半形數字。": "invalidDigits",
+    "此資料站帳號已綁定遊戲帳號。": "alreadyLinked",
+    "搜尋結果已失效，請重新搜尋。": "expiredSearch",
+    "此遊戲帳號已綁定。": "gameLinked",
+    "官方資料沒有有效的公會獎牌數量。": "medalUnavailable",
+    "公會獎牌數量不符，請確認後重試。": "medalMismatch",
+    "驗證任務已結束或過期，請重新開始。": "challengeExpired",
+    "尚未偵測到指定的正確位置交換，請確認遊戲已儲存隊伍。": "swapNotDetected",
+    "驗證任務已失效。": "challengeInvalid",
+    "遊戲帳號已被綁定，或目前帳號已有綁定。": "linkedElsewhere",
+    "目前帳號密碼不正確。": "badPassword",
+    "目前沒有已綁定的遊戲帳號。": "notLinked",
+    "請先完成遊戲帳號驗證。": "needVerification"
+};
+  const serverMessage = (message, fallback) => {
+    if (message && serverErrorKeys[message]) return t("error." + serverErrorKeys[message], message);
+    if (message) return window.RangerbookI18n?.uiText(message) || message;
+    return t(fallback, fallback);
+  };
   if (!auth || !get("adminPersonalPanel")) return;
 
   let selected = null;
