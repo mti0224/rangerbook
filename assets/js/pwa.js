@@ -4,7 +4,7 @@
   if(window.top!==window) return; // The personal-team iframe shares its top-level app UI.
   if(window.RangerbookPwa) return;
   const root=new URL('../../',document.currentScript.src);
-  let registration, installPrompt, status='', dismissed='', update=false, applying=false;
+  let registration, installPrompt, status='', dismissed='', update=false, applying=false, activationBlocked=false;
   const standalone=()=>window.matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
   const ios=/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
   const iosBrowser=ios && /Safari\//.test(navigator.userAgent) && !/FBAN|FBAV|Instagram|Line\//i.test(navigator.userAgent);
@@ -15,13 +15,13 @@
   }
   function refresh() {
     if(!box || !t('offline')) return;
-    const kind=update?'update':status;
+    const kind=activationBlocked?'closeTabs':update?'update':status;
     box.hidden=!kind || dismissed===kind;
     box.replaceChildren();
     if(!box.hidden) {
       const p=document.createElement('p');p.textContent=t(kind);box.append(p);
       const actions=document.createElement('div');actions.className='rb-pwa-actions';
-      actions.append(button(update?'updateNow':'retry',update?applyUpdate:()=>location.reload()),button('later',()=>{dismissed=kind;refresh();}));
+      actions.append(button(update && !activationBlocked?'updateNow':'retry',update && !activationBlocked?applyUpdate:()=>location.reload()),button('later',()=>{dismissed=kind;refresh();}));
       box.append(actions);
     }
     if(!panel) return;
@@ -60,7 +60,7 @@
       registration.waiting.postMessage({type:'RB_ACTIVATE_UPDATE'},[channel.port2]);
     });
     decided=true;
-    if(!accepted) {navigator.serviceWorker.removeEventListener('controllerchange',onChange);applying=false;update=false;status='closeTabs';refresh();return;}
+    if(!accepted) {navigator.serviceWorker.removeEventListener('controllerchange',onChange);applying=false;activationBlocked=true;update=false;status='closeTabs';refresh();return;}
     // Refresh only this consenting document, exactly once after activation.
     if(changed || navigator.serviceWorker.controller!==previous) reload();
   }

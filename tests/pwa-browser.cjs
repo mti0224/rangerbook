@@ -78,7 +78,10 @@ const waitControlled=p=>p.waitForFunction(()=>!!navigator.serviceWorker.controll
   const second=await ctx.newPage();await second.goto(base+'/settings/');
   await page.locator('.rb-pwa-status button').first().click();
   await page.waitForFunction(()=>document.querySelector('.rb-pwa-status').textContent.includes('Close other'));
-  await second.close();await page.evaluate(()=>window.RangerbookPwa.checkUpdate());
+  // Background update checks must not erase the close-other-windows guidance.
+  await page.evaluate(()=>window.RangerbookPwa.checkUpdate());
+  assert.match(await page.locator('.rb-pwa-status').innerText(),/Close other/);
+  await second.close();await page.reload();await waitControlled(page);
   await page.waitForFunction(()=>document.querySelector('.rb-pwa-status button')?.textContent==='Update and reload');
   await Promise.all([page.waitForNavigation(),page.locator('.rb-pwa-status button').first().click()]);await waitControlled(page);
   const keys=await page.evaluate(()=>caches.keys());assert.ok(keys.some(x=>x.includes('upgrade-browser-fixture')));assert.ok(!keys.some(x=>x.includes(release.appVersion)));
