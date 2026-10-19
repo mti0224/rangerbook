@@ -17,7 +17,7 @@ function harness() {
   const file=path.join(root,name);return new Response(changed===name?'incompatible':fs.existsSync(file)&&fs.statSync(file).isFile()?fs.readFileSync(file):'private-or-unknown',{status:fs.existsSync(file)?200:404});
  };
  const self={registration:{scope},clients:{async matchAll(){return windows;},claim(){throw new Error('Never claim a loading page');}},addEventListener:(name,fn)=>listeners[name]=fn,async skipWaiting(){skipped++;}};
- const ctx=vm.createContext({self,caches,fetch,URL,Request,Response,AbortSignal,crypto:webcrypto,console});
+ const ctx=vm.createContext({self,caches,fetch,URL,Request,Response,AbortController,setTimeout,clearTimeout,crypto:webcrypto,console});
  vm.runInContext(source+';globalThis.inspect={RELEASE,CORE,DATA,BOOT,put};',ctx);
  async function event(name,extra={}) {
   const pending=[];let response;

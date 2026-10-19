@@ -90,13 +90,15 @@ const detailRoute = name => /^gear\/[^/]+\/?$/.test(name) ||
   /^endless\/stage\/end\d+\/?$/i.test(name) || /^mainstage\/(hard|extreme)\/stage\/(hs|es)\d+\/?$/i.test(name);
 async function resource(name,request,isData,event) {
   const table=isData?RELEASE.data:RELEASE.core, cacheName=isData?DATA:CORE;
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),10000);
   try {
-    const response=await fetch(new Request(absolute(name),{cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(10000)}));
+    const response=await fetch(new Request(absolute(name),{cache:'no-store',credentials:'omit',signal:controller.signal}));
     if(await verified(response,table[name])) {
       event.waitUntil(put(cacheName,name,response.clone()));return response;
     }
     event.waitUntil(notify('update-required'));
-  } catch(_) {}
+  } catch(_) {} finally {clearTimeout(timer);}
   const cache=await caches.open(cacheName), cached=await cache.match(absolute(name));
   // Cache entries are checked again: corrupted/partial snapshots never get used.
   if(cached && await verified(cached,table[name])) {
