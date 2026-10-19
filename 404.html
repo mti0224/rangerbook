@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <script>
     (() => {
+      const root = location.pathname.startsWith('/rangerbook/') ? '/rangerbook/' : '/';
+      document.write('<script src="' + root + 'assets/js/pwa-head.js"><\/script>');
+    })();
+  </script>
+
+  <script>
+    (() => {
       const root = location.pathname.startsWith("/rangerbook/") ? "/rangerbook/" : "/";
       document.write('<script src="' + root + 'assets/js/visitor-region.js?v=20261013-region1"><\/script>');
     })();
@@ -19,13 +26,21 @@
       document.documentElement.dataset.theme = "light";
     }
   </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>LINE Rangers Database</title>
   <script>
     (function () {
       var path = window.location.pathname;
       var hasRepoPrefix = path.indexOf('/rangerbook/') === 0;
       var root = hasRepoPrefix ? '/rangerbook/' : '/';
+      // Match ranger.js's canonical detail route even before a SW controls the page.
+      var rangerMatch = path.match(/^(?:\/rangerbook)?\/ranger\/ranger\/([^/]+)\/?$/);
+      if (rangerMatch && rangerMatch[1] !== 'index.html') {
+        var rangerId = rangerMatch[1];
+        try { rangerId = decodeURIComponent(rangerId); } catch (error) {}
+        window.location.replace(root + 'ranger/ranger/?detail=' + encodeURIComponent(rangerId));
+        return;
+      }
       var isGearDetail = /^(?:\/rangerbook)?\/gear\/[^/]+\/?$/.test(path);
       var isEndlessStage = /^(?:\/rangerbook)?\/endless\/stage\/end\d+\/?$/i.test(path);
       var hardMatch = path.match(/^(?:\/rangerbook)?\/mainstage\/hard\/stage\/hs(\d+)\/?$/i);

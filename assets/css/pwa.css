@@ -1,0 +1,22 @@
+.rb-pwa-status { position: fixed; z-index: 2100; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); width: min(420px, calc(100vw - 2rem)); max-height: 40dvh; overflow: auto; box-sizing: border-box; padding: .9rem 1rem; border: 1px solid var(--line, #d9e3e5); border-radius: 11px; background: var(--panel, white); color: var(--text, #192d35); box-shadow: var(--shadow); font-size: .9rem; }
+.rb-pwa-status p { margin: 0 0 .65rem; }
+.rb-pwa-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+.rb-pwa-actions button, .rb-pwa-button { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .8rem; background: var(--soft); color: var(--primary-dark); cursor: pointer; font: inherit; }
+.rb-pwa-panel { margin-block: 1rem; padding: 1.2rem; border: 1px solid var(--line); background: var(--panel); border-radius: 11px; }
+.rb-pwa-panel h2 { margin-top: 0; }
+.rb-pwa-panel p { color: var(--muted); }
+.rb-pwa-panel summary { cursor: pointer; color: var(--primary-dark); }
+.rb-pwa-offline { max-width: 620px; margin: max(2rem, env(safe-area-inset-top)) auto; padding: 1.5rem; }
+.rb-pwa-offline a { color: var(--primary-dark); }
+/* Existing modals already use dvh. Only add the missing standalone safe areas. */
+@media (display-mode: standalone) {
+  body.gt-app { padding-top: calc(var(--header-height) + env(safe-area-inset-top)); padding-bottom: env(safe-area-inset-bottom); }
+  body.gt-app .site-header { padding-top: env(safe-area-inset-top); }
+  body.gt-app .gt-sidebar { padding-top: max(1.35rem, env(safe-area-inset-top)); padding-bottom: max(.85rem, env(safe-area-inset-bottom)); padding-left: max(.8rem, env(safe-area-inset-left)); }
+  body.gt-app .site-header .header-inner { padding-left: max(.85rem, env(safe-area-inset-left)); padding-right: max(.85rem, env(safe-area-inset-right)); }
+  body.gt-app .page { padding-bottom: max(5rem, env(safe-area-inset-bottom)); }
+  body.gt-app :is(input,textarea,select) { scroll-margin-block: 6rem; }
+}
+@media (display-mode: standalone) and (max-width: 760px) {
+  body.gt-app :is(input:not([type=checkbox]):not([type=radio]),textarea,select) { font-size: max(16px, 1em); }
+}

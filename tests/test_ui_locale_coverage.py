@@ -86,6 +86,15 @@ class UITests(unittest.TestCase):
                     "← " + page_source["v2.back"],
                     "日本語",  # Native language name in the language selector.
                 }
+            # Match runtime overlays, including scheduled publisher snapshots.
+            if "v2-data.js" in page.read_text(encoding="utf-8"):
+                overrides = json.loads((ROOT / "assets/locales/personal-analysis-overrides.json").read_text(encoding="utf-8"))
+                self.assertTrue(all(r.get("en", "").strip() for r in overrides))
+                page_source = {**page_source, **{r["key"].removeprefix("UI:"): r["zh_TW"] for r in overrides}}
+                page_known |= set(page_source.values())
+            pwa = json.loads((ROOT / "assets/locales/pwa.json").read_text(encoding="utf-8"))
+            page_source = {**page_source, **pwa["zh-Hant"]}
+            page_known |= set(pwa["zh-Hant"].values())
             for text in parser.texts:
                 count += 1
                 if text not in page_known:

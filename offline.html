@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Rangerbook</title>
+  <script>
+    (()=>{
+      const root=location.pathname.startsWith('/rangerbook/')?'/rangerbook/':'/';
+      try {document.documentElement.dataset.theme=localStorage.getItem('rangerbook-theme')==='dark'?'dark':'light';} catch(_) {}
+      ['style.css','game-tech.css'].forEach(name=>document.write('<link rel="stylesheet" href="'+root+'assets/css/'+name+'">'));
+      document.write('<script src="'+root+'assets/js/pwa-head.js"><\/script>');
+      document.write('<script src="'+root+'assets/js/visitor-region.js"><\/script>');
+      document.write('<script defer src="'+root+'assets/js/i18n.js"><\/script>');
+    })();
+  </script>
+</head>
+<body class="gt-app" style="margin-left:0;padding-top:0">
+  <main class="rb-pwa-offline">
+    <h1 data-i18n="pwa.offlineTitle">目前無法連線</h1>
+    <p data-i18n="pwa.offlineBody">這個頁面尚未儲存在裝置上。請連線後重試，或返回已瀏覽的頁面。</p>
+    <p data-i18n="pwa.offlinePrivate">登入、個人隊伍、PvP、公會戰及管理員功能需要網路連線。</p>
+    <button class="rb-pwa-button" type="button" data-pwa-retry data-i18n="pwa.retry">重新載入</button>
+    <p><a href="./" data-pwa-home data-i18n="pwa.home">返回首頁</a></p>
+  </main>
+</body>
+</html>

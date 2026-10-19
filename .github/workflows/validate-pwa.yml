@@ -1,0 +1,58 @@
+name: Validate PWA and regression behavior
+on:
+  pull_request:
+    paths:
+      - "**/*.html"
+      - "assets/**"
+      - "res/v2/**"
+      - "manifest.webmanifest"
+      - "sw.js"
+      - "pwa-data.json"
+      - "scripts/build-pwa.mjs"
+      - "tests/pwa-*.cjs"
+      - "tests/team-analysis-browser.cjs"
+      - ".github/workflows/*pwa*.yml"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pwa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/build-pwa.mjs
+      - name: Validate manifests, releases and worker lifecycle
+        run: |
+          node tests/pwa-contract.cjs
+          node tests/pwa-worker.cjs
+          node --test tests/*.test.js
+          node tests/v2-site-adapter.cjs
+          node tests/team-analysis-model.cjs
+          node tests/team-analysis-overview-model.cjs
+          node tests/personal-viewer-layout.cjs
+          node tests/i18n-contract.cjs
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Real service worker, offline routes and upgrades
+        run: node tests/pwa-browser.cjs
+      - name: Team analysis regression on desktop and touch
+        run: |
+          node tests/team-analysis-browser.cjs
+          QA_TOUCH=1 QA_LOCALE=en node tests/team-analysis-browser.cjs
+      - name: Settings and mobile sidebar regression
+        run: |
+          python3 -m http.server 4173 >/tmp/rangerbook-pwa-ui.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          node tests/settings-ui.cjs
+          node tests/sidebar-drawer-ui.cjs
+          node tests/sidebar-navigation-ux.cjs
+          node tests/compare-search-locales.cjs
+          AUDIT_BASE_URL=http://127.0.0.1:4173 node tests/v2-browser-interactions.cjs
+          AUDIT_BASE_URL=http://127.0.0.1:4173 node tests/v2-pvp-guild-browser.cjs

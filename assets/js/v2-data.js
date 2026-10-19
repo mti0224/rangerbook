@@ -73,7 +73,9 @@
   function text(ref) {
     const zh=render(ref,"zh_TW");pair(zh,render(ref,locale),2);return zh;
   }
-  const catalogPromises=Object.fromEntries(["official","custom","ui"].map(name=>[name,(async()=>{
+  const catalogPromises={};
+  function loadCatalog(name) {
+    return catalogPromises[name] ||= (async()=>{
     const version=name==="ui"?"20261017-analysis1":"20261013-thai1";
     const r=await nativeFetch(root+"res/v2/locales/"+name+".json?v="+version);
     if (!r.ok) throw new Error("V2 catalog unavailable: "+name);
@@ -95,14 +97,21 @@
       if (catalog.has(row.key)) throw new Error("Duplicate V2 key: "+row.key);
       catalog.set(row.key,row);pair(row.zh_TW,row[locale],/^EQUIP:GEAR_ATTR_.*_nm$/.test(row.key)?4:/^ABILITY:.*_nm$/.test(row.key)?3:0);
     }
-  })()]));
-  const authoredReady=Promise.all([catalogPromises.custom,catalogPromises.ui]);
-  const catalogsReady=Promise.all(Object.values(catalogPromises));
-  // Report rejected bootstrap without silently switching to V1.
-  catalogsReady.catch(e=>console.error("V2 language catalogs failed",e));
+    })();
+  }
+  const authoredReady=Promise.all([loadCatalog("custom"),loadCatalog("ui")]);
+  let allCatalogs;
+  function ensureCatalogs() {
+    if (!allCatalogs) {
+      allCatalogs=Promise.all([authoredReady,loadCatalog("official")]);
+      allCatalogs.catch(e=>console.error("V2 language catalogs failed",e));
+    }
+    return allCatalogs;
+  }
+  authoredReady.catch(e=>console.error("V2 authored catalogs failed",e));
   async function data(name) {
     if (!cache.has(name)) cache.set(name,(async()=>{
-      await catalogsReady;
+      await ensureCatalogs();
       const r=await nativeFetch(root+"res/v2/"+name+".json");
       if (!r.ok) throw new Error("V2 dataset unavailable: "+name);
       const d=await r.json();
@@ -347,11 +356,11 @@
     else if(/\/res\/i18n\//.test(path))build=()=>legacyLocale(name.replace(/\.json$/,""));
     if(!build)return nativeFetch(input,options);
     try {
-      await (path.includes("/assets/locales/") ? authoredReady : catalogsReady);
+      await (path.includes("/assets/locales/") ? authoredReady : ensureCatalogs());
       if(!viewCache.has(path))viewCache.set(path,Promise.resolve().then(build));
       return new Response(JSON.stringify(await viewCache.get(path)),{status:200,headers:{"Content-Type":"application/json","X-Rangerbook-Source":"v2"}});
     }catch(e){viewCache.delete(path);console.error("V2 view failed",path,e);return new Response(JSON.stringify({error:"V2 unavailable"}),{status:503,headers:{"Content-Type":"application/json"}});}
   };
-  window.RangerbookV2={ready:catalogsReady,get locale(){return locale;},data,render,text,catalog,
+  window.RangerbookV2={get ready(){return ensureCatalogs();},get locale(){return locale;},data,render,text,catalog,
     translateText:s=>phrases.get(normalized(s))||s,source:"v2",routes:Object.keys(routes)};
 })();

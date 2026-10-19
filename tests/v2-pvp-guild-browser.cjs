@@ -15,7 +15,9 @@ const fixtures={
  const browser=await chromium.launch({headless:true});
  try {
   for(const locale of ['zh-Hant','en','th','jp']) {
-   const context=await browser.newContext({viewport:{width:1200,height:900}});
+   // These API fixtures use Playwright routing, which cannot intercept worker
+   // requests. Actual controlled-network behavior is covered by pwa-browser.cjs.
+   const context=await browser.newContext({viewport:{width:1200,height:900},serviceWorkers:'block'});
    await context.addInitScript(l=>localStorage.setItem('rangerbook-language',l),locale);
    let role='user';
    await context.route('**/rangerbook-auth.warmycat.com/**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({logged_in:role==='admin',role,account:role==='admin'?'qa-admin':null})}));

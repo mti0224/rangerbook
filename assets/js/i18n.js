@@ -224,7 +224,13 @@
   }
   async function loadUi(selected) {
     try {
-      const all = await json(root + "assets/locales/ui.json?v=20261018-team-overview2");
+      const [baseResult,pwaResult] = await Promise.allSettled([
+        json(root + "assets/locales/ui.json?v=20261018-team-overview2"),
+        json(root + "assets/locales/pwa.json")
+      ]);
+      const all = baseResult.status === "fulfilled" ? baseResult.value : {};
+      const pwa = pwaResult.status === "fulfilled" ? pwaResult.value : {};
+      for (const lang of supported) all[lang] = {...all[lang],...pwa[lang]};
       if (selected !== locale) return;
       const baseline = all["zh-Hant"] || {};
       dictionary = Object.fromEntries(Object.entries(Object.assign({}, baseline, all[selected] || {}))
