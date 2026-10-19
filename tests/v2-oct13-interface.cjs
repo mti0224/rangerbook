@@ -1,3 +1,4 @@
+// API-routing fixtures run without SW; real controlled networking is tested in pwa-browser.cjs.
 /* Four-language interaction regression for the 2026-10-13 interface requests.
  * Private admin/statistics APIs are fixtures; no real accounts or writes. */
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
@@ -17,7 +18,7 @@ const traffic={status:'ready',updatedAt:'2026-10-13T00:00:00Z',summary:{users:30
  try{
   for(const locale of ['zh-Hant','en','jp','th']){
    console.log('OCT13_START '+locale);
-   const ctx=await browser.newContext({viewport:{width:1400,height:1000}});
+   const ctx=await browser.newContext({serviceWorkers:"block",viewport:{width:1400,height:1000}});
    await ctx.addInitScript(l=>localStorage.setItem('rangerbook-language',l),locale);
    await ctx.route('**/www.googletagmanager.com/**',r=>r.abort());
    await ctx.route('**/rangerbook-auth.warmycat.com/**',r=>{

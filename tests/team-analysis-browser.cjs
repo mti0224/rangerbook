@@ -26,6 +26,16 @@ for(const g of catalogs.equipment) {
   const errors=[];let playerCalls=0;
   await context.route(base+'/**',r=>{
    let filename=decodeURIComponent(new URL(r.request().url()).pathname);if(filename.endsWith('/'))filename+='index.html';
+   if(filename==='/pwa-data.json') {
+    // The PWA integrity guard also applies to synthetic UI fixtures. Publish
+    // hashes for the exact fixture responses rather than disabling the guard.
+    const metadata=JSON.parse(fs.readFileSync(path.join(root,'pwa-data.json')));
+    for(const [name,field] of [['rangers','rangers'],['equipment','equipment'],['abilities','abilities'],['equipment-effects','effects']]) {
+     const bytes=Buffer.from(JSON.stringify({schemaVersion:2,[field]:catalogs[field]}));
+     metadata.files[`res/v2/${name}.json`]={hash:require('node:crypto').createHash('sha256').update(bytes).digest('hex'),size:bytes.length};
+    }
+    return r.fulfill({json:metadata});
+   }
    for(const [name,field] of [['rangers','rangers'],['equipment','equipment'],['abilities','abilities'],['equipment-effects','effects']]) {
     if(filename===`/res/v2/${name}.json`) return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:2,[field]:catalogs[field]})});
    }
