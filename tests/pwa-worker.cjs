@@ -70,5 +70,9 @@ function harness() {
  h.setQuota(true);await h.ctx.inspect.put(DATA,'res/v2/rangers.json',new Response('x'));assert.ok(!(await h.caches.keys()).includes(DATA));
  assert.ok(await (await h.caches.open(CORE)).match('https://test/rangerbook/'+BOOT[0]));
  const failure=harness();failure.setChanged('offline.html');await assert.rejects(()=>failure.event('install'));assert.equal(failure.skipped,0);assert.equal((await failure.caches.keys()).length,0);
+ let unregistered=0;await h.caches.open('another-app-cache');
+ h.ctx.self.registration.unregister=async()=>{unregistered++;};
+ vm.runInContext(fs.readFileSync(path.join(root,'assets/pwa/disabled-worker.js'),'utf8'),h.ctx);
+ await h.event('activate');assert.equal(unregistered,1);assert.deepEqual(await h.caches.keys(),['another-app-cache'],'Rollback removes only this app scope');
  console.log('PWA_WORKER_OK lifecycle/consent/multi-tab/404 routes/integrity/offline/recovery/private exclusions/32MB budget/quota/cleanup/failed install');
 })().catch(e=>{console.error(e);process.exitCode=1;});

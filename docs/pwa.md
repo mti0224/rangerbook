@@ -2,7 +2,7 @@
 
 ## Scope and audited base
 
-Audited `main` at `1638419e272b191f7e8635532f203999ba5d9046` (2026-10-19). Development branch: `feat/pwa-install-offline`. This change is a static, optional enhancement to the existing HTML/CSS/JavaScript site. It does not change AWS, databases, APIs, Discord Bot, V1/V2 publishers, game schemas, calculations or authorization rules. No production merge or deployment has been performed.
+Audited `main` at `1638419e272b191f7e8635532f203999ba5d9046` (2026-10-19). Development branch: `feat/pwa-install-offline`. This change is a static, optional enhancement to the existing HTML/CSS/JavaScript site. It does not change AWS, databases, APIs, Discord Bot, V1/V2 publishers, game schemas, calculations or authorization rules. No production merge or deployment has been performed. PR: https://github.com/mti0224/rangerbook/pull/165.
 
 The repository has 43 existing HTML entry points, a shared `site.js`, `i18n.js` and V2 compatibility adapter. GitHub Actions uploads the repository to Pages on pushes to `main`. `CNAME` selects `rangerbook.warmycat.com`; existing `/rangerbook/` path detection is also retained. The old V2 manifest's source fingerprint is not a complete identity for every translated/output file, so it is not used as the offline consistency boundary.
 
@@ -29,6 +29,8 @@ The repository has 43 existing HTML entry points, a shared `site.js`, `i18n.js` 
 | `tests/pwa-contract.cjs`, `pwa-worker.cjs`, `pwa-browser.cjs` | Manifest/icons, release integrity, lifecycle, version upgrades, offline, privacy, route and storage tests. |
 | `tests/team-analysis-browser.cjs` | Fixture metadata now hashes synthetic datasets, keeping the real integrity guard enabled. |
 | `tests/v2-pvp-guild-browser.cjs` | Disables SW for its API-routing fixture only; Playwright routing does not intercept SW-owned network. Real SW privacy/network tests are separate. |
+| `.github/workflows/audit-game-tech-visuals.yml`, `validate-thai-review.yml` | Rebuild integrity metadata after those CI jobs substitute their authored translation fixture. |
+| `tests/home-popular-ui.cjs`, `thai-review-ui.cjs`, `v2-oct13-interface.cjs`, `visitor-region-ui.cjs` | Keep their mocked API routing isolated from SW-owned network; integrity checks remain enabled. |
 | `tests/test_ui_locale_coverage.py` | Checks the same authored overlays/PWA catalog as the runtime, including scheduled publisher snapshots. |
 
 ## Cache and consistency policy
@@ -83,6 +85,8 @@ Executed locally with real headless Chromium 141 via Playwright, plus Node/Pytho
 - Existing Ranger/equipment interactions: four languages passed (localized search, Ranger level and equipment upgrades).
 - Existing Ranger comparison search: all 2,306 indexed Rangers and four locales passed.
 - Existing public PvP/guild-war browser fixtures: four languages passed (usage, equipment, player teams, guild identity and permission gates).
+- Regional defaults/cookie fallback, homepage popular cards (four languages/two themes), Thai review and October 13 interface fixtures passed after CI preview metadata was regenerated.
+- GitHub Actions initial PWA workflow run 39243280080 passed, as did localization, Ranger, comparison, Game-Tech and PvP/guild checks. Follow-up changes fix isolated mocked-network/catalog-preview CI integration. The separate visual audit still has the documented pre-existing admin-tab expectation to resolve outside this scope.
 
 Reproduce after checkout:
 

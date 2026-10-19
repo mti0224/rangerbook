@@ -1,3 +1,4 @@
+// API-routing fixtures run without SW; real controlled networking is tested in pwa-browser.cjs.
 /* Reproduce the Thai review with real V2 records and synthetic PvP players. */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -18,7 +19,7 @@ const fixtures = {
   const browser = await chromium.launch({headless:true, executablePath:process.env.QA_CHROME, args:process.env.QA_CHROME ? ["--single-process", "--no-zygote"] : []});
   try {
     for (const locale of ['th', 'en', 'jp', 'zh-Hant']) {
-      const context = await browser.newContext({viewport:{width:1140, height:900}});
+      const context = await browser.newContext({serviceWorkers:"block",viewport:{width:1140, height:900}});
       await context.addInitScript(l => localStorage.setItem('rangerbook-language', l), locale);
       if (process.env.QA_LOCAL_FILES) await context.route(base + '/**', r => {
         let name = decodeURIComponent(new URL(r.request().url()).pathname);

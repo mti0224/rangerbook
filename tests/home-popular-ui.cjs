@@ -1,3 +1,4 @@
+// API-routing fixtures run without SW; real controlled networking is tested in pwa-browser.cjs.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -23,7 +24,7 @@ const details={...report,pages:[
     for (const locale of ['zh-Hant','en','jp','th']) for (const theme of ['light','dark']) {
       browser = await chromium.launch({headless:true, executablePath:process.env.QA_CHROME,
         args:process.env.QA_CHROME ? ['--single-process','--no-zygote'] : []});
-      const context = await browser.newContext({viewport:{width:1366,height:1000}});
+      const context = await browser.newContext({serviceWorkers:"block",viewport:{width:1366,height:1000}});
       if (process.env.QA_LOCAL_FILES) await context.route(base + '/**', r => {
         let name = decodeURIComponent(new URL(r.request().url()).pathname);
         if(name.endsWith('/')) name += 'index.html';

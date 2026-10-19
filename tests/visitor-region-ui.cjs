@@ -1,3 +1,4 @@
+// API-routing fixtures run without SW; real controlled networking is tested in pwa-browser.cjs.
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
@@ -19,7 +20,7 @@ async function verifyLanguage(page, expected) {
   const browser = await chromium.launch({ headless: true });
   try {
     for (const [country, expected] of [["TW", "zh-Hant"], ["HK", "zh-Hant"], ["MO", "zh-Hant"], ["TH", "th"], ["JP", "jp"], ["US", "en"], ["CN", "en"]]) {
-      const context = await browser.newContext({ locale: "en-US", viewport: { width: 390, height: 844 } });
+      const context = await browser.newContext({serviceWorkers:"block", locale: "en-US", viewport: { width: 390, height: 844 } });
       let currentCountry = country, requests = 0;
       await context.route("https://api.country.is/**", route => {
         requests++;
@@ -60,7 +61,7 @@ async function verifyLanguage(page, expected) {
     }
     // A failed / malformed service response must not leave the page or link blocked.
     for (const mode of ["error", "invalid", "timeout"]) {
-      const context = await browser.newContext();
+      const context = await browser.newContext({serviceWorkers:"block"});
       await context.route("https://api.country.is/**", async route => {
         if (mode === "timeout") await new Promise(resolve => setTimeout(resolve, 3000));
         await route.fulfill({ status: mode === "error" ? 503 : 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: '{"country":"invalid"}' }).catch(() => {});
@@ -76,7 +77,7 @@ async function verifyLanguage(page, expected) {
       await context.close();
     }
     // A language preference saved during a pending lookup has priority.
-    const context = await browser.newContext();
+    const context = await browser.newContext({serviceWorkers:"block"});
     let release;
     const gate = new Promise(resolve => { release = resolve; });
     await context.route("https://api.country.is/**", async route => {
@@ -96,7 +97,7 @@ async function verifyLanguage(page, expected) {
     await context.close();
     console.log("REGION_CONCURRENT_PREFERENCE_OK");
     // A first visit directly to a data page must use the same finalized locale.
-    const fresh = await browser.newContext();
+    const fresh = await browser.newContext({serviceWorkers:"block"});
     await fresh.route("https://api.country.is/**", route => route.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: '{"country":"JP"}' }));
     await fresh.route("https://www.googletagmanager.com/**", route => route.abort());
     await fresh.route("https://rangerbook-auth.warmycat.com/**", route => route.abort());
@@ -113,7 +114,7 @@ async function verifyLanguage(page, expected) {
     await fresh.close();
     console.log("REGION_FIRST_DATA_PAGE_OK");
     // Cookie preferences still work when localStorage is unavailable.
-    const cookieContext = await browser.newContext();
+    const cookieContext = await browser.newContext({serviceWorkers:"block"});
     await cookieContext.addCookies([{ name: languageKey, value: "ja", url: base }]);
     await cookieContext.addInitScript(key => {
       const get = Storage.prototype.getItem, set = Storage.prototype.setItem;
