@@ -36,6 +36,9 @@ function harness() {
  await h.event('activate');const {CORE,DATA,RELEASE,BOOT}=h.ctx.inspect;
  assert.ok(await h.get('settings/index.html'));assert.ok((await h.get('res/v2/abilities.json')).ok);
  assert.ok((await h.caches.open(DATA)).match('https://test/rangerbook/res/v2/abilities.json'));
+ const warmedRequests=h.network.length;
+ assert.ok((await h.get('res/v2/abilities.json')).ok);
+ assert.equal(h.network.length,warmedRequests,'Verified warm data must not wait for any network request');
  for(const name of ['https://auth.test/auth/me','admin/','auth/me','api/player-team-query','sponsor/','payment/','index.html?session=private'])await h.get(name);
  await h.get('res/v2/abilities.json',{headers:new Headers({Authorization:'Bearer private'})});
  await h.get('res/v2/abilities.json',{method:'POST'});
@@ -76,3 +79,4 @@ function harness() {
  await h.event('activate');assert.equal(unregistered,1);assert.deepEqual(await h.caches.keys(),['another-app-cache'],'Rollback removes only this app scope');
  console.log('PWA_WORKER_OK lifecycle/consent/multi-tab/404 routes/integrity/offline/recovery/private exclusions/32MB budget/quota/cleanup/failed install');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+

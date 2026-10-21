@@ -46,6 +46,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - run: node scripts/build-pwa.mjs
       - run: python -m unittest discover -s tests -p 'test_game_locale_export.py' -v
       - run: python -m unittest discover -s tests -p 'test_ui_locale_coverage.py' -v
       - run: python -m unittest discover -s tests -p 'test_i18n_detail_tables.py' -v

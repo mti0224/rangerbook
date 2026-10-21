@@ -59,6 +59,7 @@
     filtered: [],
     abilityMap: {},
     selectedId: "",
+    preview: false,
     page: 1,
     pageSize: 60,
     animationIndexPromise: null,
@@ -375,6 +376,7 @@
 
   function fillSelect(select, values, label = "") {
     if (!select) return;
+    const selected=select.value;
     const unique = [...new Set(values.map(text).filter((value) => !isNone(value)))]
       .sort((a, b) => a.localeCompare(b, "zh-Hant"));
     const sourceLabel = label ? `全部${label}` : "全部";
@@ -383,6 +385,7 @@
       : window.RangerbookI18n.format("site.ranger.allFilter",[window.RangerbookI18n.uiText(label)],sourceLabel);
     select.innerHTML = `<option value="">${html(first)}</option>`
       + unique.map((value) => `<option value="${html(value)}">${html(value)}</option>`).join("");
+    if(unique.includes(selected))select.value=selected;
   }
 
   function tagClass(value) {
@@ -488,7 +491,7 @@
     renderPaginationBar("bottomPagination", total, totalPages, start, end);
   }
 
-  function applyFilters() {
+  function applyFilters(resetPage=true) {
     if (isDetailPage) return;
     const query = els.search?.value.trim().toLowerCase() || "";
     const selectedSkillEffect = text(els.skillEffect?.value);
@@ -511,7 +514,7 @@
       if (selectedTalentEffect && !talent.effects.includes(selectedTalentEffect)) return false;
       return true;
     });
-    state.page = 1;
+    if(resetPage)state.page = 1;
     renderList();
   }
 
@@ -981,16 +984,31 @@
 
   async function openRanger(id) {
     state.selectedId = id;
-    const row = state.rows.find(({ ranger }) => getId(ranger) === id);
+    let row = state.rows.find(({ ranger }) => getId(ranger) === id);
     if (!row || !els.modalContent) return false;
+    if(state.preview) {
+      const [rows,abilities]=await Promise.all([window.RangerbookV2.rangerPageRows(),window.RangerbookV2.rangerPageAbilities()]);
+      const ranger=rows.find(r=>getId(r)===id);
+      if(!ranger)return false;
+      row={ranger};state.abilityMap=abilities;
+    }
     await window.RangerbookEvolution?.ready();
-    const animationMeta = isDetailPage ? await loadAnimationMeta(id) : null;
+    const animationMeta = state.animationMetaCache.get(id) || null;
     if (state.selectedId !== id) return false;
 
     els.modalContent.innerHTML = renderDetail(row.ranger, animationMeta);
     if (isDetailPage) {
       mountLevelControl(row.ranger);
       revealDetailPage();
+      // Animation timing and sprite hosts must never block the character data.
+      loadAnimationMeta(id).then(meta=>{
+        if(!meta || state.selectedId!==id)return;
+        const sections=els.modalContent.querySelectorAll('.ranger-skill-card .skill-meta-table');
+        sections.forEach((table,index)=>{
+          const cell=table.querySelector('tbody tr:last-child td:last-child');
+          if(cell)cell.textContent=skillStartupValue(row.ranger['技能'+(index+1)],meta,index);
+        });
+      });
     } else {
       pruneSummaryModal(id);
       if (els.modal) els.modal.hidden = false;
@@ -1044,17 +1062,35 @@
 
   async function init() {
     try {
-      const [rangerResponse, abilityResponse] = await Promise.all([
-        fetch(DATA_URL),
-        fetch(ABILITY_DATA_URL).catch(() => null)
+      if(!isDetailPage && window.RangerbookV2?.rangerListPreview) {
+        const preview=await window.RangerbookV2.rangerListPreview();
+        if(preview) {
+          state.preview=true;
+          state.rows=preview.map((ranger,index)=>({ranger,index,date:parseDate(ranger['登場時間']),search:searchBlob(ranger)}))
+            .sort((a,b)=>(b.date-a.date)||(a.index-b.index));
+          state.filtered=[...state.rows];
+          fillSelect(els.star,state.rows.map(row=>row.ranger['Ranger星數']));
+          fillSelect(els.type,state.rows.map(row=>row.ranger['類型']));
+          fillSelect(els.element,state.rows.map(row=>row.ranger['屬性']));
+          if(els.advancedToggle){els.advancedToggle.disabled=true;els.advancedToggle.setAttribute('aria-busy','true');}
+          if(els.special)els.special.disabled=true;
+          renderList();
+          // Let the small preview paint before requesting full filter data.
+          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        }
+      }
+      const [raw, abilities] = await Promise.all([
+        window.RangerbookV2?.rangerPageRows ? window.RangerbookV2.rangerPageRows()
+          : fetch(DATA_URL).then(response=>{if(!response.ok)throw new Error('Rangers unavailable');return response.json();}),
+        window.RangerbookV2?.rangerPageAbilities ? window.RangerbookV2.rangerPageAbilities()
+          : fetch(ABILITY_DATA_URL).then(response=>response.ok ? response.json() : {}).catch(()=>({}))
       ]);
-      if (!rangerResponse.ok) throw new Error(`HTTP ${rangerResponse.status}`);
-      const raw = await rangerResponse.json();
-      state.abilityMap = abilityResponse && abilityResponse.ok ? await abilityResponse.json() : {};
+      state.abilityMap = abilities;
       await window.RangerbookI18n?.readyGame?.();
       state.rows = (Array.isArray(raw) ? raw : [])
         .map((ranger, index) => ({ ranger, index, date: parseDate(ranger["登場時間"]), search: searchBlob(ranger) }))
         .sort((a, b) => (b.date - a.date) || (a.index - b.index));
+      state.preview=false;
 
       if (isDetailPage) {
         const found = await openRanger(detailId);
@@ -1070,10 +1106,17 @@
       fillSelect(els.abilityEffect, state.rows.flatMap((row) => abilityFilterValues(row.ranger)), "能力");
       fillSelect(els.talentCondition, state.rows.flatMap((row) => talentSearchCategories(row.ranger).conditions), "才能條件");
       fillSelect(els.talentEffect, state.rows.flatMap((row) => talentSearchCategories(row.ranger).effects), "才能效果");
-      renderList();
+      if(els.advancedToggle){els.advancedToggle.disabled=false;els.advancedToggle.removeAttribute('aria-busy');}
+      if(els.special)els.special.disabled=false;
+      applyFilters(false);
     } catch (error) {
       if (isDetailPage && detailPage) {
         detailPage.status.textContent = "角色資料載入失敗，請稍後再試。";
+      } else if (els.list && state.preview) {
+        els.advancedToggle?.removeAttribute('aria-busy');
+        const notice=document.createElement('p');notice.className='empty-state small';notice.setAttribute('role','status');
+        notice.textContent=window.RangerbookI18n?.t('site.ranger.partialFilters','進階篩選資料載入失敗，請重新載入頁面。') || '進階篩選資料載入失敗，請重新載入頁面。';
+        els.list.before(notice);
       } else if (els.list) {
         els.list.innerHTML = `<div class="empty-state">資料載入失敗，請稍後再試。</div>`;
       }

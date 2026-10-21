@@ -19,7 +19,7 @@
 
   function loadRangerMap() {
     if (!rangerMapPromise) {
-      rangerMapPromise = fetch(DATA_URL)
+      rangerMapPromise = (window.RangerbookV2?.rangerPageRows ? window.RangerbookV2.rangerPageRows().then(rows => ({ok:true,json:async()=>rows})) : fetch(DATA_URL))
         .then((res) => res.ok ? res.json() : [])
         .then((rows) => {
           const map = new Map();
@@ -78,3 +78,4 @@
   observer.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("DOMContentLoaded", () => addExtraStats());
 })();
+

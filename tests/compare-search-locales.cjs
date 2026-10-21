@@ -75,7 +75,10 @@ assert.deepEqual(index.map(row => row.rangerCode).sort(), fullIds.sort(), "searc
       }
       await left.fill(target.rangerCode);
       await list.locator('[data-id="' + target.rangerCode + '"]').click();
-      await page.waitForFunction(() => document.querySelector("#compareSelected .compare-selected-card img"));
+      // Images are intentionally blocked in this fixture and onerror removes
+      // them. A selected character's ID is the stable data-readiness signal.
+      await page.waitForFunction(id => [...document.querySelectorAll("#compareSelected .compare-selected-card .compare-suggestion-meta")]
+        .some(node => node.textContent.trim() === id), target.rangerCode);
       assert.equal(await left.inputValue(), name(target, locale));
       await list.waitFor({ state: "hidden" });
       await right.fill(name(target, locale));
@@ -90,3 +93,4 @@ assert.deepEqual(index.map(row => row.rangerCode).sort(), fullIds.sort(), "searc
     }
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
+

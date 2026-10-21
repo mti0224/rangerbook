@@ -31,7 +31,8 @@
   }
   function ready() {
     if (!pending) pending = (async () => {
-      const records = (await window.RangerbookV2.data("rangers")).rangers;
+      const records = window.RangerbookV2.evolutionRows ? await window.RangerbookV2.evolutionRows()
+        : (await window.RangerbookV2.data("rangers")).rangers;
       // The compiler extension keeps future official refreshes authoritative.
       // The checked snapshot supports the current publisher during rollout.
       const edges = records.every(row => Array.isArray(row.evolutionTargets))

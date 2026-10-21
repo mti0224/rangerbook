@@ -22,6 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Build the production data projections and integrity manifest
+        run: node scripts/build-pwa.mjs
       - run: node --check assets/js/ranger-compare.js && node --check assets/js/v2-data.js
       - run: npm install --no-save --package-lock=false playwright && npx playwright install --with-deps chromium
       - name: Verify all four languages and full search coverage

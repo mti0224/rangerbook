@@ -6,6 +6,30 @@
   if (window.RangerbookV2) return;
   const root = location.pathname.startsWith("/rangerbook/") ? "/rangerbook/" : "/";
   const nativeFetch = window.fetch.bind(window);
+  const pageUrl=new URL(location.href);
+  const detailId=/\/ranger\/ranger\//.test(pageUrl.pathname)
+    ? pageUrl.searchParams.get('detail') || pageUrl.pathname.match(/\/ranger\/ranger\/([^/]+)\/?$/)?.[1] : null;
+  const listPage=/\/ranger\/ranger\/$/.test(pageUrl.pathname) && !detailId;
+  let previewPromise;
+  function previewBundle() {
+    return previewPromise ||= nativeFetch(root+'res/v2/fast/ranger-list.json').then(async response=>{
+      if(!response.ok)return null;
+      const value=await response.json();
+      if(value.schemaVersion!==2 || !Array.isArray(value.rangers))throw new Error('Invalid Ranger preview');
+      return value;
+    }).catch(()=>null); // Older page shells can still use the pinned full release.
+  }
+  let bundlePromise;
+  function detailBundle() {
+    if(!detailId)return Promise.resolve(null);
+    return bundlePromise ||= nativeFetch(root+'res/v2/fast/ranger/'+encodeURIComponent(detailId)+'.json')
+      .then(async response=>{
+        if(!response.ok)return null;
+        const value=await response.json();
+        if(value.schemaVersion!==2 || value.rangers?.[0]?.rangerCode!==detailId)throw new Error('Invalid Ranger detail bundle');
+        return value;
+      }).catch(()=>null);
+  }
   const language = {"zh-Hant":"zh_TW",zh_TW:"zh_TW",en:"en",th:"th",jp:"jp",ja:"jp"};
   let saved; try {saved=localStorage.getItem("rangerbook-language");} catch (_) {}
   if (!language[saved] && typeof document!=="undefined")
@@ -77,9 +101,17 @@
   function loadCatalog(name) {
     return catalogPromises[name] ||= (async()=>{
     const version=name==="ui"?"20261017-analysis1":"20261013-thai1";
-    const r=await nativeFetch(root+"res/v2/locales/"+name+".json?v="+version);
-    if (!r.ok) throw new Error("V2 catalog unavailable: "+name);
-    const rows=await r.json();
+    let rows=name==='official' ? (await (listPage?previewBundle():detailBundle()))?.locales : null;
+    if(!rows) {
+      let r;
+      if(name==='official' || (name==='official-full' && listPage)) {
+        await localeReady;
+        r=await nativeFetch(root+'res/v2/fast/locales/'+locale+'.json').catch(()=>null);
+      }
+      if(!r?.ok)r=await nativeFetch(root+"res/v2/locales/"+(name==='official-full'?'official':name)+".json?v="+version);
+      if (!r.ok) throw new Error("V2 catalog unavailable: "+name);
+      rows=await r.json();
+    }
     await localeReady;
     if (!Array.isArray(rows)) throw new Error("Invalid V2 catalog: "+name);
     // Periodic backend publishing may use an older UI snapshot. Keep the
@@ -99,7 +131,7 @@
       effectiveRows=[...new Map([...rows,...overrides].map(row=>[row.key,row])).values()];
     }
     for (const row of effectiveRows) {
-      if (catalog.has(row.key)) throw new Error("Duplicate V2 key: "+row.key);
+      if (catalog.has(row.key) && name!=='official-full') throw new Error("Duplicate V2 key: "+row.key);
       catalog.set(row.key,row);pair(row.zh_TW,row[locale],/^EQUIP:GEAR_ATTR_.*_nm$/.test(row.key)?4:/^ABILITY:.*_nm$/.test(row.key)?3:0);
     }
     })();
@@ -116,11 +148,12 @@
   authoredReady.catch(e=>console.error("V2 authored catalogs failed",e));
   async function data(name) {
     if (!cache.has(name)) cache.set(name,(async()=>{
-      await ensureCatalogs();
+      const catalogs=ensureCatalogs();
       const r=await nativeFetch(root+"res/v2/"+name+".json");
       if (!r.ok) throw new Error("V2 dataset unavailable: "+name);
       const d=await r.json();
       if (d.schemaVersion!==2) throw new Error("Invalid V2 schema: "+name);
+      await catalogs;
       return d;
     })());
     return cache.get(name);
@@ -188,8 +221,8 @@
     if(s.moveSpeed) out["移動速度"]=(speeds[s.moveSpeed.rating]||s.moveSpeed.rating)+"("+number(s.moveSpeed.pointsPerSecond)+"點/秒)";
     return out;
   }
-  async function abilityMap() {
-    const rows=(await data("abilities")).abilities;
+  async function abilityMap(selectedRows) {
+    const rows=selectedRows || (await data("abilities")).abilities;
     return Object.fromEntries(rows.map(a=>{
       const out={icon:a.icon,"名稱":text(a.nameKey),"敘述":text(a.descriptionKey),
         __v2:{nameKey:a.nameKey,descriptionKey:a.descriptionKey},
@@ -222,8 +255,13 @@
       render("UI:"+(x.elementType==="NONE"?"copy.none":"tag."+element),locale)];
   }
   async function actors(name) {
-    const d=await data(name), aa=await abilityMap(), enemy=name.startsWith("enemies/");
-    return (d.rangers||d.enemies).map(x=>{
+    const [d,abilities]=await Promise.all([data(name),data('abilities'),
+      detailId || listPage ? loadCatalog('official-full') : null]);
+    const aa=await abilityMap(abilities.abilities);
+    return actorRecords(d.rangers||d.enemies,aa,name.startsWith("enemies/"));
+  }
+  function actorRecords(records,aa,enemy=false) {
+    return records.map(x=>{
       const out={...(enemy?{enemy_id:x.enemyCode}:{ranger_id:x.rangerCode,"Ranger名稱":text(x.nameKey),
         "角色敘述":text(x.descriptionKey),"登場時間":x.releaseDate||"","Ranger星數":stars(x)}),
         "類型":types[x.roleType]||x.roleType,"屬性":elements[x.elementType]||x.elementType,
@@ -239,6 +277,29 @@
       for (const [k,v] of Object.entries(x.rankUpStatIncreaseMax||{})) out[k+"Max"]=v;
       out.__v2={code:x.rangerCode||x.enemyCode,roleType:x.roleType,elementType:x.elementType};return out;
     });
+  }
+  let pageRowsPromise,pageAbilitiesPromise;
+  function rangerPageRows() {
+    return pageRowsPromise ||= (async()=>{
+    const bundle=await detailBundle();
+    if(!bundle)return actors('rangers');
+    await ensureCatalogs();
+    return actorRecords(bundle.rangers,await abilityMap(bundle.abilities));
+    })().catch(error=>{pageRowsPromise=null;throw error;});
+  }
+  function rangerPageAbilities() {
+    return pageAbilitiesPromise ||= (async()=>{
+    const bundle=await detailBundle();
+    if(listPage) {
+      const [abilities]=await Promise.all([data('abilities'),loadCatalog('official-full')]);
+      return abilityMap(abilities.abilities);
+    }
+    await ensureCatalogs();
+    return abilityMap(bundle?.abilities);
+    })().catch(error=>{pageAbilitiesPromise=null;throw error;});
+  }
+  async function evolutionRows() {
+    return (await detailBundle())?.evolutionRangers || (await data('rangers')).rangers;
   }
   async function equipment() {
     return (await data("equipment")).equipment.map(x=>{
@@ -317,6 +378,9 @@
   async function projectiles() {
     const raw=(await data("projectiles")).units;
     const rows=Array.isArray(raw)?raw:Object.values(raw);
+    return projectileRecords(rows);
+  }
+  function projectileRecords(rows) {
     return {schemaVersion:3,source:"V2",unitCount:rows.length,units:Object.fromEntries(rows.map(x=>{
       const v=x.visual,m=x.movement,out={unitCode:x.unitCode,resourceCode:v.resourceCode,guardianResourceCode:v.guardianResourceCode,
         useEnemySideResource:v.useEnemySprite?1:0,render:{flightYn:v.flying?1:0,sizeRatio:v.scale,shadowCenter:v.shadowCenter,faceCenter:v.faceCenter},
@@ -362,12 +426,29 @@
     else if(/\/res\/i18n\//.test(path))build=()=>legacyLocale(name.replace(/\.json$/,""));
     if(!build)return nativeFetch(input,options);
     try {
+      // Start independent data transfers now; each adapter waits for its own
+      // catalogs before rendering text. Avoid a catalog -> data waterfall.
+      if(!viewCache.has(path))viewCache.set(path,Promise.resolve().then(async()=>{
+        if(path.includes('/assets/locales/'))await authoredReady;
+        else if(path.includes('/res/i18n/'))await ensureCatalogs();
+        return build();
+      }));
       await (path.includes("/assets/locales/") ? authoredReady : ensureCatalogs());
-      if(!viewCache.has(path))viewCache.set(path,Promise.resolve().then(build));
       return new Response(JSON.stringify(await viewCache.get(path)),{status:200,headers:{"Content-Type":"application/json","X-Rangerbook-Source":"v2"}});
     }catch(e){viewCache.delete(path);console.error("V2 view failed",path,e);return new Response(JSON.stringify({error:"V2 unavailable"}),{status:503,headers:{"Content-Type":"application/json"}});}
   };
   window.RangerbookV2={get ready(){return ensureCatalogs();},get locale(){return locale;},data,render,text,catalog,
+    rangerPageRows,rangerPageAbilities,evolutionRows,
+    async rangerListPreview() {
+      const bundle=await previewBundle();
+      if(!bundle)return null;
+      await ensureCatalogs();
+      return actorRecords(bundle.rangers,{});
+    },
+    async rangerPageProjectiles() {
+      const bundle=await detailBundle();
+      return bundle ? projectileRecords(bundle.projectiles) : projectiles();
+    },
     translateText:s=>phrases.get(normalized(s))||s,source:"v2",routes:Object.keys(routes)};
 })();
 

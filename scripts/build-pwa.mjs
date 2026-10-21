@@ -1,8 +1,9 @@
-/* Pages-only packaging. Never edits the V1/V2 publishers or their output. */
+/* Pages packaging and derived read models. Authoritative V1/V2 inputs stay unchanged. */
 import { readdir, readFile, writeFile, access } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import {buildFastData} from './build-fast-data.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 try {
   await access(path.join(root,'.pwa-disabled'));
@@ -20,6 +21,7 @@ async function files(dir) {
   }
   return out.sort();
 }
+console.log('Fast data',await buildFastData(root));
 const all = await files('');
 const record = async names => Object.fromEntries(await Promise.all(names.map(async name => {
   const bytes = await readFile(path.join(root,name));
