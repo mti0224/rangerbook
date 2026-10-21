@@ -787,7 +787,7 @@
       ${window.RangerbookEvolution?.render(ranger) || ""}
       <section class="detail-section"><h3>技能</h3>${renderSkills(ranger, animationMeta)}</section>
       <section class="detail-section"><h3>能力</h3>${abilityCards(normalAbilities(ranger), "沒有能力資料。", "ranger-ability-group")}</section>
-      <section class="detail-section"><h3>覺醒能力</h3>${abilityCards(awakeAbilities(ranger), "沒有覺醒能力資料。", "ranger-awake-ability-group")}</section>
+      <section class="detail-section" data-detail-section="awakening"><h3>覺醒能力</h3>${abilityCards(awakeAbilities(ranger), "沒有覺醒能力資料。", "ranger-awake-ability-group")}</section>
       <section class="detail-section"><h3>才能</h3>${renderTalent(ranger["才能"], ranger) || `<div class="empty-state small">沒有才能資料。</div>`}</section>`;
   }
 
