@@ -784,6 +784,7 @@
         </div>
       </div>
       <section class="detail-section"><h3 data-i18n="detail.basicStats">基本數值</h3><div class="ranger-stat-grid">${stats}</div></section>
+      ${window.RangerbookEvolution?.render(ranger) || ""}
       <section class="detail-section"><h3>技能</h3>${renderSkills(ranger, animationMeta)}</section>
       <section class="detail-section"><h3>能力</h3>${abilityCards(normalAbilities(ranger), "沒有能力資料。", "ranger-ability-group")}</section>
       <section class="detail-section"><h3>覺醒能力</h3>${abilityCards(awakeAbilities(ranger), "沒有覺醒能力資料。", "ranger-awake-ability-group")}</section>
@@ -982,6 +983,7 @@
     state.selectedId = id;
     const row = state.rows.find(({ ranger }) => getId(ranger) === id);
     if (!row || !els.modalContent) return false;
+    await window.RangerbookEvolution?.ready();
     const animationMeta = isDetailPage ? await loadAnimationMeta(id) : null;
     if (state.selectedId !== id) return false;
 

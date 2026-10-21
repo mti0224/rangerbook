@@ -113,6 +113,24 @@ async function assertTranslated(page,locale,selector) {
       // Detail names and IDs are explicit arguments; titles remain stable after DOM updates.
       await ready(page,'/ranger/ranger/?detail=u1626u-cony');
       await page.locator('#rangerLevelRange').waitFor();
+      const evolution = page.locator('.ranger-evolution-section');
+      await evolution.waitFor();
+      assert.equal(await evolution.locator('h3').innerText(),expected('site.evolution.title',locale));
+      assert.equal(await evolution.locator('[data-evolution-id]').count(),4);
+      assert.equal(await evolution.locator('[aria-current="page"]').count(),1);
+      assert.equal(await evolution.locator('.ranger-evolution-current').innerText(),expected('site.evolution.current',locale));
+      assert.equal(await evolution.evaluate(el => el.previousElementSibling.querySelector('h3').dataset.i18n),'detail.basicStats');
+      assert.ok(await evolution.evaluate(el => !!el.nextElementSibling.querySelector('.ranger-skill-card')));
+      assert.equal(await evolution.locator('[data-evolution-id="u1626e-cony"] [data-evolution-target]').count(),2);
+      assert.equal(await evolution.locator('[data-evolution-id="u1626u-cony"] [data-evolution-target="u1627e-cony"]').count(),1);
+      await page.setViewportSize({width:375,height:812});
+      const menuToggle = page.locator('.site-menu-toggle');
+      if(await menuToggle.getAttribute('aria-expanded') === 'true') await menuToggle.click();
+      assert.ok(await evolution.evaluate(el => [...el.querySelectorAll('.ranger-evolution-stage')].every(card => {
+        const rect=card.getBoundingClientRect();return rect.left>=0 && rect.right<=innerWidth;
+      })),locale+' mobile evolution cards fit the viewport');
+      if(process.env.QA_EVOLUTION_SCREENSHOT && locale === 'en') await evolution.screenshot({path:process.env.QA_EVOLUTION_SCREENSHOT});
+      await page.setViewportSize({width:1200,height:900});
       await page.waitForFunction(suffix => document.title.endsWith(suffix),expected('site.title.ranger',locale,'').replace(/^｜/,''));
       await assertTranslated(page,locale,'#rangerModalContent *, .site-menu-toggle');
       const talentDescriptions = await page.evaluate(async () => {
@@ -128,6 +146,12 @@ async function assertTranslated(page,locale,selector) {
       await page.locator('#rangerLevelRange').fill('180');
       await settle(page);
       assert.ok(!/undefined|NaN/.test(await page.locator('#rangerModalContent').innerText()));
+      await evolution.locator('[data-evolution-id="u1627e-cony"] .ranger-evolution-character').click();
+      await page.locator('[data-evolution-id="u1627e-cony"] [aria-current="page"]').waitFor();
+      await ready(page,'/ranger/ranking/');
+      await page.locator('.ranking-card').first().click();
+      await page.locator('.ranger-evolution-section').waitFor();
+      assert.equal(await page.locator('.ranger-evolution-section h3').innerText(),expected('site.evolution.title',locale));
       await ready(page,'/gear/?detail=eq_2202_wpn_07');
       await page.locator('.gear-detail-content:not([hidden])').waitFor();
       await page.waitForFunction(suffix => document.title.endsWith(suffix),expected('site.title.gear',locale,'').replace(/^｜/,''));

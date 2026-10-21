@@ -964,5 +964,40 @@
     "en": "Stage %N1-%N2",
     "th": "ด่าน %N1-%N2",
     "jp": "ステージ%N1-%N2"
+  },
+  {
+    "key": "UI:site.evolution.title",
+    "zh_TW": "進化階段",
+    "en": "Evolution Stages",
+    "th": "ขั้นวิวัฒนาการ",
+    "jp": "進化段階"
+  },
+  {
+    "key": "UI:site.evolution.current",
+    "zh_TW": "目前角色",
+    "en": "Current Ranger",
+    "th": "เรนเจอร์ปัจจุบัน",
+    "jp": "現在のレンジャー"
+  },
+  {
+    "key": "UI:site.evolution.next",
+    "zh_TW": "可進化為",
+    "en": "Can evolve into",
+    "th": "สามารถวิวัฒนาการเป็น",
+    "jp": "進化先"
+  },
+  {
+    "key": "UI:site.evolution.none",
+    "zh_TW": "官方資料無其他進化階段。",
+    "en": "No other evolution stages in the official data.",
+    "th": "ข้อมูลทางการไม่มีขั้นวิวัฒนาการอื่น",
+    "jp": "公式データに他の進化段階はありません。"
+  },
+  {
+    "key": "UI:site.evolution.unavailable",
+    "zh_TW": "進化階段資料暫時無法載入。",
+    "en": "Evolution stages are temporarily unavailable.",
+    "th": "ไม่สามารถโหลดข้อมูลขั้นวิวัฒนาการได้ในขณะนี้",
+    "jp": "進化段階のデータを現在読み込めません。"
   }
 ]
