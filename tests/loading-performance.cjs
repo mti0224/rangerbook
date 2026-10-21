@@ -8,6 +8,8 @@ const blocked=new Set(['res/v2/rangers.json','res/v2/abilities.json','res/v2/loc
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH || undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
  try {for(const locale of ['zh-Hant','en','th','jp']) {
   const context=await browser.newContext({serviceWorkers:'block'}),requests=[];
+  let holdBackground=false,releaseBackground;
+  const backgroundGate=new Promise(resolve=>{releaseBackground=resolve;});
   await context.addInitScript(lang=>localStorage.setItem('rangerbook-language',lang),locale);
   await context.route('**/*',route=>{
    const url=new URL(route.request().url());
@@ -16,6 +18,8 @@ const blocked=new Set(['res/v2/rangers.json','res/v2/abilities.json','res/v2/loc
    if(url.origin!==base)return route.abort();
    let name=decodeURIComponent(url.pathname).replace(/^\//,'');if(name.endsWith('/'))name+='index.html';
    requests.push(name);
+   if(holdBackground && ['res/v2/rangers.json','res/v2/abilities.json'].includes(name))
+     return backgroundGate.then(()=>route.fulfill({contentType:'application/json',body:read(name)}));
    if(blocked.has(name))return route.fulfill({status:503,body:'large data deliberately unavailable'});
    if(!fs.existsSync(path.join(root,name)))return route.fulfill({status:404,body:''});
    const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
@@ -32,10 +36,20 @@ const blocked=new Set(['res/v2/rangers.json','res/v2/abilities.json','res/v2/loc
   assert.deepEqual(errors,[]);
   console.log(`FAST_DETAIL_OK ${locale} ${Date.now()-start}ms without full data or animation host`);
   requests.length=0;
+  holdBackground=locale==='en';
   await page.goto(base+'/ranger/ranger/',{waitUntil:'domcontentloaded'});
   await page.locator('.ranger-card').first().waitFor({timeout:10000});
   assert.equal(await page.locator('.ranger-card').count(),60,'Preview displays the real page of characters');
   assert.ok(requests.includes('res/v2/fast/ranger-list.json'));
+  if(holdBackground) {
+    await page.locator('#typeFilter').selectOption('敏捷型');
+    await page.locator('#paginationNext').click();
+    const firstId=await page.locator('.ranger-card').first().getAttribute('data-ranger-id');
+    releaseBackground();
+    await page.waitForFunction(()=>!document.querySelector('#rangerAdvancedToggleBtn').disabled);
+    assert.equal(await page.locator('#typeFilter').inputValue(),'敏捷型','Background completion preserves selected filters');
+    assert.equal(await page.locator('.ranger-card').first().getAttribute('data-ranger-id'),firstId,'Background completion preserves the current page');
+  }
   await context.close();
  }}finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

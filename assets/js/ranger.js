@@ -491,7 +491,7 @@
     renderPaginationBar("bottomPagination", total, totalPages, start, end);
   }
 
-  function applyFilters() {
+  function applyFilters(resetPage=true) {
     if (isDetailPage) return;
     const query = els.search?.value.trim().toLowerCase() || "";
     const selectedSkillEffect = text(els.skillEffect?.value);
@@ -514,7 +514,7 @@
       if (selectedTalentEffect && !talent.effects.includes(selectedTalentEffect)) return false;
       return true;
     });
-    state.page = 1;
+    if(resetPage)state.page = 1;
     renderList();
   }
 
@@ -1072,7 +1072,7 @@
           fillSelect(els.star,state.rows.map(row=>row.ranger['Ranger星數']));
           fillSelect(els.type,state.rows.map(row=>row.ranger['類型']));
           fillSelect(els.element,state.rows.map(row=>row.ranger['屬性']));
-          if(els.advancedToggle)els.advancedToggle.disabled=true;
+          if(els.advancedToggle){els.advancedToggle.disabled=true;els.advancedToggle.setAttribute('aria-busy','true');}
           if(els.special)els.special.disabled=true;
           renderList();
           // Let the small preview paint before requesting full filter data.
@@ -1106,13 +1106,14 @@
       fillSelect(els.abilityEffect, state.rows.flatMap((row) => abilityFilterValues(row.ranger)), "能力");
       fillSelect(els.talentCondition, state.rows.flatMap((row) => talentSearchCategories(row.ranger).conditions), "才能條件");
       fillSelect(els.talentEffect, state.rows.flatMap((row) => talentSearchCategories(row.ranger).effects), "才能效果");
-      if(els.advancedToggle)els.advancedToggle.disabled=false;
+      if(els.advancedToggle){els.advancedToggle.disabled=false;els.advancedToggle.removeAttribute('aria-busy');}
       if(els.special)els.special.disabled=false;
-      applyFilters();
+      applyFilters(false);
     } catch (error) {
       if (isDetailPage && detailPage) {
         detailPage.status.textContent = "角色資料載入失敗，請稍後再試。";
       } else if (els.list && state.preview) {
+        els.advancedToggle?.removeAttribute('aria-busy');
         const notice=document.createElement('p');notice.className='empty-state small';notice.setAttribute('role','status');
         notice.textContent=window.RangerbookI18n?.t('site.ranger.partialFilters','進階篩選資料載入失敗，請重新載入頁面。') || '進階篩選資料載入失敗，請重新載入頁面。';
         els.list.before(notice);
