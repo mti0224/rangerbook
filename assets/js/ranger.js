@@ -377,7 +377,10 @@
     if (!select) return;
     const unique = [...new Set(values.map(text).filter((value) => !isNone(value)))]
       .sort((a, b) => a.localeCompare(b, "zh-Hant"));
-    const first = label ? window.RangerbookI18n.format("site.ranger.allFilter",[window.RangerbookI18n.uiText(label)],`全部${label}`) : "全部";
+    const sourceLabel = label ? `全部${label}` : "全部";
+    const knownLabel = window.RangerbookI18n.uiText(sourceLabel);
+    const first = knownLabel !== sourceLabel || !label ? knownLabel
+      : window.RangerbookI18n.format("site.ranger.allFilter",[window.RangerbookI18n.uiText(label)],sourceLabel);
     select.innerHTML = `<option value="">${html(first)}</option>`
       + unique.map((value) => `<option value="${html(value)}">${html(value)}</option>`).join("");
   }
