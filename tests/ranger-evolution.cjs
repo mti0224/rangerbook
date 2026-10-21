@@ -12,7 +12,8 @@ for (const edge of snapshot.edges) {
   assert.notEqual(edge.from, edge.to);
 }
 assert.equal(snapshot.edges.length, new Set(snapshot.edges.map(e=>e.from+'|'+e.to)).size);
-async function fixture(rows, edges, fail=false) {
+async function fixture(rows, edges, fail=false, embedded=false) {
+  if(!embedded)rows=rows.map(({evolutionTargets,...row})=>row);
   const window = {RangerbookV2:{data:async()=>({rangers:rows}),render:key=>key,locale:'en'}};
   const fetch = async () => {if(fail)throw new Error('offline');return {json:async()=>({edges})};};
   vm.runInNewContext(fs.readFileSync(path.join(root,'assets/js/ranger-evolution.js'),'utf8'),{
@@ -31,7 +32,7 @@ async function fixture(rows, edges, fail=false) {
   assert.ok(rendered.includes('/rangerbook/ranger/ranger/?detail=u1627e-cony'));
   assert.ok(!chain.includes('u1628e-cony'),'same-name Rangers must never be inferred');
   // Embedded official relationships override the older rollout snapshot.
-  const embedded = await fixture(records.map(row=>({...row,evolutionTargets:[]})),snapshot.edges,true);
+  const embedded = await fixture(records.map(row=>({...row,evolutionTargets:[]})),snapshot.edges,true,true);
   assert.equal(embedded.stages('u1626u-cony').length,1);
   assert.ok(embedded.render({ranger_id:'u1626u-cony'}).includes('官方資料無其他進化階段。'));
   // Official cycles must not hang the viewer, and missing targets cannot make broken links.

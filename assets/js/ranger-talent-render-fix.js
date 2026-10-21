@@ -97,7 +97,7 @@
 
   function loadRows() {
     if (!rowsPromise) {
-      rowsPromise = fetch(DATA_URL)
+      rowsPromise = (window.RangerbookV2?.rangerPageRows ? window.RangerbookV2.rangerPageRows().then(rows => ({ok:true,json:async()=>rows})) : fetch(DATA_URL))
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();

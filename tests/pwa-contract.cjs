@@ -28,6 +28,8 @@ async function verifier() {
  vm.runInNewContext(read('assets/js/pwa-data.js').toString(),ctx);
  assert.equal(calls.length,0,'No eager release or data download');
  assert.ok((await ctx.window.fetch('https://test/res/v2/abilities.json')).ok);
+ await Promise.all([ctx.window.fetch('https://test/res/v2/abilities.json'),ctx.window.fetch('https://test/res/v2/abilities.json')]);
+ assert.equal(calls.filter(name=>name==='res/v2/abilities.json').length,1,'Concurrent and repeated verified data reads share one transfer');
  assert.ok(calls.includes('pwa-data.json'));
  const bad={...metadata,files:{...metadata.files,'res/v2/rangers.json':{hash:'wrong'}}};
  const fetch=async input=>new Response(new URL(input).pathname==='/pwa-data.json'?JSON.stringify(bad):read(new URL(input).pathname.slice(1)));
@@ -36,3 +38,4 @@ async function verifier() {
  assert.ok(events.some(e=>e.detail.kind==='data-unavailable'));
 }
 verifier().then(()=>console.log('PWA_CONTRACT_OK manifest/icons/all HTML entries/four locales/release hashes/first-visit integrity')).catch(e=>{console.error(e);process.exitCode=1;});
+

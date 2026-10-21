@@ -999,5 +999,12 @@
     "en": "Evolution stages are temporarily unavailable.",
     "th": "ไม่สามารถโหลดข้อมูลขั้นวิวัฒนาการได้ในขณะนี้",
     "jp": "進化段階のデータを現在読み込めません。"
+  },
+  {
+    "key": "UI:site.ranger.partialFilters",
+    "zh_TW": "進階篩選資料載入失敗，請重新載入頁面。",
+    "en": "Advanced filters could not load. Please reload this page.",
+    "th": "ไม่สามารถโหลดตัวกรองขั้นสูงได้ โปรดโหลดหน้านี้ใหม่",
+    "jp": "詳細フィルターを読み込めませんでした。ページを再読み込みしてください。"
   }
 ]

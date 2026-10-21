@@ -282,6 +282,8 @@
   }
   function lookup(kind,key,original) {
     if (locale === "zh-Hant") return original;
+    const v2=window.RangerbookV2,ref=kind+':'+key;
+    if(v2?.catalog?.has(ref))return v2.render(ref,v2.locale);
     const result = gameData[locale];
     return result?.official?.[kind]?.[key] || original;
   }

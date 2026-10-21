@@ -31,7 +31,7 @@
 
   async function loadRangerMap() {
     if (state.rangerMap) return state.rangerMap;
-    const res = await fetch(DATA_URL);
+    const res = await (window.RangerbookV2?.rangerPageRows ? window.RangerbookV2.rangerPageRows().then(rows => ({ok:true,json:async()=>rows})) : fetch(DATA_URL));
     const rows = res.ok ? await res.json() : [];
     state.rangerMap = new Map();
     if (Array.isArray(rows)) {
@@ -68,3 +68,4 @@
 
   document.addEventListener("DOMContentLoaded", () => updateCards());
 })();
+

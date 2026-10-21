@@ -90,20 +90,21 @@ const detailRoute = name => /^gear\/[^/]+\/?$/.test(name) ||
   /^endless\/stage\/end\d+\/?$/i.test(name) || /^mainstage\/(hard|extreme)\/stage\/(hs|es)\d+\/?$/i.test(name);
 async function resource(name,request,isData,event) {
   const table=isData?RELEASE.data:RELEASE.core, cacheName=isData?DATA:CORE;
+  // A release hash identifies immutable bytes. Never wait ten seconds for the
+  // network when this exact verified release is already stored locally.
+  const cache=await caches.open(cacheName), cached=await cache.match(absolute(name));
+  if(cached && await verified(cached,table[name])) return cached;
+  if(cached) await cache.delete(absolute(name));
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),10000);
   try {
-    const response=await fetch(new Request(absolute(name),{cache:'no-store',credentials:'omit',signal:controller.signal}));
+    const versioned=new URL(absolute(name));versioned.search='?rb-v='+table[name].hash;
+    const response=await fetch(new Request(versioned,{cache:'force-cache',credentials:'omit',signal:controller.signal}));
     if(await verified(response,table[name])) {
       event.waitUntil(put(cacheName,name,response.clone()));return response;
     }
     event.waitUntil(notify('update-required'));
   } catch(_) {} finally {clearTimeout(timer);}
-  const cache=await caches.open(cacheName), cached=await cache.match(absolute(name));
-  // Cache entries are checked again: corrupted/partial snapshots never get used.
-  if(cached && await verified(cached,table[name])) {
-    event.waitUntil(notify(isData?'cached-data':'cached-page'));return cached;
-  }
   if(request.mode==='navigate') return (await caches.open(CORE)).match(absolute('offline.html'));
   event.waitUntil(notify(isData?'data-unavailable':'update-required'));
   return new Response(JSON.stringify({error:'RANGERBOOK_OFFLINE_OR_RELEASE_MISMATCH'}),{status:503,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});

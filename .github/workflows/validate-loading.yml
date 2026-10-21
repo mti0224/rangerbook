@@ -1,0 +1,24 @@
+name: Validate loading performance
+on:
+  pull_request:
+    paths:
+      - 'assets/js/v2-data.js'
+      - 'assets/js/pwa-data.js'
+      - 'assets/js/ranger*.js'
+      - 'assets/pwa/service-worker.js'
+      - 'scripts/build-*.mjs'
+      - 'tests/fast-data.cjs'
+      - 'tests/loading-performance.cjs'
+      - '.github/workflows/validate-loading.yml'
+jobs:
+  loading:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/build-pwa.mjs
+      - run: node tests/fast-data.cjs && node tests/pwa-contract.cjs && node tests/pwa-worker.cjs
+      - run: npm install --no-save playwright && npx playwright install --with-deps chromium
+      - run: node tests/loading-performance.cjs

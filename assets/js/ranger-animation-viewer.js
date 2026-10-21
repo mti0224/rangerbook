@@ -174,7 +174,9 @@
 
   function loadProjectileData() {
     if (!state.projectileDataPromise) {
-      state.projectileDataPromise = fetch(PROJECTILE_DATA_URL)
+      state.projectileDataPromise = (window.RangerbookV2?.rangerPageProjectiles
+        ? window.RangerbookV2.rangerPageProjectiles().then(data=>({ok:true,json:async()=>data}))
+        : fetch(PROJECTILE_DATA_URL))
         .then((response) => (response.ok ? response.json() : null))
         .catch(() => null);
     }
@@ -1695,3 +1697,4 @@ function publishPlaybackPlan(section, track) {
     if (event.target?.id === "rangerModalCloseBtn" || event.target?.id === "rangerModal") stopPlayback();
   });
 })();
+
