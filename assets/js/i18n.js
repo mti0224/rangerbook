@@ -124,8 +124,6 @@
     if (!localeInitialized) return original;
     original = displayBreaks(original);
     if (locale === "zh-Hant") return original;
-    const exact = window.RangerbookV2?.translateText(original);
-    if (exact && exact !== original) return displayBreaks(exact);
     const cleaned = original.replace(/\s+/g, " ").trim();
     if (!cleaned) return original;
     // User-specified evolution naming takes precedence over old generic UI copies.
@@ -133,6 +131,8 @@
     if (hyper && locale === "en") return "Hyper " + hyper[1] + " Stars";
     const ultra = cleaned.match(/^(?:終極進化|究極進化)\s*(\d+)\s*星$/);
     if (ultra && locale === "en") return "Ultra " + ultra[1] + " Stars";
+    const exact = window.RangerbookV2?.translateText(original);
+    if (exact && exact !== original) return displayBreaks(exact);
     const direct = englishByChinese.get(cleaned);
     if (direct) return direct;
     const gameTerm = gameTermsByChinese.get(cleaned) || officialByChinese.get(cleaned);
