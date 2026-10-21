@@ -1,4 +1,5 @@
 (() => {
+  const ui = value => window.RangerbookI18n?.uiText(value) || value;
   const ADMIN_MODE_KEY = "rangerbook-admin-mode";
   const DATA_URL = "https://pvp-data.warmycat.com/usage.json";
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
@@ -122,7 +123,7 @@
       ctx.font = `800 31px ${FONT_FAMILY}`;
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
-      ctx.fillText(`${numberFormat.format(count)} 次`, countX, countY);
+      ctx.fillText(ui(`${numberFormat.format(count)} 次`), countX, countY);
     });
 
     return canvas;
@@ -160,7 +161,7 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (error) {
       console.error("PvP Top 20 image export failed:", error);
-      alert("前 20 名角色圖片產生失敗，請重新整理後再試。");
+      alert(ui("前 20 名角色圖片產生失敗，請重新整理後再試。"));
     } finally {
       button.disabled = false;
       button.textContent = previousText;

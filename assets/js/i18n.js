@@ -215,22 +215,29 @@
         }
       }
       const ariaKey = node.getAttribute("data-i18n-aria-label");
-      if (ariaKey && dictionary[ariaKey] !== undefined) node.setAttribute("aria-label",dictionary[ariaKey]);
+      if (ariaKey && dictionary[ariaKey] !== undefined && node.getAttribute("aria-label") !== dictionary[ariaKey]) node.setAttribute("aria-label",dictionary[ariaKey]);
       const inputKey = node.getAttribute("data-i18n-placeholder");
-      if (inputKey && dictionary[inputKey] !== undefined) node.setAttribute("placeholder",dictionary[inputKey]);
+      if (inputKey && dictionary[inputKey] !== undefined && node.getAttribute("placeholder") !== dictionary[inputKey]) node.setAttribute("placeholder",dictionary[inputKey]);
     }
     autoTranslate(rootNode);
     document.documentElement.lang = locale === "jp" ? "ja" : locale;
   }
   async function loadUi(selected) {
     try {
-      const [baseResult,pwaResult] = await Promise.allSettled([
+      const [baseResult,pwaResult,overridesResult] = await Promise.allSettled([
         json(root + "assets/locales/ui.json?v=20261018-team-overview2"),
-        json(root + "assets/locales/pwa.json")
+        json(root + "assets/locales/pwa.json"),
+        json(root + "assets/locales/sitewide-overrides.json?v=20261021-1")
       ]);
       const all = baseResult.status === "fulfilled" ? baseResult.value : {};
       const pwa = pwaResult.status === "fulfilled" ? pwaResult.value : {};
       for (const lang of supported) all[lang] = {...all[lang],...pwa[lang]};
+      if (overridesResult.status === "fulfilled") {
+        for (const row of overridesResult.value) for (const lang of supported) {
+          const value=row[lang === "zh-Hant" ? "zh_TW" : lang];
+          if (value) all[lang][row.key.replace(/^UI:/,"")]=value;
+        }
+      }
       if (selected !== locale) return;
       const baseline = all["zh-Hant"] || {};
       dictionary = Object.fromEntries(Object.entries(Object.assign({}, baseline, all[selected] || {}))
@@ -315,6 +322,14 @@
       });
     },
     readyGame, lookup, matchOfficial,
+    display(record, field, original) {
+      const ref = record?.__v2?.[field];
+      // Identical Chinese descriptions may have different official translations.
+      // Use the bound record key instead of guessing from its visible text.
+      return ref && window.RangerbookV2
+        ? displayBreaks(window.RangerbookV2.render(ref, window.RangerbookV2.locale))
+        : uiText(original);
+    },
     custom(key, original) {
       return gameTermsByKey.get(key) || gameData[locale]?.custom?.[key] || original;
     },
@@ -350,7 +365,9 @@
   }
   const observer = new MutationObserver(mutations => {
     for (const record of mutations) {
-      if (record.type === "characterData") {
+      if (record.type === "attributes") {
+        pending.add(record.target);
+      } else if (record.type === "characterData") {
         pending.add(record.target);
       } else for (const node of record.addedNodes) {
         if (node.nodeType === 1 || node.nodeType === 3) pending.add(node);
@@ -361,5 +378,7 @@
       queueMicrotask(flush);
     }
   });
-  observer.observe(document.documentElement, {subtree:true,childList:true,characterData:true});
+  observer.observe(document.documentElement, {subtree:true,childList:true,characterData:true,
+    attributes:true,attributeFilter:[...uiAttrNames,"data-i18n","data-i18n-placeholder","data-i18n-aria-label"]});
 })();
+

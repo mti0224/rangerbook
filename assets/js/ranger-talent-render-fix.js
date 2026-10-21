@@ -1,4 +1,5 @@
 (() => {
+  const display = (record, field, value) => window.RangerbookI18n?.display?.(record,field,value) ?? value;
   const DATA_URL = "../res/Rangers_data.json";
   const ANIMATION_META_BASE = "https://res.warmycat.com/animation_meta/";
   const ANIMATION_INDEX_URL = `${ANIMATION_META_BASE}index.json`;
@@ -192,11 +193,11 @@
   }
 
   function skillName(skill, index) {
-    return text(skill?.["技能名稱"] || skill?.["名稱"] || skill?.name) || `技能 ${index + 1}`;
+    return text(display(skill,"nameKey",skill?.["技能名稱"] || skill?.["名稱"] || skill?.name)) || `技能 ${index + 1}`;
   }
 
   function skillDescription(skill) {
-    return text(skill?.["技能敘述"] || skill?.["技能說明"] || skill?.["敘述"] || skill?.["描述"] || skill?.description || "");
+    return text(display(skill,"descriptionKey",skill?.["技能敘述"] || skill?.["技能說明"] || skill?.["敘述"] || skill?.["描述"] || skill?.description || ""));
   }
 
   function renderSkillCard(skill, index, animationMeta) {
@@ -283,7 +284,7 @@
     return `
       <article class="ranger-talent-card">
         ${talentTitle(title)}
-        ${desc ? `<p class="preline">${html(desc)}</p>` : ""}
+        ${desc ? `<p class="preline">${html(display(content,"descriptionKey",desc))}</p>` : ""}
         ${conditionTable}
         ${gainTable}
       </article>

@@ -1,4 +1,7 @@
 (() => {
+  const ui = value => window.RangerbookI18n?.uiText(value) || value;
+  const f = (key,args,fallback) => window.RangerbookI18n?.format("site."+key,args,fallback) || fallback;
+  const escapeHtml = value => String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
   const INDEX_URL = "https://pvp-data.warmycat.com/history/index.json";
   const BASE_URL = "https://pvp-data.warmycat.com/history/";
   const ID_DICT_URL = "../../res/id_dict.json";
@@ -33,9 +36,9 @@
 
   function rangerName(id) {
     const value = rangerNames[id];
-    if (typeof value === "string") return value;
-    if (value && typeof value === "object") return value.name || value["名稱"] || id;
-    return id;
+    const name = typeof value === "string" ? value
+      : value && typeof value === "object" ? value.name || value["名稱"] || id : id;
+    return window.RangerbookI18n?.unitName(id,name) || name;
   }
 
   function normalizeSnapshot(raw) {
@@ -122,7 +125,7 @@
       <span class="pvp-history-chip" style="border-left:5px solid ${SERIES_COLORS[index]}">
         <img src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.remove()">
         <span>${rangerName(id)}</span>
-        <button type="button" data-remove-id="${id}" aria-label="移除 ${rangerName(id)}">×</button>
+        <button type="button" data-remove-id="${id}" aria-label="${escapeHtml(f("history.remove",[rangerName(id)],`移除 ${rangerName(id)}`))}">×</button>
       </span>`).join("");
   }
 
@@ -245,7 +248,7 @@
       ctx.fillStyle = textColor;
       ctx.textAlign = "center";
       ctx.font = "15px system-ui, sans-serif";
-      ctx.fillText(!data.length ? "尚無歷史資料" : "請加入至少一名角色", width / 2, height / 2);
+      ctx.fillText(ui(!data.length ? "尚無歷史資料" : "請加入至少一名角色"), width / 2, height / 2);
     }
   }
 
@@ -276,7 +279,7 @@
       return;
     }
 
-    el.tooltip.innerHTML = `<strong>${rangerName(nearest.id)}</strong><br>${nearest.date}<br>使用次數：${nearest.value}<br>有效樣本：${nearest.sampleCount ?? "-"}`;
+    el.tooltip.innerHTML = `<strong>${rangerName(nearest.id)}</strong><br>${nearest.date}<br>${escapeHtml(ui(`使用次數：${nearest.value}`))}<br>${escapeHtml(window.RangerbookI18n?.format("site.history.samples",[nearest.sampleCount ?? "-"],`有效樣本：${nearest.sampleCount ?? "-"}`) || `有效樣本：${nearest.sampleCount ?? "-"}`)}`;
     el.tooltip.hidden = false;
     el.tooltip.style.left = `${Math.min(rect.width - 270, Math.max(4, nearest.x + 12))}px`;
     el.tooltip.style.top = `${Math.max(4, nearest.y - 70)}px`;
@@ -308,9 +311,9 @@
   el.canvas.addEventListener("mouseleave", () => { el.tooltip.hidden = true; });
   window.addEventListener("resize", () => requestAnimationFrame(drawChart));
 
-  loadHistory().catch((error) => {
+  (async () => { await window.RangerbookI18n?.ready; await loadHistory(); })().catch((error) => {
     console.error(error);
-    setStatus(`無法載入歷史資料：${error.message}`, true);
+    setStatus(f("history.loadError",[ui(error.message)],`無法載入歷史資料：${error.message}`), true);
     drawChart();
   });
 })();

@@ -1,4 +1,5 @@
 (() => {
+  const display = (record, field, value) => window.RangerbookI18n?.display?.(record,field,value) ?? value;
   const DATA_URL = "../res/hsEnemy_data.json";
   const ABILITY_DATA_URL = "../res/%E8%83%BD%E5%8A%9B.json";
   const ENEMY_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
@@ -441,14 +442,14 @@
 
   function renderAbilityCard(ability) {
     const detail = ability.detail;
-    const description = text(detail?.["敘述"] || "");
+    const description = text(display(detail,"descriptionKey",detail?.["敘述"] || ""));
     const icon = ability.icon || detail?.icon || "";
     return `
       <article class="ranger-ability-card">
         <div class="ranger-icon-title">
           ${icon ? `<img class="small-icon" src="${ABILITY_ICON(icon)}" alt="" onerror="this.remove();">` : ""}
           <div>
-            <h4>${escapeHtml(ability.name)}</h4>
+            <h4>${escapeHtml(display(ability.detail,"nameKey",ability.name))}</h4>
             ${description && description !== "無" && description !== "(無)" ? `<p class="preline">${escapeHtml(description)}</p>` : ""}
           </div>
         </div>
@@ -543,3 +544,4 @@
 
   init();
 })();
+

@@ -109,7 +109,7 @@
         }
         if (list.querySelector(".empty-state")) {
           phase = 3;
-          status.textContent = `找不到裝備 ID：${detailId}`;
+          status.textContent = window.RangerbookI18n.format("site.gear.missing",[detailId],`找不到裝備 ID：${detailId}`);
         }
       }
     }
@@ -136,3 +136,4 @@
     if (modalContent.dataset.renderedGearId) revealDetail(modalContent.dataset.renderedGearId);
   }
 })();
+

@@ -1,4 +1,5 @@
 (() => {
+  const display = (record, field, value) => window.RangerbookI18n?.display?.(record,field,value) ?? value;
   const currentScript = document.currentScript;
   const scriptBaseUrl = currentScript?.src || window.location.href;
   const path = window.location.pathname;
@@ -376,7 +377,7 @@
     if (!select) return;
     const unique = [...new Set(values.map(text).filter((value) => !isNone(value)))]
       .sort((a, b) => a.localeCompare(b, "zh-Hant"));
-    const first = label ? `全部${label}` : "全部";
+    const first = label ? window.RangerbookI18n.format("site.ranger.allFilter",[window.RangerbookI18n.uiText(label)],`全部${label}`) : "全部";
     select.innerHTML = `<option value="">${html(first)}</option>`
       + unique.map((value) => `<option value="${html(value)}">${html(value)}</option>`).join("");
   }
@@ -632,7 +633,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4><span data-i18n="copy.skills">技能</span> ${index + 1}：${html(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能名稱"] || "未命名技能") || skill["技能名稱"] || "未命名技能")}</h4>${description(window.RangerbookI18n?.matchOfficial("SKILL", skill["技能敘述"]) || skill["技能敘述"], "ranger-skill-description")}</div>
+          <div><h4><span data-i18n="copy.skills">技能</span> ${index + 1}：${html(display(skill,"nameKey",skill["技能名稱"] || "未命名技能"))}</h4>${description(display(skill,"descriptionKey",skill["技能敘述"]), "ranger-skill-description")}</div>
         </div>
         ${skillMetaTable(skill, animationMeta, index)}
         ${skillTable(skill)}
@@ -666,7 +667,7 @@
       <article class="ranger-ability-card">
         <div class="ranger-icon-title">
           ${ability.icon ? `<img class="small-icon" src="${ABILITY_ICON(ability.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>${html(window.RangerbookI18n?.matchOfficial("ABILITY", ability.name) || ability.name)}</h4>${description(window.RangerbookI18n?.matchOfficial("ABILITY", ability.detail?.["敘述"]) || ability.detail?.["敘述"], "preline")}</div>
+          <div><h4>${html(display(ability.detail,"nameKey",ability.name))}</h4>${description(display(ability.detail,"descriptionKey",ability.detail?.["敘述"]), "preline")}</div>
         </div>
         ${abilityTable(abilityEffects(ability.detail))}
       </article>`).join("")}</div>`;
@@ -707,7 +708,7 @@
           <tbody>${effects.map((effect) => `<tr><td class="talent-prob-cell">${html(effect.probability || "-")}</td><td>${html(effect.effect || "-")}</td></tr>`).join("")}</tbody>
         </table>
       </div>` : "";
-    return `<article class="ranger-talent-card">${talentTitle(title, true)}${description(talentDescription, "ranger-talent-description")}${conditionTable}${effectTable}</article>`;
+    return `<article class="ranger-talent-card">${talentTitle(title, true)}${description(display(content,"descriptionKey",talentDescription), "ranger-talent-description")}${conditionTable}${effectTable}</article>`;
   }
 
   function renderBoostTalent(title, content) {
@@ -1052,7 +1053,7 @@
 
       if (isDetailPage) {
         const found = await openRanger(detailId);
-        if (!found && detailPage) detailPage.status.textContent = `找不到角色 ID：${detailId}`;
+        if (!found && detailPage) detailPage.status.textContent = window.RangerbookI18n.format("site.ranger.missing",[detailId],`找不到角色 ID：${detailId}`);
         return;
       }
 
@@ -1082,3 +1083,4 @@
   setupEvents();
   init();
 })();
+

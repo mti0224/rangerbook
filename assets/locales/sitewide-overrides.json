@@ -1,0 +1,968 @@
+[
+  {
+    "key": "UI:site.gear.detailTitle",
+    "zh_TW": "裝備詳細資料",
+    "en": "Equipment Details",
+    "th": "รายละเอียดอุปกรณ์",
+    "jp": "装備詳細"
+  },
+  {
+    "key": "UI:site.gear.detailIntro",
+    "zh_TW": "查詢裝備的完整數據。",
+    "en": "View complete equipment stats.",
+    "th": "ดูค่าสถานะอุปกรณ์ทั้งหมด",
+    "jp": "装備のすべてのデータを確認できます。"
+  },
+  {
+    "key": "UI:site.gear.detailDocument",
+    "zh_TW": "裝備詳細資料｜LINE Rangers Database",
+    "en": "Equipment Details｜LINE Rangers Database",
+    "th": "รายละเอียดอุปกรณ์｜LINE Rangers Database",
+    "jp": "装備詳細｜LINE Rangers Database"
+  },
+  {
+    "key": "UI:site.gear.back",
+    "zh_TW": "返回裝備列表",
+    "en": "Back to equipment",
+    "th": "กลับสู่รายการอุปกรณ์",
+    "jp": "装備一覧に戻る"
+  },
+  {
+    "key": "UI:site.gear.loading",
+    "zh_TW": "裝備資料載入中…",
+    "en": "Loading equipment…",
+    "th": "กำลังโหลดข้อมูลอุปกรณ์…",
+    "jp": "装備データを読み込み中…"
+  },
+  {
+    "key": "UI:site.common.loadFailed",
+    "zh_TW": "資料載入失敗",
+    "en": "Unable to load data",
+    "th": "โหลดข้อมูลไม่สำเร็จ",
+    "jp": "データを読み込めませんでした"
+  },
+  {
+    "key": "UI:site.gear.loadFailed",
+    "zh_TW": "裝備資料載入失敗，請稍後再試。",
+    "en": "Unable to load equipment. Please try again later.",
+    "th": "โหลดข้อมูลอุปกรณ์ไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "jp": "装備データを読み込めませんでした。しばらくしてから再試行してください。"
+  },
+  {
+    "key": "UI:site.ranger.detailDocument",
+    "zh_TW": "角色詳細資料｜LINE Rangers Database",
+    "en": "Ranger Details｜LINE Rangers Database",
+    "th": "รายละเอียดเรนเจอร์｜LINE Rangers Database",
+    "jp": "レンジャー詳細｜LINE Rangers Database"
+  },
+  {
+    "key": "UI:site.ranger.loadFailed",
+    "zh_TW": "角色資料載入失敗，請稍後再試。",
+    "en": "Unable to load Rangers. Please try again later.",
+    "th": "โหลดข้อมูลเรนเจอร์ไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "jp": "レンジャーデータを読み込めませんでした。しばらくしてから再試行してください。"
+  },
+  {
+    "key": "UI:site.ranger.fullLoadFailed",
+    "zh_TW": "角色完整資料載入失敗。",
+    "en": "Unable to load full Ranger data.",
+    "th": "โหลดข้อมูลเรนเจอร์ทั้งหมดไม่สำเร็จ",
+    "jp": "レンジャーの詳細データを読み込めませんでした。"
+  },
+  {
+    "key": "UI:site.ranger.unnamed",
+    "zh_TW": "未命名角色",
+    "en": "Unnamed Ranger",
+    "th": "เรนเจอร์ไม่มีชื่อ",
+    "jp": "名前のないレンジャー"
+  },
+  {
+    "key": "UI:site.enemy.unnamed",
+    "zh_TW": "未命名敵人",
+    "en": "Unnamed enemy",
+    "th": "ศัตรูไม่มีชื่อ",
+    "jp": "名前のない敵"
+  },
+  {
+    "key": "UI:site.animation.preview",
+    "zh_TW": "角色動畫預覽",
+    "en": "Ranger animation preview",
+    "th": "ตัวอย่างแอนิเมชันเรนเจอร์",
+    "jp": "レンジャーアニメーションのプレビュー"
+  },
+  {
+    "key": "UI:site.animation.target.slotHyper",
+    "zh_TW": "賭徒兔兔的拉霸機（超進化）",
+    "en": "Gambler Cony's slot machine (Hyper)",
+    "th": "ตู้สล็อตของโคนี่นักพนัน (ไฮเปอร์)",
+    "jp": "ギャンブラーコニーのスロットマシン（ハイパー）"
+  },
+  {
+    "key": "UI:site.animation.target.slotNine",
+    "zh_TW": "賭徒兔兔的拉霸機（九星）",
+    "en": "Gambler Cony's slot machine (9 Stars)",
+    "th": "ตู้สล็อตของโคนี่นักพนัน (9 ดาว)",
+    "jp": "ギャンブラーコニーのスロットマシン（星9）"
+  },
+  {
+    "key": "UI:site.animation.target.statue",
+    "zh_TW": "紫衣詹姆士的雕像",
+    "en": "Purple James's statue",
+    "th": "รูปปั้นเจมส์ชุดม่วง",
+    "jp": "紫服ジェームズの像"
+  },
+  {
+    "key": "UI:site.animation.target.ghostHyper",
+    "zh_TW": "冥界熊大的幽魂鬼怪（超進化）",
+    "en": "Underworld Brown's ghost (Hyper)",
+    "th": "วิญญาณของบราวน์แห่งยมโลก (ไฮเปอร์)",
+    "jp": "冥界ブラウンの幽霊（ハイパー）"
+  },
+  {
+    "key": "UI:site.animation.target.ghostNine",
+    "zh_TW": "冥界熊大的幽魂鬼怪（九星）",
+    "en": "Underworld Brown's ghost (9 Stars)",
+    "th": "วิญญาณของบราวน์แห่งยมโลก (9 ดาว)",
+    "jp": "冥界ブラウンの幽霊（星9）"
+  },
+  {
+    "key": "UI:site.history.noSnapshots",
+    "zh_TW": "尚未建立任何每日歷史快照。",
+    "en": "No daily history snapshots yet.",
+    "th": "ยังไม่มีข้อมูลประวัติรายวัน",
+    "jp": "日別の履歴データはまだありません。"
+  },
+  {
+    "key": "UI:site.history.empty",
+    "zh_TW": "尚無歷史資料",
+    "en": "No history data yet",
+    "th": "ยังไม่มีข้อมูลประวัติ",
+    "jp": "履歴データはまだありません"
+  },
+  {
+    "key": "UI:site.history.addRanger",
+    "zh_TW": "請加入至少一名角色",
+    "en": "Add at least one Ranger",
+    "th": "โปรดเพิ่มเรนเจอร์อย่างน้อยหนึ่งตัว",
+    "jp": "レンジャーを1体以上追加してください"
+  },
+  {
+    "key": "UI:site.password.mismatch",
+    "zh_TW": "兩次輸入的新密碼不一致。",
+    "en": "The new passwords do not match.",
+    "th": "รหัสผ่านใหม่ทั้งสองครั้งไม่ตรงกัน",
+    "jp": "新しいパスワードが一致しません。"
+  },
+  {
+    "key": "UI:site.password.same",
+    "zh_TW": "新密碼不得與目前密碼相同。",
+    "en": "Your new password must differ from your current password.",
+    "th": "รหัสผ่านใหม่ต้องไม่เหมือนรหัสผ่านปัจจุบัน",
+    "jp": "新しいパスワードは現在のものと異なる必要があります。"
+  },
+  {
+    "key": "UI:site.password.updating",
+    "zh_TW": "更新密碼中…",
+    "en": "Updating password…",
+    "th": "กำลังเปลี่ยนรหัสผ่าน…",
+    "jp": "パスワードを更新中…"
+  },
+  {
+    "key": "UI:site.password.updated",
+    "zh_TW": "密碼已更新。其他裝置的登入狀態已登出，本裝置仍保持登入。",
+    "en": "Password updated. Other devices have been signed out; this device stays signed in.",
+    "th": "เปลี่ยนรหัสผ่านแล้ว อุปกรณ์อื่นออกจากระบบแล้ว แต่อุปกรณ์นี้ยังอยู่ในระบบ",
+    "jp": "パスワードを更新しました。他の端末はログアウトされ、この端末はログイン状態を維持します。"
+  },
+  {
+    "key": "UI:site.password.failed",
+    "zh_TW": "密碼更新失敗。",
+    "en": "Unable to update password.",
+    "th": "เปลี่ยนรหัสผ่านไม่สำเร็จ",
+    "jp": "パスワードを更新できませんでした。"
+  },
+  {
+    "key": "UI:site.auth.superAdmin",
+    "zh_TW": "最大管理者",
+    "en": "Super administrator",
+    "th": "ผู้ดูแลสูงสุด",
+    "jp": "最高管理者"
+  },
+  {
+    "key": "UI:site.auth.pending",
+    "zh_TW": "等待審核",
+    "en": "Pending approval",
+    "th": "รอการอนุมัติ",
+    "jp": "承認待ち"
+  },
+  {
+    "key": "UI:site.auth.approved",
+    "zh_TW": "已核准",
+    "en": "Approved",
+    "th": "อนุมัติแล้ว",
+    "jp": "承認済み"
+  },
+  {
+    "key": "UI:site.auth.rejected",
+    "zh_TW": "已拒絕",
+    "en": "Rejected",
+    "th": "ปฏิเสธแล้ว",
+    "jp": "却下済み"
+  },
+  {
+    "key": "UI:site.auth.pendingMessage",
+    "zh_TW": "你的管理員申請正在等待最大管理者審核。",
+    "en": "Your admin request is awaiting approval from a super administrator.",
+    "th": "คำขอสิทธิ์ผู้ดูแลของคุณกำลังรอผู้ดูแลสูงสุดอนุมัติ",
+    "jp": "管理者申請は最高管理者の承認待ちです。"
+  },
+  {
+    "key": "UI:site.auth.rejectedMessage",
+    "zh_TW": "你的管理員申請已被拒絕，目前維持非管理員權限。",
+    "en": "Your admin request was declined. Your account retains standard access.",
+    "th": "คำขอสิทธิ์ผู้ดูแลถูกปฏิเสธ บัญชีของคุณยังมีสิทธิ์ทั่วไป",
+    "jp": "管理者申請は却下されました。一般ユーザーの権限が維持されます。"
+  },
+  {
+    "key": "UI:site.auth.account",
+    "zh_TW": "此帳號",
+    "en": "this account",
+    "th": "บัญชีนี้",
+    "jp": "このアカウント"
+  },
+  {
+    "key": "UI:site.auth.loggingIn",
+    "zh_TW": "登入中…",
+    "en": "Signing in…",
+    "th": "กำลังเข้าสู่ระบบ…",
+    "jp": "ログイン中…"
+  },
+  {
+    "key": "UI:site.auth.mismatch",
+    "zh_TW": "兩次輸入的密碼不一致。",
+    "en": "The passwords do not match.",
+    "th": "รหัสผ่านทั้งสองครั้งไม่ตรงกัน",
+    "jp": "パスワードが一致しません。"
+  },
+  {
+    "key": "UI:site.auth.registering",
+    "zh_TW": "建立帳號中…",
+    "en": "Creating account…",
+    "th": "กำลังสร้างบัญชี…",
+    "jp": "アカウントを作成中…"
+  },
+  {
+    "key": "UI:site.auth.registered",
+    "zh_TW": "註冊成功，管理員申請已送出。請等待最大管理者審核後再登入查看權限。",
+    "en": "Account created and admin request submitted. Sign in after a super administrator reviews your request.",
+    "th": "สมัครสำเร็จและส่งคำขอสิทธิ์ผู้ดูแลแล้ว โปรดรอผู้ดูแลสูงสุดตรวจสอบก่อนเข้าสู่ระบบเพื่อดูสิทธิ์",
+    "jp": "登録が完了し、管理者申請を送信しました。最高管理者の審査後にログインして権限を確認してください。"
+  },
+  {
+    "key": "UI:site.auth.accountFormat",
+    "zh_TW": "帳號限 3–32 字元，只能使用英文字母、數字、底線、句點與連字號。",
+    "en": "Accounts must be 3–32 characters: letters, numbers, underscores, periods or hyphens.",
+    "th": "ชื่อบัญชีต้องยาว 3–32 ตัวอักษร ใช้ได้เฉพาะอักษรอังกฤษ ตัวเลข ขีดล่าง จุด และขีดกลาง",
+    "jp": "アカウント名は3～32文字で、英字・数字・アンダースコア・ピリオド・ハイフンのみ使用できます。"
+  },
+  {
+    "key": "UI:site.auth.passwordLength",
+    "zh_TW": "密碼長度必須為 10–128 字元。",
+    "en": "Passwords must be 10–128 characters.",
+    "th": "รหัสผ่านต้องยาว 10–128 ตัวอักษร",
+    "jp": "パスワードは10～128文字にしてください。"
+  },
+  {
+    "key": "UI:site.auth.notLoggedIn",
+    "zh_TW": "尚未登入。",
+    "en": "You are not signed in.",
+    "th": "ยังไม่ได้เข้าสู่ระบบ",
+    "jp": "ログインしていません。"
+  },
+  {
+    "key": "UI:site.auth.adminRequired",
+    "zh_TW": "需要管理員權限。",
+    "en": "Administrator access is required.",
+    "th": "ต้องมีสิทธิ์ผู้ดูแล",
+    "jp": "管理者権限が必要です。"
+  },
+  {
+    "key": "UI:site.auth.superRequired",
+    "zh_TW": "需要最大管理者權限。",
+    "en": "Super administrator access is required.",
+    "th": "ต้องมีสิทธิ์ผู้ดูแลสูงสุด",
+    "jp": "最高管理者権限が必要です。"
+  },
+  {
+    "key": "UI:site.auth.noUser",
+    "zh_TW": "找不到使用者。",
+    "en": "User not found.",
+    "th": "ไม่พบผู้ใช้",
+    "jp": "ユーザーが見つかりません。"
+  },
+  {
+    "key": "UI:site.auth.noSuperEdit",
+    "zh_TW": "不能透過此 API 修改最大管理者。",
+    "en": "Super administrators cannot be modified through this API.",
+    "th": "ไม่สามารถแก้ไขผู้ดูแลสูงสุดผ่าน API นี้",
+    "jp": "このAPIでは最高管理者を変更できません。"
+  },
+  {
+    "key": "UI:site.auth.exists",
+    "zh_TW": "此帳號已存在。",
+    "en": "This account already exists.",
+    "th": "บัญชีนี้มีอยู่แล้ว",
+    "jp": "このアカウントは既に存在します。"
+  },
+  {
+    "key": "UI:site.auth.credentials",
+    "zh_TW": "帳號或密碼錯誤。",
+    "en": "Incorrect account or password.",
+    "th": "ชื่อบัญชีหรือรหัสผ่านไม่ถูกต้อง",
+    "jp": "アカウント名またはパスワードが正しくありません。"
+  },
+  {
+    "key": "UI:site.auth.notAdmin",
+    "zh_TW": "此帳號目前不是管理員。",
+    "en": "This account is not currently an administrator.",
+    "th": "บัญชีนี้ไม่ได้เป็นผู้ดูแล",
+    "jp": "このアカウントは現在管理者ではありません。"
+  },
+  {
+    "key": "UI:site.traffic.noSource",
+    "zh_TW": "尚未設定 GA4 資料來源",
+    "en": "No GA4 data source configured",
+    "th": "ยังไม่ได้ตั้งค่าแหล่งข้อมูล GA4",
+    "jp": "GA4のデータソースが設定されていません"
+  },
+  {
+    "key": "UI:site.traffic.noViews",
+    "zh_TW": "這個日期範圍尚無每日瀏覽資料",
+    "en": "No daily view data for this date range",
+    "th": "ไม่มีข้อมูลยอดเข้าชมรายวันในช่วงวันที่นี้",
+    "jp": "この期間の日別閲覧データはありません"
+  },
+  {
+    "key": "UI:site.traffic.noSources",
+    "zh_TW": "這個日期範圍尚無流量來源資料",
+    "en": "No traffic source data for this date range",
+    "th": "ไม่มีข้อมูลแหล่งที่มาของการเข้าชมในช่วงวันที่นี้",
+    "jp": "この期間の流入元データはありません"
+  },
+  {
+    "key": "UI:site.traffic.other",
+    "zh_TW": "其他",
+    "en": "Other",
+    "th": "อื่น ๆ",
+    "jp": "その他"
+  },
+  {
+    "key": "UI:site.traffic.cacheRead",
+    "zh_TW": "流量快取無法讀取",
+    "en": "Unable to read cached traffic data",
+    "th": "อ่านข้อมูลการเข้าชมที่เก็บไว้ไม่สำเร็จ",
+    "jp": "閲覧データのキャッシュを読み込めません"
+  },
+  {
+    "key": "UI:site.traffic.cacheInvalid",
+    "zh_TW": "流量快取內容無效",
+    "en": "Invalid cached traffic data",
+    "th": "ข้อมูลการเข้าชมที่เก็บไว้ไม่ถูกต้อง",
+    "jp": "閲覧データのキャッシュが無効です"
+  },
+  {
+    "key": "UI:site.traffic.days",
+    "zh_TW": "只支援 7、30、90 天",
+    "en": "Only 7, 30 or 90 days are supported",
+    "th": "รองรับเฉพาะ 7, 30 หรือ 90 วัน",
+    "jp": "7日・30日・90日のみ対応しています"
+  },
+  {
+    "key": "UI:site.resources.invalid",
+    "zh_TW": "資源更新紀錄格式錯誤。",
+    "en": "Invalid resource update log format.",
+    "th": "รูปแบบบันทึกการอัปเดตทรัพยากรไม่ถูกต้อง",
+    "jp": "リソース更新履歴の形式が正しくありません。"
+  },
+  {
+    "key": "UI:site.pvp.noUsage",
+    "zh_TW": "角色使用率資料尚未產生或目前無法載入。",
+    "en": "Ranger usage data is not available yet or could not be loaded.",
+    "th": "ยังไม่มีข้อมูลอัตราการใช้งานเรนเจอร์ หรือโหลดไม่ได้ในขณะนี้",
+    "jp": "レンジャー使用率データがまだないか、現在読み込めません。"
+  },
+  {
+    "key": "UI:site.pvp.noTopUsage",
+    "zh_TW": "此前 N 名統計尚未產生，需等待下一次完整 PvP 資料更新。",
+    "en": "Statistics for this top-N selection are not available yet. Please wait for the next full PvP update.",
+    "th": "ยังไม่มีสถิติอันดับที่เลือก โปรดรอการอัปเดตข้อมูล PvP ทั้งหมดครั้งถัดไป",
+    "jp": "この上位人数の統計はまだありません。次回のPvPデータ全体更新をお待ちください。"
+  },
+  {
+    "key": "UI:site.pvp.noRank",
+    "zh_TW": "排行榜資料尚未產生，或目前無法載入。",
+    "en": "Leaderboard data is not available yet or could not be loaded.",
+    "th": "ยังไม่มีข้อมูลอันดับ หรือโหลดไม่ได้ในขณะนี้",
+    "jp": "ランキングデータがまだないか、現在読み込めません。"
+  },
+  {
+    "key": "UI:site.pvp.searching",
+    "zh_TW": "搜尋中…",
+    "en": "Searching…",
+    "th": "กำลังค้นหา…",
+    "jp": "検索中…"
+  },
+  {
+    "key": "UI:site.pvp.reading",
+    "zh_TW": "正在透過遊戲 API 讀取玩家目前隊伍…",
+    "en": "Loading the player's current teams from the game API…",
+    "th": "กำลังโหลดทีมปัจจุบันของผู้เล่นผ่าน API เกม…",
+    "jp": "ゲームAPIからプレイヤーの現在のチームを読み込み中…"
+  },
+  {
+    "key": "UI:site.pvp.updated",
+    "zh_TW": "隊伍資料已更新。",
+    "en": "Team data updated.",
+    "th": "อัปเดตข้อมูลทีมแล้ว",
+    "jp": "チームデータを更新しました。"
+  },
+  {
+    "key": "UI:site.guild.memberFailed",
+    "zh_TW": "公會成員資料載入失敗，請稍後重試。",
+    "en": "Unable to load guild members. Please try again later.",
+    "th": "โหลดข้อมูลสมาชิกกิลด์ไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "jp": "ギルドメンバーを読み込めませんでした。しばらくしてから再試行してください。"
+  },
+  {
+    "key": "UI:site.guild.outOfSync",
+    "zh_TW": "公會排名與成員資料尚未同步，為避免顯示其他公會的成員，暫不顯示名單。",
+    "en": "Guild rankings and member data are not in sync. The member list is temporarily hidden to avoid showing members of another guild.",
+    "th": "ข้อมูลอันดับกิลด์และสมาชิกยังไม่ตรงกัน จึงซ่อนรายชื่อชั่วคราวเพื่อไม่ให้แสดงสมาชิกของกิลด์อื่น",
+    "jp": "ギルド順位とメンバーデータが同期していないため、別のギルドのメンバーを表示しないよう一覧を一時的に非表示にしています。"
+  },
+  {
+    "key": "UI:site.guild.rankFailed",
+    "zh_TW": "公會排名資料尚未產生或目前無法載入。",
+    "en": "Guild ranking data is not available yet or could not be loaded.",
+    "th": "ยังไม่มีข้อมูลอันดับกิลด์ หรือโหลดไม่ได้ในขณะนี้",
+    "jp": "ギルドランキングデータがまだないか、現在読み込めません。"
+  },
+  {
+    "key": "UI:site.export.failed",
+    "zh_TW": "前 20 名角色圖片產生失敗，請重新整理後再試。",
+    "en": "Unable to create the top 20 Rangers image. Refresh and try again.",
+    "th": "สร้างภาพเรนเจอร์ 20 อันดับแรกไม่สำเร็จ โปรดโหลดหน้าใหม่แล้วลองอีกครั้ง",
+    "jp": "上位20体の画像を作成できませんでした。再読み込みして再試行してください。"
+  },
+  {
+    "key": "UI:site.export.pngFailed",
+    "zh_TW": "無法產生 PNG",
+    "en": "Unable to create PNG",
+    "th": "สร้าง PNG ไม่สำเร็จ",
+    "jp": "PNGを作成できません"
+  },
+  {
+    "key": "UI:site.nav.openMenu",
+    "zh_TW": "開啟選單",
+    "en": "Open menu",
+    "th": "เปิดเมนู",
+    "jp": "メニューを開く"
+  },
+  {
+    "key": "UI:site.nav.closeMenu",
+    "zh_TW": "關閉選單",
+    "en": "Close menu",
+    "th": "ปิดเมนู",
+    "jp": "メニューを閉じる"
+  },
+  {
+    "key": "UI:site.nav.main",
+    "zh_TW": "主要導覽",
+    "en": "Main navigation",
+    "th": "เมนูหลัก",
+    "jp": "メインナビゲーション"
+  },
+  {
+    "key": "UI:site.nav.features",
+    "zh_TW": "資料站功能導覽",
+    "en": "Database features",
+    "th": "เมนูฟังก์ชันฐานข้อมูล",
+    "jp": "データベース機能のナビゲーション"
+  },
+  {
+    "key": "UI:site.nav.links",
+    "zh_TW": "資料站主要連結",
+    "en": "Database links",
+    "th": "ลิงก์หลักของฐานข้อมูล",
+    "jp": "データベースの主要リンク"
+  },
+  {
+    "key": "UI:site.gear.filterStars",
+    "zh_TW": "篩選星數",
+    "en": "Filter by star grade",
+    "th": "กรองตามจำนวนดาว",
+    "jp": "星数で絞り込む"
+  },
+  {
+    "key": "UI:site.gear.filterType",
+    "zh_TW": "篩選類型",
+    "en": "Filter by type",
+    "th": "กรองตามประเภท",
+    "jp": "タイプで絞り込む"
+  },
+  {
+    "key": "UI:site.gear.filterElement",
+    "zh_TW": "篩選屬性",
+    "en": "Filter by element",
+    "th": "กรองตามธาตุ",
+    "jp": "属性で絞り込む"
+  },
+  {
+    "key": "UI:site.gear.relatedLoading",
+    "zh_TW": "展開後載入相關角色…",
+    "en": "Expand to load related Rangers…",
+    "th": "ขยายเพื่อโหลดเรนเจอร์ที่เกี่ยวข้อง…",
+    "jp": "展開すると関連レンジャーを読み込みます…"
+  },
+  {
+    "key": "UI:site.stage.towerSwitch",
+    "zh_TW": "無限之塔關卡切換",
+    "en": "Select an Infinite Tower floor",
+    "th": "เลือกชั้นหอคอยไร้สิ้นสุด",
+    "jp": "無限の塔の階を切り替える"
+  },
+  {
+    "key": "UI:site.stage.unnamedGimmick",
+    "zh_TW": "未命名機關",
+    "en": "Unnamed gimmick",
+    "th": "กลไกไม่มีชื่อ",
+    "jp": "名前のないギミック"
+  },
+  {
+    "key": "UI:site.stage.activeFirst",
+    "zh_TW": "主動機關首次發動",
+    "en": "Active gimmick initial delay",
+    "th": "เวลาเริ่มทำงานครั้งแรกของกลไกแอ็กทีฟ",
+    "jp": "アクティブギミックの初回発動"
+  },
+  {
+    "key": "UI:site.stage.activeCooldown",
+    "zh_TW": "主動機關冷卻時間",
+    "en": "Active gimmick cooldown",
+    "th": "คูลดาวน์กลไกแอ็กทีฟ",
+    "jp": "アクティブギミックのクールタイム"
+  },
+  {
+    "key": "UI:site.ranger.basic",
+    "zh_TW": "基本資料",
+    "en": "Basic information",
+    "th": "ข้อมูลพื้นฐาน",
+    "jp": "基本情報"
+  },
+  {
+    "key": "UI:site.ranger.talentCondition",
+    "zh_TW": "才能條件",
+    "en": "Talent condition",
+    "th": "เงื่อนไขพรสวรรค์",
+    "jp": "才能条件"
+  },
+  {
+    "key": "UI:site.ranger.talentEffect",
+    "zh_TW": "才能效果",
+    "en": "Talent effect",
+    "th": "เอฟเฟกต์พรสวรรค์",
+    "jp": "才能効果"
+  },
+  {
+    "key": "UI:site.ranger.splash",
+    "zh_TW": "降臨",
+    "en": "Advent",
+    "th": "จุติ",
+    "jp": "降臨"
+  },
+  {
+    "key": "UI:site.ranger.ultra",
+    "zh_TW": "究極進化",
+    "en": "Ultra Evolution",
+    "th": "วิวัฒนาการอัลตร้า",
+    "jp": "ウルトラ進化"
+  },
+  {
+    "key": "UI:site.dynamic.seconds",
+    "zh_TW": "%N1秒",
+    "en": "%N1 sec",
+    "th": "%N1 วินาที",
+    "jp": "%N1秒"
+  },
+  {
+    "key": "UI:site.dynamic.points",
+    "zh_TW": "%N1點",
+    "en": "%N1 pt",
+    "th": "%N1 หน่วย",
+    "jp": "%N1ポイント"
+  },
+  {
+    "key": "UI:site.dynamic.feathers",
+    "zh_TW": "%N1根",
+    "en": "%N1 feathers",
+    "th": "ขนนก %N1 อัน",
+    "jp": "羽根%N1枚"
+  },
+  {
+    "key": "UI:site.dynamic.attack",
+    "zh_TW": "攻擊力 %N1",
+    "en": "ATK %N1",
+    "th": "ATK %N1",
+    "jp": "攻撃力 %N1"
+  },
+  {
+    "key": "UI:site.dynamic.hp",
+    "zh_TW": "體力 %N1",
+    "en": "HP %N1",
+    "th": "HP %N1",
+    "jp": "HP %N1"
+  },
+  {
+    "key": "UI:site.dynamic.minerals",
+    "zh_TW": "礦物 %N1",
+    "en": "Minerals %N1",
+    "th": "แร่ %N1",
+    "jp": "ミネラル %N1"
+  },
+  {
+    "key": "UI:site.dynamic.levelProgress",
+    "zh_TW": "%N1等，共%N2等",
+    "en": "Level %N1 / %N2",
+    "th": "เลเวล %N1 / %N2",
+    "jp": "レベル%N1 / %N2"
+  },
+  {
+    "key": "UI:site.dynamic.awakened",
+    "zh_TW": "覺醒能力%N1",
+    "en": "Awakened ability %N1",
+    "th": "ความสามารถปลุกพลัง %N1",
+    "jp": "覚醒アビリティ%N1"
+  },
+  {
+    "key": "UI:site.dynamic.removeFiles",
+    "zh_TW": "刪除 %N1",
+    "en": "Deleted %N1",
+    "th": "ลบ %N1",
+    "jp": "削除 %N1"
+  },
+  {
+    "key": "UI:site.dynamic.historyUses",
+    "zh_TW": "使用次數：%N1",
+    "en": "Appearances: %N1",
+    "th": "จำนวนครั้งที่ลงสนาม: %N1",
+    "jp": "使用回数：%N1"
+  },
+  {
+    "key": "UI:site.dynamic.historyLimit",
+    "zh_TW": "最多同時比較 %N1 名角色。",
+    "en": "Compare up to %N1 Rangers at once.",
+    "th": "เปรียบเทียบเรนเจอร์ได้สูงสุด %N1 ตัวพร้อมกัน",
+    "jp": "同時に比較できるレンジャーは%N1体までです。"
+  },
+  {
+    "key": "UI:site.dynamic.searchCount",
+    "zh_TW": "找到 %N1 筆符合結果。",
+    "en": "Found %N1 matching results.",
+    "th": "พบผลลัพธ์ที่ตรงกัน %N1 รายการ",
+    "jp": "%N1件の結果が見つかりました。"
+  },
+  {
+    "key": "UI:site.dynamic.labyrinthRow",
+    "zh_TW": "迷宮第 %N1 行",
+    "en": "Labyrinth row %N1",
+    "th": "แถวที่ %N1 ของเขาวงกต",
+    "jp": "ラビリンス%N1行目"
+  },
+  {
+    "key": "UI:site.dynamic.missingFloor",
+    "zh_TW": "找不到第 %N1 層資料。",
+    "en": "No data found for floor %N1.",
+    "th": "ไม่พบข้อมูลชั้น %N1",
+    "jp": "%N1階のデータが見つかりません。"
+  },
+  {
+    "key": "UI:site.dynamic.missingHard",
+    "zh_TW": "找不到困難關卡第 %N1 關資料。",
+    "en": "No data found for Hard Stage %N1.",
+    "th": "ไม่พบข้อมูลด่านยาก %N1",
+    "jp": "ハードステージ%N1のデータが見つかりません。"
+  },
+  {
+    "key": "UI:site.dynamic.ultraAlias",
+    "zh_TW": "終極進化%N1星",
+    "en": "Ultra %N1 Stars",
+    "th": "อัลตร้า %N1 ดาว",
+    "jp": "ウルトラ進化・星%N1"
+  },
+  {
+    "key": "UI:site.title.ranger",
+    "zh_TW": "%N1｜角色詳細資料",
+    "en": "%N1｜Ranger Details",
+    "th": "%N1｜รายละเอียดเรนเจอร์",
+    "jp": "%N1｜レンジャー詳細"
+  },
+  {
+    "key": "UI:site.title.gear",
+    "zh_TW": "%N1｜裝備詳細資料",
+    "en": "%N1｜Equipment Details",
+    "th": "%N1｜รายละเอียดอุปกรณ์",
+    "jp": "%N1｜装備詳細"
+  },
+  {
+    "key": "UI:site.title.hard",
+    "zh_TW": "第%N1關｜困難關卡資訊",
+    "en": "Stage %N1｜Hard Stage Info",
+    "th": "ด่าน %N1｜ข้อมูลด่านยาก",
+    "jp": "ステージ%N1｜ハードステージ情報"
+  },
+  {
+    "key": "UI:site.title.extreme",
+    "zh_TW": "第%N1關｜極限關卡資訊",
+    "en": "Stage %N1｜Extreme Stage Info",
+    "th": "ด่าน %N1｜ข้อมูลด่านเอ็กซ์ตรีม",
+    "jp": "ステージ%N1｜エクストリームステージ情報"
+  },
+  {
+    "key": "UI:site.title.endless",
+    "zh_TW": "第%N1層｜無限之塔關卡資訊",
+    "en": "Floor %N1｜Infinite Tower Info",
+    "th": "ชั้น %N1｜ข้อมูลหอคอยไร้สิ้นสุด",
+    "jp": "%N1階｜無限の塔ステージ情報"
+  },
+  {
+    "key": "UI:site.title.labyrinth",
+    "zh_TW": "關卡%N1｜迷宮關卡資訊",
+    "en": "Stage %N1｜Labyrinth Stage Info",
+    "th": "ด่าน %N1｜ข้อมูลด่านเขาวงกต",
+    "jp": "ステージ%N1｜ラビリンス情報"
+  },
+  {
+    "key": "UI:site.admin.roleConfirm",
+    "zh_TW": "確定要將「%N1」的權限更改為「%N2」？ 變更後該帳號目前所有登入狀態會立即失效。",
+    "en": "Change permissions for “%N1” to “%N2”? All sessions for this account will end immediately.",
+    "th": "เปลี่ยนสิทธิ์ของ “%N1” เป็น “%N2” หรือไม่? บัญชีนี้จะออกจากระบบทุกอุปกรณ์ทันที",
+    "jp": "「%N1」の権限を「%N2」に変更しますか？このアカウントのすべてのログイン状態は直ちに無効になります。"
+  },
+  {
+    "key": "UI:site.admin.roleDone",
+    "zh_TW": "已將「%N1」權限更改為「%N2」。",
+    "en": "Permissions for “%N1” changed to “%N2”.",
+    "th": "เปลี่ยนสิทธิ์ของ “%N1” เป็น “%N2” แล้ว",
+    "jp": "「%N1」の権限を「%N2」に変更しました。"
+  },
+  {
+    "key": "UI:site.admin.resetConfirm",
+    "zh_TW": "確定要重置「%N1」的密碼？",
+    "en": "Reset the password for “%N1”?",
+    "th": "รีเซ็ตรหัสผ่านของ “%N1” หรือไม่?",
+    "jp": "「%N1」のパスワードをリセットしますか？"
+  },
+  {
+    "key": "UI:site.admin.resetFinal",
+    "zh_TW": "再次確認：將「%N1」的密碼重置為 qwer1234？ 重置後該帳號目前所有登入狀態會立即失效。",
+    "en": "Confirm again: reset the password for “%N1” to qwer1234? All sessions for this account will end immediately.",
+    "th": "ยืนยันอีกครั้ง: รีเซ็ตรหัสผ่านของ “%N1” เป็น qwer1234 หรือไม่? บัญชีนี้จะออกจากระบบทุกอุปกรณ์ทันที",
+    "jp": "再確認：「%N1」のパスワードをqwer1234にリセットしますか？このアカウントのすべてのログイン状態は直ちに無効になります。"
+  },
+  {
+    "key": "UI:site.admin.resetDone",
+    "zh_TW": "已將「%N1」的密碼重置為 qwer1234。",
+    "en": "Password for “%N1” reset to qwer1234.",
+    "th": "รีเซ็ตรหัสผ่านของ “%N1” เป็น qwer1234 แล้ว",
+    "jp": "「%N1」のパスワードをqwer1234にリセットしました。"
+  },
+  {
+    "key": "UI:site.admin.deleteConfirm",
+    "zh_TW": "確定要刪除帳號「%N1」？",
+    "en": "Delete account “%N1”?",
+    "th": "ลบบัญชี “%N1” หรือไม่?",
+    "jp": "アカウント「%N1」を削除しますか？"
+  },
+  {
+    "key": "UI:site.admin.deleteFinal",
+    "zh_TW": "再次確認：永久刪除帳號「%N1」？ 此操作無法復原，該帳號所有登入狀態也會立即失效。",
+    "en": "Confirm again: permanently delete account “%N1”? This cannot be undone and all sessions will end immediately.",
+    "th": "ยืนยันอีกครั้ง: ลบบัญชี “%N1” ถาวรหรือไม่? กู้คืนไม่ได้และบัญชีนี้จะออกจากระบบทุกอุปกรณ์ทันที",
+    "jp": "再確認：アカウント「%N1」を完全に削除しますか？元に戻すことはできず、すべてのログイン状態が直ちに無効になります。"
+  },
+  {
+    "key": "UI:site.admin.deleteDone",
+    "zh_TW": "已刪除帳號「%N1」。",
+    "en": "Account “%N1” deleted.",
+    "th": "ลบบัญชี “%N1” แล้ว",
+    "jp": "アカウント「%N1」を削除しました。"
+  },
+  {
+    "key": "UI:site.admin.appliedAt",
+    "zh_TW": "申請時間：%N1",
+    "en": "Applied: %N1",
+    "th": "เวลาสมัคร: %N1",
+    "jp": "申請日時：%N1"
+  },
+  {
+    "key": "UI:site.common.readError",
+    "zh_TW": "無法讀取：%N1",
+    "en": "Unable to load: %N1",
+    "th": "โหลดไม่สำเร็จ: %N1",
+    "jp": "読み込めません：%N1"
+  },
+  {
+    "key": "UI:site.resources.readError",
+    "zh_TW": "無法讀取資源更新紀錄：%N1",
+    "en": "Unable to read resource update log: %N1",
+    "th": "อ่านบันทึกการอัปเดตทรัพยากรไม่สำเร็จ: %N1",
+    "jp": "リソース更新履歴を読み込めません：%N1"
+  },
+  {
+    "key": "UI:site.history.remove",
+    "zh_TW": "移除 %N1",
+    "en": "Remove %N1",
+    "th": "นำ %N1 ออก",
+    "jp": "%N1を削除"
+  },
+  {
+    "key": "UI:site.history.loadError",
+    "zh_TW": "無法載入歷史資料：%N1",
+    "en": "Unable to load history: %N1",
+    "th": "โหลดข้อมูลประวัติไม่สำเร็จ: %N1",
+    "jp": "履歴を読み込めません：%N1"
+  },
+  {
+    "key": "UI:site.ranger.missing",
+    "zh_TW": "找不到角色 ID：%N1",
+    "en": "Ranger ID not found: %N1",
+    "th": "ไม่พบ ID เรนเจอร์: %N1",
+    "jp": "レンジャーIDが見つかりません：%N1"
+  },
+  {
+    "key": "UI:site.ranger.missingData",
+    "zh_TW": "找不到角色資料：%N1",
+    "en": "Ranger data not found: %N1",
+    "th": "ไม่พบข้อมูลเรนเจอร์: %N1",
+    "jp": "レンジャーデータが見つかりません：%N1"
+  },
+  {
+    "key": "UI:site.gear.missing",
+    "zh_TW": "找不到裝備 ID：%N1",
+    "en": "Equipment ID not found: %N1",
+    "th": "ไม่พบ ID อุปกรณ์: %N1",
+    "jp": "装備IDが見つかりません：%N1"
+  },
+  {
+    "key": "UI:site.pvp.queryError",
+    "zh_TW": "玩家資料查詢失敗：%N1",
+    "en": "Unable to query player data: %N1",
+    "th": "ค้นหาข้อมูลผู้เล่นไม่สำเร็จ: %N1",
+    "jp": "プレイヤーデータの取得に失敗しました：%N1"
+  },
+  {
+    "key": "UI:site.pvp.viewTeam",
+    "zh_TW": "查看 %N1 的隊伍",
+    "en": "View %N1’s team",
+    "th": "ดูทีมของ %N1",
+    "jp": "%N1のチームを表示"
+  },
+  {
+    "key": "UI:site.pvp.viewBuild",
+    "zh_TW": "查看 %N1 的配裝、覺醒能力與才能解放狀態",
+    "en": "View %N1’s equipment, awakened abilities and talent status",
+    "th": "ดูอุปกรณ์ ความสามารถปลุกพลัง และสถานะพรสวรรค์ของ %N1",
+    "jp": "%N1の装備・覚醒アビリティ・才能解放状況を表示"
+  },
+  {
+    "key": "UI:site.pvp.gearPages",
+    "zh_TW": "%N1使用率分頁",
+    "en": "%N1 usage pages",
+    "th": "หน้าสถิติการใช้%N1",
+    "jp": "%N1使用率のページ切り替え"
+  },
+  {
+    "key": "UI:site.guild.noTier",
+    "zh_TW": "目前沒有%N1段位的公會資料。",
+    "en": "No guild data for the %N1 league.",
+    "th": "ไม่มีข้อมูลกิลด์ในลีก %N1",
+    "jp": "%N1リーグのギルドデータはありません。"
+  },
+  {
+    "key": "UI:site.guild.usageDescription",
+    "zh_TW": "%N1段位公會戰的進攻隊伍角色使用率",
+    "en": "Ranger usage in attacking teams for %N1 Guild Wars",
+    "th": "อัตราการใช้เรนเจอร์ในทีมบุกสงครามกิลด์ลีก %N1",
+    "jp": "%N1リーグのギルド戦攻撃チームにおけるレンジャー使用率"
+  },
+  {
+    "key": "UI:site.guild.usageError",
+    "zh_TW": "%N1公會戰角色使用率資料尚未產生或目前無法載入。",
+    "en": "%N1 Guild War usage data is not available yet or could not be loaded.",
+    "th": "ยังไม่มีข้อมูลอัตราการใช้เรนเจอร์สงครามกิลด์ %N1 หรือโหลดไม่ได้ในขณะนี้",
+    "jp": "%N1のギルド戦使用率データがまだないか、現在読み込めません。"
+  },
+  {
+    "key": "UI:site.stage.labyrinthMissing",
+    "zh_TW": "找不到迷宮關卡 %N1 的資料。",
+    "en": "No data found for Labyrinth Stage %N1.",
+    "th": "ไม่พบข้อมูลด่านเขาวงกต %N1",
+    "jp": "ラビリンスステージ%N1のデータが見つかりません。"
+  },
+  {
+    "key": "UI:site.ranking.title",
+    "zh_TW": "%N1排名",
+    "en": "%N1 ranking",
+    "th": "อันดับ%N1",
+    "jp": "%N1ランキング"
+  },
+  {
+    "key": "UI:site.ranger.allFilter",
+    "zh_TW": "全部%N1",
+    "en": "All %N1",
+    "th": "%N1ทั้งหมด",
+    "jp": "すべての%N1"
+  },
+  {
+    "key": "UI:site.gear.filterAll",
+    "zh_TW": "%N1: 全部",
+    "en": "%N1: All",
+    "th": "%N1: ทั้งหมด",
+    "jp": "%N1：すべて"
+  },
+  {
+    "key": "UI:site.equipment.pending",
+    "zh_TW": "裝備組合統計尚未產生，需等待下一次完整%N1資料更新。",
+    "en": "Equipment combination statistics are not available yet. Please wait for the next full %N1 update.",
+    "th": "ยังไม่มีสถิติชุดอุปกรณ์ โปรดรอการอัปเดตข้อมูล %N1 ทั้งหมดครั้งถัดไป",
+    "jp": "装備の組み合わせ統計はまだありません。次回の%N1データ全体更新をお待ちください。"
+  },
+  {
+    "key": "UI:site.history.samples",
+    "zh_TW": "有效樣本：%N1",
+    "en": "Valid samples: %N1",
+    "th": "จำนวนตัวอย่างที่ใช้ได้: %N1",
+    "jp": "有効サンプル数：%N1"
+  },
+  {
+    "key": "UI:site.gear.upgradeLabel",
+    "zh_TW": "%N1強化等級",
+    "en": "%N1 upgrade level",
+    "th": "ระดับอัปเกรด%N1",
+    "jp": "%N1の強化レベル"
+  },
+  {
+    "key": "UI:site.dynamic.secondRange",
+    "zh_TW": "%N1秒 ~ %N2秒",
+    "en": "%N1 ~ %N2 sec",
+    "th": "%N1 ~ %N2 วินาที",
+    "jp": "%N1 ~ %N2秒"
+  },
+  {
+    "key": "UI:site.dynamic.stageCoordinate",
+    "zh_TW": "關卡 %N1-%N2",
+    "en": "Stage %N1-%N2",
+    "th": "ด่าน %N1-%N2",
+    "jp": "ステージ%N1-%N2"
+  }
+]

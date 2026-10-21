@@ -1,4 +1,5 @@
 (() => {
+  const display = (record, field, value) => window.RangerbookI18n?.display?.(record,field,value) ?? value;
   const DATA_URL = "../../res/Rangers_data.json";
   const ABILITY_DATA_URL = "../../res/%E8%83%BD%E5%8A%9B.json";
   const RANGER_IMAGE = (id) => `https://rangers.lerico.net/res/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
@@ -210,7 +211,7 @@
   function renderSkills(r, animationMeta) {
     const skills = [getSkill(r, "技能1"), getSkill(r, "技能2")].filter(Boolean);
     if (!skills.length) return `<div class="empty-state small">沒有技能資料。</div>`;
-    return skills.map((s, i) => `<article class="ranger-skill-card"><div class="ranger-icon-title">${s.icon ? `<img class="small-icon" src="${SKILL_ICON(s.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>技能 ${i + 1}：${html(s["技能名稱"] || "未命名技能")}</h4>${description(s["技能敘述"], "ranger-skill-description")}</div></div>${skillMetaTable(s, animationMeta, i)}${skillTable(s)}</article>`).join("");
+    return skills.map((s, i) => `<article class="ranger-skill-card"><div class="ranger-icon-title">${s.icon ? `<img class="small-icon" src="${SKILL_ICON(s.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>技能 ${i + 1}：${html(display(s,"nameKey",s["技能名稱"] || "未命名技能"))}</h4>${description(display(s,"descriptionKey",s["技能敘述"]), "ranger-skill-description")}</div></div>${skillMetaTable(s, animationMeta, i)}${skillTable(s)}</article>`).join("");
   }
   function abilityTable(effects) {
     if (!effects.length) return "";
@@ -218,7 +219,7 @@
   }
   function abilityCards(items, empty) {
     if (!items.length) return `<div class="empty-state small">${html(empty)}</div>`;
-    return `<div class="ranger-ability-list">${items.map((a) => `<article class="ranger-ability-card"><div class="ranger-icon-title">${a.icon ? `<img class="small-icon" src="${ABILITY_ICON(a.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>${html(a.name)}</h4>${description(a.detail?.["敘述"], "preline")}</div></div>${abilityTable(abilityEffects(a.detail))}</article>`).join("")}</div>`;
+    return `<div class="ranger-ability-list">${items.map((a) => `<article class="ranger-ability-card"><div class="ranger-icon-title">${a.icon ? `<img class="small-icon" src="${ABILITY_ICON(a.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>${html(display(a.detail,"nameKey",a.name))}</h4>${description(display(a.detail,"descriptionKey",a.detail?.["敘述"]), "preline")}</div></div>${abilityTable(abilityEffects(a.detail))}</article>`).join("")}</div>`;
   }
   function talentTitle(title, withIcon = true, tag = "h4") {
     const t = text(title).replace(/\d+$/g, "");
@@ -235,7 +236,7 @@
     const effects = parseMainTalentEffects(getExactValue(content, ["增益效果", "效果", "觸發效果", "效果列表"]), probability);
     const conditionTable = `<div class="table-scroll talent-main-table-wrap"><table class="talent-main-table"><colgroup><col class="talent-main-prob-col"><col class="talent-main-condition-col"></colgroup><thead><tr><th>機率</th><th>條件</th></tr></thead><tbody>${conditions.map((condition, index) => `<tr>${index === 0 ? `<td rowspan="${conditions.length}" class="talent-prob-cell">${html(probability)}</td>` : ""}<td>${html(condition)}</td></tr>`).join("")}</tbody></table></div>`;
     const effectTable = effects.length ? `<div class="table-scroll talent-main-effect-wrap"><table class="talent-main-effect-table"><colgroup><col class="talent-main-prob-col"><col class="talent-main-condition-col"></colgroup><thead><tr><th>機率</th><th>增益效果</th></tr></thead><tbody>${effects.map((effect) => `<tr><td class="talent-prob-cell">${html(effect.probability || "-")}</td><td>${html(effect.effect || "-")}</td></tr>`).join("")}</tbody></table></div>` : "";
-    return `<article class="ranger-talent-card">${talentTitle(title, true)}${description(talentDesc, "ranger-talent-description")}${conditionTable}${effectTable}</article>`;
+    return `<article class="ranger-talent-card">${talentTitle(title, true)}${description(display(content,"descriptionKey",talentDesc), "ranger-talent-description")}${conditionTable}${effectTable}</article>`;
   }
   function renderBoostTalent(title, content) {
     if (isNone(content)) return "";
@@ -316,7 +317,7 @@
     state.filtered = buildFilteredRows();
     els.metricButtons.forEach((button) => button.classList.toggle("active", button.dataset.metric === state.metric));
     // The active ranking type is already displayed in the metric tabs.
-    if (els.title) els.title.textContent = `${metric.label}排名`;
+    if (els.title) els.title.textContent = window.RangerbookI18n.format("site.ranking.title",[window.RangerbookI18n.uiText(metric.label)],`${metric.label}排名`);
     applyPagination(resetPage);
   }
   async function openRanger(id) {
@@ -366,3 +367,4 @@
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !els.modal.hidden) closeModal(); });
   init();
 })();
+

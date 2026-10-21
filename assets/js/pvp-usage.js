@@ -106,7 +106,7 @@
         <tr>
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${rank}</span></td>
           <td>
-            <button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${escapeHtml(row.rangerId)}" aria-label="查看 ${escapeHtml(row.name || row.rangerId)} 的配裝、覺醒能力與才能解放狀態">
+            <button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${escapeHtml(row.rangerId)}" aria-label="${escapeHtml(window.RangerbookI18n.format("site.pvp.viewBuild",[row.name || row.rangerId],`查看 ${row.name || row.rangerId} 的配裝、覺醒能力與才能解放狀態`))}">
               <img class="pvp-ranger-thumb" src="${RANGER_IMAGE(row.rangerId)}" alt="" loading="lazy" onerror="this.remove();">
               <span>
                 <span class="pvp-ranger-name">${escapeHtml(row.name || row.rangerId)}</span>
@@ -185,7 +185,7 @@
     }
     const info = abilityMap[code] || {};
     return {
-      name: info["名稱"] || code,
+      name: window.RangerbookI18n?.display?.(info,"nameKey",info["名稱"] || code) || info["名稱"] || code,
       icon: info.icon || "",
     };
   }
@@ -257,7 +257,7 @@
     const start = page * OPTION_PAGE_SIZE;
     const visibleItems = items.slice(start, start + OPTION_PAGE_SIZE);
     const pagination = totalPages > 1 ? `
-      <div class="pvp-option-pagination" aria-label="${escapeHtml(label)}使用率分頁">
+      <div class="pvp-option-pagination" aria-label="${escapeHtml(window.RangerbookI18n.format("site.pvp.gearPages",[window.RangerbookI18n.uiText(label)],`${label}使用率分頁`))}">
         <button type="button" data-gear-page-slot="${slot}" data-gear-page="${page - 1}" ${page <= 0 ? "disabled" : ""}>‹</button>
         <span>${page + 1} / ${totalPages}</span>
         <button type="button" data-gear-page-slot="${slot}" data-gear-page="${page + 1}" ${page >= totalPages - 1 ? "disabled" : ""}>›</button>
@@ -414,3 +414,4 @@
   load();
   window.setInterval(load, REFRESH_MS);
 })();
+
