@@ -244,7 +244,11 @@
         .map(([key,value]) => [key,displayBreaks(value).replace(/[\r\n]+/g," ")]));
       englishByChinese = new Map();
       if (selected !== "zh-Hant") {
-        for (const [key, original] of Object.entries(baseline)) {
+        // Shared category text uses the canonical tag wording. Analysis labels
+        // remain explicitly keyed; publisher row order must not choose a label.
+        const entries = Object.entries(baseline).sort(([a],[b]) =>
+          Number(b.startsWith("tag.")) - Number(a.startsWith("tag.")));
+        for (const [key, original] of entries) {
           const translated = all[selected]?.[key];
           if (typeof original !== "string" || !translated || translated === original) continue;
           const normalized = original.replace(/\s+/g, " ").trim();

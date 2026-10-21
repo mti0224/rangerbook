@@ -99,6 +99,8 @@ async function assertTranslated(page,locale,selector) {
       const translated = await page.evaluate(() => [window.RangerbookI18n.uiText('攻擊力 123,456'),window.RangerbookI18n.uiText('5等，共240等'),window.RangerbookI18n.uiText('關卡 1-1'),window.RangerbookI18n.uiText('0.5秒 ~ 1秒')]);
       assert.deepEqual(translated,[expected('site.dynamic.attack',locale,'123,456'),expected('site.dynamic.levelProgress',locale,5,240),expected('site.dynamic.stageCoordinate',locale,1,1),expected('site.dynamic.secondRange',locale,'0.5',1)]);
       if(locale === 'en') assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText('超進化8星')),'Hyper 8 Stars');
+      assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText('敏捷型')),expected('tag.agi',locale),
+        'canonical tags must win over analysis labels regardless of publisher row order');
       await ready(page,'/guildwar/ranking/');
       await page.waitForFunction(() => document.querySelector('.pvp-empty-row'));
       await settle(page);
