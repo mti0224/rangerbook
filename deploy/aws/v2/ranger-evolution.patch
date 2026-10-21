@@ -1,0 +1,13 @@
+--- a/scripts/v2/raw_rangers.py
++++ b/scripts/v2/raw_rangers.py
+@@ -172,6 +172,10 @@
+           "nameKey":"UNIT:"+str(name) if name else None,
+           "descriptionKey":"UNIT:"+str(desc) if desc else None,
+           "starGrade":value(unit,"grade"),
++          "evolutionTargets":[{"rangerCode":unit[field],"kind":kind}
++              for field,kind in (("unitCodeAfterEvolution","NORMAL"),
++                                 ("unitCodeAfterTranscendence","ULTRA"),
++                                 ("unitCodeAfterHyper","HYPER")) if unit.get(field)],
+           "evolution":("ULTRA" if unit.get("isTranscendentUnit")==1 else
+                        "HYPER" if unit.get("isHyperUnit")==1 else "NORMAL"),
+           "roleType":unit.get("unitCategoryType") or "NONE",

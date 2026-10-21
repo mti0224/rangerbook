@@ -1,4 +1,5 @@
 (() => {
+  const display = (record, field, value) => window.RangerbookI18n?.display?.(record,field,value) ?? value;
   const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const DATA_URL = `${ROOT}res/%E8%BF%B7%E5%AE%AE%E9%97%9C%E5%8D%A1%E7%94%9F%E7%94%A2%E7%B7%9A.json`;
   const ENEMY_DATA_URL = `${ROOT}res/labyrinthEnemy_data.json`;
@@ -343,8 +344,8 @@
     const abilities = getAbilities(enemy);
     if (!abilities.length) return `<div class="empty-state small">沒有能力資料。</div>`;
     return `<div class="ranger-ability-list">${abilities.map((ability) => {
-      const description = text(ability.detail?.["敘述"] || "");
-      return `<article class="ranger-ability-card"><div class="ranger-icon-title">${ability.icon ? `<img class="small-icon" src="${ABILITY_ICON(ability.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>${escapeHtml(ability.name)}</h4>${description && description !== "無" && description !== "(無)" ? `<p class="preline">${escapeHtml(description)}</p>` : ""}</div></div>${renderAbilityEffectTable(getAbilityEffects(ability.detail))}</article>`;
+      const description = text(display(ability.detail,"descriptionKey",ability.detail?.["敘述"] || ""));
+      return `<article class="ranger-ability-card"><div class="ranger-icon-title">${ability.icon ? `<img class="small-icon" src="${ABILITY_ICON(ability.icon)}" alt="" onerror="this.remove();">` : ""}<div><h4>${escapeHtml(display(ability.detail,"nameKey",ability.name))}</h4>${description && description !== "無" && description !== "(無)" ? `<p class="preline">${escapeHtml(description)}</p>` : ""}</div></div>${renderAbilityEffectTable(getAbilityEffects(ability.detail))}</article>`;
     }).join("")}</div>`;
   }
 
@@ -410,7 +411,7 @@
         if (stage) renderStageDetail(stage);
         else {
           renderStageGrid();
-          if (stageGrid) stageGrid.innerHTML = `<div class="empty-state">找不到迷宮關卡 ${escapeHtml(requestedKey)} 的資料。</div>`;
+          if (stageGrid) stageGrid.innerHTML = `<div class="empty-state">${escapeHtml(window.RangerbookI18n.format("site.stage.labyrinthMissing",[requestedKey],`找不到迷宮關卡 ${requestedKey} 的資料。`))}</div>`;
         }
       } else {
         renderStageGrid();
@@ -431,3 +432,4 @@
 
   init();
 })();
+

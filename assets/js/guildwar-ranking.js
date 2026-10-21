@@ -121,7 +121,7 @@
         <td>${num(guild.score)}</td>
         <td>${num(guild.curMemberCount)} / ${num(guild.maxMemberCount)}</td>
         <td>${esc(guild.nationalFlag || "-")}</td>
-      </tr>`).join("") : `<tr class="pvp-empty-row"><td colspan="5">目前沒有${esc(tier.label)}段位的公會資料。</td></tr>`;
+      </tr>`).join("") : `<tr class="pvp-empty-row"><td colspan="5">${esc(window.RangerbookI18n.format("site.guild.noTier",[window.RangerbookI18n.uiText(tier.label)],`目前沒有${tier.label}段位的公會資料。`))}</td></tr>`;
   }
 
   async function loadTierData(code) {
@@ -288,7 +288,7 @@
     const code = String(unit?.awakeAbilityCode || "").trim();
     if (!code) return { name: "未設定覺醒能力", icon: "" };
     const info = abilityMap[code] || {};
-    return { name: info["名稱"] || code, icon: info.icon || String(unit?.awakeAbilityIcon || "").trim() };
+    return { name: window.RangerbookI18n?.display?.(info,"nameKey",info["名稱"] || code) || info["名稱"] || code, icon: info.icon || String(unit?.awakeAbilityIcon || "").trim() };
   }
 
   function talentInfo(unit) {
@@ -545,5 +545,7 @@
   });
 
   preloadTalentIcons();
+  window.addEventListener("rangerbook:locale-ready", render);
   load();
 })();
+

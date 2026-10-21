@@ -190,7 +190,7 @@
     } catch (error) {
       if (requestId !== trafficRequestId || !auth.isAdmin()) return;
       clearTraffic();
-      status.textContent = "無法讀取：" + (error?.message || "未知錯誤");
+      status.textContent = formatUi("site.common.readError",[ui(error?.message || "未知錯誤")],"無法讀取：" + (error?.message || "未知錯誤"));
     }
   }
   $("trafficRefresh")?.addEventListener("click",loadTraffic);
@@ -321,7 +321,7 @@
       <article class="admin-user-row" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}">
         <div class="admin-user-meta">
           <strong>${escapeHtml(item.account)}</strong>
-          <small>申請時間：${escapeHtml(formatDate(item.created_at))}</small>
+          <small>${escapeHtml(formatUi("site.admin.appliedAt",[formatDate(item.created_at)],"申請時間："+formatDate(item.created_at)))}</small>
         </div>
         <div class="admin-user-actions">
           <button class="approve" type="button" data-action="approve">核准管理員</button>
@@ -365,8 +365,8 @@
           <div class="admin-user-meta">
             <strong>${escapeHtml(item.account)}</strong>
             <small>
-              ${escapeHtml(ROLE_LABELS[item.role] || item.role)} ·
-              ${escapeHtml(STATUS_LABELS[item.admin_application_status] || item.admin_application_status || "-")}
+              ${escapeHtml(ui(ROLE_LABELS[item.role] || item.role))} ·
+              ${escapeHtml(ui(STATUS_LABELS[item.admin_application_status] || item.admin_application_status || "-"))}
             </small>
           </div>
           ${controls}
@@ -385,7 +385,7 @@
 
   async function runUserAction(row, action) {
     const userId = row?.dataset.userId;
-    const account = row?.dataset.userAccount || "此帳號";
+    const account = row?.dataset.userAccount || ui("此帳號");
     if (!userId) return;
 
     row.querySelectorAll("details[open]").forEach((details) => details.removeAttribute("open"));
@@ -401,21 +401,21 @@
     } else if (action === "change-role") {
       const role = row.querySelector("[data-role-select]")?.value;
       if (!role) return;
-      const roleLabel = ROLE_LABELS[role] || role;
-      if (!window.confirm(`確定要將「${account}」的權限更改為「${roleLabel}」？\n變更後該帳號目前所有登入狀態會立即失效。`)) return;
+      const roleLabel = ui(ROLE_LABELS[role] || role);
+      if (!window.confirm(formatUi("site.admin.roleConfirm",[account,roleLabel],`確定要將「${account}」的權限更改為「${roleLabel}」？ 變更後該帳號目前所有登入狀態會立即失效。`))) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/role`;
       options.body = JSON.stringify({ role });
-      successMessage = `已將「${account}」權限更改為「${roleLabel}」。`;
+      successMessage = formatUi("site.admin.roleDone",[account,roleLabel],`已將「${account}」權限更改為「${roleLabel}」。`);
     } else if (action === "reset-password") {
-      if (!window.confirm(`確定要重置「${account}」的密碼？`)) return;
-      if (!window.confirm(`再次確認：將「${account}」的密碼重置為 qwer1234？\n重置後該帳號目前所有登入狀態會立即失效。`)) return;
+      if (!window.confirm(formatUi("site.admin.resetConfirm",[account],`確定要重置「${account}」的密碼？`))) return;
+      if (!window.confirm(formatUi("site.admin.resetFinal",[account],`再次確認：將「${account}」的密碼重置為 qwer1234？ 重置後該帳號目前所有登入狀態會立即失效。`))) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/reset-password`;
-      successMessage = `已將「${account}」的密碼重置為 qwer1234。`;
+      successMessage = formatUi("site.admin.resetDone",[account],`已將「${account}」的密碼重置為 qwer1234。`);
     } else if (action === "delete-user") {
-      if (!window.confirm(`確定要刪除帳號「${account}」？`)) return;
-      if (!window.confirm(`再次確認：永久刪除帳號「${account}」？\n此操作無法復原，該帳號所有登入狀態也會立即失效。`)) return;
+      if (!window.confirm(formatUi("site.admin.deleteConfirm",[account],`確定要刪除帳號「${account}」？`))) return;
+      if (!window.confirm(formatUi("site.admin.deleteFinal",[account],`再次確認：永久刪除帳號「${account}」？ 此操作無法復原，該帳號所有登入狀態也會立即失效。`))) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/delete`;
-      successMessage = `已刪除帳號「${account}」。`;
+      successMessage = formatUi("site.admin.deleteDone",[account],`已刪除帳號「${account}」。`);
     } else {
       return;
     }
@@ -426,7 +426,7 @@
       if (successMessage) window.alert(successMessage);
       await loadSuperAdminData();
     } catch (error) {
-      window.alert(error.message);
+      window.alert(ui(error.message));
       setRowDisabled(row, false);
     }
   }

@@ -86,9 +86,14 @@
     // authored personal-team copy and single-hit analysis help authoritative.
     let effectiveRows=rows;
     if (name==="ui") {
-      const overrideResponse=await nativeFetch(root+"assets/locales/personal-analysis-overrides.json?v=20261018-2");
-      if (!overrideResponse.ok) throw new Error("Personal-team UI overrides unavailable");
-      const overrides=await overrideResponse.json();
+      const overrides=(await Promise.all([
+        "personal-analysis-overrides.json?v=20261018-2",
+        "sitewide-overrides.json?v=20261021-1"
+      ].map(async file=>{
+        const response=await nativeFetch(root+"assets/locales/"+file);
+        if (!response.ok) throw new Error("UI overrides unavailable: "+file);
+        return response.json();
+      }))).flat();
       if (!Array.isArray(overrides) || overrides.some(row=>!row?.key?.startsWith("UI:")))
         throw new Error("Invalid personal-team UI overrides");
       effectiveRows=[...new Map([...rows,...overrides].map(row=>[row.key,row])).values()];
@@ -158,6 +163,7 @@
     const trigger=s.trigger.type==="SELF"?"自身":s.trigger.type==="SEARCH"?"前方敵人":
       s.trigger.type==="RSEARCH"?"後方敵人（倍率:"+number(s.trigger.searchRatio)+"倍）":s.trigger.type;
     return {"技能名稱":text(s.nameKey)||s.skillCode,"技能敘述":text(s.descriptionKey),
+      __v2:{nameKey:s.nameKey,descriptionKey:s.descriptionKey},
       "發動機率":percent(s.activationRate),"觸發基準":trigger,"技能冷卻時間":seconds(s.cooldownSeconds),icon:s.icon,
       "技能組":s.effects.map(e=>({"效果":text("CUSTOM:"+e.effectCode),"係數":effectMagnitude(e),
         "有效時間":!e.duration?"-":e.duration.kind==="levelFormula"?formula(e.duration):seconds(e.duration.seconds),
@@ -200,7 +206,7 @@
     if (!t) return "無";
     const out={};
     if(t.major) {const m=t.major;
-      out["主要才能"]={"敘述":text(m.descriptionKey),"觸發機率":percent(m.activationChancePercent),
+      out["主要才能"]={"敘述":text(m.descriptionKey),__v2:{descriptionKey:m.descriptionKey},"觸發機率":percent(m.activationChancePercent),
         "條件":text(m.activationConditionKey),"增益效果":m.effects.map(x=>text(x.localizedEffect))};
       (m.additionalConditions||[]).forEach((x,i)=>out["主要才能"]["條件"+(i+2)]=text(x.text || x.textKey || x));
     }
@@ -364,3 +370,4 @@
   window.RangerbookV2={get ready(){return ensureCatalogs();},get locale(){return locale;},data,render,text,catalog,
     translateText:s=>phrases.get(normalized(s))||s,source:"v2",routes:Object.keys(routes)};
 })();
+

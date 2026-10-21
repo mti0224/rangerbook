@@ -131,7 +131,7 @@
     if (els.scopeLabel) els.scopeLabel.textContent = label;
     if (els.sample) els.sample.textContent = num(index?.metadata?.sampleCount);
     if (els.guildCount) els.guildCount.textContent = num(index?.metadata?.guildCount);
-    if (els.description) els.description.textContent = `${label}段位公會戰的進攻隊伍角色使用率`;
+    if (els.description) els.description.textContent = f("site.guild.usageDescription",[window.RangerbookI18n.uiText(label)],`${label}段位公會戰的進攻隊伍角色使用率`);
     fill(els.type, rows.map(r=>r.type), "全部類型"); fill(els.element, rows.map(r=>r.element), "全部屬性");
     render(); closeModal(); status();
   }
@@ -146,7 +146,7 @@
     if (els.scopeLabel) els.scopeLabel.textContent=label;
     if (els.sample) els.sample.textContent=num(summary.sampleCount);
     if (els.guildCount) els.guildCount.textContent=num(activeGuilds.length);
-    if(els.description) els.description.textContent=tier==="LEGEND_20"?"傳奇段位前 20 名公會的公會戰進攻隊伍角色使用率":`${label}段位公會戰的進攻隊伍角色使用率`;
+    if(els.description) els.description.textContent=tier==="LEGEND_20"?"傳奇段位前 20 名公會的公會戰進攻隊伍角色使用率":f("site.guild.usageDescription",[window.RangerbookI18n.uiText(label)],`${label}段位公會戰的進攻隊伍角色使用率`);
     fill(els.type,rows.map(r=>r.type),"全部類型"); fill(els.element,rows.map(r=>r.element),"全部屬性");
     render(); closeModal(); status();
   }
@@ -173,7 +173,7 @@
     detailCache.set(cacheKey,detail); return detail;
   }
 
-  function optionList(items,kind){if(!items?.length)return `<div class="pvp-modal-empty">目前沒有可顯示的統計資料。</div>`;return `<div class="pvp-option-list">${items.map(item=>{let code,name,icon="";if(kind==="gear"){code=item.equipItemCode||"";name=code==="__NONE__"?"未裝備":gearNames[code]||code;icon=code&&code!=="__NONE__"?GEAR_ICON(code):""}else if(kind==="ability"){code=item.awakeAbilityCode||"";const a=abilityMap[code]||{};name=a["名稱"]||code;icon=a.icon?ABILITY_ICON(a.icon):""}else{code=String(item.talentGrade??"");name=Number(code)===0?"未解放才能":`才能解放階段 ${code}`;icon=/^[0-4]$/.test(code)?TALENT_ICON(code):""}const rate=Math.max(0,Math.min(100,Number(item.rate)||0));return `<div class="pvp-option-row">${icon?`<img class="pvp-option-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">`:`<span class="pvp-option-icon pvp-option-icon-empty">—</span>`}<div class="pvp-option-main"><div class="pvp-option-title">${esc(name)}</div><div class="pvp-option-bar"><span style="--option-rate:${rate}%"></span></div></div><div class="pvp-option-stats"><strong>${num(rate)}%</strong><span>${num(item.count)} 次</span></div></div>`}).join("")}</div>`;}
+  function optionList(items,kind){if(!items?.length)return `<div class="pvp-modal-empty">目前沒有可顯示的統計資料。</div>`;return `<div class="pvp-option-list">${items.map(item=>{let code,name,icon="";if(kind==="gear"){code=item.equipItemCode||"";name=code==="__NONE__"?"未裝備":gearNames[code]||code;icon=code&&code!=="__NONE__"?GEAR_ICON(code):""}else if(kind==="ability"){code=item.awakeAbilityCode||"";const a=abilityMap[code]||{};name=window.RangerbookI18n?.display?.(a,"nameKey",a["名稱"]||code)||a["名稱"]||code;icon=a.icon?ABILITY_ICON(a.icon):""}else{code=String(item.talentGrade??"");name=Number(code)===0?"未解放才能":`才能解放階段 ${code}`;icon=/^[0-4]$/.test(code)?TALENT_ICON(code):""}const rate=Math.max(0,Math.min(100,Number(item.rate)||0));return `<div class="pvp-option-row">${icon?`<img class="pvp-option-icon" src="${icon}" alt="" loading="lazy" onerror="this.remove();">`:`<span class="pvp-option-icon pvp-option-icon-empty">—</span>`}<div class="pvp-option-main"><div class="pvp-option-title">${esc(name)}</div><div class="pvp-option-bar"><span style="--option-rate:${rate}%"></span></div></div><div class="pvp-option-stats"><strong>${num(rate)}%</strong><span>${num(item.count)} 次</span></div></div>`}).join("")}</div>`;}
   function gearCard(detail,slot){const all=detail.equipmentUsage?.[slot]||[],pages=Math.max(1,Math.ceil(all.length/PAGE_SIZE)),page=Math.max(0,Math.min(pages-1,modalState.gearPages[slot]||0));modalState.gearPages[slot]=page;const items=all.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);return `<section class="pvp-equipment-card" data-slot="${slot}"><h4>${SLOT_LABELS[slot]}</h4>${optionList(items,"gear")}${pages>1?`<div class="pvp-option-pagination"><button data-page-slot="${slot}" data-page="${page-1}" ${page===0?"disabled":""}>‹</button><span>${page+1} / ${pages}</span><button data-page-slot="${slot}" data-page="${page+1}" ${page===pages-1?"disabled":""}>›</button></div>`:""}</section>`;}
   function comboChip(code,label){const name=code==="__NONE__"?"未裝備":gearNames[code]||code,icon=code&&code!=="__NONE__"?`<img class="pvp-combo-gear-icon" src="${GEAR_ICON(code)}" alt="" loading="lazy" onerror="this.remove();">`:`<span class="pvp-combo-gear-icon pvp-combo-gear-empty">—</span>`;return `<div class="pvp-combo-gear">${icon}<div><span>${label}</span><strong title="${esc(name)}">${esc(name)}</strong></div></div>`;}
   function comboSection(detail){const all=detail.equipmentCombinationUsage||[],pages=Math.max(1,Math.ceil(all.length/PAGE_SIZE)),page=Math.max(0,Math.min(pages-1,modalState.comboPage||0));modalState.comboPage=page;const visible=all.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE),body=visible.length?`<div class="pvp-combo-list">${visible.map((c,i)=>`<div class="pvp-combo-row"><span class="pvp-combo-rank">${page*PAGE_SIZE+i+1}</span><div class="pvp-combo-gears">${comboChip(c.WEAPON,"武器")}${comboChip(c.ARMOR,"防具")}${comboChip(c.ACC,"飾品")}</div><div class="pvp-combo-stats"><strong>${num(c.rate)}%</strong><span>${num(c.count)} 次</span></div></div>`).join("")}</div>`:`<div class="pvp-modal-empty">目前沒有可顯示的裝備組合資料。</div>`;return `<section class="pvp-modal-section pvp-equipment-combination-section" data-combo-section><div class="pvp-modal-section-heading"><h3>裝備組合排名</h3></div>${body}${pages>1?`<div class="pvp-option-pagination pvp-combo-pagination"><button data-combo-page="${page-1}" ${page===0?"disabled":""}>‹</button><span>${page+1} / ${pages}</span><button data-combo-page="${page+1}" ${page===pages-1?"disabled":""}>›</button></div>`:""}</section>`;}
@@ -231,7 +231,7 @@
       const compact = await loadCompact(tier);
       applyCompact(compact);
     } catch(e) {
-      console.error(e);rows=[];render();status(`${label}公會戰角色使用率資料尚未產生或目前無法載入。`,true);
+      console.error(e);rows=[];render();status(f("site.guild.usageError",[window.RangerbookI18n.uiText(label)],`${label}公會戰角色使用率資料尚未產生或目前無法載入。`),true);
     }
   }
 

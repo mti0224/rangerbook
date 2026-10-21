@@ -177,41 +177,43 @@
     return match ? `${match[1]}-${match[2]}` : "";
   }
 
+  const titleText = (key,args,fallback) => window.RangerbookI18n?.format("site.title."+key,args,fallback) || fallback;
+
   function desiredDetailTitle() {
     const path = normalizedPath();
 
     if (detailRequested(path, /^\/ranger\/ranger\/[^/]+\/?$/)) {
       const name = elementText("#rangerModalTitle");
-      if (name) return `${name}｜角色詳細資料`;
+      if (name) return titleText("ranger",[name],`${name}｜角色詳細資料`);
     }
 
     if (detailRequested(path, /^\/gear\/[^/]+\/?$/)) {
       const name = elementText("#gearModalTitle");
-      if (name) return `${name}｜裝備詳細資料`;
+      if (name) return titleText("gear",[name],`${name}｜裝備詳細資料`);
     }
 
     if (path.startsWith("/mainstage/hard/stage")) {
       const detail = document.getElementById("hsStageDetail");
       const no = stageNumber(elementText("#hsStageTitle"));
-      if (detail && !detail.hidden && no) return `第${no}關｜困難關卡資訊`;
+      if (detail && !detail.hidden && no) return titleText("hard",[no],`第${no}關｜困難關卡資訊`);
     }
 
     if (path.startsWith("/mainstage/extreme/stage")) {
       const detail = document.getElementById("hsStageDetail");
       const no = stageNumber(elementText("#hsStageTitle"));
-      if (detail && !detail.hidden && no) return `第${no}關｜極限關卡資訊`;
+      if (detail && !detail.hidden && no) return titleText("extreme",[no],`第${no}關｜極限關卡資訊`);
     }
 
     if (path.startsWith("/endless/stage")) {
       const detail = document.getElementById("endlessStageDetail");
       const no = stageNumber(elementText("#endlessStageTitle"));
-      if (detail && !detail.hidden && no) return `第${no}層｜無限之塔關卡資訊`;
+      if (detail && !detail.hidden && no) return titleText("endless",[no],`第${no}層｜無限之塔關卡資訊`);
     }
 
     if (path.startsWith("/labyrinth/stage")) {
       const detail = document.getElementById("labyrinthStageDetail");
       const key = labyrinthStageKey(elementText("#labyrinthStageTitle"));
-      if (detail && !detail.hidden && key) return `關卡${key}｜迷宮關卡資訊`;
+      if (detail && !detail.hidden && key) return titleText("labyrinth",[key],`關卡${key}｜迷宮關卡資訊`);
     }
 
     return "";
@@ -235,6 +237,7 @@
 
   document.addEventListener("DOMContentLoaded", updateDetailTitle);
   document.addEventListener("rangerbook:gear-rendered", updateDetailTitle);
+  window.addEventListener("rangerbook:locale-ready", updateDetailTitle);
   requestAnimationFrame(updateDetailTitle);
 })();
 
@@ -333,7 +336,7 @@
   if (!window.RangerbookI18n && !document.querySelector("script[data-rangerbook-i18n]")) {
     const script = document.createElement("script");
     script.dataset.rangerbookI18n = "true";
-    script.src = rootPrefix + "assets/js/i18n.js?v=20261018-team-overview2";
+    script.src = rootPrefix + "assets/js/i18n.js?v=20261021-sitewide1";
     document.head.appendChild(script);
   }
 
@@ -607,3 +610,4 @@
   setTimeout(updateMenuMode, 120);
   setTimeout(updateMenuMode, 500);
 })();
+

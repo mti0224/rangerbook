@@ -34,7 +34,16 @@
 
     if (!response.ok) {
       const message = payload?.detail || payload?.message || `HTTP ${response.status}`;
-      const error = new Error(message);
+      const i18n = window.RangerbookI18n;
+      const prefixes = {
+        "無法讀取資源更新紀錄：": "site.resources.readError",
+        "玩家資料查詢失敗：": "site.pvp.queryError"
+      };
+      const prefix = Object.keys(prefixes).find(value => typeof message === "string" && message.startsWith(value));
+      const displayMessage = prefix && i18n
+        ? i18n.format(prefixes[prefix], [i18n.uiText(message.slice(prefix.length))], message)
+        : i18n?.uiText(message) || message;
+      const error = new Error(displayMessage);
       error.status = response.status;
       error.payload = payload;
       throw error;
@@ -118,3 +127,4 @@
     isSuperAdmin
   };
 })();
+

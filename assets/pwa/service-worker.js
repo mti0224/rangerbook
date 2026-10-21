@@ -8,7 +8,7 @@ const DATA = PREFIX+'data-'+RELEASE.dataVersion;
 const CORE_LIMIT = 8*1024*1024, DATA_LIMIT = 32*1024*1024;
 const BOOT = ['offline.html','404.html','assets/css/style.css','assets/css/game-tech.css','assets/css/pwa.css',
   'assets/js/visitor-region.js','assets/js/i18n.js','assets/js/pwa.js','assets/js/pwa-head.js','assets/js/pwa-data.js',
-  'assets/locales/ui.json','assets/locales/game-custom.json','assets/locales/pwa.json',
+  'assets/locales/ui.json','assets/locales/game-custom.json','assets/locales/pwa.json','assets/locales/sitewide-overrides.json',
   'manifest.webmanifest','assets/pwa/icon-192.png','assets/pwa/icon-512.png',
   'assets/pwa/apple-touch-icon.png','pwa-data.json'];
 const absolute = name => new URL(name,BASE).href;
@@ -142,3 +142,4 @@ self.addEventListener('fetch',event=>{
   // Non-allowlisted resources (including all animation/images on other hosts)
   // are never added to Cache Storage.
 });
+

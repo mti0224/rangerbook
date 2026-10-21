@@ -112,7 +112,10 @@
     const options = LEVELS.map((value) => (
       `<option value="${value}"${value === level ? " selected" : ""}>${value === 5 ? "+Max" : `+${value}`}</option>`
     )).join("");
-    return `<label class="gear-level-control"><span class="sr-only">${escapeHtml(section)}${escapeHtml(window.RangerbookI18n?.t("detail.upgradeLevel", "強化等級") || "強化等級")}</span><select class="gear-level-select" data-gear-id="${escapeHtml(id)}" data-gear-level-section="${escapeHtml(section)}" aria-label="${escapeHtml(section)}${escapeHtml(window.RangerbookI18n?.t("detail.upgradeLevel", "強化等級") || "強化等級")}">${options}</select></label>`;
+    const sectionLabel = section === "基本效果" ? gt("gear.normalOptions",section)
+      : section === "高級效果" ? gt("gear.highLevelOptions",section) : localText(section);
+    const label = window.RangerbookI18n?.format("site.gear.upgradeLabel",[sectionLabel],section+"強化等級") || section+"強化等級";
+    return `<label class="gear-level-control"><span class="sr-only">${escapeHtml(label)}</span><select class="gear-level-select" data-gear-id="${escapeHtml(id)}" data-gear-level-section="${escapeHtml(section)}" aria-label="${escapeHtml(label)}">${options}</select></label>`;
   }
 
   function heading(id, section, level, hasData = true) {
@@ -522,3 +525,4 @@
 
   window.RangerbookGearDetail = { render, preload };
 })();
+

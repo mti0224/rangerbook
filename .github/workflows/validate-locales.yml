@@ -6,6 +6,12 @@ on:
       - "assets/js/settings.js"
       - "assets/css/settings-page.css"
       - "assets/js/i18n.js"
+      - "assets/js/v2-data.js"
+      - "tests/sitewide-localization.cjs"
+      - "assets/js/ranger-evolution.js"
+      - "assets/data/ranger-evolution.json"
+      - "tests/ranger-evolution.cjs"
+      - "tests/test_sitewide_locale_coverage.py"
       - "assets/locales/**"
       - "deploy/aws/v2/locales/ui.json"
       - ".github/workflows/validate-locales.yml"
@@ -44,5 +50,11 @@ jobs:
       - run: python -m unittest discover -s tests -p 'test_ui_locale_coverage.py' -v
       - run: python -m unittest discover -s tests -p 'test_i18n_detail_tables.py' -v
       - run: python -m unittest discover -s tests -p 'test_user_audit_translations.py' -v
+      - run: python -m unittest discover -s tests -p 'test_sitewide_locale_coverage.py' -v
       - run: node --check assets/js/i18n.js && node --check assets/js/site.js && node --check assets/js/ranger.js && node --check assets/js/gear.js && node --check assets/js/ability.js && node --check assets/js/settings.js
+      - run: node tests/ranger-evolution.cjs
       - run: node tests/i18n-contract.cjs
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/sitewide-localization.cjs
+

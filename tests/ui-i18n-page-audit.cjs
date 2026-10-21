@@ -98,9 +98,9 @@ const paths = [
             document.body.appendChild(root);
             return root.id;
           });
-          await page.waitForFunction(() => document.querySelector("#audit-game-specific-terms span")?.textContent === "8-Star Hyper Evolution");
+          await page.waitForFunction(() => document.querySelector("#audit-game-specific-terms span")?.textContent === "Hyper 8 Stars");
           const labels = await page.locator("#audit-game-specific-terms span").allTextContents();
-          assert.deepEqual(labels, ["8-Star Hyper Evolution", "Ultra 9 Stars", "15 pt/sec", "1.5 sec/attack", "Rank #12 · 31 / 50 members"]);
+          assert.deepEqual(labels, ["Hyper 8 Stars", "Ultra 9 Stars", "15 pt/sec", "1.5 sec/attack", "Rank #12 · 31 / 50 members"]);
         }
         if(path==="/settings/"){
           assert.equal(await page.locator('input[name="language"]:checked').inputValue(),"en");
@@ -141,3 +141,4 @@ const paths = [
     await browser.close();
   }
 })().catch(e => {console.error(e);process.exitCode=1;});
+

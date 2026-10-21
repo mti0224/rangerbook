@@ -61,7 +61,7 @@ const fixtures = {
       await assertText(page.locator('[data-i18n="stats.respawn"]'), get('stats.respawn', locale));
       const desktopLabel = await page.locator('[data-i18n="stats.respawn"]').evaluate(x => ({width:x.clientWidth, scroll:x.scrollWidth}));
       assert.ok(desktopLabel.width >= desktopLabel.scroll - 1, 'Production label must fit the desktop card');
-      await assertText(page.locator('#rangerModalContent .detail-section').nth(3).locator('.empty-state'), get('empty.awakenedAbilities', locale));
+      await assertText(page.locator('#rangerModalContent [data-detail-section="awakening"] .empty-state'), get('empty.awakenedAbilities', locale));
       await page.locator('#rangerLevelRange').fill('180');
       await assertText(page.locator('.ranger-level-output'), '180/240');
       await page.setViewportSize({width:390,height:844});
@@ -104,3 +104,4 @@ async function assertText(locator, expected) {
   }), expected});
   assert.equal((await locator.textContent()).trim(), expected);
 }
+

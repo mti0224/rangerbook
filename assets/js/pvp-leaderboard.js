@@ -141,7 +141,7 @@
     elements.body.innerHTML = filtered.map((player) => {
       const name = playerName(player);
       return `
-        <tr class="pvp-player-row" data-player-rank="${escapeHtml(player.rank)}" data-player-key="${escapeHtml(player.detailKey || "")}" tabindex="0" role="button" aria-label="查看 ${escapeHtml(name)} 的隊伍">
+        <tr class="pvp-player-row" data-player-rank="${escapeHtml(player.rank)}" data-player-key="${escapeHtml(player.detailKey || "")}" tabindex="0" role="button" aria-label="${escapeHtml(window.RangerbookI18n.format("site.pvp.viewTeam",[name],`查看 ${name} 的隊伍`))}">
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${escapeHtml(player.rank)}</span>${rankDelta(player)}</td>
           <td><div class="pvp-player-main"><div><div class="pvp-player-name">${escapeHtml(name)}</div><div class="pvp-player-sub">${levelHtml(player.level, player.displayLevel, player.nationalFlag)}</div></div></div></td>
           <td class="pvp-score">${escapeHtml(formatNumber(player.score))}</td>
@@ -250,7 +250,7 @@
     const code = String(unit?.awakeAbilityCode || "").trim();
     if (!code) return { name: "未設定覺醒能力", icon: "" };
     const info = abilityMap[code] || {};
-    return { name: info["名稱"] || code, icon: info.icon || String(unit?.awakeAbilityIcon || "").trim() };
+    return { name: window.RangerbookI18n?.display?.(info,"nameKey",info["名稱"] || code) || info["名稱"] || code, icon: info.icon || String(unit?.awakeAbilityIcon || "").trim() };
   }
 
   function talentInfo(unit) {
@@ -527,3 +527,4 @@
   load();
   window.setInterval(load, REFRESH_MS);
 })();
+

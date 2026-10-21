@@ -1,4 +1,5 @@
 (() => {
+  const display = (record, field, value) => window.RangerbookI18n?.display?.(record,field,value) ?? value;
   const ROOT = window.location.pathname.includes("/rangerbook/") ? "/rangerbook/" : "/";
   const INDEX_URL = `${ROOT}res/Ranger_index.json`;
   const DATA_URL = `${ROOT}res/Rangers_data.json`;
@@ -141,7 +142,7 @@
 
   function skillMetaValue(skill, field, animationMeta = null, skillKey = "") {
     if (!skill && field !== "前搖時間") return "-";
-    if (field === "名稱") return fmt(skill?.["技能名稱"] || skill?.name || "-");
+    if (field === "名稱") return fmt(display(skill,"nameKey",skill?.["技能名稱"] || skill?.name || "-"));
     if (field === "發動率") return fmt(skill?.["發動機率"] || skill?.["技能發動率"] || skill?.["技能發動機率"]);
     if (field === "冷卻") return fmt(skill?.["技能冷卻時間"] || skill?.["冷卻時間"]);
     if (field === "觸發基準") return fmt(skill?.["觸發基準"] || skill?.["觸發條件"] || skill?.["基準"]);
@@ -166,7 +167,7 @@
 
   function abilityNameFromDetail(detail, fallback = "") {
     if (!detail || typeof detail !== "object") return fallback;
-    return text(detail["名稱"] || detail.name || detail["能力"] || fallback);
+    return text(display(detail,"nameKey",detail["名稱"] || detail.name || detail["能力"] || fallback));
   }
 
   function abilityIconFromDetail(detail) {
@@ -181,14 +182,14 @@
     if (typeof value === "object") {
       const code = text(value.abilityCode || value["abilityCode"] || value.code || value["code"] || fallbackCode);
       const detail = getAbilityDetail(code) || getAbilityDetail(value["能力"] || value["名稱"] || value.name);
-      const name = text(value["能力"] || value["名稱"] || value.name || abilityNameFromDetail(detail, code));
+      const name = text(display(detail,"nameKey",value["能力"] || value["名稱"] || value.name || abilityNameFromDetail(detail, code)));
       const icon = text(value.icon || value["icon"] || abilityIconFromDetail(detail));
       return name && !isNone(name) ? [{ name, code, icon }] : [];
     }
 
     const code = text(fallbackCode);
     const detail = getAbilityDetail(code) || getAbilityDetail(value);
-    const name = text(value) || abilityNameFromDetail(detail, code);
+    const name = display(detail,"nameKey",text(value) || abilityNameFromDetail(detail, code));
     const icon = abilityIconFromDetail(detail);
     return name && !isNone(name) ? [{ name, code, icon }] : [];
   }
@@ -535,7 +536,7 @@
     }
     const ranger = state.fullMap.get(id);
     if (!ranger) {
-      renderResult(`找不到角色資料：${id}`);
+      renderResult(window.RangerbookI18n.format("site.ranger.missingData",[id],`找不到角色資料：${id}`));
       return;
     }
     state[side] = ranger;
@@ -570,3 +571,4 @@
   renderResult();
   loadIndex();
 })();
+

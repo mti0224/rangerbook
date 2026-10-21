@@ -9,7 +9,7 @@ const load=n=>JSON.parse(fs.readFileSync(path.join(root,'res/v2',n+'.json'),'utf
   const requested=[];
   const win={fetch:async url=>{
    requested.push(url);const p=new URL(url,'https://test.invalid').pathname;
-   assert.ok(p.startsWith('/res/v2/') || p==='/assets/locales/personal-analysis-overrides.json','Unsupported V2 adapter request: '+p);
+   assert.ok(p.startsWith('/res/v2/') || ['/assets/locales/personal-analysis-overrides.json','/assets/locales/sitewide-overrides.json'].includes(p),'Unsupported V2 adapter request: '+p);
    return new Response(fs.readFileSync(path.join(root,p),'utf8'),{headers:{'Content-Type':'application/json'}});
   }};
   const ctx={window:win,location:{pathname:'/ranger/ranger/',origin:'https://test.invalid',href:'https://test.invalid/ranger/ranger/'},
@@ -42,7 +42,7 @@ const load=n=>JSON.parse(fs.readFileSync(path.join(root,'res/v2',n+'.json'),'utf
   }
   const words=await (await win.fetch('https://test.invalid/assets/locales/ui.json')).json();
   assert.ok(words[locale]);
-  assert.ok(requested.every(x=>x.includes('/res/v2/') || x.includes('/assets/locales/personal-analysis-overrides.json')));
+  assert.ok(requested.every(x=>x.includes('/res/v2/') || ['personal-analysis-overrides.json','sitewide-overrides.json'].some(name=>x.includes('/assets/locales/'+name))));
   const overrides=JSON.parse(fs.readFileSync(path.join(root,'assets/locales/personal-analysis-overrides.json'),'utf8'));
   const description=overrides.find(x=>x.key==='UI:analysis.help.elementBody');
   assert.equal(words[locale]['analysis.help.elementBody'],description[locale==='zh-Hant'?'zh_TW':locale],
@@ -50,3 +50,4 @@ const load=n=>JSON.parse(fs.readFileSync(path.join(root,'res/v2',n+'.json'),'utf
   console.log('V2_ADAPTER_OK '+locale+' '+win.RangerbookV2.routes.length+' view contracts');
  }
 })().catch(e=>{console.error(e);process.exitCode=1;});
+

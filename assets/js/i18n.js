@@ -118,14 +118,12 @@
     [/^困難關卡第\s*(\d+)\s*關$/, m => "Hard Stage " + m[1]],
     [/^迷宮關卡\s*(\d+[-－]\d+)$/, m => "Labyrinth Stage " + m[1]]
   ];
-  const uiAttrNames = ["placeholder", "title", "aria-label", "alt"];
+  const uiAttrNames = ["placeholder", "title", "aria-label", "alt", "data-expand-text", "data-collapse-text"];
   function uiText(original) {
     if (typeof original !== "string") return original;
     if (!localeInitialized) return original;
     original = displayBreaks(original);
     if (locale === "zh-Hant") return original;
-    const exact = window.RangerbookV2?.translateText(original);
-    if (exact && exact !== original) return displayBreaks(exact);
     const cleaned = original.replace(/\s+/g, " ").trim();
     if (!cleaned) return original;
     // User-specified evolution naming takes precedence over old generic UI copies.
@@ -133,6 +131,8 @@
     if (hyper && locale === "en") return "Hyper " + hyper[1] + " Stars";
     const ultra = cleaned.match(/^(?:終極進化|究極進化)\s*(\d+)\s*星$/);
     if (ultra && locale === "en") return "Ultra " + ultra[1] + " Stars";
+    const exact = window.RangerbookV2?.translateText(original);
+    if (exact && exact !== original) return displayBreaks(exact);
     const direct = englishByChinese.get(cleaned);
     if (direct) return direct;
     const gameTerm = gameTermsByChinese.get(cleaned) || officialByChinese.get(cleaned);
@@ -215,29 +215,40 @@
         }
       }
       const ariaKey = node.getAttribute("data-i18n-aria-label");
-      if (ariaKey && dictionary[ariaKey] !== undefined) node.setAttribute("aria-label",dictionary[ariaKey]);
+      if (ariaKey && dictionary[ariaKey] !== undefined && node.getAttribute("aria-label") !== dictionary[ariaKey]) node.setAttribute("aria-label",dictionary[ariaKey]);
       const inputKey = node.getAttribute("data-i18n-placeholder");
-      if (inputKey && dictionary[inputKey] !== undefined) node.setAttribute("placeholder",dictionary[inputKey]);
+      if (inputKey && dictionary[inputKey] !== undefined && node.getAttribute("placeholder") !== dictionary[inputKey]) node.setAttribute("placeholder",dictionary[inputKey]);
     }
     autoTranslate(rootNode);
     document.documentElement.lang = locale === "jp" ? "ja" : locale;
   }
   async function loadUi(selected) {
     try {
-      const [baseResult,pwaResult] = await Promise.allSettled([
+      const [baseResult,pwaResult,overridesResult] = await Promise.allSettled([
         json(root + "assets/locales/ui.json?v=20261018-team-overview2"),
-        json(root + "assets/locales/pwa.json")
+        json(root + "assets/locales/pwa.json"),
+        json(root + "assets/locales/sitewide-overrides.json?v=20261021-1")
       ]);
       const all = baseResult.status === "fulfilled" ? baseResult.value : {};
       const pwa = pwaResult.status === "fulfilled" ? pwaResult.value : {};
       for (const lang of supported) all[lang] = {...all[lang],...pwa[lang]};
+      if (overridesResult.status === "fulfilled") {
+        for (const row of overridesResult.value) for (const lang of supported) {
+          const value=row[lang === "zh-Hant" ? "zh_TW" : lang];
+          if (value) all[lang][row.key.replace(/^UI:/,"")]=value;
+        }
+      }
       if (selected !== locale) return;
       const baseline = all["zh-Hant"] || {};
       dictionary = Object.fromEntries(Object.entries(Object.assign({}, baseline, all[selected] || {}))
         .map(([key,value]) => [key,displayBreaks(value).replace(/[\r\n]+/g," ")]));
       englishByChinese = new Map();
       if (selected !== "zh-Hant") {
-        for (const [key, original] of Object.entries(baseline)) {
+        // Shared category text uses the canonical tag wording. Analysis labels
+        // remain explicitly keyed; publisher row order must not choose a label.
+        const entries = Object.entries(baseline).sort(([a],[b]) =>
+          Number(b.startsWith("tag.")) - Number(a.startsWith("tag.")));
+        for (const [key, original] of entries) {
           const translated = all[selected]?.[key];
           if (typeof original !== "string" || !translated || translated === original) continue;
           const normalized = original.replace(/\s+/g, " ").trim();
@@ -315,6 +326,14 @@
       });
     },
     readyGame, lookup, matchOfficial,
+    display(record, field, original) {
+      const ref = record?.__v2?.[field];
+      // Identical Chinese descriptions may have different official translations.
+      // Use the bound record key instead of guessing from its visible text.
+      return ref && window.RangerbookV2
+        ? displayBreaks(window.RangerbookV2.render(ref, window.RangerbookV2.locale))
+        : uiText(original);
+    },
     custom(key, original) {
       return gameTermsByKey.get(key) || gameData[locale]?.custom?.[key] || original;
     },
@@ -350,7 +369,9 @@
   }
   const observer = new MutationObserver(mutations => {
     for (const record of mutations) {
-      if (record.type === "characterData") {
+      if (record.type === "attributes") {
+        pending.add(record.target);
+      } else if (record.type === "characterData") {
         pending.add(record.target);
       } else for (const node of record.addedNodes) {
         if (node.nodeType === 1 || node.nodeType === 3) pending.add(node);
@@ -361,5 +382,7 @@
       queueMicrotask(flush);
     }
   });
-  observer.observe(document.documentElement, {subtree:true,childList:true,characterData:true});
+  observer.observe(document.documentElement, {subtree:true,childList:true,characterData:true,
+    attributes:true,attributeFilter:[...uiAttrNames,"data-i18n","data-i18n-placeholder","data-i18n-aria-label"]});
 })();
+
