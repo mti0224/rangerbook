@@ -93,9 +93,14 @@ async function assertTranslated(page,locale,selector) {
       await ready(page,'/settings/');
       // Existing attributes changed after insertion must translate, without observer loops.
       await page.evaluate(() => {const button=document.createElement('button');button.id='qaAttrs';button.textContent='QA';document.body.append(button);});
-      await page.locator('#qaAttrs').evaluate(el => {el.title='開啟選單';el.setAttribute('aria-label','關閉選單');});
+      await page.locator('#qaAttrs').evaluate(el => {
+        el.title='開啟選單';el.setAttribute('aria-label','關閉選單');
+        el.setAttribute('data-expand-text','展開');el.setAttribute('data-collapse-text','收合');
+      });
       await page.waitForFunction(want => document.querySelector('#qaAttrs').title===want,expected('site.nav.openMenu',locale));
       assert.equal(await page.locator('#qaAttrs').getAttribute('aria-label'),expected('site.nav.closeMenu',locale));
+      assert.equal(await page.locator('#qaAttrs').getAttribute('data-expand-text'),expected('action.expand',locale));
+      assert.equal(await page.locator('#qaAttrs').getAttribute('data-collapse-text'),expected('action.collapse',locale));
       const translated = await page.evaluate(() => [window.RangerbookI18n.uiText('攻擊力 123,456'),window.RangerbookI18n.uiText('5等，共240等'),window.RangerbookI18n.uiText('關卡 1-1'),window.RangerbookI18n.uiText('0.5秒 ~ 1秒')]);
       assert.deepEqual(translated,[expected('site.dynamic.attack',locale,'123,456'),expected('site.dynamic.levelProgress',locale,5,240),expected('site.dynamic.stageCoordinate',locale,1,1),expected('site.dynamic.secondRange',locale,'0.5',1)]);
       if(locale === 'en') assert.equal(await page.evaluate(() => window.RangerbookI18n.uiText('超進化8星')),'Hyper 8 Stars');

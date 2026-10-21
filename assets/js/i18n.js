@@ -118,7 +118,7 @@
     [/^困難關卡第\s*(\d+)\s*關$/, m => "Hard Stage " + m[1]],
     [/^迷宮關卡\s*(\d+[-－]\d+)$/, m => "Labyrinth Stage " + m[1]]
   ];
-  const uiAttrNames = ["placeholder", "title", "aria-label", "alt"];
+  const uiAttrNames = ["placeholder", "title", "aria-label", "alt", "data-expand-text", "data-collapse-text"];
   function uiText(original) {
     if (typeof original !== "string") return original;
     if (!localeInitialized) return original;
