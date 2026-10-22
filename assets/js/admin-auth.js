@@ -42,7 +42,7 @@
         "玩家資料查詢失敗：": "site.pvp.queryError"
       };
       const prefix = Object.keys(prefixes).find(value => typeof message === "string" && message.startsWith(value));
-      const displayMessage = prefix && i18n
+      const displayMessage = typeof message === "string" && message.startsWith("member.") ? (i18n?.t(message, message) || message) : prefix && i18n
         ? i18n.format(prefixes[prefix], [i18n.uiText(message.slice(prefix.length))], message)
         : i18n?.uiText(message) || message;
       const error = new Error(displayMessage);
@@ -60,7 +60,9 @@
       account: payload?.account || null,
       role: payload?.role || "user",
       must_change_password: Boolean(payload?.must_change_password),
-      admin_application_status: payload?.admin_application_status || null
+      admin_application_status: payload?.admin_application_status || null,
+      mfa_required: Boolean(payload?.mfa_required),
+      setup_required: Boolean(payload?.setup_required)
     };
     window.dispatchEvent(new CustomEvent("rangerbook:auth-changed", { detail: { ...currentUser } }));
     return { ...currentUser };
@@ -90,10 +92,10 @@
     return { ...currentUser };
   }
 
-  async function register(account, password) {
+  async function register(account, password, email, captcha) {
     return api("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ account, password })
+      body: JSON.stringify({ account, password, email, captcha })
     });
   }
 

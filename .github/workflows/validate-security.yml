@@ -3,6 +3,16 @@ on:
   pull_request:
     paths:
       - 'backend/**'
+      - 'membership/**'
+      - 'account/**'
+      - 'account-action/**'
+      - 'personal-teams/**'
+      - 'assets/js/member-*.js'
+      - 'tests/member-*'
+      - 'tests/test_membership*.py'
+      - 'assets/pwa/service-worker.js'
+      - 'assets/css/admin.css'
+      - 'assets/css/sidebar-drawer.css'
       - 'ops/**'
       - 'deploy/**'
       - 'res/resource_asset_manifest.json'
@@ -23,7 +33,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r membership/requirements.txt fastapi requests argon2-cffi pytest httpx
+      - run: python -m pytest -q tests/test_membership_core.py
+      - run: node scripts/build-pwa.mjs
       - run: node scripts/check-public-boundary.mjs
       - run: node tests/security-pages.mjs && node tests/security-auth.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
-      - run: node tests/security-browser.cjs
+      - run: node tests/security-browser.cjs && node tests/member-browser.cjs

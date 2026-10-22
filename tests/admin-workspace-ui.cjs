@@ -8,6 +8,7 @@ const roles = ["guest","user","admin","super_admin"];
   try {
   for (const role of roles) {
     const page = await browser.newPage({ viewport: { width: 1080, height: 800 } });
+    await require("./local-static-fixture.cjs").install(page,base);
     await require("./region-fixture.cjs").mockTaiwan(page);
     const protectedPaths=[];
     await page.route("https://rangerbook-auth.warmycat.com/**", async route => {
@@ -32,7 +33,7 @@ const roles = ["guest","user","admin","super_admin"];
         (expected==="guest"||a.getUser().role===expected);
     },role,{timeout:15000});
     const state=async()=>page.evaluate(()=>{
-      const hidden=id=>document.getElementById(id).hidden;
+      const hidden=id=>document.getElementById(id)?.hidden ?? true;
       return {auth:hidden("adminAuthCard"),session:hidden("adminSessionCard"),
         workspace:hidden("adminWorkspace"),personal:hidden("adminPersonalPanel"),password:hidden("adminPasswordCard"),
         resources:hidden("adminResourceUpdatesCard"),accounts:hidden("superAdminPanel"),
@@ -44,12 +45,12 @@ const roles = ["guest","user","admin","super_admin"];
     if(role==="guest"){assert.equal(s.auth,false);assert.equal(s.workspace,true);}
     else if(role==="user"){
       assert.equal(s.session,false);assert.equal(s.workspace,false);
-      assert.deepEqual(s.selected,["password"]);assert.equal(s.password,false);assert.equal(s.personal,true);
+      assert.deepEqual(s.selected,[]);assert.equal(s.password,true);assert.equal(s.personal,true);
       assert.equal(s.resources,true);assert.equal(s.accounts,true);assert.equal(s.accountTab,true);assert.equal(s.trafficTab,true);
     }
     else{
       assert.equal(s.session,false);assert.equal(s.workspace,false);assert.equal(s.name,"test_"+role);
-      assert.deepEqual(s.selected,["personal"]);assert.equal(s.personal,false);assert.equal(s.password,true);assert.equal(s.resources,true);assert.equal(s.accounts,true);
+      assert.deepEqual(s.selected,["resources"]);assert.equal(s.personal,true);assert.equal(s.password,true);assert.equal(s.resources,false);assert.equal(s.accounts,true);
       assert.equal(s.accountTab,role!=="super_admin");assert.equal(s.trafficTab,false);
       await page.locator("#adminResourcesTab").click();
       s=await state();
@@ -61,7 +62,7 @@ const roles = ["guest","user","admin","super_admin"];
         await page.locator("#adminAccountsTab").click();
         s=await state();assert.deepEqual(s.selected,["accounts"]);assert.equal(s.accounts,false);assert.equal(s.resources,true);
         await page.locator("#adminAccountsTab").focus();
-        await page.keyboard.press("Home");s=await state();assert.deepEqual(s.selected,["personal"]);
+        await page.keyboard.press("Home");s=await state();assert.deepEqual(s.selected,["resources"]);
       }
     }
     if(role==="guest"||role==="user")assert.equal(protectedPaths.length,0,"non-admin must not request protected records");

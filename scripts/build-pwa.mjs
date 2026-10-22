@@ -16,7 +16,7 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 async function files(dir) {
   const out = [];
   for (const entry of await readdir(path.join(root, dir), {withFileTypes:true})) {
-    if (entry.name.startsWith('.') || ['node_modules','backend','deploy','docs','tests','scripts'].includes(entry.name)) continue;
+    if (entry.name.startsWith('.') || ['node_modules','backend','deploy','docs','tests','scripts','membership'].includes(entry.name)) continue;
     const name = path.posix.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...await files(name)); else out.push(name);
   }

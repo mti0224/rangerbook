@@ -184,3 +184,5 @@ body.gt-app .gt-sidebar-nav button.gt-nav-hub:focus-visible {
 }
 body.gt-app .gt-sidebar-nav button.gt-nav-hub[aria-current="page"] { box-shadow: inset 2px 0 var(--primary); }
 body.gt-app .gt-sidebar-nav button.gt-nav-hub[aria-current="page"]::before { color: var(--primary); }
+
+body.gt-app .gt-user-navigation { margin-top: .85rem; padding-top: .65rem; border-top: 1px solid var(--line); }

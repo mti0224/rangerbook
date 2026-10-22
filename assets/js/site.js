@@ -488,17 +488,42 @@
   if (gtPath.startsWith(rootPrefix + "admin/")) {
     gtAdminLink.setAttribute("aria-current", "page");
   }
-  // Admin is an ordinary sidebar link directly following Sponsor, not a footer.
-  gtNav.append(gtAdminLink);
+  const gtUserGroup = document.createElement("div");
+  gtUserGroup.className = "gt-user-navigation";
+  gtUserGroup.hidden = true;
+  const gtUserLabel = document.createElement("div");
+  gtUserLabel.className = "gt-sidebar-label";
+  gtUserLabel.dataset.i18n = "member.user";
+  gtUserLabel.textContent = "使用者";
+  gtUserGroup.append(gtUserLabel);
+  for (const [path,key,label] of [["personal-teams/","admin.personal.heading","個人隊伍"],["account/","member.security","隱私權與密碼"]]) {
+    const link = document.createElement("a");
+    link.href = rootPrefix + path; link.dataset.i18n = key; link.textContent = label;
+    if(gtPath.startsWith(rootPrefix + path)) link.setAttribute("aria-current","page");
+    gtUserGroup.append(link);
+  }
+  gtUserGroup.append(gtAdminLink);
+  gtNav.append(gtUserGroup);
+  let gtMemberNavigation = false;
+  let gtLastUser = null;
+  fetch("https://rangerbook-auth.warmycat.com/auth/features", {cache:"no-store",credentials:"include"})
+    .then(r=>r.ok?r.json():null).then(features=>{
+      gtMemberNavigation = Boolean(features?.member_navigation);
+      setAdminLinkVisibility(gtLastUser);
+    }).catch(()=>{});
   gtFoot.append(gtFootCaption);
   gtSidebar.append(gtDrawerTop, gtLabel, gtNav, gtFoot);
 
   // The admin link is a navigation convenience, never an authorization check.
   // Verify the existing server-side session. Protected APIs still enforce roles.
   function setAdminLinkVisibility(user) {
-    gtAdminLink.hidden = !(user?.logged_in && (user.role === "admin" || user.role === "super_admin"));
+    gtLastUser = user;
+    const complete = user?.logged_in && !user.must_change_password && !user.mfa_required && !user.setup_required;
+    const admin = complete && ["admin","super_admin"].includes(user.role);
+    gtUserGroup.hidden = !(complete && (admin || gtMemberNavigation));
+    gtAdminLink.hidden = !admin;
     gtProtectedLinks.forEach(({ link, roles }) => {
-      link.hidden = !(user?.logged_in && roles.includes(user.role));
+      link.hidden = !(complete && roles.includes(user.role));
     });
   }
   window.addEventListener("rangerbook:auth-changed", event => {
@@ -512,7 +537,7 @@
     // Admin and player-search pages load the existing RangerbookAuth module
     // immediately after site.js; it will emit rangerbook:auth-changed.
     fetch("https://rangerbook-auth.warmycat.com/auth/me", {
-      method: "GET", credentials: "include", headers: { Accept: "application/json" }
+      method: "GET", credentials: "include", cache: "no-store", headers: { Accept: "application/json" }
     }).then(response => response.ok ? response.json() : null)
       .then(setAdminLinkVisibility)
       .catch(() => setAdminLinkVisibility(null));

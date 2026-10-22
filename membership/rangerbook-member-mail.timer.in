@@ -1,0 +1,10 @@
+[Unit]
+Description=Poll Rangerbook transactional email outbox
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+Unit=rangerbook-member-mail.service
+
+[Install]
+WantedBy=timers.target

@@ -53,7 +53,7 @@
     status.className = "admin-message" + (error ? " error" : "");
   }
   function adminAllowed() {
-    return auth.isAdmin() && !section.hidden;
+    return auth.getUser().logged_in && !auth.getUser().must_change_password && !section.hidden;
   }
   function requestBusy(value) {
     busy = value;
@@ -120,7 +120,7 @@
     if (id !== version || !adminAllowed()) return;
     setStatus(t("status.loading", "讀取個人隊伍狀態中…"));
     try {
-      const info = await auth.api("/admin/game-binding/status");
+      const info = await auth.api("/member/game-binding/status");
       if (id !== version || !adminAllowed()) return;
       if (info.bound) {
         unboundPanel.hidden = true;
@@ -128,7 +128,7 @@
         const player = info.player || {};
         get("adminPersonalBoundLabel").textContent = (player.player_name || t("status.unknownPlayer","未知玩家")) +
           " · " + (player.guild_name || t("status.noGuild","無公會"));
-        const privateInfo = await auth.api("/admin/personal-teams");
+        const privateInfo = await auth.api("/member/personal-teams");
         if (id !== version || !adminAllowed()) return;
         drawTeams(privateInfo.teams);
         if (privateInfo.teams && (!Array.isArray(privateInfo.teams.pvpteam) || !Array.isArray(privateInfo.teams.guildwar))) {
@@ -158,7 +158,7 @@
     selectedPanel.hidden = true;
     selected = null;
     try {
-      const data = await auth.api("/admin/game-players/search?q=" + encodeURIComponent(query));
+      const data = await auth.api("/member/game-players/search?q=" + encodeURIComponent(query));
       if (id !== version || !adminAllowed()) return;
       const items = Array.isArray(data.items) ? data.items : [];
       for (const item of items) {
@@ -202,7 +202,7 @@
     requestBusy(true);
     setStatus(t("status.checkingMedal","正在核對公會獎牌並建立驗證任務…"));
     try {
-      const challenge = await auth.api("/admin/game-binding/start", {
+      const challenge = await auth.api("/member/game-binding/start", {
         method: "POST", body: JSON.stringify({ candidateId: selected.candidateId, medal })
       });
       if (id !== version || !adminAllowed()) return;
@@ -222,7 +222,7 @@
     requestBusy(true);
     setStatus(t("status.checkingSwap","正在向官方 API 查詢最新隊伍配置…"));
     try {
-      const response = await auth.api("/admin/game-binding/verify", {
+      const response = await auth.api("/member/game-binding/verify", {
         method: "POST", body: JSON.stringify({ challengeId })
       });
       if (id !== version || !adminAllowed()) return;
@@ -246,7 +246,7 @@
     requestBusy(true);
     setStatus(t("status.importing","正在匯入最新隊伍…"));
     try {
-      await auth.api("/admin/personal-teams/import", { method: "POST" });
+      await auth.api("/member/personal-teams/import", { method: "POST" });
       if (id !== version || !adminAllowed()) return;
       await refresh();
       setStatus(t("status.imported","個人隊伍已更新。"));
@@ -275,7 +275,7 @@
     requestBusy(true);
     setStatus(t("status.unbinding","正在解除綁定並刪除私人隊伍…"));
     try {
-      await auth.api("/admin/game-binding/unbind", {
+      await auth.api("/member/game-binding/unbind", {
         method: "POST", body: JSON.stringify({ password })
       });
       if (id !== version || !adminAllowed()) return;
@@ -300,7 +300,7 @@
   });
 
   window.addEventListener("rangerbook:auth-changed", event => {
-    if (!event.detail?.logged_in || !auth.isAdmin()) {
+    if (!event.detail?.logged_in || event.detail.must_change_password) {
       ++version;
       clearPrivateView();
       return;

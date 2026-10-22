@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <script src="../assets/js/pwa-head.js"></script>
+
+  <script>
+    (() => {
+      const root = location.pathname.startsWith("/rangerbook/") ? "/rangerbook/" : "/";
+      document.write('<script src="' + root + 'assets/js/visitor-region.js?v=20261013-region1"><\/script>');
+    })();
+  </script>
+  <style>html[data-rb-localizing] body{visibility:hidden}html[data-rb-localizing]::after{content:"Loading…";position:fixed;inset:45% 0;text-align:center;font:16px sans-serif}</style>
+
+  <script>
+    // Apply the saved theme before any stylesheet can paint the page.
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer"><title>帳號｜LINE Rangers Database</title>
+  <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261018-unified980">
+  <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
+  <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
+  <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
+  <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261013-v2.5">
+  <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
+  <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261014-toggle1">
+</head>
+<body class="gt-app"><div id="site-header"></div><main class="admin-page"><div class="admin-shell"><section class="admin-card"><h1 data-i18n="admin.personal.heading">個人隊伍</h1><p id="memberGate" data-i18n="member.loginRequired">請先登入並完成驗證。</p></section>      <section id="adminPersonalPanel" class="admin-workspace-panel" hidden>
+        <div class="admin-session-head">
+          <div>
+            <h2 data-i18n="admin.personal.heading">個人隊伍</h2>
+            <p class="admin-muted" data-i18n="admin.personal.intro">綁定自己的 LINE Rangers 遊戲帳號後，可匯入一般隊伍 1～5、PvP 防守及公會戰進攻隊伍，並檢視隊伍分析。</p>
+          </div>
+        </div>
+        <div id="adminPersonalStatus" class="admin-message" role="status" aria-live="polite"></div>
+        <div id="adminPersonalUnbound" class="personal-verify">
+          <h3 data-i18n="admin.personal.unbound.title">尚未匯入任何隊伍</h3>
+          <p class="admin-muted" data-i18n="admin.personal.unbound.guide">請先搜尋遊戲內名稱，再完成公會獎牌確認與隊伍位置交換。</p>
+          <form id="adminPersonalSearchForm" class="admin-form">
+            <label><span data-i18n="admin.personal.search.label">遊戲內名稱</span>
+              <input id="adminPersonalSearch" type="search" minlength="2" maxlength="64" data-i18n-placeholder="admin.personal.search.placeholder" placeholder="輸入至少兩個字元" autocomplete="off" required>
+            </label>
+            <button type="submit" class="primary personal-primary" data-i18n="admin.personal.search.button">搜尋玩家</button>
+          </form>
+          <div id="adminPersonalCandidates" class="personal-candidates" role="listbox" aria-label="玩家搜尋候選名單" data-i18n-aria-label="admin.personal.search.candidatesLabel"></div>
+          <div id="adminPersonalSelected" hidden>
+            <p id="adminPersonalSelectedName"></p>
+            <form id="adminPersonalMedalForm" class="admin-form">
+              <h3 data-i18n="admin.personal.medal.title">1／2：確認公會獎牌數量</h3>
+              <p class="admin-muted" data-i18n="admin.personal.medal.guide">請輸入遊戲內目前持有的公會獎牌數量（半形數字）。</p>
+              <label><span data-i18n="admin.personal.medal.label">公會獎牌</span>
+                <input id="adminPersonalMedal" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="12" autocomplete="off" data-i18n-placeholder="admin.personal.medal.placeholder" placeholder="例如：125" required>
+              </label>
+              <button type="submit" class="primary personal-primary" data-i18n="admin.personal.medal.submit">確認並繼續</button>
+            </form>
+          </div>
+          <div id="adminPersonalChallenge" hidden>
+            <h3 data-i18n="admin.personal.challenge.title">2／2：交換指定 Ranger 的位置</h3>
+            <p id="adminPersonalChallengeInstruction" class="personal-instruction"></p>
+            <p class="admin-muted" data-i18n="admin.personal.challenge.guide">請在遊戲中完成並儲存交換，再返回資料站驗證。成功後請恢復原本位置，再匯入隊伍。</p>
+            <p id="adminPersonalChallengeExpiry" class="admin-muted"></p>
+            <button id="adminPersonalVerify" type="button" class="primary personal-primary" data-i18n="admin.personal.challenge.verify">我已交換，開始驗證</button>
+          </div>
+        </div>
+        <div id="adminPersonalBound" hidden>
+          <h3 data-i18n="admin.personal.bound.title">已綁定的遊戲帳號</h3>
+          <p id="adminPersonalBoundLabel" class="admin-muted"></p>
+          <div class="admin-actions">
+            <button id="adminPersonalImport" class="primary" type="button" data-i18n="admin.personal.bound.import">匯入／更新我的隊伍</button>
+            <button id="adminPersonalUnbind" class="secondary" type="button" data-i18n="admin.personal.bound.unbind">解除遊戲帳號綁定</button>
+          </div>
+          <p id="adminPersonalLastImported" class="admin-muted"></p>
+          <form id="adminPersonalUnbindForm" class="admin-form personal-unbind-form" hidden>
+            <h4 data-i18n="admin.personal.unbind.title">請確認解除綁定</h4>
+            <p class="admin-muted" data-i18n="admin.personal.unbind.guide">解除後此帳號已匯入的個人隊伍將刪除。公開排名不受影響；之後可重新驗證其他遊戲帳號。</p>
+            <label><span data-i18n="admin.personal.unbind.password">請輸入目前資料站帳號密碼</span>
+              <input id="adminPersonalUnbindPassword" type="password" autocomplete="current-password" maxlength="128" required>
+            </label>
+            <div class="admin-actions">
+              <button type="submit" class="danger" data-i18n="admin.personal.unbind.confirm">確認解除綁定</button>
+              <button id="adminPersonalUnbindCancel" type="button" class="secondary" data-i18n="admin.personal.unbind.cancel">取消</button>
+            </div>
+          </form>
+          <div id="adminPersonalTeams" class="personal-team-viewer">
+            <iframe id="adminPersonalViewer" title="我的 LINE Rangers 隊伍與隊伍分析" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
+          </div>
+        </div>
+      </section>
+
+</div></main>
+<script src="../assets/js/v2-data.js"></script><script src="../assets/js/site.js"></script><script src="../assets/js/admin-auth.js"></script>
+<script src="../assets/js/admin-personal-teams.js"></script>
+<script src="../assets/js/member-page.js"></script>
+</body></html>

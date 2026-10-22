@@ -840,3 +840,10 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
   background: transparent;
   overflow: hidden;
 }
+
+/* Member security cards retain the existing admin shell spacing. */
+#memberSecurityArea { display: grid; gap: 20px; }
+#memberSecurityArea[hidden] { display: none; }
+#memberRecovery { white-space: pre-wrap; overflow-wrap: anywhere; }
+#memberManualKey { overflow-wrap: anywhere; }
+.gt-user-navigation { margin-top: .85rem; padding-top: .65rem; border-top: 1px solid var(--line); }

@@ -6,3 +6,7 @@ pvp_config.json
 # Python caches
 __pycache__/
 *.pyc
+
+# Generated Pages/PWA build output
+_site/
+res/v2/fast/

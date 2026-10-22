@@ -84,7 +84,7 @@ self.addEventListener('message',event=>{
 function privateRequest(request,url) {
   return request.method!=='GET' || url.origin!==BASE.origin || !url.pathname.startsWith(BASE.pathname) ||
     request.headers.has('Authorization') || /(?:token|session|auth|code|password)/i.test([...url.searchParams.keys()].join(' ')) ||
-    /^(?:admin|auth|api|sponsor|payment)(?:\/|$)/i.test(url.pathname.slice(BASE.pathname.length));
+    /^(?:admin|account|account-action|personal-teams|auth|api|sponsor|payment)(?:\/|$)/i.test(url.pathname.slice(BASE.pathname.length));
 }
 const detailRoute = name => /^gear\/[^/]+\/?$/.test(name) ||
   /^endless\/stage\/end\d+\/?$/i.test(name) || /^mainstage\/(hard|extreme)\/stage\/(hs|es)\d+\/?$/i.test(name);

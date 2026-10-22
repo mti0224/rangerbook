@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 const directories=new Set(['ability','about','admin','adventEnemy','assets','endless','eventStageEnemy',
-  'gear','guildwar','hsEnemy','infEnemy','labyrinth','mainstage','pvp','ranger','res','settings','sponsor','update','v2']);
+  'account','account-action','personal-teams','gear','guildwar','hsEnemy','infEnemy','labyrinth','mainstage','pvp','ranger','res','settings','sponsor','update','v2']);
 const rootFiles=new Set(['.nojekyll','CNAME','404.html','index.html','offline.html','manifest.webmanifest',
   'pwa-data.json','sw.js','robots.txt','sitemap.xml','favicon.ico']);
 const extensions=new Set(['.html','.css','.js','.mjs','.json','.png','.jpg','.jpeg','.gif','.svg','.webp',

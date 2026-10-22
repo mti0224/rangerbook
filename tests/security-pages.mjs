@@ -7,9 +7,9 @@ import {packagePages,isPublicFile} from '../scripts/package-pages.mjs';
 const root=await mkdtemp(path.join(tmpdir(),'rb-pages-security-'));
 try {
  const publicFiles=['index.html','CNAME','.nojekyll','sw.js','pwa-data.json','assets/js/admin-password.js',
-   'assets/pwa/icon-192.png','res/v2/rangers.json','res/裝備資料庫.json','v2/preview.js','admin/index.html'];
+   'assets/pwa/icon-192.png','res/v2/rangers.json','res/裝備資料庫.json','v2/preview.js','admin/index.html','account/index.html','personal-teams/index.html','account-action/index.html'];
  const privateFiles=['backend/rangerbook_auth/app.py','backend/rangerbook_auth/rangerbook_auth.db',
-   'backend/rangerbook_auth/.env','deploy/aws/pvp_config.json','docs/report.md','tests/test.cjs',
+   'backend/rangerbook_auth/.env','membership/service.py','membership/mail_worker.py','membership/source-manifest.json','deploy/aws/pvp_config.json','docs/report.md','tests/test.cjs',
    'res/resource_asset_manifest.json','assets/data/credentials.json','res/player_lookup_cache.json','res/private.db','assets/key.pem',
    'assets/.env','assets/js/bundle.js.map','v2/test-preview.cjs','.git/config'];
  for(const name of [...publicFiles,...privateFiles]) {

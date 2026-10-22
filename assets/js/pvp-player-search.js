@@ -575,12 +575,12 @@
     window.RangerbookTeamAnalysis?.clear();
     try {
       const [payload] = await Promise.all([
-        auth.api("/admin/personal-teams"),
+        auth.api("/member/personal-teams"),
         loadSupportData(),
         window.RangerbookI18n?.ready,
         window.RangerbookI18n?.readyGame?.()
       ]);
-      if (sequence !== playerQuerySequence || !auth.isAdmin()) return;
+      if (sequence !== playerQuerySequence || !(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) return;
       playerPayload = payload?.bound ? { teams: payload.teams || {} } : null;
       if (!playerPayload) {
         result.hidden = true;
@@ -618,7 +618,7 @@
       // Move the existing team picker out of the hidden name-search card.
       // This retains the same 7-team navigation without exposing player search.
       result.prepend(selection);
-      if (!auth.isAdmin()) { page.hidden = true; return; }
+      if (!(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) { page.hidden = true; return; }
       page.hidden = false;
       teamSelect.value = "team1";
       selection.hidden = true;
@@ -640,7 +640,7 @@
 
   window.addEventListener("message", (event) => {
     if (!personalMode || event.origin !== window.location.origin || event.source !== window.parent) return;
-    if (event.data?.type === "rangerbook-personal-refresh" && auth.isAdmin()) loadPersonalTeams();
+    if (event.data?.type === "rangerbook-personal-refresh" && auth.getUser().logged_in && !auth.getUser().must_change_password) loadPersonalTeams();
     if (event.data?.type === "rangerbook-personal-clear") {
       playerQuerySequence++;
       playerPayload = null;
@@ -652,7 +652,7 @@
 
   window.addEventListener("rangerbook:auth-changed", () => {
     if (personalMode) {
-      if (!auth.isAdmin()) {
+      if (!(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) {
         playerQuerySequence++;
         playerPayload = null;
         result.hidden = true;

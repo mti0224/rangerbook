@@ -20,6 +20,8 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     if(url.pathname==='/auth/logout' && failLogout)return route.abort();
     let json={items:[],totalRecordedBatches:0};
     if(url.pathname==='/auth/me')json={...user};
+    if(url.pathname==='/auth/features')json={members_v2:true,google:false,registration:false};
+    if(url.pathname==='/auth/security')json={totp_enabled:false,totp_required:false};
     if(url.pathname==='/auth/change-password'){changed=true;user.must_change_password=false;json={ok:true};}
     if(url.pathname==='/auth/logout'){user.logged_in=false;json={ok:true};}
     if(url.pathname==='/admin/users')json={items:[{id:'qa_target',account:'fixture_target',role:'admin',admin_application_status:'approved'}]};
@@ -37,19 +39,16 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const page=await context.newPage();page.setDefaultTimeout(15000);
   page.on('pageerror',error=>errors.push(error.message));
   page.on('dialog',async dialog=>{dialogs.push(dialog.message());await dialog.accept();});
-  await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
+  await page.goto(base+'/account/',{waitUntil:'domcontentloaded'});
   await page.locator('#adminPasswordForm').waitFor();
-  assert.equal(await page.locator('#adminPersonalTab').isVisible(),false);
-  assert.equal(await page.locator('#adminAccountsTab').isVisible(),false);
-  assert.equal(await page.locator('#adminPasswordTab').getAttribute('aria-selected'),'true');
-  assert.equal(await page.locator('#adminSessionMessage').innerText(),copy('site.auth.passwordChangeRequired',locale));
   assert.ok(!requests.some(name=>name.startsWith('/admin/')),'Temporary-password sessions do not load privileged data');
   await page.locator('#adminCurrentPassword').fill('Temporary-test-password!');
   await page.locator('#adminNewPassword').fill('New-test-password!42');
   await page.locator('#adminNewPasswordConfirm').fill('New-test-password!42');
   await page.locator('#adminPasswordSubmit').click();
   await page.waitForFunction(()=>window.RangerbookAuth?.isAdmin());assert.ok(changed);
-  await page.locator('#adminPersonalTab').waitFor();
+  await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
+  await page.locator('#adminResourcesTab').waitFor();
   failLogout=true;await page.locator('#adminLogoutBtn').click();
   await page.waitForFunction(text=>document.querySelector('#adminSessionMessage').textContent===text,copy('site.auth.logoutFailed',locale));
   assert.ok(await page.locator('#adminSessionCard').isVisible(),'Failed logout keeps the authenticated state visible');
