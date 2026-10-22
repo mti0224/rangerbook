@@ -14,6 +14,7 @@ export function isPublicFile(name) {
   const parts=name.split('/');
   if(parts.some(part=>part==='..' || !part))return false;
   if(parts.length===1)return rootFiles.has(name);
+  if(/(?:^|\/)resource_asset_manifest\.json$/i.test(name))return false;
   if(!directories.has(parts[0]) || parts.some(part=>part.startsWith('.')))return false;
   if(/(?:^|\/)(?:player_lookup_cache|pvp_config|credentials|secrets|sessions|rangerbook_auth)(?:[._-]|$)/i.test(name))return false;
   return extensions.has(path.posix.extname(name).toLowerCase());

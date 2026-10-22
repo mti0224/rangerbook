@@ -10,7 +10,7 @@ try {
    'assets/pwa/icon-192.png','res/v2/rangers.json','res/裝備資料庫.json','v2/preview.js','admin/index.html'];
  const privateFiles=['backend/rangerbook_auth/app.py','backend/rangerbook_auth/rangerbook_auth.db',
    'backend/rangerbook_auth/.env','deploy/aws/pvp_config.json','docs/report.md','tests/test.cjs',
-   'assets/data/credentials.json','res/player_lookup_cache.json','res/private.db','assets/key.pem',
+   'res/resource_asset_manifest.json','assets/data/credentials.json','res/player_lookup_cache.json','res/private.db','assets/key.pem',
    'assets/.env','assets/js/bundle.js.map','v2/test-preview.cjs','.git/config'];
  for(const name of [...publicFiles,...privateFiles]) {
   const target=path.join(root,name);await mkdir(path.dirname(target),{recursive:true});await writeFile(target,name);

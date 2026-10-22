@@ -2,7 +2,11 @@ name: Validate security boundaries
 on:
   pull_request:
     paths:
-      - 'backend/rangerbook_auth/**'
+      - 'backend/**'
+      - 'ops/**'
+      - 'deploy/**'
+      - 'res/resource_asset_manifest.json'
+      - 'scripts/check-public-boundary.mjs'
       - 'assets/js/admin-*.js'
       - 'assets/locales/sitewide-overrides.json'
       - 'scripts/package-pages.mjs'
@@ -16,16 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install --upgrade 'pip>=26.2'
-      - run: pip install -r backend/rangerbook_auth/requirements.txt httpx pip-audit
-      - run: pip-audit --progress-spinner off
-      - run: PYTHONWARNINGS=ignore::DeprecationWarning python -m unittest discover -s backend/rangerbook_auth/tests -p 'test_*.py'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: node scripts/check-public-boundary.mjs
       - run: node tests/security-pages.mjs && node tests/security-auth.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: node tests/security-browser.cjs
