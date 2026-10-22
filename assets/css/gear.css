@@ -1,122 +1,40 @@
-.gear-controls {
-  grid-template-columns: 1fr;
-  align-items: stretch;
+/* Filter geometry and checkbox states are shared with the Ranger page. */
+.gear-basic-filters > .ranger-filter-options,
+.gear-advanced-filters > .gear-filter-panel,
+.gear-filter-panel > .gear-checkbox-grid,
+.gear-filter-panel > .gear-filter-head,
+.gear-filter-panel > .gear-basic-display-level {
+  grid-column: 1 / -1;
 }
 
-.gear-basic-filter-row {
+.gear-controls .gear-checkbox-grid {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) auto auto;
-  gap: 0.75rem;
-  align-items: end;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: .35rem;
+  min-width: 0;
 }
 
-.gear-search-box {
-  width: 100%;
-}
-
-.gear-advanced-toggle-btn {
-  min-height: 2.75rem;
-  border-radius: 999px;
-  padding: 0.75rem 1.1rem;
-}
-
-.gear-advanced-filters {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-  margin-top: 0.25rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
-}
-
-.gear-advanced-filters[hidden] {
-  display: none;
-}
-
-.gear-filter-panel {
-  border: 1px solid var(--line);
-  border-radius: 1rem;
-  padding: 0.9rem;
-  background: #fbfdff;
+.gear-basic-grid {
+  max-height: 17rem;
+  overflow: auto;
 }
 
 .gear-filter-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.55rem;
+  justify-content: flex-end;
 }
 
-.gear-filter-head h2 {
-  margin: 0;
-  color: var(--text);
-  font-size: 0.95rem;
-}
-
-.gear-checkbox-grid {
-  display: grid;
-  gap: 0.45rem 0.85rem;
-}
-
-.gear-star-grid {
-  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
-}
-
-.gear-type-grid,
 .gear-trigger-type-grid {
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-}
-
-.gear-trigger-attr-grid {
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  margin-bottom: 0.45rem;
-}
-
-.gear-basic-grid {
-  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-  max-height: 17rem;
-  overflow: auto;
-  padding-right: 0.25rem;
-}
-
-.gear-checkbox {
-  display: inline-flex;
-  align-items: center;
-  grid-template-columns: none;
-  gap: 0.45rem;
-  min-width: 0;
-  color: var(--text);
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.gear-checkbox input {
-  flex: 0 0 1rem;
-  width: 1rem;
-  min-width: 1rem;
-  max-width: 1rem;
-  height: 1rem;
-  min-height: 1rem;
-  max-height: 1rem;
-  margin: 0;
-  padding: 0;
-  accent-color: var(--primary);
-}
-
-.gear-checkbox span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding-top: .65rem;
+  border-top: 1px solid var(--line);
 }
 
 .gear-mode-switch {
   display: inline-flex;
   overflow: hidden;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--line);
   border-radius: 0.75rem;
-  background: #ffffff;
+  background: var(--panel);
 }
 
 .gear-mode-switch button {
@@ -233,22 +151,5 @@ html[data-theme="dark"] body .gear-mode-switch button.active {
 }
 
 @media (max-width: 720px) {
-  .gear-basic-filter-row {
-    grid-template-columns: 1fr;
-  }
-
-  .gear-advanced-toggle-btn,
-  .gear-basic-filter-row #gearResetBtn {
-    width: 100%;
-  }
-}
-
-@media (max-width: 620px) {
-  .gear-basic-grid,
-  .gear-type-grid,
-  .gear-trigger-type-grid,
-  .gear-trigger-attr-grid,
-  .gear-star-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  .gear-controls .gear-checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
