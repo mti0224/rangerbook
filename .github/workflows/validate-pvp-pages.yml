@@ -47,6 +47,8 @@ jobs:
           node --check assets/js/team-analysis.js
           node tests/team-analysis-model.cjs
           node tests/team-analysis-overview-model.cjs
+      - name: Build release data for browser checks
+        run: node scripts/build-pwa.mjs
       - name: Verify four languages, player search, leagues and guild teams
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
