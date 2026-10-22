@@ -40,6 +40,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         const drawer=page.locator("#gt-site-drawer");
         const backdrop=page.locator(".gt-drawer-backdrop");
         if(width>1120){
+          // Wait for the asynchronously loaded desktop sidebar styles to paint,
+          // just as the compact branch waits for its visible menu button.
+          await drawer.waitFor({state:"visible",timeout:7000});
           assert.equal(await toggle.isVisible(),false);
           assert.equal(await drawer.isVisible(),true);
           assert.equal(await backdrop.isVisible(),false);
