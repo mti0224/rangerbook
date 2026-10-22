@@ -130,6 +130,9 @@
         throw new Error("Invalid personal-team UI overrides");
       effectiveRows=[...new Map([...rows,...overrides].map(row=>[row.key,row])).values()];
     }
+    // An expanded catalog may finish before the preview catalog. Merge it
+    // after the initial catalog so background filter loading cannot collide.
+    if(name==='official-full')await ensureCatalogs();
     for (const row of effectiveRows) {
       if (catalog.has(row.key) && name!=='official-full') throw new Error("Duplicate V2 key: "+row.key);
       catalog.set(row.key,row);pair(row.zh_TW,row[locale],/^EQUIP:GEAR_ATTR_.*_nm$/.test(row.key)?4:/^ABILITY:.*_nm$/.test(row.key)?3:0);
@@ -235,12 +238,22 @@
       });return [a.abilityCode,out];
     }));
   }
+  function talentCategory(ref) {
+    // Filter by the authored template, independent of each Ranger's numeric
+    // values. Preserve the canonical category and its current-language label.
+    const key=typeof ref==='string'?ref:ref?.templateKey || ref?.key;
+    if(!key)return '';
+    const category=lang=>render(key,lang).replace(/%(?:N\d*|d\d*|s|n)/g,'N');
+    const zh=category('zh_TW');pair(zh,category(locale),2);return zh;
+  }
   function talent(t) {
     if (!t) return "無";
     const out={};
     if(t.major) {const m=t.major;
       out["主要才能"]={"敘述":text(m.descriptionKey),__v2:{descriptionKey:m.descriptionKey},"觸發機率":percent(m.activationChancePercent),
-        "條件":text(m.activationConditionKey),"增益效果":m.effects.map(x=>text(x.localizedEffect))};
+        "條件":text(m.activationConditionKey),"條件搜尋分類":talentCategory(m.activationConditionKey),
+        "增益效果":m.effects.map(x=>({"觸發機率":percent(x.activationChancePercent),
+          "效果":text(x.localizedEffect),"效果搜尋分類":talentCategory(x.localizedEffect)}))};
       (m.additionalConditions||[]).forEach((x,i)=>out["主要才能"]["條件"+(i+2)]=text(x.text || x.textKey || x));
     }
     out["強化才能"]=(t.enhancements||[]).map(x=>text(x.localizedEffect));
