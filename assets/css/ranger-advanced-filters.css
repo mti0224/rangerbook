@@ -1,13 +1,15 @@
 .ranger-controls {
   align-items: end;
+  grid-template-columns: minmax(180px, 1.8fr) repeat(3, minmax(105px, 1fr)) auto auto;
 }
 
 .ranger-filter-menu { position: relative; min-width: 0; }
 .ranger-filter-menu > summary {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) .5rem;
   align-items: center;
-  gap: .5rem;
-  min-height: 44px;
+  gap: .05rem .4rem;
+  min-height: 56px;
   padding: .55rem .7rem;
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -26,11 +28,12 @@
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   transform: rotate(45deg);
-  margin-left: auto;
-  flex-shrink: 0;
+  grid-column: 2;
+  grid-row: 1 / span 2;
 }
 .ranger-filter-menu[open] > summary::after { transform: rotate(225deg); }
-.ranger-filter-menu [data-filter-summary] { color: var(--muted); font-size: .78rem; }
+.ranger-filter-menu > summary > span { grid-column: 1; min-width: 0; overflow-wrap: anywhere; }
+.ranger-filter-menu [data-filter-summary] { color: var(--muted); font-size: .75rem; }
 .ranger-filter-menu .ranger-filter-options {
   position: absolute;
   z-index: 20;
@@ -116,17 +119,28 @@ body.gt-app .ranger-controls .ranger-filter-option {
   min-width: 0;
 }
 
+@media (min-width: 721px) {
+  .ranger-filter-menu:nth-of-type(3) .ranger-filter-options { left: auto; right: 0; }
+}
+
+@media (min-width: 721px) and (max-width: 1100px) {
+  .ranger-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ranger-controls .search-box { grid-column: 1 / -1; }
+  .ranger-controls .advanced-toggle-btn { grid-column: 1 / span 2; }
+}
+
 @media (max-width: 720px) {
   .ranger-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ranger-controls .search-box,
   .ranger-controls #rangerResetBtn { grid-column: 1 / -1; }
-  /* Inline panels fit narrow screens and push results below the open menu. */
+  /* Float above results; opening a menu does not lengthen the filter section. */
   .ranger-filter-menu .ranger-filter-options {
-    position: static;
-    width: 100%;
-    max-width: 100%;
-    margin-top: .4rem;
-    grid-template-columns: minmax(0, 1fr);
+    width: min(19rem, calc(100vw - 4rem));
+    max-width: none;
+  }
+  .ranger-filter-menu:nth-of-type(2) .ranger-filter-options {
+    left: auto;
+    right: 0;
   }
   .ranger-controls .advanced-toggle-btn,
   .ranger-controls #rangerResetBtn {

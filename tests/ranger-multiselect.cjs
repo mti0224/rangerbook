@@ -55,9 +55,11 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
   await expectRows(row=>['AGI','INT'].includes(row.roleType) && ['9星','超進化8星'].includes(stars(row)) && row.elementType==='LIGHT',true);
   await page.locator('h1').click();
   assert.equal(await page.locator('.ranger-filter-menu[open]').count(),0,'Outside click closes the menu');
-  for(const theme of ['light','dark'])for(const width of [1200,375]) {
+  for(const theme of ['light','dark'])for(const width of [1200,1024,768,375]) {
    await page.setViewportSize({width,height:900});
    await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+   const mobileToggle=page.locator('.site-menu-toggle');
+   if(width<=1024 && await mobileToggle.isVisible() && await mobileToggle.getAttribute('aria-expanded')==='true')await mobileToggle.click();
    await open('starFilter');
    const geometry=await page.locator('#starFilter').evaluate(el=>{
     const r=el.getBoundingClientRect(),input=el.querySelector('input'),box=input.getBoundingClientRect(),style=getComputedStyle(el);
@@ -66,23 +68,36 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
    assert.ok(geometry.left>=0 && geometry.right<=geometry.width,`${locale} ${theme} ${width}: menu fits viewport`);
    assert.ok(geometry.checkbox>=16 && geometry.checkbox<=24,'Native checkbox stays a usable compact size');
    assert.notEqual(geometry.ink,geometry.panel,'Text remains visible in both themes');
+   assert.ok(await summary('starFilter').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Summary text fits the collapsed control');
    await summary('starFilter').click();
    assert.ok(await menu('starFilter').evaluate(el=>el.getBoundingClientRect().height<90),'Collapsed menu stays compact');
+   for(const id of ['typeFilter','elementFilter']) {
+     await open(id);
+     assert.ok(await page.locator('#'+id).evaluate(el=>{
+       const box=el.getBoundingClientRect();return box.left>=0 && box.right<=innerWidth;
+     }),`${locale} ${theme} ${width}: ${id} fits viewport`);
+     await summary(id).click();
+   }
+   assert.ok(await page.locator('.ranger-controls').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Filter controls do not overflow their panel');
   }
+  await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
   assert.equal(await page.locator('.ranger-filter-options input:checked').count(),0);
   await expectRows(()=>true);
   await check('elementFilter','無');await expectRows(row=>row.elementType==='NONE');
+  await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
   await page.locator('#paginationSize').selectOption('60');
   await check('starFilter','終極進化8星');
   await expectRows(row=>row.evolution==='ULTRA' && row.starGrade===8);
   if(locale==='zh_TW')assert.ok((await page.locator('#rangerList').innerText()).includes('終極進化8星'));
+  await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
   await page.locator('#rangerAdvancedToggleBtn').click();
   await page.locator('#talentConditionFilter').selectOption('當普通攻擊發生爆擊時');
   await check('typeFilter','敏捷型');await check('typeFilter','智慧型');
   await expectRows(row=>['AGI','INT'].includes(row.roleType) && row.talents?.major?.activationConditionCode==='TLT_CRITICAL_ATTACK',true);
+  await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
   assert.equal(await page.locator('#talentConditionFilter').inputValue(),'');
   assert.deepEqual(errors,[]);
