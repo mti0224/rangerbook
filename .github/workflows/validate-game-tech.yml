@@ -35,6 +35,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Build release data for navigation checks
+        run: node scripts/build-pwa.mjs
       - name: Install browser test runtime
         run: npm install --no-save --package-lock=false playwright && npx playwright install --with-deps chromium
       - name: Verify sidebar navigation and animation
