@@ -392,14 +392,6 @@
     return [...(group?.querySelectorAll('input[type="checkbox"]:checked') || [])].map(input=>input.value);
   }
 
-  function updateFilterSummary(group) {
-    const summary=group?.closest('details')?.querySelector('[data-filter-summary]');
-    if(!summary)return;
-    const count=checkedValues(group).length;
-    summary.textContent=count ? window.RangerbookI18n.format('site.ranger.selectedCount',[count],`已選 ${count} 項`)
-      : window.RangerbookI18n.uiText('全部');
-  }
-
   function fillChecks(group, values) {
     if(!group)return;
     const selected=new Set(checkedValues(group));
@@ -407,12 +399,11 @@
     const unique=[...new Set(values.map(text).filter(value=>value && value!=='-'))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
     const existing=[...group.querySelectorAll('input[type="checkbox"]')].map(input=>input.value);
     if(existing.length===unique.length && existing.every((value,index)=>value===unique[index])) {
-      updateFilterSummary(group);return;
+      return;
     }
     // Keep the fieldset legend and any choices made while full data was loading.
     group.querySelectorAll('label').forEach(label=>label.remove());
     group.insertAdjacentHTML('beforeend',unique.map(value=>`<label class="ranger-filter-option"><input type="checkbox" name="${group.id}" value="${html(value)}"${selected.has(value)?' checked':''}><span>${html(window.RangerbookI18n.uiText(value))}</span></label>`).join(''));
-    updateFilterSummary(group);
   }
 
   function tagClass(value) {
@@ -1062,19 +1053,7 @@
           element?.addEventListener("input", applyFilters);
           element?.addEventListener("change", applyFilters);
         });
-      [els.star,els.type,els.element].forEach(group=>group?.addEventListener('change',()=>{
-        updateFilterSummary(group);applyFilters();
-      }));
-      const menus=[els.star,els.type,els.element].map(group=>group?.closest('details')).filter(Boolean);
-      menus.forEach(menu=>menu.addEventListener('toggle',()=>{
-        if(menu.open)menus.forEach(other=>{if(other!==menu)other.open=false;});
-      }));
-      document.addEventListener('click',event=>menus.forEach(menu=>{if(!menu.contains(event.target))menu.open=false;}));
-      document.addEventListener('keydown',event=>{
-        if(event.key==='Escape')menus.forEach(menu=>{
-          if(menu.open){menu.open=false;menu.querySelector('summary').focus();}
-        });
-      });
+      [els.star,els.type,els.element].forEach(group=>group?.addEventListener('change',()=>applyFilters()));
       els.list?.addEventListener("click", (event) => {
         const card = event.target.closest?.(".ranger-card[data-ranger-id]");
         if (card) openRanger(card.dataset.rangerId || "");
@@ -1084,7 +1063,6 @@
           .forEach((element) => { if (element) element.value = ""; });
         [els.star,els.type,els.element].forEach(group=>{
           group?.querySelectorAll('input[type="checkbox"]').forEach(input=>{input.checked=false;});
-          updateFilterSummary(group);
         });
         applyFilters();
       });

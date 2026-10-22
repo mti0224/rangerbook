@@ -1,64 +1,33 @@
 .ranger-controls {
   align-items: end;
-  grid-template-columns: minmax(180px, 1.8fr) repeat(3, minmax(105px, 1fr)) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
 }
 
-.ranger-filter-menu { position: relative; min-width: 0; }
-.ranger-filter-menu > summary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) .5rem;
-  align-items: center;
-  gap: .05rem .4rem;
-  min-height: 56px;
-  padding: .55rem .7rem;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: var(--gt-inset, var(--panel));
-  color: var(--text);
-  cursor: pointer;
-  list-style: none;
-  font-size: .85rem;
-  font-weight: 750;
-}
-.ranger-filter-menu > summary::-webkit-details-marker { display: none; }
-.ranger-filter-menu > summary::after {
-  content: '';
-  width: .4rem;
-  height: .4rem;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
-  grid-column: 2;
-  grid-row: 1 / span 2;
-}
-.ranger-filter-menu[open] > summary::after { transform: rotate(225deg); }
-.ranger-filter-menu > summary > span { grid-column: 1; min-width: 0; overflow-wrap: anywhere; }
-.ranger-filter-menu [data-filter-summary] { color: var(--muted); font-size: .75rem; }
-.ranger-filter-menu .ranger-filter-options {
-  position: absolute;
-  z-index: 20;
-  top: calc(100% + .4rem);
-  left: 0;
-  width: max(100%, 19rem);
-  max-width: min(24rem, calc(100vw - 2rem));
-  max-height: min(26rem, 65vh);
-  overflow-y: auto;
+.ranger-basic-filters {
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .85rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.ranger-filter-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
   gap: .35rem;
+  min-width: 0;
   margin: 0;
   padding: .65rem;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background: var(--panel);
-  box-shadow: var(--shadow);
+  background: var(--gt-inset, var(--panel));
 }
+#starFilter { grid-column: 1 / -1; }
 .ranger-filter-options > legend {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
+  padding: 0 .35rem;
+  color: var(--text);
+  font-size: .85rem;
+  font-weight: 750;
 }
 body.gt-app .ranger-controls .ranger-filter-option {
   display: flex;
@@ -119,32 +88,12 @@ body.gt-app .ranger-controls .ranger-filter-option {
   min-width: 0;
 }
 
-@media (min-width: 721px) {
-  .ranger-filter-menu:nth-of-type(3) .ranger-filter-options { left: auto; right: 0; }
-}
-
-@media (min-width: 721px) and (max-width: 1100px) {
-  .ranger-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .ranger-controls .search-box { grid-column: 1 / -1; }
-  .ranger-controls .advanced-toggle-btn { grid-column: 1 / span 2; }
-}
-
 @media (max-width: 720px) {
   .ranger-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ranger-controls .search-box,
-  .ranger-controls #rangerResetBtn { grid-column: 1 / -1; }
-  /* Float above results; opening a menu does not lengthen the filter section. */
-  .ranger-filter-menu .ranger-filter-options {
-    width: min(19rem, calc(100vw - 4rem));
-    max-width: none;
-  }
-  .ranger-filter-menu:nth-of-type(2) .ranger-filter-options {
-    left: auto;
-    right: 0;
-  }
+  .ranger-controls .search-box { grid-column: 1 / -1; }
   .ranger-controls .advanced-toggle-btn,
-  .ranger-controls #rangerResetBtn {
-    width: 100%;
-  }
+  .ranger-controls #rangerResetBtn { width: 100%; }
+  .ranger-basic-filters { grid-template-columns: minmax(0, 1fr); }
+  .ranger-controls .advanced-filters { grid-template-columns: minmax(0, 1fr); }
+  .ranger-filter-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-
