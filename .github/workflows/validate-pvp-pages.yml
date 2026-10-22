@@ -14,12 +14,7 @@ on:
       - "tests/team-analysis*.cjs"
       - "assets/js/guildwar-*.js"
       - "assets/css/pvp-player-teams.css"
-      - "backend/rangerbook_auth/equipment_effects.py"
-      - "backend/rangerbook_auth/player_query.py"
-      - "deploy/aws/install_player_equipment_values.py"
-      - "deploy/aws/install_team_analysis.py"
       - "tests/player-equipment-values.cjs"
-      - "tests/test_player_equipment_values.py"
       - "assets/css/pvp-data.css"
       - "assets/css/pvp-usage-fixes.css"
       - ".github/workflows/validate-pvp-pages.yml"
@@ -52,10 +47,6 @@ jobs:
           node --check assets/js/team-analysis.js
           node tests/team-analysis-model.cjs
           node tests/team-analysis-overview-model.cjs
-      - name: Verify actual player equipment values and collector installation
-        run: |
-          pip install requests
-          python -m unittest discover -s tests -p test_player_equipment_values.py -v
       - name: Verify four languages, player search, leagues and guild teams
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1

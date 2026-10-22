@@ -2,7 +2,7 @@ import {readdir} from 'node:fs/promises';
 import path from 'node:path';
 
 const blockedRoots=['backend/','ops/','deploy/systemd/'];
-const blockedFiles=new Set(['res/resource_asset_manifest.json','tests/test_popular_pages.py']);
+const blockedFiles=new Set(['res/resource_asset_manifest.json','tests/test_popular_pages.py','tests/test_game_binding.py','tests/test_player_equipment_values.py']);
 const root=process.cwd();
 const violations=[];
 async function walk(dir='') {
