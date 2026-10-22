@@ -11,6 +11,10 @@ on:
       - 'tests/loading-performance.cjs'
       - 'tests/talent-adapter.cjs'
       - 'tests/ranger-multiselect.cjs'
+      - 'tests/filter-style-consistency.cjs'
+      - 'assets/js/gear.js'
+      - 'assets/css/gear.css'
+      - 'gear/index.html'
       - 'assets/css/ranger-advanced-filters.css'
       - 'ranger/ranger/index.html'
       - '.github/workflows/validate-loading.yml'
@@ -27,3 +31,4 @@ jobs:
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: node tests/loading-performance.cjs
       - run: node tests/ranger-multiselect.cjs
+      - run: node tests/filter-style-consistency.cjs

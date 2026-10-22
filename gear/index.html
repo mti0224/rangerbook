@@ -37,6 +37,7 @@
   <link rel="stylesheet" href="../assets/css/gear-detail-level-controls-only.css">
   <link rel="stylesheet" href="../assets/css/gear-advanced-divider-width.css">
   <link rel="stylesheet" href="../assets/css/gear-skillplus-ranger-filters.css?v=20260731-2">
+  <link rel="stylesheet" href="../assets/css/ranger-advanced-filters.css">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -55,57 +56,48 @@
     </section>
 
     <section class="controls ranger-controls gear-controls">
-      <div class="gear-basic-filter-row">
-        <label class="search-box gear-search-box">
-          <span data-i18n="gear.search">搜尋裝備</span>
-          <input id="gearSearchInput" type="search" placeholder="輸入裝備名稱、種類、效果或數值..." data-i18n-placeholder="gear.placeholder">
-        </label>
+      <label class="search-box gear-search-box">
+        <span data-i18n="gear.search">搜尋裝備</span>
+        <input id="gearSearchInput" type="search" placeholder="輸入裝備名稱、種類、效果或數值..." data-i18n-placeholder="gear.placeholder">
+      </label>
 
-        <button id="gearAdvancedToggleBtn" class="gear-advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="gearAdvancedFilters">
-          <span data-i18n="filter.advanced">進階篩選 ▼</span>
-        </button>
+      <button id="gearAdvancedToggleBtn" class="advanced-toggle-btn gear-advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="gearAdvancedFilters">
+        <span data-i18n="filter.advanced">進階篩選 ▼</span>
+      </button>
 
-        <button id="gearResetBtn" type="button" data-i18n="filter.reset">清除篩選</button>
-      </div>
+      <button id="gearResetBtn" type="button" data-i18n="filter.reset">清除篩選</button>
 
-      <div id="gearAdvancedFilters" class="gear-advanced-filters" hidden>
-        <section class="gear-filter-panel">
+      <div id="gearAdvancedFilters" class="advanced-filters gear-advanced-filters" hidden>
+        <div class="ranger-basic-filters gear-basic-filters">
+          <fieldset class="ranger-filter-options gear-filter-panel">
+            <legend data-i18n="ranger.star">星數</legend>
+            <div id="gearStarFilter" class="gear-checkbox-grid gear-star-grid"></div>
+          </fieldset>
+          <fieldset class="ranger-filter-options gear-filter-panel">
+            <legend data-i18n="ranger.type">類型</legend>
+            <div id="gearTypeFilter" class="gear-checkbox-grid gear-type-grid"></div>
+          </fieldset>
+        </div>
+
+        <fieldset class="ranger-filter-options gear-filter-panel gear-basic-filter-panel">
+          <legend data-i18n="filter.basic">基本效果</legend>
           <div class="gear-filter-head">
-            <h2 data-i18n="ranger.star">星數</h2>
-          </div>
-          <div id="gearStarFilter" class="gear-checkbox-grid gear-star-grid"></div>
-        </section>
-
-        <section class="gear-filter-panel">
-          <div class="gear-filter-head">
-            <h2 data-i18n="ranger.type">類型</h2>
-          </div>
-          <div id="gearTypeFilter" class="gear-checkbox-grid gear-type-grid"></div>
-        </section>
-
-        <section class="gear-filter-panel gear-basic-filter-panel">
-          <div class="gear-filter-head">
-            <h2 data-i18n="filter.basic">基本效果</h2>
             <div class="gear-mode-switch" role="group" aria-label="基本效果篩選模式">
               <button id="gearBasicModeOr" class="active" type="button" data-mode="OR">OR</button>
               <button id="gearBasicModeAnd" type="button" data-mode="AND">AND</button>
             </div>
           </div>
           <div id="gearBasicEffectFilter" class="gear-checkbox-grid gear-basic-grid"></div>
-        </section>
+        </fieldset>
 
-        <section class="gear-filter-panel gear-trigger-filter-panel">
-          <div class="gear-filter-head">
-            <h2 data-i18n="filter.trigger">觸發條件</h2>
-          </div>
+        <fieldset class="ranger-filter-options gear-filter-panel gear-trigger-filter-panel">
+          <legend data-i18n="filter.trigger">觸發條件</legend>
           <div id="gearTriggerAttrFilter" class="gear-checkbox-grid gear-trigger-attr-grid"></div>
           <div id="gearTriggerTypeFilter" class="gear-checkbox-grid gear-trigger-type-grid"></div>
-        </section>
+        </fieldset>
 
-        <section class="gear-filter-panel gear-basic-display-panel">
-          <div class="gear-filter-head">
-            <h2 data-i18n="filter.basic.level">基本數值顯示等級</h2>
-          </div>
+        <fieldset class="ranger-filter-options gear-filter-panel gear-basic-display-panel">
+          <legend data-i18n="filter.basic.level">基本數值顯示等級</legend>
           <fieldset id="gearBasicDisplayLevel" class="gear-basic-display-level" aria-label="基本數值顯示等級">
             <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="0" checked><span>+0</span></label>
             <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="1"><span>+1</span></label>
@@ -114,7 +106,7 @@
             <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="4"><span>+4</span></label>
             <label class="gear-basic-display-option"><input type="radio" name="gearBasicDisplayLevel" value="5"><span>+Max</span></label>
           </fieldset>
-        </section>
+        </fieldset>
       </div>
     </section>
 

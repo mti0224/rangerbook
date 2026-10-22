@@ -286,7 +286,7 @@
   function renderCheckbox(container, values, formatter = (value) => value) {
     if (!container) return;
     container.innerHTML = uniqueSorted(values).map((value) => `
-      <label class="gear-checkbox" title="${escapeHtml(formatter(value))}">
+      <label class="gear-checkbox ranger-filter-option" title="${escapeHtml(formatter(value))}">
         <input type="checkbox" value="${escapeHtml(value)}">
         <span>${escapeHtml(formatter(value))}</span>
       </label>
@@ -298,10 +298,10 @@
     if (skillPlusFilter) return skillPlusFilter;
     if (!advancedFilters) return null;
 
-    const panel = document.createElement("section");
-    panel.className = "gear-filter-panel gear-skillplus-filter-panel";
+    const panel = document.createElement("fieldset");
+    panel.className = "ranger-filter-options gear-filter-panel gear-skillplus-filter-panel";
     panel.innerHTML = `
-      <div class="gear-filter-head"><h2>Skill+</h2></div>
+      <legend>Skill+</legend>
       <div id="gearSkillPlusFilter" class="gear-checkbox-grid gear-skillplus-grid"></div>
     `;
     const triggerPanel = advancedFilters.querySelector(".gear-trigger-filter-panel");

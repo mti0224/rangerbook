@@ -1,3 +1,4 @@
+/* Shared list-filter layout and checkbox states for Rangers and Gear. */
 .ranger-controls {
   align-items: end;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -39,6 +40,12 @@ body.gt-app .ranger-controls .ranger-filter-option {
   color: var(--text);
   cursor: pointer;
   overflow-wrap: anywhere;
+}
+body.gt-app .ranger-controls .ranger-filter-option span {
+  min-width: 0;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
 }
 .ranger-filter-option:hover { background: var(--gt-control-hover, var(--soft)); }
 .ranger-filter-option:has(input:checked) { background: var(--gt-control-selected, var(--soft)); }
@@ -92,7 +99,8 @@ body.gt-app .ranger-controls .ranger-filter-option {
   .ranger-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ranger-controls .search-box { grid-column: 1 / -1; }
   .ranger-controls .advanced-toggle-btn,
-  .ranger-controls #rangerResetBtn { width: 100%; }
+  .ranger-controls #rangerResetBtn,
+  .ranger-controls #gearResetBtn { width: 100%; }
   .ranger-basic-filters { grid-template-columns: minmax(0, 1fr); }
   .ranger-controls .advanced-filters { grid-template-columns: minmax(0, 1fr); }
   .ranger-filter-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
