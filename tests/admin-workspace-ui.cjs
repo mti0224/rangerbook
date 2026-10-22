@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 const roles = ["guest","user","admin","super_admin"];
 (async () => {
-  const browser = await chromium.launch({headless:true});
+  const browser = await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
   try {
   for (const role of roles) {
     const page = await browser.newPage({ viewport: { width: 1080, height: 800 } });
@@ -42,7 +42,11 @@ const roles = ["guest","user","admin","super_admin"];
     });
     let s=await state();
     if(role==="guest"){assert.equal(s.auth,false);assert.equal(s.workspace,true);}
-    else if(role==="user"){assert.equal(s.session,false);assert.equal(s.workspace,true);assert.equal(s.accounts,true);assert.equal(s.accountTab,true);assert.equal(s.trafficTab,true);}
+    else if(role==="user"){
+      assert.equal(s.session,false);assert.equal(s.workspace,false);
+      assert.deepEqual(s.selected,["password"]);assert.equal(s.password,false);assert.equal(s.personal,true);
+      assert.equal(s.resources,true);assert.equal(s.accounts,true);assert.equal(s.accountTab,true);assert.equal(s.trafficTab,true);
+    }
     else{
       assert.equal(s.session,false);assert.equal(s.workspace,false);assert.equal(s.name,"test_"+role);
       assert.deepEqual(s.selected,["personal"]);assert.equal(s.personal,false);assert.equal(s.password,true);assert.equal(s.resources,true);assert.equal(s.accounts,true);
