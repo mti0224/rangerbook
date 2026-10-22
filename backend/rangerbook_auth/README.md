@@ -34,14 +34,14 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-把本資料夾的 `app.py`、`bootstrap_super_admin.py`、`requirements.txt` 與 `.env` 放到 `/home/ubuntu/rangerbook-auth/`。
+把本資料夾所有 Python 模組、`requirements.txt` 與 `.env` 放到 `/home/ubuntu/rangerbook-auth/`。
 
 ## 建立唯一的最大管理者
 
 ```bash
 cd /home/ubuntu/rangerbook-auth
 source venv/bin/activate
-python bootstrap_super_admin.py warmycat
+RANGERBOOK_AUTH_DB=/home/ubuntu/rangerbook-private/auth/rangerbook_auth.db python bootstrap_super_admin.py warmycat
 ```
 
 程式會在終端機安全詢問密碼與確認密碼，不需要把明文密碼寫入檔案或 shell history。
@@ -52,11 +52,15 @@ python bootstrap_super_admin.py warmycat
 /home/ubuntu/rangerbook-auth/rangerbook_auth.db
 ```
 
-可透過 `.env` 的 `RANGERBOOK_AUTH_DB` 修改。
+開發時可透過 `RANGERBOOK_AUTH_DB` 修改。正式 systemd 服務最後載入 root 擁有的 `/etc/rangerbook-auth-paths.env`，將資料庫與玩家快取放在 `/home/ubuntu/rangerbook-private/auth/`；直接執行維護指令時也必須指定相同路徑。
+
+升級既有服務時，先停止服務，以 SQLite backup API 複製既有資料庫到新路徑，並將既有 `player_lookup_cache.json` 複製過去；確認檔案屬於服務使用者、權限 `0600` 後再啟動。不得建立空資料庫來取代既有資料。程式、虛擬環境及 `.env` 對服務唯讀，僅私有資料目錄允許寫入。
 
 ## systemd
 
 ```bash
+sudo install -d -o ubuntu -g ubuntu -m 700 /home/ubuntu/rangerbook-private/auth
+sudo install -o root -g root -m 644 security-paths.env.example /etc/rangerbook-auth-paths.env
 sudo cp rangerbook-auth.service /etc/systemd/system/rangerbook-auth.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now rangerbook-auth
@@ -125,7 +129,7 @@ Rangerbook 的 `ability`、`gear` 等完整資料可繼續存在公開的 `res/*
 
 ```text
 /home/ubuntu/rangerbook-data/player_index.json
-/home/ubuntu/rangerbook-auth/player_lookup_cache.json
+/home/ubuntu/rangerbook-private/auth/player_lookup_cache.json
 ```
 
 API：
@@ -150,5 +154,15 @@ Auth v1.2.0 會使用既有 Guild War collector 作為遊戲 API core，預設�
 ```text
 RANGERBOOK_GUILDWAR_CORE=/home/ubuntu/rangerbook-scripts/collect_guildwar_usage.py
 RANGERBOOK_PLAYER_INDEX=/home/ubuntu/rangerbook-data/player_index.json
-RANGERBOOK_PLAYER_QUERY_CACHE=/home/ubuntu/rangerbook-auth/player_lookup_cache.json
+RANGERBOOK_PLAYER_QUERY_CACHE=/home/ubuntu/rangerbook-private/auth/player_lookup_cache.json
 ```
+
+
+## 安全保護與驗證
+
+- 登入、註冊、密碼變更、解除遊戲綁定與官方玩家查詢會記錄操作嘗試並限流；失敗嘗試也計入，Argon2 雜湊同時最多兩個。反向代理必須覆寫 `X-Forwarded-For`，且 Uvicorn 只信任 localhost 代理。
+- 重設密碼每次產生獨立隨機值、撤銷既有 session，登入後必須先改密碼才能使用管理端點。一般使用者也能修改自己的密碼。
+- 私有 API 回應禁止快取；驗證錯誤不回傳輸入值；非預期錯誤不回傳路徑或上游訊息。請求本文最多 16 KiB，包含串流本文。正式 API 不公開互動文件。
+- 部署 Pages 時只上傳 `scripts/package-pages.mjs` 產生的 `_site/`，禁止將儲存庫根目錄當成網站產物。
+- `python -m unittest discover -s backend/rangerbook_auth/tests -p 'test_*.py'`、`node tests/security-pages.mjs`、`node tests/security-auth.cjs` 與 `node tests/security-browser.cjs` 驗證權限及前端流程；瀏覽器測試使用隔離的假帳號與攔截 API。
+- `pip-audit` 檢查實際安裝版本，維護時同時更新安裝工具 pip。不得將套件檢查通過解讀為不存在其他安全問題。

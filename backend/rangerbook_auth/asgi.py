@@ -9,7 +9,8 @@ from app import (
     SESSION_COOKIE,
     app,
     db,
-    require_admin,
+    require_user,
+    limit_auth,
     require_trusted_origin,
     session_hash,
     validate_password,
@@ -25,14 +26,17 @@ class PasswordChange(BaseModel):
 def change_own_password(
     payload: PasswordChange,
     request: Request,
-    user=Depends(require_admin),
+    user=Depends(require_user),
 ) -> dict[str, object]:
-    """Allow any authenticated administrator to change their own password."""
+    """Allow authenticated users to replace their own temporary password."""
     require_trusted_origin(request)
     validate_password(payload.new_password)
+    limit_auth(request, "password-change", user["id"], subject_limit=5)
 
     try:
         PASSWORD_HASHER.verify(user["password_hash"], payload.current_password)
+    except HTTPException:
+        raise
     except VerifyMismatchError as error:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -56,7 +60,7 @@ def change_own_password(
 
     with db() as connection:
         connection.execute(
-            "UPDATE users SET password_hash = ? WHERE id = ?",
+            "UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?",
             (password_hash, user["id"]),
         )
         if current_token_hash:

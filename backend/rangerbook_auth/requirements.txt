@@ -3,5 +3,6 @@ uvicorn[standard]>=0.30,<1
 argon2-cffi>=23,<26
 pydantic>=2,<3
 requests>=2.31,<3
+certifi>=2026.10.19
 
 google-analytics-data>=0.18,<1

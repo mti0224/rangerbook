@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import re
 import secrets
@@ -11,22 +12,22 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterator, Literal
 
-from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, Field
 
 from player_query import query_player_teams, search_players
 from game_binding import init_tables as init_game_binding_tables, register_routes as register_game_binding_routes
 from popular_pages import build_popular_report
+from security import BoundedPasswordHasher, RequestBodyLimit, consume_rate_limit, init_security_tables, password_change_required
 
 APP_ROOT = Path(__file__).resolve().parent
 DB_PATH = Path(os.getenv("RANGERBOOK_AUTH_DB", APP_ROOT / "rangerbook_auth.db")).resolve()
 SESSION_COOKIE = os.getenv("RANGERBOOK_SESSION_COOKIE", "__Host-rangerbook_session")
 SESSION_DAYS = int(os.getenv("RANGERBOOK_SESSION_DAYS", "7"))
-RESET_PASSWORD = "qwer1234"
 ALLOWED_ORIGINS = {
     origin.strip().rstrip("/")
     for origin in os.getenv(
@@ -44,7 +45,7 @@ RESOURCE_UPDATES_INDEX = Path(
 ).resolve()
 
 ACCOUNT_RE = re.compile(r"^[A-Za-z0-9_.-]{3,32}$")
-PASSWORD_HASHER = PasswordHasher(
+PASSWORD_HASHER = BoundedPasswordHasher(
     time_cost=3,
     memory_cost=65536,
     parallelism=1,
@@ -52,7 +53,30 @@ PASSWORD_HASHER = PasswordHasher(
     salt_len=16,
 )
 
-app = FastAPI(title="Rangerbook Auth API", version="1.2.0")
+DUMMY_PASSWORD_HASH = PASSWORD_HASHER.hash(secrets.token_urlsafe(32))
+
+app = FastAPI(title="Rangerbook Auth API", version="1.3.0", docs_url=None, redoc_url=None, openapi_url=None)
+app.add_middleware(RequestBodyLimit)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    try:
+        response = await call_next(request)
+    except Exception as error:
+        logging.getLogger(__name__).error("Request processing failed (%s)", type(error).__name__)
+        response = JSONResponse({"detail": "服務暫時無法使用，請稍後重試。"}, status_code=500)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000"
+    if not request.url.path.startswith("/public/"):
+        response.headers["Cache-Control"] = "no-store, private"
+        response.headers["Pragma"] = "no-cache"
+    return response
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=sorted(ALLOWED_ORIGINS),
@@ -60,6 +84,17 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
+
+@app.exception_handler(RequestValidationError)
+async def invalid_request(request: Request, error: RequestValidationError):
+    # Pydantic's default `input` field can reflect a submitted password.
+    errors = [{key: value for key, value in item.items() if key in {"loc", "msg", "type"}}
+              for item in error.errors()]
+    return JSONResponse({"detail": "輸入格式不正確，請檢查後重試。", "errors": errors}, status_code=422)
+
+
+def limit_auth(request: Request, action: str, subject: str, **options) -> None:
+    consume_rate_limit(db, request, action, subject, **options)
 
 
 class Credentials(BaseModel):
@@ -97,6 +132,7 @@ def isoformat(value: datetime | None = None) -> str:
 def db() -> Iterator[sqlite3.Connection]:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(DB_PATH, timeout=10)
+    os.chmod(DB_PATH, 0o600)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
     try:
@@ -136,6 +172,7 @@ def init_db() -> None:
                 ON users(admin_application_status, role);
             """
         )
+        init_security_tables(connection)
 
 
 @app.on_event("startup")
@@ -183,6 +220,7 @@ def public_user(row: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
         "created_at": row["created_at"],
         "approved_at": row["approved_at"],
         "approved_by": row["approved_by"],
+        "must_change_password": password_change_required(row),
     }
 
 
@@ -195,12 +233,18 @@ def create_session(user_id: str) -> str:
     now = utc_now()
     expires = now + timedelta(days=SESSION_DAYS)
     with db() as connection:
+        connection.execute("DELETE FROM sessions WHERE expires_at <= ?", (isoformat(now),))
         connection.execute(
             """
             INSERT INTO sessions(token_hash, user_id, created_at, expires_at, last_seen_at)
             VALUES (?, ?, ?, ?, ?)
             """,
             (session_hash(token), user_id, isoformat(now), isoformat(expires), isoformat(now)),
+        )
+        connection.execute(
+            "DELETE FROM sessions WHERE user_id=? AND token_hash NOT IN "
+            "(SELECT token_hash FROM sessions WHERE user_id=? ORDER BY created_at DESC LIMIT 10)",
+            (user_id, user_id),
         )
     return token
 
@@ -262,12 +306,16 @@ def require_user(request: Request) -> sqlite3.Row:
 
 
 def require_admin(user: sqlite3.Row = Depends(require_user)) -> sqlite3.Row:
+    if password_change_required(user):
+        raise HTTPException(403, detail="請先更改重設後的臨時密碼。")
     if user["role"] not in {"admin", "super_admin"}:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理員權限。")
     return user
 
 
 def require_super_admin(user: sqlite3.Row = Depends(require_user)) -> sqlite3.Row:
+    if password_change_required(user):
+        raise HTTPException(403, detail="請先更改重設後的臨時密碼。")
     if user["role"] != "super_admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要最大管理者權限。")
     return user
@@ -321,6 +369,7 @@ def register(credentials: Credentials, request: Request) -> dict[str, Any]:
     require_trusted_origin(request)
     account = normalize_account(credentials.account)
     validate_password(credentials.password)
+    limit_auth(request, "register", account, ip_limit=5, subject_limit=3, window=3600)
 
     user_id = f"usr_{secrets.token_hex(12)}"
     password_hash = PASSWORD_HASHER.hash(credentials.password)
@@ -352,6 +401,7 @@ def register(credentials: Credentials, request: Request) -> dict[str, Any]:
 def login(credentials: Credentials, request: Request) -> JSONResponse:
     require_trusted_origin(request)
     account = normalize_account(credentials.account)
+    limit_auth(request, "login", account)
 
     with db() as connection:
         user = connection.execute(
@@ -359,15 +409,17 @@ def login(credentials: Credentials, request: Request) -> JSONResponse:
             (account,),
         ).fetchone()
 
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="帳號或密碼錯誤。")
-
     try:
-        PASSWORD_HASHER.verify(user["password_hash"], credentials.password)
+        PASSWORD_HASHER.verify(user["password_hash"] if user else DUMMY_PASSWORD_HASH, credentials.password)
+    except HTTPException:
+        raise
     except VerifyMismatchError as error:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="帳號或密碼錯誤。") from error
     except Exception as error:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="帳號或密碼錯誤。") from error
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="帳號或密碼錯誤。")
 
     if PASSWORD_HASHER.check_needs_rehash(user["password_hash"]):
         new_hash = PASSWORD_HASHER.hash(credentials.password)
@@ -493,14 +545,16 @@ def reset_user_password(
 ) -> dict[str, Any]:
     require_trusted_origin(request)
     target = find_mutable_user(user_id)
-    password_hash = PASSWORD_HASHER.hash(RESET_PASSWORD)
+    temporary_password = secrets.token_urlsafe(24)
+    password_hash = PASSWORD_HASHER.hash(temporary_password)
     with db() as connection:
-        connection.execute("UPDATE users SET password_hash = ? WHERE id = ?", (password_hash, user_id))
+        connection.execute("UPDATE users SET password_hash = ?, must_change_password = 1 WHERE id = ?", (password_hash, user_id))
         connection.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))
     return {
         "ok": True,
         "account": target["account"],
-        "reset_password": RESET_PASSWORD,
+        "reset_password": temporary_password,
+        "must_change_password": True,
     }
 
 
@@ -542,7 +596,7 @@ def list_resource_updates(
     except (OSError, json.JSONDecodeError) as error:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"無法讀取資源更新紀錄：{error}",
+            detail="資源更新紀錄暫時無法讀取。",
         ) from error
 
     if not isinstance(payload, dict):
@@ -580,9 +634,9 @@ def super_admin_player_search(
     try:
         return search_players(q, limit)
     except FileNotFoundError as error:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="玩家索引暫時不可用。") from error
     except (ValueError, OSError, json.JSONDecodeError) as error:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(error)) from error
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="玩家索引暫時不可用。") from error
 
 
 @app.post("/super-admin/player-team-query")
@@ -592,6 +646,7 @@ def super_admin_player_team_query(
     _: sqlite3.Row = Depends(require_super_admin),
 ) -> dict[str, Any]:
     require_trusted_origin(request)
+    limit_auth(request, "player-query", _["id"], ip_limit=30, subject_limit=10, window=300)
     try:
         return query_player_teams(payload.uid)
     except KeyError as error:
@@ -599,9 +654,9 @@ def super_admin_player_team_query(
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
     except FileNotFoundError as error:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(error)) from error
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="玩家索引暫時不可用。") from error
     except Exception as error:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"玩家資料查詢失敗：{error}") from error
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="玩家資料查詢失敗，請稍後重試。") from error
 
 
 def bootstrap_super_admin(account: str, password: str) -> dict[str, Any]:
@@ -630,7 +685,7 @@ def bootstrap_super_admin(account: str, password: str) -> dict[str, Any]:
                 """
                 UPDATE users
                 SET password_hash = ?, role = 'super_admin',
-                    admin_application_status = 'approved', approved_at = ?, approved_by = ?
+                    admin_application_status = 'approved', approved_at = ?, approved_by = ?, must_change_password = 0
                 WHERE id = ?
                 """,
                 (password_hash, now, account, existing["id"]),
@@ -694,4 +749,4 @@ def traffic_report(
 
 
 # Register administrator-only personal team and ownership verification endpoints.
-register_game_binding_routes(app, db, require_admin, require_trusted_origin, PASSWORD_HASHER)
+register_game_binding_routes(app, db, require_admin, require_trusted_origin, PASSWORD_HASHER, limit_auth)

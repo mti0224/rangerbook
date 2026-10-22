@@ -12,7 +12,7 @@
   }
 
   function updateVisibility(user = auth.getUser()) {
-    const visible = Boolean(user?.logged_in && auth.isAdmin());
+    const visible = Boolean(user?.logged_in);
     // When authorized, visibility is controlled by the selected workspace tab.
     if (!visible) {
       card.hidden = true;
@@ -48,6 +48,7 @@
           new_password: newPassword
         })
       });
+      await auth.refresh();
       form.reset();
       setMessage("密碼已更新。其他裝置的登入狀態已登出，本裝置仍保持登入。", "success");
     } catch (error) {
