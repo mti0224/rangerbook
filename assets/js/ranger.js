@@ -388,6 +388,33 @@
     if(unique.includes(selected))select.value=selected;
   }
 
+  function checkedValues(group) {
+    return [...(group?.querySelectorAll('input[type="checkbox"]:checked') || [])].map(input=>input.value);
+  }
+
+  function updateFilterSummary(group) {
+    const summary=group?.closest('details')?.querySelector('[data-filter-summary]');
+    if(!summary)return;
+    const count=checkedValues(group).length;
+    summary.textContent=count ? window.RangerbookI18n.format('site.ranger.selectedCount',[count],`已選 ${count} 項`)
+      : window.RangerbookI18n.uiText('全部');
+  }
+
+  function fillChecks(group, values) {
+    if(!group)return;
+    const selected=new Set(checkedValues(group));
+    // "無" is a real element category for early Rangers, not a missing value.
+    const unique=[...new Set(values.map(text).filter(value=>value && value!=='-'))].sort((a,b)=>a.localeCompare(b,'zh-Hant'));
+    const existing=[...group.querySelectorAll('input[type="checkbox"]')].map(input=>input.value);
+    if(existing.length===unique.length && existing.every((value,index)=>value===unique[index])) {
+      updateFilterSummary(group);return;
+    }
+    // Keep the fieldset legend and any choices made while full data was loading.
+    group.querySelectorAll('label').forEach(label=>label.remove());
+    group.insertAdjacentHTML('beforeend',unique.map(value=>`<label class="ranger-filter-option"><input type="checkbox" name="${group.id}" value="${html(value)}"${selected.has(value)?' checked':''}><span>${html(window.RangerbookI18n.uiText(value))}</span></label>`).join(''));
+    updateFilterSummary(group);
+  }
+
   function tagClass(value) {
     return TAG_CLASS_MAP.get(text(value)) || "";
   }
@@ -498,13 +525,14 @@
     const selectedAbility = text(els.abilityEffect?.value);
     const selectedTalentCondition = text(els.talentCondition?.value);
     const selectedTalentEffect = text(els.talentEffect?.value);
+    const stars=checkedValues(els.star),types=checkedValues(els.type),elements=checkedValues(els.element);
 
     state.filtered = state.rows.filter(({ ranger, search }) => {
       const talent = talentSearchCategories(ranger);
       if (query && !search.includes(query)) return false;
-      if (els.star?.value && ranger["Ranger星數"] !== els.star.value) return false;
-      if (els.type?.value && ranger["類型"] !== els.type.value) return false;
-      if (els.element?.value && ranger["屬性"] !== els.element.value) return false;
+      if (stars.length && !stars.includes(ranger["Ranger星數"])) return false;
+      if (types.length && !types.includes(ranger["類型"])) return false;
+      if (elements.length && !elements.includes(ranger["屬性"])) return false;
       if (els.special?.value === "nft" && !isYes(ranger["nft角色"])) return false;
       if (els.special?.value === "event" && !isYes(ranger["降臨關卡角色"])) return false;
       if (els.special?.value === "talent" && isNone(ranger["才能"])) return false;
@@ -1029,18 +1057,35 @@
 
   function setupEvents() {
     if (!isDetailPage) {
-      [els.search, els.star, els.type, els.element, els.special, els.skillEffect, els.abilityEffect, els.talentCondition, els.talentEffect]
+      [els.search, els.special, els.skillEffect, els.abilityEffect, els.talentCondition, els.talentEffect]
         .forEach((element) => {
           element?.addEventListener("input", applyFilters);
           element?.addEventListener("change", applyFilters);
         });
+      [els.star,els.type,els.element].forEach(group=>group?.addEventListener('change',()=>{
+        updateFilterSummary(group);applyFilters();
+      }));
+      const menus=[els.star,els.type,els.element].map(group=>group?.closest('details')).filter(Boolean);
+      menus.forEach(menu=>menu.addEventListener('toggle',()=>{
+        if(menu.open)menus.forEach(other=>{if(other!==menu)other.open=false;});
+      }));
+      document.addEventListener('click',event=>menus.forEach(menu=>{if(!menu.contains(event.target))menu.open=false;}));
+      document.addEventListener('keydown',event=>{
+        if(event.key==='Escape')menus.forEach(menu=>{
+          if(menu.open){menu.open=false;menu.querySelector('summary').focus();}
+        });
+      });
       els.list?.addEventListener("click", (event) => {
         const card = event.target.closest?.(".ranger-card[data-ranger-id]");
         if (card) openRanger(card.dataset.rangerId || "");
       });
       els.reset?.addEventListener("click", () => {
-        [els.search, els.star, els.type, els.element, els.special, els.skillEffect, els.abilityEffect, els.talentCondition, els.talentEffect]
+        [els.search, els.special, els.skillEffect, els.abilityEffect, els.talentCondition, els.talentEffect]
           .forEach((element) => { if (element) element.value = ""; });
+        [els.star,els.type,els.element].forEach(group=>{
+          group?.querySelectorAll('input[type="checkbox"]').forEach(input=>{input.checked=false;});
+          updateFilterSummary(group);
+        });
         applyFilters();
       });
       els.advancedToggle?.addEventListener("click", () => {
@@ -1069,9 +1114,9 @@
           state.rows=preview.map((ranger,index)=>({ranger,index,date:parseDate(ranger['登場時間']),search:searchBlob(ranger)}))
             .sort((a,b)=>(b.date-a.date)||(a.index-b.index));
           state.filtered=[...state.rows];
-          fillSelect(els.star,state.rows.map(row=>row.ranger['Ranger星數']));
-          fillSelect(els.type,state.rows.map(row=>row.ranger['類型']));
-          fillSelect(els.element,state.rows.map(row=>row.ranger['屬性']));
+          fillChecks(els.star,state.rows.map(row=>row.ranger['Ranger星數']));
+          fillChecks(els.type,state.rows.map(row=>row.ranger['類型']));
+          fillChecks(els.element,state.rows.map(row=>row.ranger['屬性']));
           if(els.advancedToggle){els.advancedToggle.disabled=true;els.advancedToggle.setAttribute('aria-busy','true');}
           if(els.special)els.special.disabled=true;
           renderList();
@@ -1099,9 +1144,9 @@
       }
 
       state.filtered = [...state.rows];
-      fillSelect(els.star, state.rows.map((row) => row.ranger["Ranger星數"]));
-      fillSelect(els.type, state.rows.map((row) => row.ranger["類型"]));
-      fillSelect(els.element, state.rows.map((row) => row.ranger["屬性"]));
+      fillChecks(els.star, state.rows.map((row) => row.ranger["Ranger星數"]));
+      fillChecks(els.type, state.rows.map((row) => row.ranger["類型"]));
+      fillChecks(els.element, state.rows.map((row) => row.ranger["屬性"]));
       fillSelect(els.skillEffect, state.rows.flatMap((row) => skillEffects(row.ranger)), "技能效果");
       fillSelect(els.abilityEffect, state.rows.flatMap((row) => abilityFilterValues(row.ranger)), "能力");
       fillSelect(els.talentCondition, state.rows.flatMap((row) => talentSearchCategories(row.ranger).conditions), "才能條件");

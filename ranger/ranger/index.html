@@ -70,26 +70,20 @@
         <input id="rangerSearchInput" type="search" data-i18n-placeholder="ranger.placeholder" placeholder="輸入角色名稱、ID或關鍵字...">
       </label>
 
-      <label>
-        <span data-i18n="ranger.star">星數</span>
-        <select id="starFilter">
-          <option value="" data-i18n="ranger.all">全部</option>
-        </select>
-      </label>
+      <details class="ranger-filter-menu">
+        <summary><span data-i18n="ranger.star">星數</span><span data-filter-summary>全部</span></summary>
+        <fieldset id="starFilter" class="ranger-filter-options"><legend data-i18n="ranger.star">星數</legend></fieldset>
+      </details>
 
-      <label>
-        <span data-i18n="ranger.type">類型</span>
-        <select id="typeFilter">
-          <option value="" data-i18n="ranger.all">全部</option>
-        </select>
-      </label>
+      <details class="ranger-filter-menu">
+        <summary><span data-i18n="ranger.type">類型</span><span data-filter-summary>全部</span></summary>
+        <fieldset id="typeFilter" class="ranger-filter-options"><legend data-i18n="ranger.type">類型</legend></fieldset>
+      </details>
 
-      <label>
-        <span data-i18n="ranger.element">屬性</span>
-        <select id="elementFilter">
-          <option value="" data-i18n="ranger.all">全部</option>
-        </select>
-      </label>
+      <details class="ranger-filter-menu">
+        <summary><span data-i18n="ranger.element">屬性</span><span data-filter-summary>全部</span></summary>
+        <fieldset id="elementFilter" class="ranger-filter-options"><legend data-i18n="ranger.element">屬性</legend></fieldset>
+      </details>
 
       <button id="rangerAdvancedToggleBtn" class="advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="rangerAdvancedFilters">
         進階篩選 ▼

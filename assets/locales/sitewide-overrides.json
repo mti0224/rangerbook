@@ -582,7 +582,7 @@
   },
   {
     "key": "UI:site.ranger.ultra",
-    "zh_TW": "究極進化",
+    "zh_TW": "終極進化",
     "en": "Ultra Evolution",
     "th": "วิวัฒนาการอัลตร้า",
     "jp": "ウルトラ進化"
@@ -1006,5 +1006,19 @@
     "en": "Advanced filters could not load. Please reload this page.",
     "th": "ไม่สามารถโหลดตัวกรองขั้นสูงได้ โปรดโหลดหน้านี้ใหม่",
     "jp": "詳細フィルターを読み込めませんでした。ページを再読み込みしてください。"
+  },
+  {
+    "key": "UI:site.ranger.selectedCount",
+    "zh_TW": "已選 %N1 項",
+    "en": "%N1 selected",
+    "th": "เลือกแล้ว %N1 รายการ",
+    "jp": "%N1件選択中"
+  },
+  {
+    "key": "UI:dynamic.ultra",
+    "zh_TW": "終極進化%N1星",
+    "en": "Ultra %N1 Stars",
+    "th": "อัลตร้า %N1 ดาว",
+    "jp": "ウルトラ進化・星%N1"
   }
 ]

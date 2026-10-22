@@ -7,7 +7,7 @@ const read = name => JSON.parse(fs.readFileSync(path.join(root, "res/v2", name +
 const index = read("ranger-index").rangers;
 const fullIds = read("rangers").rangers.map(row => row.rangerCode);
 const official = new Map(read("locales/official").map(row => [row.key, row]));
-const ui = new Map(read("locales/ui").map(row => [row.key, row]));
+const ui = new Map([...read("locales/ui"), ...JSON.parse(fs.readFileSync(path.join(root,"assets/locales/sitewide-overrides.json")))].map(row => [row.key, row]));
 const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
 const normalize = value => String(value || "").replace(/\\+n/g, " ").replace(/\s+/g, " ").trim();
 const languages = ["zh_TW", "en", "th", "jp"];

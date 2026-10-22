@@ -259,7 +259,7 @@
     out["強化才能"]=(t.enhancements||[]).map(x=>text(x.localizedEffect));
     return out;
   }
-  function stars(x) {return (x.evolution==="HYPER"?"超進化":x.evolution==="ULTRA"?"究極進化":"")+x.starGrade+"星";}
+  function stars(x) {return (x.evolution==="HYPER"?"超進化":x.evolution==="ULTRA"?"終極進化":"")+x.starGrade+"星";}
   function localizedRangerTags(x) {
     const starKey=x.evolution==="HYPER"?"hyper":x.evolution==="ULTRA"?"ultra":"stars";
     const element=x.elementType==="TREE"?"wood":x.elementType.toLowerCase();
