@@ -39,11 +39,11 @@ function harness() {
  const warmedRequests=h.network.length;
  assert.ok((await h.get('res/v2/abilities.json')).ok);
  assert.equal(h.network.length,warmedRequests,'Verified warm data must not wait for any network request');
- for(const name of ['https://auth.test/auth/me','admin/','auth/me','api/player-team-query','sponsor/','payment/','index.html?session=private'])await h.get(name);
+ for(const name of ['https://auth.test/auth/me','admin/','account/','account-action/','personal-teams/','account-action/index.html?reset=private','auth/me','api/player-team-query','sponsor/','payment/','index.html?session=private'])await h.get(name);
  await h.get('res/v2/abilities.json',{headers:new Headers({Authorization:'Bearer private'})});
  await h.get('res/v2/abilities.json',{method:'POST'});
- for(const cache of h.stores.values())for(const url of cache.keys())assert.ok(!/auth|session|admin|payment|sponsor/.test(url),url);
- assert.ok(h.network.slice(-9).every(x=>x.options?.cache==='no-store'));
+ for(const cache of h.stores.values())for(const url of cache.keys())assert.ok(!/auth|session|admin|account|personal-teams|payment|sponsor/.test(url),url);
+ assert.ok(h.network.slice(-13).every(x=>x.options?.cache==='no-store'));
  h.setOffline(true);
  assert.ok((await h.get('res/v2/abilities.json')).ok);
  assert.match(await (await h.get('res/v2/rangers.json')).text(),/RANGERBOOK_OFFLINE/);

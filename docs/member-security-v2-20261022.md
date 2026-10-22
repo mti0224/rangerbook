@@ -115,6 +115,6 @@ Google 綁定／更換／解除、恢復碼再生與停用 2FA 需近期重新�
 
 建置：`assets/pwa/service-worker.js`、`scripts/build-pwa.mjs`、`scripts/package-pages.mjs`、`pwa-data.json`、`sw.js`、`.gitignore`、`.github/workflows/validate-security.yml`。
 
-測試：新增 `tests/test_membership_core.py`、`test_membership_v2.py`、`member-browser.cjs`、`local-static-fixture.cjs`；更新 `admin-workspace-ui.cjs`、`site-sidebar-ui.cjs`、`security-browser.cjs`、`security-pages.mjs`、`team-analysis-model.cjs`、`pwa-contract.cjs` 以追隨搬移後的入口與安全需求。
+測試：新增 `tests/test_membership_core.py`、`test_membership_v2.py`、`member-browser.cjs`、`local-static-fixture.cjs`；更新 `admin-workspace-ui.cjs`、`site-sidebar-ui.cjs`、`security-browser.cjs`、`security-pages.mjs`、`team-analysis-model.cjs`、`pwa-contract.cjs`、`pwa-worker.cjs`、`test_sitewide_locale_coverage.py`、`test_ui_locale_coverage.py` 以追隨搬移後的入口與安全需求。
 
 本報告：`docs/member-security-v2-20261022.md`。部署、備份回復、Google／Turnstile／SES／IAM 及人工恢復詳細命令見 `membership/README.md`。

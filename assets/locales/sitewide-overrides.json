@@ -1531,5 +1531,19 @@
     "en": "Member. Apply for administrator access on the Privacy and password page.",
     "jp": "一般会員です。管理者申請はプライバシーとパスワードページから行えます。",
     "th": "สมาชิกทั่วไป สามารถสมัครเป็นผู้ดูแลได้ที่หน้าความเป็นส่วนตัวและรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.documentTitle",
+    "zh_TW": "帳號｜LINE Rangers Database",
+    "en": "Account | LINE Rangers Database",
+    "jp": "アカウント｜LINE Rangers Database",
+    "th": "บัญชี | LINE Rangers Database"
+  },
+  {
+    "key": "UI:member.actionTitle",
+    "zh_TW": "Rangerbook 帳號救援",
+    "en": "Rangerbook account recovery",
+    "jp": "Rangerbook アカウント復旧",
+    "th": "กู้คืนบัญชี Rangerbook"
   }
 ]
