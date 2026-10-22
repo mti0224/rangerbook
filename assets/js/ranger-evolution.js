@@ -56,7 +56,7 @@
     if (failed || !records.length) body = `<p class="empty-state small">${escape(label("site.evolution.unavailable","進化階段資料暫時無法載入。"))}</p>`;
     else body = `<ul class="ranger-evolution-list">${records.map(row => {
       const code = row.rangerCode, current = code === id;
-      const star = (row.evolution === "ULTRA" ? "究極進化" : row.evolution === "HYPER" ? "超進化" : "")+row.starGrade+"星";
+      const star = (row.evolution === "ULTRA" ? "終極進化" : row.evolution === "HYPER" ? "超進化" : "")+row.starGrade+"星";
       const targets = [...(next.get(code) || [])];
       return `<li class="ranger-evolution-stage${current ? " is-current" : ""}" data-evolution-id="${escape(code)}">
         <a class="ranger-evolution-character" href="${escape(link(code))}"${current ? ' aria-current="page"' : ""}>

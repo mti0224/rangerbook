@@ -10,6 +10,9 @@ on:
       - 'tests/fast-data.cjs'
       - 'tests/loading-performance.cjs'
       - 'tests/talent-adapter.cjs'
+      - 'tests/ranger-multiselect.cjs'
+      - 'assets/css/ranger-advanced-filters.css'
+      - 'ranger/ranger/index.html'
       - '.github/workflows/validate-loading.yml'
 jobs:
   loading:
@@ -23,3 +26,4 @@ jobs:
       - run: node tests/fast-data.cjs && node tests/talent-adapter.cjs && node tests/pwa-contract.cjs && node tests/pwa-worker.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: node tests/loading-performance.cjs
+      - run: node tests/ranger-multiselect.cjs

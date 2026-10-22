@@ -42,12 +42,14 @@ const blocked=new Set(['res/v2/rangers.json','res/v2/abilities.json','res/v2/loc
   assert.equal(await page.locator('.ranger-card').count(),60,'Preview displays the real page of characters');
   assert.ok(requests.includes('res/v2/fast/ranger-list.json'));
   if(holdBackground) {
-    await page.locator('#typeFilter').selectOption('敏捷型');
+    await page.locator('#typeFilter').locator('..').locator('summary').click();
+    await page.locator('#typeFilter input[value="敏捷型"]').check();
+    await page.locator('#typeFilter input[value="力量型"]').check();
     await page.locator('#paginationNext').click();
     const firstId=await page.locator('.ranger-card').first().getAttribute('data-ranger-id');
     releaseBackground();
     await page.waitForFunction(()=>!document.querySelector('#rangerAdvancedToggleBtn').disabled);
-    assert.equal(await page.locator('#typeFilter').inputValue(),'敏捷型','Background completion preserves selected filters');
+    assert.deepEqual(await page.locator('#typeFilter input:checked').evaluateAll(inputs=>inputs.map(input=>input.value).sort()),['力量型','敏捷型'],'Background completion preserves multiple selected filters');
     assert.equal(await page.locator('.ranger-card').first().getAttribute('data-ranger-id'),firstId,'Background completion preserves the current page');
   }
   await context.close();
