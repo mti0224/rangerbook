@@ -1,1 +1,1377 @@
-{"schemaVersion":2,"artifacts":[{"artifactCode":"bf_atavoid","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID","direction":"INCREASE","operation":"ADD","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":261,"DARK":281,"FIRE":281,"INT":261,"LIGHT":281,"STR":261,"TREE":281,"WATER":281},"iconPath":"/grade_C/a_bf_atavoid_icon_grade_c.png"},{"artifactCode":"bf_atk","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK","direction":"INCREASE","operation":"MUL","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":243,"DARK":272,"FIRE":272,"INT":243,"LIGHT":272,"STR":243,"TREE":272,"WATER":272},"iconPath":"/grade_C/a_bf_atk_icon_grade_c.png"},{"artifactCode":"bf_atkspd","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD","direction":"INCREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":264,"DARK":282,"FIRE":282,"INT":264,"LIGHT":282,"STR":264,"TREE":282,"WATER":282},"iconPath":"/grade_C/a_bf_atkspd_icon_grade_c.png"},{"artifactCode":"bf_avoid","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID","direction":"INCREASE","operation":"ADD","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":255,"DARK":278,"FIRE":278,"INT":255,"LIGHT":278,"STR":255,"TREE":278,"WATER":278},"iconPath":"/grade_C/a_bf_avoid_icon_grade_c.png"},{"artifactCode":"bf_hp","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_HP","direction":"INCREASE","operation":"MUL","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":246,"DARK":273,"FIRE":273,"INT":246,"LIGHT":273,"STR":246,"TREE":273,"WATER":273},"iconPath":"/grade_C/a_bf_hp_icon_grade_c.png"},{"artifactCode":"bf_spd","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_SPD","direction":"INCREASE","operation":"MUL","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":240,"DARK":270,"FIRE":270,"INT":240,"LIGHT":270,"STR":240,"TREE":270,"WATER":270},"iconPath":"/grade_C/a_bf_spd_icon_grade_c.png"},{"artifactCode":"df_atavoid","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID","direction":"DECREASE","operation":"SUB","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":330,"DARK":311,"FIRE":311,"INT":330,"LIGHT":311,"STR":330,"TREE":311,"WATER":311},"iconPath":"/grade_C/a_df_atavoid_icon_grade_c.png"},{"artifactCode":"df_atk","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK","direction":"DECREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":348,"DARK":317,"FIRE":317,"INT":348,"LIGHT":317,"STR":348,"TREE":317,"WATER":317},"iconPath":"/grade_C/a_df_atk_icon_grade_c.png"},{"artifactCode":"df_atkrge","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE","direction":"DECREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":354,"DARK":319,"FIRE":319,"INT":354,"LIGHT":319,"TREE":319,"WATER":319},"iconPath":"/grade_C/a_df_atkrge_icon_grade_c.png"},{"artifactCode":"df_atkspd","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD","direction":"DECREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":360,"DARK":321,"FIRE":321,"INT":360,"LIGHT":321,"STR":360,"TREE":321,"WATER":321},"iconPath":"/grade_C/a_df_atkspd_icon_grade_c.png"},{"artifactCode":"df_avoid","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID","direction":"DECREASE","operation":"SUB","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":336,"DARK":313,"FIRE":313,"INT":336,"LIGHT":313,"STR":336,"TREE":313,"WATER":313},"iconPath":"/grade_C/a_df_avoid_icon_grade_c.png"},{"artifactCode":"df_hp","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP","direction":"DECREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":342,"DARK":315,"FIRE":315,"INT":342,"LIGHT":315,"STR":342,"TREE":315,"WATER":315},"iconPath":"/grade_C/a_df_hp_icon_grade_c.png"},{"artifactCode":"df_spd","grade":"C","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD","direction":"DECREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":351,"DARK":318,"FIRE":318,"INT":351,"LIGHT":318,"STR":351,"TREE":318,"WATER":318},"iconPath":"/grade_C/a_df_spd_icon_grade_c.png"},{"artifactCode":"bf_atavoid","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID","direction":"INCREASE","operation":"ADD","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":870,"DARK":935,"FIRE":935,"INT":870,"LIGHT":935,"STR":870,"TREE":935,"WATER":935},"iconPath":"/grade_B/a_bf_atavoid_icon_grade_b.png"},{"artifactCode":"bf_atk","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK","direction":"INCREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":810,"DARK":905,"FIRE":905,"INT":810,"LIGHT":905,"STR":810,"TREE":905,"WATER":905},"iconPath":"/grade_B/a_bf_atk_icon_grade_b.png"},{"artifactCode":"bf_atkspd","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD","direction":"INCREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":880,"DARK":940,"FIRE":940,"INT":880,"LIGHT":940,"STR":880,"TREE":940,"WATER":940},"iconPath":"/grade_B/a_bf_atkspd_icon_grade_b.png"},{"artifactCode":"bf_avoid","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID","direction":"INCREASE","operation":"ADD","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":850,"DARK":925,"FIRE":925,"INT":850,"LIGHT":925,"STR":850,"TREE":925,"WATER":925},"iconPath":"/grade_B/a_bf_avoid_icon_grade_b.png"},{"artifactCode":"bf_hp","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_HP","direction":"INCREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":820,"DARK":910,"FIRE":910,"INT":820,"LIGHT":910,"STR":820,"TREE":910,"WATER":910},"iconPath":"/grade_B/a_bf_hp_icon_grade_b.png"},{"artifactCode":"bf_min","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_min","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_SUMMON_ENGY","direction":"INCREASE","operation":"MUL","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":780,"DARK":890,"FIRE":890,"INT":780,"LIGHT":890,"STR":780,"TREE":890,"WATER":890},"iconPath":"/grade_B/a_bf_min_icon_grade_b.png"},{"artifactCode":"bf_prdtime","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_prdtime","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_PRD_SPE","direction":"INCREASE","operation":"MUL","effectArgs":[10.0],"percent":10.0},"pointsByTarget":{"AGI":770,"DARK":885,"FIRE":885,"INT":770,"LIGHT":885,"STR":770,"TREE":885,"WATER":885},"iconPath":"/grade_B/a_bf_prdtime_icon_grade_b.png"},{"artifactCode":"bf_redmg","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_redmg","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_RE_DMG","direction":"INCREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":800,"DARK":900,"FIRE":900,"INT":800,"LIGHT":900,"STR":800,"TREE":900,"WATER":900},"iconPath":"/grade_B/a_bf_redmg_icon_grade_b.png"},{"artifactCode":"bf_spd","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_SPD","direction":"INCREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":800,"DARK":900,"FIRE":900,"INT":800,"LIGHT":900,"STR":800,"TREE":900,"WATER":900},"iconPath":"/grade_B/a_bf_spd_icon_grade_b.png"},{"artifactCode":"df_atavoid","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID","direction":"DECREASE","operation":"SUB","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1100,"DARK":1035,"FIRE":1035,"INT":1100,"LIGHT":1035,"STR":1100,"TREE":1035,"WATER":1035},"iconPath":"/grade_B/a_df_atavoid_icon_grade_b.png"},{"artifactCode":"df_atk","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1160,"DARK":1056,"FIRE":1056,"INT":1160,"LIGHT":1056,"STR":1160,"TREE":1056,"WATER":1056},"iconPath":"/grade_B/a_df_atk_icon_grade_b.png"},{"artifactCode":"df_atkrge","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1180,"DARK":1063,"FIRE":1063,"INT":1180,"LIGHT":1063,"TREE":1063,"WATER":1063},"iconPath":"/grade_B/a_df_atkrge_icon_grade_b.png"},{"artifactCode":"df_atkspd","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1200,"DARK":1070,"FIRE":1070,"INT":1200,"LIGHT":1070,"STR":1200,"TREE":1070,"WATER":1070},"iconPath":"/grade_B/a_df_atkspd_icon_grade_b.png"},{"artifactCode":"df_avoid","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID","direction":"DECREASE","operation":"SUB","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1120,"DARK":1042,"FIRE":1042,"INT":1120,"LIGHT":1042,"STR":1120,"TREE":1042,"WATER":1042},"iconPath":"/grade_B/a_df_avoid_icon_grade_b.png"},{"artifactCode":"df_dead","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_dead","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_DEAD","direction":"DECREASE","operation":"ADD","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1220,"DARK":1077,"FIRE":1077,"INT":1220,"LIGHT":1077,"STR":1220,"TREE":1077,"WATER":1077},"iconPath":"/grade_B/a_df_dead_icon_grade_b.png"},{"artifactCode":"df_heal","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_heal","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_HEAL","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1200,"DARK":1070,"FIRE":1070,"INT":1200,"LIGHT":1070,"STR":1200,"TREE":1070,"WATER":1070},"iconPath":"/grade_B/a_df_heal_icon_grade_b.png"},{"artifactCode":"df_hp","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1140,"DARK":1049,"FIRE":1049,"INT":1140,"LIGHT":1049,"STR":1140,"TREE":1049,"WATER":1049},"iconPath":"/grade_B/a_df_hp_icon_grade_b.png"},{"artifactCode":"df_min","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_min","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SUMMON_ENGY","direction":"DECREASE","operation":"MUL","effectArgs":[15.0],"percent":15.0},"pointsByTarget":{"AGI":1200,"DARK":1070,"FIRE":1070,"INT":1200,"LIGHT":1070,"STR":1200,"TREE":1070,"WATER":1070},"iconPath":"/grade_B/a_df_min_icon_grade_b.png"},{"artifactCode":"df_prdtime","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_prdtime","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_PRD_SPE","direction":"DECREASE","operation":"MUL","effectArgs":[15.0],"percent":15.0},"pointsByTarget":{"AGI":1210,"DARK":1074,"FIRE":1074,"INT":1210,"LIGHT":1074,"STR":1210,"TREE":1074,"WATER":1074},"iconPath":"/grade_B/a_df_prdtime_icon_grade_b.png"},{"artifactCode":"df_silence","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_silence","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SILENCE","direction":"DECREASE","operation":"ADD","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1210,"DARK":1074,"FIRE":1074,"INT":1210,"LIGHT":1074,"STR":1210,"TREE":1074,"WATER":1074},"iconPath":"/grade_B/a_df_silence_icon_grade_b.png"},{"artifactCode":"df_spd","grade":"B","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1170,"DARK":1060,"FIRE":1060,"INT":1170,"LIGHT":1060,"STR":1170,"TREE":1060,"WATER":1060},"iconPath":"/grade_B/a_df_spd_icon_grade_b.png"},{"artifactCode":"bf_atavoid","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID","direction":"INCREASE","operation":"ADD","effectArgs":[40.0],"percent":40.0},"pointsByTarget":{"AGI":1914,"DARK":2057,"FIRE":2057,"INT":1914,"LIGHT":2057,"STR":1914,"TREE":2057,"WATER":2057},"iconPath":"/grade_A/a_bf_atavoid_icon_grade_a.png"},{"artifactCode":"bf_atk","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK","direction":"INCREASE","operation":"MUL","effectArgs":[40.0],"percent":40.0},"pointsByTarget":{"AGI":1782,"DARK":1991,"FIRE":1991,"INT":1782,"LIGHT":1991,"STR":1782,"TREE":1991,"WATER":1991},"iconPath":"/grade_A/a_bf_atk_icon_grade_a.png"},{"artifactCode":"bf_atkspd","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD","direction":"INCREASE","operation":"MUL","effectArgs":[80.0],"percent":80.0},"pointsByTarget":{"AGI":1936,"DARK":2068,"FIRE":2068,"INT":1936,"LIGHT":2068,"STR":1936,"TREE":2068,"WATER":2068},"iconPath":"/grade_A/a_bf_atkspd_icon_grade_a.png"},{"artifactCode":"bf_avoid","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID","direction":"INCREASE","operation":"ADD","effectArgs":[40.0],"percent":40.0},"pointsByTarget":{"AGI":1870,"DARK":2035,"FIRE":2035,"INT":1870,"LIGHT":2035,"STR":1870,"TREE":2035,"WATER":2035},"iconPath":"/grade_A/a_bf_avoid_icon_grade_a.png"},{"artifactCode":"bf_hp","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_HP","direction":"INCREASE","operation":"MUL","effectArgs":[40.0],"percent":40.0},"pointsByTarget":{"AGI":1804,"DARK":2002,"FIRE":2002,"INT":1804,"LIGHT":2002,"STR":1804,"TREE":2002,"WATER":2002},"iconPath":"/grade_A/a_bf_hp_icon_grade_a.png"},{"artifactCode":"bf_min","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_min","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_SUMMON_ENGY","direction":"INCREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":1716,"DARK":1958,"FIRE":1958,"INT":1716,"LIGHT":1958,"STR":1716,"TREE":1958,"WATER":1958},"iconPath":"/grade_A/a_bf_min_icon_grade_a.png"},{"artifactCode":"bf_prdtime","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_prdtime","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_PRD_SPE","direction":"INCREASE","operation":"MUL","effectArgs":[20.0],"percent":20.0},"pointsByTarget":{"AGI":1694,"DARK":1947,"FIRE":1947,"INT":1694,"LIGHT":1947,"STR":1694,"TREE":1947,"WATER":1947},"iconPath":"/grade_A/a_bf_prdtime_icon_grade_a.png"},{"artifactCode":"bf_redmg","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_redmg","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_RE_DMG","direction":"INCREASE","operation":"MUL","effectArgs":[40.0],"percent":40.0},"pointsByTarget":{"AGI":1760,"DARK":1980,"FIRE":1980,"INT":1760,"LIGHT":1980,"STR":1760,"TREE":1980,"WATER":1980},"iconPath":"/grade_A/a_bf_redmg_icon_grade_a.png"},{"artifactCode":"bf_spd","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd","effect":{"effectKey":"CUSTOM:LABYRINTH_BUFF_EFFECT_SPD","direction":"INCREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":1760,"DARK":1980,"FIRE":1980,"INT":1760,"LIGHT":1980,"STR":1760,"TREE":1980,"WATER":1980},"iconPath":"/grade_A/a_bf_spd_icon_grade_a.png"},{"artifactCode":"df_atavoid","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID","direction":"DECREASE","operation":"SUB","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2420,"DARK":2277,"FIRE":2277,"INT":2420,"LIGHT":2277,"STR":2420,"TREE":2277,"WATER":2277},"iconPath":"/grade_A/a_df_atavoid_icon_grade_a.png"},{"artifactCode":"df_atk","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK","direction":"DECREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2552,"DARK":2323,"FIRE":2323,"INT":2552,"LIGHT":2323,"STR":2552,"TREE":2323,"WATER":2323},"iconPath":"/grade_A/a_df_atk_icon_grade_a.png"},{"artifactCode":"df_atkrge","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE","direction":"DECREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2596,"DARK":2339,"FIRE":2339,"INT":2596,"LIGHT":2339,"TREE":2339,"WATER":2339},"iconPath":"/grade_A/a_df_atkrge_icon_grade_a.png"},{"artifactCode":"df_atkspd","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD","direction":"DECREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2640,"DARK":2354,"FIRE":2354,"INT":2640,"LIGHT":2354,"STR":2640,"TREE":2354,"WATER":2354},"iconPath":"/grade_A/a_df_atkspd_icon_grade_a.png"},{"artifactCode":"df_avoid","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID","direction":"DECREASE","operation":"SUB","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2464,"DARK":2292,"FIRE":2292,"INT":2464,"LIGHT":2292,"STR":2464,"TREE":2292,"WATER":2292},"iconPath":"/grade_A/a_df_avoid_icon_grade_a.png"},{"artifactCode":"df_dead","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_dead","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_DEAD","direction":"DECREASE","operation":"ADD","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2684,"DARK":2369,"FIRE":2369,"INT":2684,"LIGHT":2369,"STR":2684,"TREE":2369,"WATER":2369},"iconPath":"/grade_A/a_df_dead_icon_grade_a.png"},{"artifactCode":"df_heal","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_heal","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_HEAL","direction":"DECREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2640,"DARK":2354,"FIRE":2354,"INT":2640,"LIGHT":2354,"STR":2640,"TREE":2354,"WATER":2354},"iconPath":"/grade_A/a_df_heal_icon_grade_a.png"},{"artifactCode":"df_hp","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP","direction":"DECREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2508,"DARK":2308,"FIRE":2308,"INT":2508,"LIGHT":2308,"STR":2508,"TREE":2308,"WATER":2308},"iconPath":"/grade_A/a_df_hp_icon_grade_a.png"},{"artifactCode":"df_min","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_min","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SUMMON_ENGY","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":2640,"DARK":2354,"FIRE":2354,"INT":2640,"LIGHT":2354,"STR":2640,"TREE":2354,"WATER":2354},"iconPath":"/grade_A/a_df_min_icon_grade_a.png"},{"artifactCode":"df_prdtime","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_prdtime","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_PRD_SPE","direction":"DECREASE","operation":"MUL","effectArgs":[30.0],"percent":30.0},"pointsByTarget":{"AGI":2662,"DARK":2362,"FIRE":2362,"INT":2662,"LIGHT":2362,"STR":2662,"TREE":2362,"WATER":2362},"iconPath":"/grade_A/a_df_prdtime_icon_grade_a.png"},{"artifactCode":"df_silence","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_silence","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SILENCE","direction":"DECREASE","operation":"ADD","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2662,"DARK":2362,"FIRE":2362,"INT":2662,"LIGHT":2362,"STR":2662,"TREE":2362,"WATER":2362},"iconPath":"/grade_A/a_df_silence_icon_grade_a.png"},{"artifactCode":"df_spd","grade":"A","nameKey":"CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd","effect":{"effectKey":"CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD","direction":"DECREASE","operation":"MUL","effectArgs":[50.0],"percent":50.0},"pointsByTarget":{"AGI":2574,"DARK":2331,"FIRE":2331,"INT":2574,"LIGHT":2331,"STR":2574,"TREE":2331,"WATER":2331},"iconPath":"/grade_A/a_df_spd_icon_grade_a.png"}]}
+{
+    "schemaVersion": 2,
+    "artifacts": [
+        {
+            "artifactCode": "bf_atavoid",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID",
+                "direction": "INCREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 261,
+                "DARK": 281,
+                "FIRE": 281,
+                "INT": 261,
+                "LIGHT": 281,
+                "STR": 261,
+                "TREE": 281,
+                "WATER": 281
+            },
+            "iconPath": "/grade_C/a_bf_atavoid_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "bf_atk",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ATK",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 243,
+                "DARK": 272,
+                "FIRE": 272,
+                "INT": 243,
+                "LIGHT": 272,
+                "STR": 243,
+                "TREE": 272,
+                "WATER": 272
+            },
+            "iconPath": "/grade_C/a_bf_atk_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "bf_atkspd",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 264,
+                "DARK": 282,
+                "FIRE": 282,
+                "INT": 264,
+                "LIGHT": 282,
+                "STR": 264,
+                "TREE": 282,
+                "WATER": 282
+            },
+            "iconPath": "/grade_C/a_bf_atkspd_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "bf_avoid",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID",
+                "direction": "INCREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 255,
+                "DARK": 278,
+                "FIRE": 278,
+                "INT": 255,
+                "LIGHT": 278,
+                "STR": 255,
+                "TREE": 278,
+                "WATER": 278
+            },
+            "iconPath": "/grade_C/a_bf_avoid_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "bf_hp",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_HP",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 246,
+                "DARK": 273,
+                "FIRE": 273,
+                "INT": 246,
+                "LIGHT": 273,
+                "STR": 246,
+                "TREE": 273,
+                "WATER": 273
+            },
+            "iconPath": "/grade_C/a_bf_hp_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "bf_spd",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_SPD",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 240,
+                "DARK": 270,
+                "FIRE": 270,
+                "INT": 240,
+                "LIGHT": 270,
+                "STR": 240,
+                "TREE": 270,
+                "WATER": 270
+            },
+            "iconPath": "/grade_C/a_bf_spd_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_atavoid",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID",
+                "direction": "DECREASE",
+                "operation": "SUB",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 330,
+                "DARK": 311,
+                "FIRE": 311,
+                "INT": 330,
+                "LIGHT": 311,
+                "STR": 330,
+                "TREE": 311,
+                "WATER": 311
+            },
+            "iconPath": "/grade_C/a_df_atavoid_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_atk",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 348,
+                "DARK": 317,
+                "FIRE": 317,
+                "INT": 348,
+                "LIGHT": 317,
+                "STR": 348,
+                "TREE": 317,
+                "WATER": 317
+            },
+            "iconPath": "/grade_C/a_df_atk_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_atkrge",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 354,
+                "DARK": 319,
+                "FIRE": 319,
+                "INT": 354,
+                "LIGHT": 319,
+                "TREE": 319,
+                "WATER": 319
+            },
+            "iconPath": "/grade_C/a_df_atkrge_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_atkspd",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 360,
+                "DARK": 321,
+                "FIRE": 321,
+                "INT": 360,
+                "LIGHT": 321,
+                "STR": 360,
+                "TREE": 321,
+                "WATER": 321
+            },
+            "iconPath": "/grade_C/a_df_atkspd_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_avoid",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID",
+                "direction": "DECREASE",
+                "operation": "SUB",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 336,
+                "DARK": 313,
+                "FIRE": 313,
+                "INT": 336,
+                "LIGHT": 313,
+                "STR": 336,
+                "TREE": 313,
+                "WATER": 313
+            },
+            "iconPath": "/grade_C/a_df_avoid_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_hp",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 342,
+                "DARK": 315,
+                "FIRE": 315,
+                "INT": 342,
+                "LIGHT": 315,
+                "STR": 342,
+                "TREE": 315,
+                "WATER": 315
+            },
+            "iconPath": "/grade_C/a_df_hp_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "df_spd",
+            "grade": "C",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 351,
+                "DARK": 318,
+                "FIRE": 318,
+                "INT": 351,
+                "LIGHT": 318,
+                "STR": 351,
+                "TREE": 318,
+                "WATER": 318
+            },
+            "iconPath": "/grade_C/a_df_spd_icon_grade_c.png"
+        },
+        {
+            "artifactCode": "bf_atavoid",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID",
+                "direction": "INCREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 870,
+                "DARK": 935,
+                "FIRE": 935,
+                "INT": 870,
+                "LIGHT": 935,
+                "STR": 870,
+                "TREE": 935,
+                "WATER": 935
+            },
+            "iconPath": "/grade_B/a_bf_atavoid_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_atk",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ATK",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 810,
+                "DARK": 905,
+                "FIRE": 905,
+                "INT": 810,
+                "LIGHT": 905,
+                "STR": 810,
+                "TREE": 905,
+                "WATER": 905
+            },
+            "iconPath": "/grade_B/a_bf_atk_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_atkspd",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 880,
+                "DARK": 940,
+                "FIRE": 940,
+                "INT": 880,
+                "LIGHT": 940,
+                "STR": 880,
+                "TREE": 940,
+                "WATER": 940
+            },
+            "iconPath": "/grade_B/a_bf_atkspd_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_avoid",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID",
+                "direction": "INCREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 850,
+                "DARK": 925,
+                "FIRE": 925,
+                "INT": 850,
+                "LIGHT": 925,
+                "STR": 850,
+                "TREE": 925,
+                "WATER": 925
+            },
+            "iconPath": "/grade_B/a_bf_avoid_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_hp",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_HP",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 820,
+                "DARK": 910,
+                "FIRE": 910,
+                "INT": 820,
+                "LIGHT": 910,
+                "STR": 820,
+                "TREE": 910,
+                "WATER": 910
+            },
+            "iconPath": "/grade_B/a_bf_hp_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_min",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_min",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_SUMMON_ENGY",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 780,
+                "DARK": 890,
+                "FIRE": 890,
+                "INT": 780,
+                "LIGHT": 890,
+                "STR": 780,
+                "TREE": 890,
+                "WATER": 890
+            },
+            "iconPath": "/grade_B/a_bf_min_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_prdtime",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_prdtime",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_PRD_SPE",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    10.0
+                ],
+                "percent": 10.0
+            },
+            "pointsByTarget": {
+                "AGI": 770,
+                "DARK": 885,
+                "FIRE": 885,
+                "INT": 770,
+                "LIGHT": 885,
+                "STR": 770,
+                "TREE": 885,
+                "WATER": 885
+            },
+            "iconPath": "/grade_B/a_bf_prdtime_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_redmg",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_redmg",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_RE_DMG",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 800,
+                "DARK": 900,
+                "FIRE": 900,
+                "INT": 800,
+                "LIGHT": 900,
+                "STR": 800,
+                "TREE": 900,
+                "WATER": 900
+            },
+            "iconPath": "/grade_B/a_bf_redmg_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_spd",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_SPD",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 800,
+                "DARK": 900,
+                "FIRE": 900,
+                "INT": 800,
+                "LIGHT": 900,
+                "STR": 800,
+                "TREE": 900,
+                "WATER": 900
+            },
+            "iconPath": "/grade_B/a_bf_spd_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_atavoid",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID",
+                "direction": "DECREASE",
+                "operation": "SUB",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1100,
+                "DARK": 1035,
+                "FIRE": 1035,
+                "INT": 1100,
+                "LIGHT": 1035,
+                "STR": 1100,
+                "TREE": 1035,
+                "WATER": 1035
+            },
+            "iconPath": "/grade_B/a_df_atavoid_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_atk",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1160,
+                "DARK": 1056,
+                "FIRE": 1056,
+                "INT": 1160,
+                "LIGHT": 1056,
+                "STR": 1160,
+                "TREE": 1056,
+                "WATER": 1056
+            },
+            "iconPath": "/grade_B/a_df_atk_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_atkrge",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1180,
+                "DARK": 1063,
+                "FIRE": 1063,
+                "INT": 1180,
+                "LIGHT": 1063,
+                "TREE": 1063,
+                "WATER": 1063
+            },
+            "iconPath": "/grade_B/a_df_atkrge_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_atkspd",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1200,
+                "DARK": 1070,
+                "FIRE": 1070,
+                "INT": 1200,
+                "LIGHT": 1070,
+                "STR": 1200,
+                "TREE": 1070,
+                "WATER": 1070
+            },
+            "iconPath": "/grade_B/a_df_atkspd_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_avoid",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID",
+                "direction": "DECREASE",
+                "operation": "SUB",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1120,
+                "DARK": 1042,
+                "FIRE": 1042,
+                "INT": 1120,
+                "LIGHT": 1042,
+                "STR": 1120,
+                "TREE": 1042,
+                "WATER": 1042
+            },
+            "iconPath": "/grade_B/a_df_avoid_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_dead",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_dead",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_DEAD",
+                "direction": "DECREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1220,
+                "DARK": 1077,
+                "FIRE": 1077,
+                "INT": 1220,
+                "LIGHT": 1077,
+                "STR": 1220,
+                "TREE": 1077,
+                "WATER": 1077
+            },
+            "iconPath": "/grade_B/a_df_dead_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_heal",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_heal",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_HEAL",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1200,
+                "DARK": 1070,
+                "FIRE": 1070,
+                "INT": 1200,
+                "LIGHT": 1070,
+                "STR": 1200,
+                "TREE": 1070,
+                "WATER": 1070
+            },
+            "iconPath": "/grade_B/a_df_heal_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_hp",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1140,
+                "DARK": 1049,
+                "FIRE": 1049,
+                "INT": 1140,
+                "LIGHT": 1049,
+                "STR": 1140,
+                "TREE": 1049,
+                "WATER": 1049
+            },
+            "iconPath": "/grade_B/a_df_hp_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_min",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_min",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SUMMON_ENGY",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    15.0
+                ],
+                "percent": 15.0
+            },
+            "pointsByTarget": {
+                "AGI": 1200,
+                "DARK": 1070,
+                "FIRE": 1070,
+                "INT": 1200,
+                "LIGHT": 1070,
+                "STR": 1200,
+                "TREE": 1070,
+                "WATER": 1070
+            },
+            "iconPath": "/grade_B/a_df_min_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_prdtime",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_prdtime",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_PRD_SPE",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    15.0
+                ],
+                "percent": 15.0
+            },
+            "pointsByTarget": {
+                "AGI": 1210,
+                "DARK": 1074,
+                "FIRE": 1074,
+                "INT": 1210,
+                "LIGHT": 1074,
+                "STR": 1210,
+                "TREE": 1074,
+                "WATER": 1074
+            },
+            "iconPath": "/grade_B/a_df_prdtime_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_silence",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_silence",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SILENCE",
+                "direction": "DECREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1210,
+                "DARK": 1074,
+                "FIRE": 1074,
+                "INT": 1210,
+                "LIGHT": 1074,
+                "STR": 1210,
+                "TREE": 1074,
+                "WATER": 1074
+            },
+            "iconPath": "/grade_B/a_df_silence_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "df_spd",
+            "grade": "B",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1170,
+                "DARK": 1060,
+                "FIRE": 1060,
+                "INT": 1170,
+                "LIGHT": 1060,
+                "STR": 1170,
+                "TREE": 1060,
+                "WATER": 1060
+            },
+            "iconPath": "/grade_B/a_df_spd_icon_grade_b.png"
+        },
+        {
+            "artifactCode": "bf_atavoid",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atavoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ANTI_AVOID",
+                "direction": "INCREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    40.0
+                ],
+                "percent": 40.0
+            },
+            "pointsByTarget": {
+                "AGI": 1914,
+                "DARK": 2057,
+                "FIRE": 2057,
+                "INT": 1914,
+                "LIGHT": 2057,
+                "STR": 1914,
+                "TREE": 2057,
+                "WATER": 2057
+            },
+            "iconPath": "/grade_A/a_bf_atavoid_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_atk",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atk",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ATK",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    40.0
+                ],
+                "percent": 40.0
+            },
+            "pointsByTarget": {
+                "AGI": 1782,
+                "DARK": 1991,
+                "FIRE": 1991,
+                "INT": 1782,
+                "LIGHT": 1991,
+                "STR": 1782,
+                "TREE": 1991,
+                "WATER": 1991
+            },
+            "iconPath": "/grade_A/a_bf_atk_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_atkspd",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_atkspd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_ATK_SPD",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    80.0
+                ],
+                "percent": 80.0
+            },
+            "pointsByTarget": {
+                "AGI": 1936,
+                "DARK": 2068,
+                "FIRE": 2068,
+                "INT": 1936,
+                "LIGHT": 2068,
+                "STR": 1936,
+                "TREE": 2068,
+                "WATER": 2068
+            },
+            "iconPath": "/grade_A/a_bf_atkspd_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_avoid",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_avoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_AVOID",
+                "direction": "INCREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    40.0
+                ],
+                "percent": 40.0
+            },
+            "pointsByTarget": {
+                "AGI": 1870,
+                "DARK": 2035,
+                "FIRE": 2035,
+                "INT": 1870,
+                "LIGHT": 2035,
+                "STR": 1870,
+                "TREE": 2035,
+                "WATER": 2035
+            },
+            "iconPath": "/grade_A/a_bf_avoid_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_hp",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_hp",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_HP",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    40.0
+                ],
+                "percent": 40.0
+            },
+            "pointsByTarget": {
+                "AGI": 1804,
+                "DARK": 2002,
+                "FIRE": 2002,
+                "INT": 1804,
+                "LIGHT": 2002,
+                "STR": 1804,
+                "TREE": 2002,
+                "WATER": 2002
+            },
+            "iconPath": "/grade_A/a_bf_hp_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_min",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_min",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_SUMMON_ENGY",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 1716,
+                "DARK": 1958,
+                "FIRE": 1958,
+                "INT": 1716,
+                "LIGHT": 1958,
+                "STR": 1716,
+                "TREE": 1958,
+                "WATER": 1958
+            },
+            "iconPath": "/grade_A/a_bf_min_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_prdtime",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_prdtime",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_PRD_SPE",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    20.0
+                ],
+                "percent": 20.0
+            },
+            "pointsByTarget": {
+                "AGI": 1694,
+                "DARK": 1947,
+                "FIRE": 1947,
+                "INT": 1694,
+                "LIGHT": 1947,
+                "STR": 1694,
+                "TREE": 1947,
+                "WATER": 1947
+            },
+            "iconPath": "/grade_A/a_bf_prdtime_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_redmg",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_redmg",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_RE_DMG",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    40.0
+                ],
+                "percent": 40.0
+            },
+            "pointsByTarget": {
+                "AGI": 1760,
+                "DARK": 1980,
+                "FIRE": 1980,
+                "INT": 1760,
+                "LIGHT": 1980,
+                "STR": 1760,
+                "TREE": 1980,
+                "WATER": 1980
+            },
+            "iconPath": "/grade_A/a_bf_redmg_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "bf_spd",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_bf_spd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_BUFF_EFFECT_SPD",
+                "direction": "INCREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 1760,
+                "DARK": 1980,
+                "FIRE": 1980,
+                "INT": 1760,
+                "LIGHT": 1980,
+                "STR": 1760,
+                "TREE": 1980,
+                "WATER": 1980
+            },
+            "iconPath": "/grade_A/a_bf_spd_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_atavoid",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atavoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_AVOID",
+                "direction": "DECREASE",
+                "operation": "SUB",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2420,
+                "DARK": 2277,
+                "FIRE": 2277,
+                "INT": 2420,
+                "LIGHT": 2277,
+                "STR": 2420,
+                "TREE": 2277,
+                "WATER": 2277
+            },
+            "iconPath": "/grade_A/a_df_atavoid_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_atk",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atk",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2552,
+                "DARK": 2323,
+                "FIRE": 2323,
+                "INT": 2552,
+                "LIGHT": 2323,
+                "STR": 2552,
+                "TREE": 2323,
+                "WATER": 2323
+            },
+            "iconPath": "/grade_A/a_df_atk_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_atkrge",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkrge",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_RANGE",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2596,
+                "DARK": 2339,
+                "FIRE": 2339,
+                "INT": 2596,
+                "LIGHT": 2339,
+                "TREE": 2339,
+                "WATER": 2339
+            },
+            "iconPath": "/grade_A/a_df_atkrge_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_atkspd",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_atkspd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ATK_SPD",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2640,
+                "DARK": 2354,
+                "FIRE": 2354,
+                "INT": 2640,
+                "LIGHT": 2354,
+                "STR": 2640,
+                "TREE": 2354,
+                "WATER": 2354
+            },
+            "iconPath": "/grade_A/a_df_atkspd_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_avoid",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_avoid",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_AVOID",
+                "direction": "DECREASE",
+                "operation": "SUB",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2464,
+                "DARK": 2292,
+                "FIRE": 2292,
+                "INT": 2464,
+                "LIGHT": 2292,
+                "STR": 2464,
+                "TREE": 2292,
+                "WATER": 2292
+            },
+            "iconPath": "/grade_A/a_df_avoid_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_dead",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_dead",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_DEAD",
+                "direction": "DECREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2684,
+                "DARK": 2369,
+                "FIRE": 2369,
+                "INT": 2684,
+                "LIGHT": 2369,
+                "STR": 2684,
+                "TREE": 2369,
+                "WATER": 2369
+            },
+            "iconPath": "/grade_A/a_df_dead_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_heal",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_heal",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_ANTI_HEAL",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2640,
+                "DARK": 2354,
+                "FIRE": 2354,
+                "INT": 2640,
+                "LIGHT": 2354,
+                "STR": 2640,
+                "TREE": 2354,
+                "WATER": 2354
+            },
+            "iconPath": "/grade_A/a_df_heal_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_hp",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_hp",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_HP",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2508,
+                "DARK": 2308,
+                "FIRE": 2308,
+                "INT": 2508,
+                "LIGHT": 2308,
+                "STR": 2508,
+                "TREE": 2308,
+                "WATER": 2308
+            },
+            "iconPath": "/grade_A/a_df_hp_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_min",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_min",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SUMMON_ENGY",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 2640,
+                "DARK": 2354,
+                "FIRE": 2354,
+                "INT": 2640,
+                "LIGHT": 2354,
+                "STR": 2640,
+                "TREE": 2354,
+                "WATER": 2354
+            },
+            "iconPath": "/grade_A/a_df_min_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_prdtime",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_prdtime",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_PRD_SPE",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    30.0
+                ],
+                "percent": 30.0
+            },
+            "pointsByTarget": {
+                "AGI": 2662,
+                "DARK": 2362,
+                "FIRE": 2362,
+                "INT": 2662,
+                "LIGHT": 2362,
+                "STR": 2662,
+                "TREE": 2362,
+                "WATER": 2362
+            },
+            "iconPath": "/grade_A/a_df_prdtime_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_silence",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_silence",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SILENCE",
+                "direction": "DECREASE",
+                "operation": "ADD",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2662,
+                "DARK": 2362,
+                "FIRE": 2362,
+                "INT": 2662,
+                "LIGHT": 2362,
+                "STR": 2662,
+                "TREE": 2362,
+                "WATER": 2362
+            },
+            "iconPath": "/grade_A/a_df_silence_icon_grade_a.png"
+        },
+        {
+            "artifactCode": "df_spd",
+            "grade": "A",
+            "nameKey": "CUSTOM:LABYRINTH_ARTIFACT_NAME_df_spd",
+            "effect": {
+                "effectKey": "CUSTOM:LABYRINTH_DEBUFF_EFFECT_SPD",
+                "direction": "DECREASE",
+                "operation": "MUL",
+                "effectArgs": [
+                    50.0
+                ],
+                "percent": 50.0
+            },
+            "pointsByTarget": {
+                "AGI": 2574,
+                "DARK": 2331,
+                "FIRE": 2331,
+                "INT": 2574,
+                "LIGHT": 2331,
+                "STR": 2574,
+                "TREE": 2331,
+                "WATER": 2331
+            },
+            "iconPath": "/grade_A/a_df_spd_icon_grade_a.png"
+        }
+    ]
+}

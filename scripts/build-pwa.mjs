@@ -1,5 +1,6 @@
 /* Pages packaging and derived read models. Authoritative V1/V2 inputs stay unchanged. */
 import { readdir, readFile, writeFile, access } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -21,6 +22,7 @@ async function files(dir) {
   }
   return out.sort();
 }
+execFileSync('python3',[path.join(root,'scripts/format-res-json.py'),path.join(root,'res')],{stdio:'inherit'});
 console.log('Fast data',await buildFastData(root));
 const all = await files('');
 const record = async names => Object.fromEntries(await Promise.all(names.map(async name => {

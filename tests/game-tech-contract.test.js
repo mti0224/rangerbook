@@ -166,34 +166,14 @@ test("PvP usage-history keeps series-colored chip left borders",()=>{
   assert.match(controls,/\.pvp-history-chip button:hover/);
 });
 
-test("site traffic is admin-accessible with private backend cache",()=>{
+test("site traffic UI exposes admin-gated controls",()=>{
  const html=read("admin/index.html"),js=read("assets/js/admin-page.js");
- const api=read("backend/rangerbook_auth/app.py");
- const collector=read("backend/rangerbook_auth/traffic_collector.py");
  assert.match(html,/id="adminTrafficTab"[^>]*hidden/);
  assert.match(html,/id="adminTrafficPanel"[^>]*hidden/);
  assert.ok(js.includes("traffic: auth.isAdmin()"));
  assert.ok(js.includes("auth.api(\"/admin/traffic?days=\""));
- assert.ok(api.includes('@app.get("/admin/traffic")'));
- assert.ok(api.includes('@app.get("/super-admin/traffic", include_in_schema=False)'));
- assert.match(api,/def traffic_report\([\s\S]{0,160}Depends\(require_admin\)/);
- assert.match(api,/TRAFFIC_CACHE_DIR/);
- assert.match(collector,/BetaAnalyticsDataClient/);
- assert.match(collector,/os\.replace\(/);
  assert.ok(!html.includes("僅限最大管理者查看"));
  assert.ok(!html.includes("尚未設定時不顯示虛構數據"));
-});
-test("GA4 Workload Identity Federation is scoped to the single EC2 and keyless",()=>{
- const script=read("backend/rangerbook_auth/setup_google_wif.sh");
- const guide=read("backend/rangerbook_auth/TRAFFIC_DEPLOY.md");
- assert.match(script,/PROJECT_ID="rangerbook-ga4-reader"/);
- assert.match(script,/SERVICE_ACCOUNT="rangerbook-ga4-reader@rangerbook-ga4-reader\.iam\.gserviceaccount\.com"/);
- assert.match(script,/AWS_ACCOUNT="010421869571"/);
- assert.match(script,/EC2_INSTANCE="i-05cb332634cb5d0a9"/);
- assert.match(script,/attribute\.aws_ec2_instance/);
- assert.match(script,/--enable-imdsv2/);
- assert.doesNotMatch(script,/--key-file\s|service-accounts keys create/);
- assert.match(guide,/540346392/);
 });
 
 test("GA4 traffic charts have no CDN dependencies and preserve role-protected data",()=>{

@@ -52,7 +52,7 @@ def build(raw_dir: Path, out_dir: Path, locales=LOCALES):
         payload = {"locale": locale, "official": translations[locale], "custom": custom}
         output = out_dir / (locale + ".json")
         temporary = output.with_suffix(".json.tmp")
-        temporary.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=4) + "\n", encoding="utf-8")
         temporary.replace(output)
         result[locale] = {
             "official": {k: len(v) for k, v in translations[locale].items()},

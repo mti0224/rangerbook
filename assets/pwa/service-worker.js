@@ -31,7 +31,7 @@ function put(cacheName,name,response) {
     const entries=cacheName===DATA?RELEASE.data:RELEASE.core;
     const budget=cacheName===DATA?DATA_LIMIT:CORE_LIMIT;
     const size=entries[name]?.size || 0;
-    if(size>budget || size>8*1024*1024) return;
+    if(size>budget) return;
     let total=0;
     for(const key of keys) total+=entries[new URL(key.url).pathname.slice(BASE.pathname.length)]?.size || 0;
     const exists=keys.find(k=>k.url===absolute(name));

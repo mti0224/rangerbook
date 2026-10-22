@@ -8,7 +8,7 @@ export async function buildFastData(root) {
   await rm(dir,{recursive:true,force:true});
   await mkdir(path.join(dir,'ranger'),{recursive:true});
   await mkdir(path.join(dir,'locales'),{recursive:true});
-  const write=(name,value)=>writeFile(path.join(dir,name+'.json'),JSON.stringify(value)+'\n');
+  const write=(name,value)=>writeFile(path.join(dir,name+'.json'),JSON.stringify(value,null,4)+'\n');
   // Keep all four name aliases for multilingual search; other text needs only
   // Chinese canonical text, English fallback and the selected display language.
   for(const locale of ['zh_TW','en','th','jp']) await write('locales/'+locale,official.map(row=>
@@ -48,7 +48,7 @@ export async function buildFastData(root) {
     const projectile=projectiles.units[row.rangerCode];
     const bundle={schemaVersion:2,rangers:[row],abilities:selectedAbilities,evolutionRangers,projectiles:projectile?[projectile]:[],
       locales:[...refs].map(key=>byKey.get(key)).filter(Boolean)};
-    const bytes=JSON.stringify(bundle)+'\n';
+    const bytes=JSON.stringify(bundle,null,4)+'\n';
     total+=Buffer.byteLength(bytes);max=Math.max(max,Buffer.byteLength(bytes));
     await writeFile(path.join(dir,'ranger',row.rangerCode+'.json'),bytes);
   }
