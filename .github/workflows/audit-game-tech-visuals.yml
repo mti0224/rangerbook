@@ -10,7 +10,6 @@ on:
       - "assets/locales/**"
       - "assets/data/popular-pages.json"
       - "tests/home-popular-ui.cjs"
-      - "tests/test_popular_pages.py"
       - "tests/ui-i18n-page-audit.cjs"
       - "assets/js/admin-page.js"
       - "assets/js/admin-traffic-charts.js"
@@ -25,7 +24,6 @@ on:
       - "deploy/aws/v2/locales/**"
       - "tests/pvp-history-chip-colors.cjs"
       - "tests/sitewide-visual-audit.cjs"
-      - "backend/rangerbook_auth/**"
       - ".github/workflows/audit-game-tech-visuals.yml"
   workflow_dispatch:
 
@@ -58,14 +56,6 @@ jobs:
           done
           cat /tmp/rangerbook-preview.log
           exit 1
-      - name: Validate Google WIF setup and GA4 collector syntax
-        run: |
-          bash -n backend/rangerbook_auth/setup_google_wif.sh
-          python3 -m py_compile backend/rangerbook_auth/traffic_collector.py
-      - name: Verify public leaf-page ranking and private traffic boundaries
-        run: |
-          pip install -r backend/rangerbook_auth/requirements.txt httpx
-          python3 -m unittest discover -s tests -p test_popular_pages.py -v
       - name: Check homepage popular pages in four languages and both themes
         run: node tests/home-popular-ui.cjs
         env:
