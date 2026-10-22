@@ -110,6 +110,47 @@ async function assertTranslated(page,locale,selector) {
       await page.waitForFunction(() => document.querySelector('.pvp-empty-row'));
       await settle(page);
       assert.equal((await page.locator('.pvp-empty-row').innerText()).trim(),expected('site.guild.noTier',locale,await page.evaluate(() => window.RangerbookI18n.uiText('傳奇'))));
+      // Talent categories must survive the V2 adapter and remain functional
+      // after the fast preview is replaced by complete filter data.
+      await ready(page,'/ranger/ranger/');
+      await page.waitForFunction(() => !document.querySelector('#rangerAdvancedToggleBtn').disabled
+        && document.querySelector('#talentConditionFilter').options.length>1);
+      await page.locator('#rangerAdvancedToggleBtn').click();
+      const talentWords=new Map(JSON.parse(read('res/v2/locales/custom.json')).map(row=>[row.key,row]));
+      const talentRows=JSON.parse(read('res/v2/rangers.json')).rangers;
+      const talentCategory=(key,lang)=>talentWords.get(key)[lang].replace(/%(?:N\d*|d\d*|s|n)/g,'N');
+      for(const [selector,kind,count] of [['#talentConditionFilter','condition',12],['#talentEffectFilter','effect',16]]) {
+        const keys=[...new Set(talentRows.flatMap(row=>{
+          const main=row.talents?.major;if(!main)return [];
+          return kind==='condition'?[main.activationConditionKey.templateKey]:main.effects.map(effect=>effect.localizedEffect.templateKey);
+        }))];
+        const want=keys.map(key=>({value:talentCategory(key,'zh_TW'),label:talentCategory(key,locale==='zh-Hant'?'zh_TW':locale)}));
+        await page.waitForFunction(({selector,want})=>want.every(item=>[...document.querySelector(selector).options]
+          .some(option=>option.value===item.value && option.textContent===item.label)),{selector,want});
+        assert.equal(await page.locator(selector+' option').count(),count+1,locale+' populated talent '+kind+' categories');
+      }
+      for(const [condition,effect] of [
+        ['TLT_CRITICAL_ATTACK',null],
+        [null,'CUSTOM:TALENT_TEXT_SPEED_S'],
+        ['TLT_CRITICAL_ATTACK','CUSTOM:TALENT_TEXT_PASS_PHY_DEF_S'],
+        ['TLT_NO_CONDITION','CUSTOM:TALENT_TEXT_PASS_PHY_DEF_S']
+      ]) {
+        await page.locator('#talentConditionFilter').selectOption(condition?talentCategory('CUSTOM:TALENT_TEXT_'+condition,'zh_TW'):'');
+        await page.locator('#talentEffectFilter').selectOption(effect?talentCategory(effect,'zh_TW'):'');
+        const ids=talentRows.filter(row=>{
+          const main=row.talents?.major;
+          return main && (!condition || main.activationConditionCode===condition)
+            && (!effect || main.effects.some(item=>item.localizedEffect.templateKey===effect));
+        }).map(row=>row.rangerCode).sort();
+        await page.waitForFunction(count=>Number(document.querySelector('#rangerResultCount').textContent)===count,ids.length);
+        assert.deepEqual((await page.locator('.ranger-card').evaluateAll(cards=>cards.map(card=>card.dataset.rangerId))).sort(),ids,
+          locale+' talent filter exact matches: '+condition+' / '+effect);
+      }
+      await page.locator('#rangerResetBtn').click();
+      assert.equal(await page.locator('#talentConditionFilter').inputValue(),'');
+      assert.equal(await page.locator('#talentEffectFilter').inputValue(),'');
+      assert.equal(await page.locator('.ranger-card').count(),60);
+      console.log('TALENT_FILTER_UI_OK',locale,'12/16 localized categories; independent, combined and empty matches; reset');
       // Detail names and IDs are explicit arguments; titles remain stable after DOM updates.
       await ready(page,'/ranger/ranger/?detail=u1626u-cony');
       await page.locator('#rangerLevelRange').waitFor();

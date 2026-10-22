@@ -9,6 +9,7 @@ on:
       - 'scripts/build-*.mjs'
       - 'tests/fast-data.cjs'
       - 'tests/loading-performance.cjs'
+      - 'tests/talent-adapter.cjs'
       - '.github/workflows/validate-loading.yml'
 jobs:
   loading:
@@ -19,6 +20,6 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/build-pwa.mjs
-      - run: node tests/fast-data.cjs && node tests/pwa-contract.cjs && node tests/pwa-worker.cjs
+      - run: node tests/fast-data.cjs && node tests/talent-adapter.cjs && node tests/pwa-contract.cjs && node tests/pwa-worker.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: node tests/loading-performance.cjs
