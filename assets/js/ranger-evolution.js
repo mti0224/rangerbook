@@ -54,15 +54,16 @@
     const records = stages(id);
     let body;
     if (failed || !records.length) body = `<p class="empty-state small">${escape(label("site.evolution.unavailable","進化階段資料暫時無法載入。"))}</p>`;
-    else body = `<ul class="ranger-evolution-list">${records.map(row => {
+    else body = `<ul class="ranger-evolution-list gear-skillplus-ranger-grid">${records.map(row => {
       const code = row.rangerCode, current = code === id;
       const star = (row.evolution === "ULTRA" ? "終極進化" : row.evolution === "HYPER" ? "超進化" : "")+row.starGrade+"星";
       const targets = [...(next.get(code) || [])];
       return `<li class="ranger-evolution-stage${current ? " is-current" : ""}" data-evolution-id="${escape(code)}">
-        <a class="ranger-evolution-character" href="${escape(link(code))}"${current ? ' aria-current="page"' : ""}>
+        <a class="ranger-evolution-character gear-skillplus-ranger-card" href="${escape(link(code))}" title="${escape(name(row))}"${current ? ' aria-current="page"' : ""}>
           <img src="https://res.warmycat.com/${encodeURIComponent(code)}/${encodeURIComponent(code)}-thum.png" alt="" loading="lazy">
-          <span><strong>${escape(name(row))}</strong><span class="ranger-evolution-grade">${escape(window.RangerbookI18n?.uiText(star) || star)}</span></span>
+          <span>${escape(name(row))}</span>
         </a>
+        <span class="ranger-evolution-grade">${escape(window.RangerbookI18n?.uiText(star) || star)}</span>
         ${current ? `<span class="ranger-evolution-current">${escape(label("site.evolution.current","目前角色"))}</span>` : ""}
         ${targets.length ? `<div class="ranger-evolution-targets"><span>${escape(label("site.evolution.next","可進化為"))}</span>${targets.map(to => `<a href="${escape(link(to))}" data-evolution-target="${escape(to)}">${escape(name(rows.get(to)))}</a>`).join("")}</div>` : ""}
       </li>`;
