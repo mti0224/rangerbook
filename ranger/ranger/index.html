@@ -70,26 +70,19 @@
         <input id="rangerSearchInput" type="search" data-i18n-placeholder="ranger.placeholder" placeholder="輸入角色名稱、ID或關鍵字...">
       </label>
 
-      <details class="ranger-filter-menu">
-        <summary><span data-i18n="ranger.star">星數</span><span data-filter-summary>全部</span></summary>
-        <fieldset id="starFilter" class="ranger-filter-options"><legend data-i18n="ranger.star">星數</legend></fieldset>
-      </details>
-
-      <details class="ranger-filter-menu">
-        <summary><span data-i18n="ranger.type">類型</span><span data-filter-summary>全部</span></summary>
-        <fieldset id="typeFilter" class="ranger-filter-options"><legend data-i18n="ranger.type">類型</legend></fieldset>
-      </details>
-
-      <details class="ranger-filter-menu">
-        <summary><span data-i18n="ranger.element">屬性</span><span data-filter-summary>全部</span></summary>
-        <fieldset id="elementFilter" class="ranger-filter-options"><legend data-i18n="ranger.element">屬性</legend></fieldset>
-      </details>
-
       <button id="rangerAdvancedToggleBtn" class="advanced-toggle-btn" type="button" aria-expanded="false" aria-controls="rangerAdvancedFilters">
         進階篩選 ▼
       </button>
 
+      <button id="rangerResetBtn" type="button">清除篩選</button>
+
       <div id="rangerAdvancedFilters" class="advanced-filters" hidden>
+        <div class="ranger-basic-filters">
+          <fieldset id="starFilter" class="ranger-filter-options"><legend data-i18n="ranger.star">星數</legend></fieldset>
+          <fieldset id="typeFilter" class="ranger-filter-options"><legend data-i18n="ranger.type">類型</legend></fieldset>
+          <fieldset id="elementFilter" class="ranger-filter-options"><legend data-i18n="ranger.element">屬性</legend></fieldset>
+        </div>
+
         <label>
           <span>角色分類</span>
           <select id="specialFilter">
@@ -128,8 +121,6 @@
           </select>
         </label>
       </div>
-
-      <button id="rangerResetBtn" type="button">清除篩選</button>
     </section>
 
     <section class="summary-bar">

@@ -4,8 +4,6 @@ const {chromium}=require('playwright');
 const root=path.resolve(__dirname,'..'),base='https://filters.invalid';
 const read=name=>fs.readFileSync(path.join(root,name));
 const source=JSON.parse(read('res/v2/rangers.json')).rangers;
-const copy=new Map(JSON.parse(read('assets/locales/sitewide-overrides.json')).map(row=>[row.key,row]));
-const label=(key,locale,count)=>copy.get('UI:'+key)[locale].replace('%N1',count);
 const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'終極進化':'')+row.starGrade+'星';
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH || undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
@@ -22,14 +20,15 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
   await page.goto(base+'/ranger/ranger/',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>!document.querySelector('#rangerAdvancedToggleBtn').disabled);
-  assert.equal(await page.locator('.ranger-filter-menu[open]').count(),0,'Menus start collapsed');
+  const panel=page.locator('#rangerAdvancedFilters'),toggle=page.locator('#rangerAdvancedToggleBtn');
+  assert.equal(await panel.isVisible(),false,'All advanced filters start collapsed');
+  assert.equal(await page.locator('.ranger-filter-menu, .ranger-basic-filters select, .ranger-basic-filters summary').count(),0,'Basic filters have no dropdown controls');
+  assert.equal(await panel.locator('.ranger-filter-options').count(),3,'All three checkbox groups belong to advanced filters');
   assert.equal(await page.locator('#typeFilter input[type=checkbox]').count(),3);
   assert.equal(await page.locator('#elementFilter input[type=checkbox]').count(),6,'Include the real NONE element');
-  assert.ok(!(await page.locator('#starFilter').innerText()).includes('究極進化'));
-  const menu=id=>page.locator('#'+id).locator('..');
-  const summary=id=>menu(id).locator('summary');
-  async function open(id) {if(!await menu(id).evaluate(el=>el.open))await summary(id).click();}
-  async function check(id,value) {await open(id);await page.locator('#'+id+' input[value="'+value+'"]').check();}
+  if(locale==='zh_TW')assert.ok(!(await page.locator('#starFilter').innerText()).includes('究極進化'));
+  async function open() {if(!await panel.isVisible())await toggle.click();}
+  async function check(id,value) {await open();await page.locator('#'+id+' input[value="'+value+'"]').check();}
   async function expectRows(predicate,exact=false) {
    const rows=source.filter(predicate),ids=rows.map(row=>row.rangerCode);
    const count=Number((await page.locator('#rangerResultCount').innerText()).replace(/,/g,''));
@@ -40,45 +39,45 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
   }
   await check('typeFilter','敏捷型');await check('typeFilter','智慧型');
   await expectRows(row=>['AGI','INT'].includes(row.roleType));
-  assert.equal(await summary('typeFilter').locator('[data-filter-summary]').innerText(),label('site.ranger.selectedCount',locale,2));
+  assert.equal(await page.locator('#typeFilter input:checked').count(),2);
   await check('starFilter','9星');await check('starFilter','超進化8星');
   await check('elementFilter','光');await check('elementFilter','暗');
-  assert.equal(await page.locator('.ranger-filter-menu[open]').count(),1);
+  for(const id of ['starFilter','typeFilter','elementFilter'])assert.ok(await page.locator('#'+id).isVisible(),'All checkbox groups show together');
   await page.locator('#paginationSize').selectOption('120');
   await expectRows(row=>['AGI','INT'].includes(row.roleType) && ['9星','超進化8星'].includes(stars(row)) && ['LIGHT','DARK'].includes(row.elementType),true);
-  await open('elementFilter');await page.locator('#elementFilter input[value="光"]').press('Escape');
-  assert.equal(await page.locator('.ranger-filter-menu[open]').count(),0,'Escape closes and keeps selections');
+  await toggle.click();
+  assert.equal(await panel.isVisible(),false,'One button collapses every filter group');
   assert.equal(await page.locator('#elementFilter input:checked').count(),2);
-  await summary('elementFilter').press('Enter');
-  assert.equal(await menu('elementFilter').evaluate(el=>el.open),true,'Keyboard can expand the menu');
+  await expectRows(row=>['AGI','INT'].includes(row.roleType) && ['9星','超進化8星'].includes(stars(row)) && ['LIGHT','DARK'].includes(row.elementType),true);
+  await toggle.press('Enter');
+  assert.ok(await panel.isVisible(),'Keyboard can expand the whole panel');
   await page.locator('#elementFilter input[value="暗"]').press('Space');
   await expectRows(row=>['AGI','INT'].includes(row.roleType) && ['9星','超進化8星'].includes(stars(row)) && row.elementType==='LIGHT',true);
   await page.locator('h1').click();
-  assert.equal(await page.locator('.ranger-filter-menu[open]').count(),0,'Outside click closes the menu');
+  assert.ok(await panel.isVisible(),'Inline filters stay open until explicitly collapsed');
   for(const theme of ['light','dark'])for(const width of [1200,1024,768,375]) {
    await page.setViewportSize({width,height:900});
    await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
    const mobileToggle=page.locator('.site-menu-toggle');
    if(width<=1024 && await mobileToggle.isVisible() && await mobileToggle.getAttribute('aria-expanded')==='true')await mobileToggle.click();
-   await open('starFilter');
-   const geometry=await page.locator('#starFilter').evaluate(el=>{
-    const r=el.getBoundingClientRect(),input=el.querySelector('input'),box=input.getBoundingClientRect(),style=getComputedStyle(el);
-    return {left:r.left,right:r.right,width:innerWidth,checkbox:box.width,ink:style.color,panel:style.backgroundColor};
-   });
-   assert.ok(geometry.left>=0 && geometry.right<=geometry.width,`${locale} ${theme} ${width}: menu fits viewport`);
-   assert.ok(geometry.checkbox>=16 && geometry.checkbox<=24,'Native checkbox stays a usable compact size');
-   assert.notEqual(geometry.ink,geometry.panel,'Text remains visible in both themes');
-   assert.ok(await summary('starFilter').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Summary text fits the collapsed control');
-   await summary('starFilter').click();
-   assert.ok(await menu('starFilter').evaluate(el=>el.getBoundingClientRect().height<90),'Collapsed menu stays compact');
-   for(const id of ['typeFilter','elementFilter']) {
-     await open(id);
-     assert.ok(await page.locator('#'+id).evaluate(el=>{
-       const box=el.getBoundingClientRect();return box.left>=0 && box.right<=innerWidth;
-     }),`${locale} ${theme} ${width}: ${id} fits viewport`);
-     await summary(id).click();
+   await open();
+   for(const id of ['starFilter','typeFilter','elementFilter']) {
+    const geometry=await page.locator('#'+id).evaluate(el=>{
+     const r=el.getBoundingClientRect(),box=el.querySelector('input').getBoundingClientRect(),style=getComputedStyle(el);
+     return {left:r.left,right:r.right,width:innerWidth,checkbox:box.width,ink:style.color,panel:style.backgroundColor,position:style.position};
+    });
+    assert.ok(geometry.left>=0 && geometry.right<=geometry.width,`${locale} ${theme} ${width}: ${id} fits viewport`);
+    assert.equal(geometry.position,'static','Checkbox groups flow inside the panel');
+    assert.ok(geometry.checkbox>=16 && geometry.checkbox<=24,'Native checkbox stays a usable compact size');
+    assert.notEqual(geometry.ink,geometry.panel,'Text remains visible in both themes');
    }
    assert.ok(await page.locator('.ranger-controls').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Filter controls do not overflow their panel');
+   await toggle.click();
+   const collapsedHeight=await page.locator('.ranger-controls').evaluate(el=>el.getBoundingClientRect().height);
+   assert.ok(collapsedHeight<240,`${locale} ${theme} ${width}: collapsed controls stay compact with translated button text (${collapsedHeight}px)`);
+   assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+   await open();
+   assert.equal(await page.locator('#typeFilter input:checked').count(),2,'Selections survive collapsing and resizing');
   }
   await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
@@ -93,7 +92,7 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
   if(locale==='zh_TW')assert.ok((await page.locator('#rangerList').innerText()).includes('終極進化8星'));
   await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
-  await page.locator('#rangerAdvancedToggleBtn').click();
+  await open();
   await page.locator('#talentConditionFilter').selectOption('當普通攻擊發生爆擊時');
   await check('typeFilter','敏捷型');await check('typeFilter','智慧型');
   await expectRows(row=>['AGI','INT'].includes(row.roleType) && row.talents?.major?.activationConditionCode==='TLT_CRITICAL_ATTACK',true);
