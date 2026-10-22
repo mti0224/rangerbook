@@ -85,7 +85,7 @@
   function allowedWorkspaceSections() {
     return {
       personal: auth.isAdmin(),
-      password: auth.isAdmin(),
+      password: Boolean(auth.getUser().logged_in),
       resources: auth.isAdmin(),
       accounts: auth.isSuperAdmin(),
       traffic: auth.isAdmin()
@@ -94,9 +94,10 @@
 
   function renderWorkspaceTabs() {
     const allowed = allowedWorkspaceSections();
-    const hasAccess = auth.isAdmin();
+    const user = auth.getUser();
+    const hasAccess = Boolean(user.logged_in);
     if (workspace) workspace.hidden = !hasAccess;
-    if (!allowed[activeWorkspaceSection]) activeWorkspaceSection = "personal";
+    if (user.must_change_password || !allowed[activeWorkspaceSection]) activeWorkspaceSection = hasAccess ? "password" : "personal";
 
     Object.entries(workspacePanels).forEach(([key, { button, panel }]) => {
       const accessible = Boolean(allowed[key]);
@@ -218,7 +219,9 @@
     currentStatus.textContent = STATUS_LABELS[status] || status;
     currentStatus.className = `admin-status-badge ${status}`.trim();
 
-    if (user.role === "user" && status === "pending") {
+    if (user.must_change_password) {
+      setMessage(sessionMessage, "請先更改重設後的臨時密碼。", "error");
+    } else if (user.role === "user" && status === "pending") {
       setMessage(sessionMessage, "你的管理員申請正在等待最大管理者審核。", "success");
     } else if (user.role === "user" && status === "rejected") {
       setMessage(sessionMessage, "你的管理員申請已被拒絕，目前維持非管理員權限。", "error");
@@ -408,9 +411,8 @@
       successMessage = formatUi("site.admin.roleDone",[account,roleLabel],`已將「${account}」權限更改為「${roleLabel}」。`);
     } else if (action === "reset-password") {
       if (!window.confirm(formatUi("site.admin.resetConfirm",[account],`確定要重置「${account}」的密碼？`))) return;
-      if (!window.confirm(formatUi("site.admin.resetFinal",[account],`再次確認：將「${account}」的密碼重置為 qwer1234？ 重置後該帳號目前所有登入狀態會立即失效。`))) return;
+      if (!window.confirm(formatUi("site.admin.resetFinal",[account],`再次確認：為「${account}」產生新的臨時密碼？ 重置後該帳號目前所有登入狀態會立即失效。`))) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/reset-password`;
-      successMessage = formatUi("site.admin.resetDone",[account],`已將「${account}」的密碼重置為 qwer1234。`);
     } else if (action === "delete-user") {
       if (!window.confirm(formatUi("site.admin.deleteConfirm",[account],`確定要刪除帳號「${account}」？`))) return;
       if (!window.confirm(formatUi("site.admin.deleteFinal",[account],`再次確認：永久刪除帳號「${account}」？ 此操作無法復原，該帳號所有登入狀態也會立即失效。`))) return;
@@ -422,7 +424,10 @@
 
     setRowDisabled(row, true);
     try {
-      await auth.api(endpoint, options);
+      const payload = await auth.api(endpoint, options);
+      if (action === "reset-password") {
+        successMessage = formatUi("site.admin.resetDone",[account,payload.reset_password],`已為「${account}」產生臨時密碼：${payload.reset_password}。請以安全方式交給本人，首次登入須先更改密碼。`);
+      }
       if (successMessage) window.alert(successMessage);
       await loadSuperAdminData();
     } catch (error) {
@@ -496,9 +501,13 @@
   });
 
   logoutBtn?.addEventListener("click", async () => {
-    await auth.logout();
-    renderUserState(auth.getUser());
-    showAuthPanel("login");
+    try {
+      await auth.logout();
+      renderUserState(auth.getUser());
+      showAuthPanel("login");
+    } catch (_) {
+      setMessage(sessionMessage, "登出失敗，請確認網路後重試。", "error");
+    }
   });
 
   refreshBtn?.addEventListener("click", loadSuperAdminData);

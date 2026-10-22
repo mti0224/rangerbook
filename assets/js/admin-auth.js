@@ -7,6 +7,7 @@
     logged_in: false,
     account: null,
     role: "user",
+    must_change_password: false,
     admin_application_status: null
   };
   let readyPromise = null;
@@ -20,7 +21,8 @@
     const response = await fetch(`${API_BASE}${path}`, {
       ...options,
       headers,
-      credentials: "include"
+      credentials: "include",
+      cache: "no-store"
     });
 
     let payload = null;
@@ -57,6 +59,7 @@
       logged_in: Boolean(payload?.logged_in),
       account: payload?.account || null,
       role: payload?.role || "user",
+      must_change_password: Boolean(payload?.must_change_password),
       admin_application_status: payload?.admin_application_status || null
     };
     window.dispatchEvent(new CustomEvent("rangerbook:auth-changed", { detail: { ...currentUser } }));
@@ -95,11 +98,8 @@
   }
 
   async function logout() {
-    try {
-      await api("/auth/logout", { method: "POST" });
-    } finally {
-      readyPromise = Promise.resolve(setCurrentUser({ logged_in: false, role: "user" }));
-    }
+    await api("/auth/logout", { method: "POST" });
+    readyPromise = Promise.resolve(setCurrentUser({ logged_in: false, role: "user" }));
   }
 
   function getUser() {
@@ -107,11 +107,11 @@
   }
 
   function isAdmin() {
-    return currentUser.logged_in && ADMIN_ROLES.has(currentUser.role);
+    return currentUser.logged_in && !currentUser.must_change_password && ADMIN_ROLES.has(currentUser.role);
   }
 
   function isSuperAdmin() {
-    return currentUser.logged_in && currentUser.role === "super_admin";
+    return currentUser.logged_in && !currentUser.must_change_password && currentUser.role === "super_admin";
   }
 
   window.RangerbookAuth = {

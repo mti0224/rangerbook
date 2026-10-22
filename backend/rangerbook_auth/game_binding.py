@@ -274,7 +274,7 @@ class VerifyRequest(BaseModel):
     challengeId: str = Field(min_length=16, max_length=128)
 
 
-def register_routes(app: FastAPI, db: Callable, require_admin: Callable, require_trusted_origin: Callable, password_hasher: Any) -> None:
+def register_routes(app: FastAPI, db: Callable, require_admin: Callable, require_trusted_origin: Callable, password_hasher: Any, limit_auth: Callable) -> None:
     def user_id(user: Any) -> str:
         return str(user["id"])
 
@@ -417,8 +417,11 @@ def register_routes(app: FastAPI, db: Callable, require_admin: Callable, require
     def unbind_game_account(payload: UnbindRequest, request: Request, user: Any = Depends(require_admin)) -> dict[str, Any]:
         # A valid session alone is not sufficient for a destructive UID switch.
         require_trusted_origin(request)
+        limit_auth(request, "unbind", user_id(user), subject_limit=5)
         try:
             password_hasher.verify(user["password_hash"], payload.password)
+        except HTTPException:
+            raise
         except Exception:
             fail(403, "目前帳號密碼不正確。")
         identity = user_id(user)

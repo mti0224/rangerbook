@@ -764,17 +764,17 @@
   },
   {
     "key": "UI:site.admin.resetFinal",
-    "zh_TW": "再次確認：將「%N1」的密碼重置為 qwer1234？ 重置後該帳號目前所有登入狀態會立即失效。",
-    "en": "Confirm again: reset the password for “%N1” to qwer1234? All sessions for this account will end immediately.",
-    "th": "ยืนยันอีกครั้ง: รีเซ็ตรหัสผ่านของ “%N1” เป็น qwer1234 หรือไม่? บัญชีนี้จะออกจากระบบทุกอุปกรณ์ทันที",
-    "jp": "再確認：「%N1」のパスワードをqwer1234にリセットしますか？このアカウントのすべてのログイン状態は直ちに無効になります。"
+    "zh_TW": "再次確認：為「%N1」產生新的臨時密碼？ 重置後該帳號目前所有登入狀態會立即失效。",
+    "en": "Confirm again: generate a new temporary password for “%N1”? All sessions for this account will end immediately.",
+    "th": "ยืนยันอีกครั้ง: สร้างรหัสผ่านชั่วคราวใหม่ให้ “%N1” หรือไม่? บัญชีนี้จะออกจากระบบทุกอุปกรณ์ทันที",
+    "jp": "再確認：「%N1」の新しい仮パスワードを生成しますか？このアカウントのすべてのログイン状態は直ちに無効になります。"
   },
   {
     "key": "UI:site.admin.resetDone",
-    "zh_TW": "已將「%N1」的密碼重置為 qwer1234。",
-    "en": "Password for “%N1” reset to qwer1234.",
-    "th": "รีเซ็ตรหัสผ่านของ “%N1” เป็น qwer1234 แล้ว",
-    "jp": "「%N1」のパスワードをqwer1234にリセットしました。"
+    "zh_TW": "已為「%N1」產生臨時密碼：%N2。請以安全方式交給本人，首次登入須先更改密碼。",
+    "en": "Temporary password for “%N1”: %N2. Share it securely with the account owner. They must change it when signing in.",
+    "th": "รหัสผ่านชั่วคราวของ “%N1”: %N2 โปรดส่งให้เจ้าของบัญชีอย่างปลอดภัย และเปลี่ยนรหัสผ่านเมื่อเข้าสู่ระบบครั้งแรก",
+    "jp": "「%N1」の仮パスワード：%N2。本人に安全な方法で伝えてください。初回ログイン時に変更が必要です。"
   },
   {
     "key": "UI:site.admin.deleteConfirm",
@@ -1020,5 +1020,61 @@
     "en": "Ultra %N1 Stars",
     "th": "อัลตร้า %N1 ดาว",
     "jp": "ウルトラ進化・星%N1"
+  },
+  {
+    "key": "UI:site.auth.passwordChangeRequired",
+    "zh_TW": "請先更改重設後的臨時密碼。",
+    "en": "Please change your temporary password first.",
+    "th": "โปรดเปลี่ยนรหัสผ่านชั่วคราวก่อน",
+    "jp": "先に仮パスワードを変更してください。"
+  },
+  {
+    "key": "UI:site.auth.logoutFailed",
+    "zh_TW": "登出失敗，請確認網路後重試。",
+    "en": "Sign-out failed. Check your connection and try again.",
+    "th": "ออกจากระบบไม่สำเร็จ โปรดตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง",
+    "jp": "ログアウトに失敗しました。接続を確認して再試行してください。"
+  },
+  {
+    "key": "UI:site.security.resourceUnavailable",
+    "zh_TW": "資源更新紀錄暫時無法讀取。",
+    "en": "Resource update records are temporarily unavailable.",
+    "th": "ไม่สามารถอ่านบันทึกการอัปเดตทรัพยากรได้ชั่วคราว",
+    "jp": "リソース更新履歴を一時的に読み取れません。"
+  },
+  {
+    "key": "UI:site.security.playerIndexUnavailable",
+    "zh_TW": "玩家索引暫時不可用。",
+    "en": "The player index is temporarily unavailable.",
+    "th": "ดัชนีผู้เล่นไม่พร้อมใช้งานชั่วคราว",
+    "jp": "プレイヤー索引を一時的に利用できません。"
+  },
+  {
+    "key": "UI:site.security.playerQueryUnavailable",
+    "zh_TW": "玩家資料查詢失敗，請稍後重試。",
+    "en": "Player lookup failed. Please try again later.",
+    "th": "ค้นหาข้อมูลผู้เล่นไม่สำเร็จ โปรดลองอีกครั้งภายหลัง",
+    "jp": "プレイヤー情報を取得できませんでした。後ほど再試行してください。"
+  },
+  {
+    "key": "UI:site.security.serviceUnavailable",
+    "zh_TW": "服務暫時無法使用，請稍後重試。",
+    "en": "The service is temporarily unavailable. Please try again later.",
+    "th": "บริการไม่พร้อมใช้งานชั่วคราว โปรดลองอีกครั้งภายหลัง",
+    "jp": "サービスを一時的に利用できません。後ほど再試行してください。"
+  },
+  {
+    "key": "UI:site.security.invalidInput",
+    "zh_TW": "輸入格式不正確，請檢查後重試。",
+    "en": "Invalid input. Please check and try again.",
+    "th": "รูปแบบข้อมูลไม่ถูกต้อง โปรดตรวจสอบแล้วลองอีกครั้ง",
+    "jp": "入力形式が正しくありません。確認して再試行してください。"
+  },
+  {
+    "key": "UI:site.security.bodyTooLarge",
+    "zh_TW": "請求內容過大。",
+    "en": "The request is too large.",
+    "th": "ข้อมูลคำขอมีขนาดใหญ่เกินไป",
+    "jp": "リクエストが大きすぎます。"
   }
 ]
