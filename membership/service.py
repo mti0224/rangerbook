@@ -15,6 +15,7 @@ import sqlite3
 import time
 import uuid
 from urllib.parse import urlencode
+from typing import Literal
 
 import jwt
 import pyotp
@@ -76,6 +77,14 @@ class Register(Payload):
 
 class Identifier(Payload):
     identifier: str = Field(min_length=1, max_length=254)
+
+
+class Rescue(Identifier):
+    source: Literal['registration', 'google'] = 'registration'
+
+
+class ActionProof(Payload):
+    code: str = Field(default='', max_length=64)
 
 
 class Token(Payload):
@@ -201,11 +210,13 @@ class Membership:
         self.h.require_trusted_origin(request)
         self.rate(request, 'reauth', user['id'], subject_limit=5)
         self.password(user, payload.password)
+        # Resolve the full session before the write transaction; the legacy
+        # lookup updates last_seen_at and therefore needs its own writer lock.
+        if user['totp_secret']:
+            self.full(request)
         with self.h.db() as con:
             con.execute('BEGIN IMMEDIATE')
-            if user['totp_secret']:
-                self.factor(con, user, payload.code)
-            con.execute('UPDATE sessions SET reauth_until=? WHERE token_hash=?', (time.time() + 300, self.session_id(request)))
+            con.execute('UPDATE sessions SET reauth_until=? WHERE token_hash=?', (time.time() + 600, self.session_id(request)))
             self.audit(con, user['id'], 'reauthenticated')
 
     def recent(self, request, user):
@@ -269,8 +280,6 @@ class Membership:
             claims.get('azp', self.google_id) != self.google_id):
             raise ValueError('Invalid Google claims')
         email = email_value(claims['email'])
-        if not email.endswith('@gmail.com'):
-            raise ValueError('Verified Gmail required')
         return claims['sub'], email
 
     def install(self):
@@ -337,7 +346,7 @@ class Membership:
         @app.post('/auth/reauth')
         def reauth(payload: PasswordProof, request: Request, user=Depends(raw)):
             self.reauth(request, user, payload)
-            return {'ok': True, 'reauth_valid_for': 300}
+            return {'ok': True, 'reauth_valid_for': 600}
 
         @app.get('/auth/security')
         def security(request: Request, user=Depends(raw)):
@@ -397,25 +406,38 @@ class Membership:
             return self.promote(request, user, {'recovery_codes': codes})
 
         @app.post('/auth/2fa/recovery-codes')
-        def recovery(request: Request, user=Depends(full)):
+        def recovery(payload: ActionProof, request: Request, user=Depends(full)):
             self.recent(request, user)
             if not user['totp_secret']:
                 raise HTTPException(403, 'member.setupRequired')
+            self.rate(request, 'factor', user['id'], subject_limit=5)
             with h.db() as con:
+                con.execute('BEGIN IMMEDIATE')
+                self.factor(con, user, payload.code)
                 codes = self.codes(con, user['id'])
                 self.audit(con, user['id'], 'recovery_codes_replaced')
             return {'recovery_codes': codes}
 
         @app.post('/auth/2fa/disable')
-        def disable(request: Request, user=Depends(full)):
+        def disable(payload: Code, request: Request, user=Depends(full)):
             self.recent(request, user)
             if user['role'] == 'super_admin':
                 raise HTTPException(403, 'member.mandatory2fa')
+            self.rate(request, 'factor', user['id'], subject_limit=5)
             with h.db() as con:
+                con.execute('BEGIN IMMEDIATE')
+                self.factor(con, user, payload.code)
                 con.execute('UPDATE users SET totp_secret=NULL,totp_last_step=-1 WHERE id=?', (user['id'],))
                 con.execute('DELETE FROM member_recovery_codes WHERE user_id=?', (user['id'],))
                 con.execute('DELETE FROM sessions WHERE user_id=?', (user['id'],))
                 self.audit(con, user['id'], 'totp_disabled')
+            return {'ok': True}
+
+        @app.post('/auth/2fa/cancel')
+        def cancel_setup(request: Request, user=Depends(raw)):
+            h.require_trusted_origin(request)
+            with h.db() as con:
+                con.execute('DELETE FROM member_totp_setup WHERE session_hash=?', (self.session_id(request),))
             return {'ok': True}
 
         @app.post('/auth/register')
@@ -464,22 +486,41 @@ class Membership:
             return {'ok': True}
 
         @app.post('/auth/password/forgot')
-        def forgot(payload: Identifier, request: Request):
+        def forgot(payload: Rescue, request: Request):
             h.require_trusted_origin(request)
             self.rate(request, 'forgot-ip', 'global', ip_limit=10, subject_limit=100, window=3600)
             # Subject limiting silently suppresses mail; cannot enumerate existing accounts via 429.
             try:
                 self.rate(request, 'forgot', payload.identifier, ip_limit=10, subject_limit=3, window=3600)
                 with h.db() as con:
-                    user = con.execute('SELECT * FROM users WHERE account=? COLLATE NOCASE OR recovery_email=? COLLATE NOCASE', (payload.identifier, gmail(payload.identifier) if '@' in payload.identifier else payload.identifier)).fetchone()
-                if user and user['recovery_email'] and self.mail_enabled:
-                    self.rate(request, 'forgot-email', user['recovery_email'], ip_limit=10, subject_limit=3, window=3600)
+                    user = con.execute('SELECT * FROM users WHERE account=? COLLATE NOCASE', (payload.identifier,)).fetchone()
+                email = None
+                if user:
+                    if payload.source == 'registration' and user['email_verified']:
+                        email = user['email']
+                    elif payload.source == 'google' and user['google_sub']:
+                        email = user['recovery_email']
+                if email and self.mail_enabled:
+                    self.rate(request, 'forgot-email', email, ip_limit=10, subject_limit=3, window=3600)
                     with h.db() as con:
-                        self.issue(con, user['id'], 'reset', user['recovery_email'])
+                        # A resend inside 60s must not invalidate a link already in transit.
+                        active = con.execute("SELECT expires FROM member_tokens WHERE user_id=? AND kind='reset'", (user['id'],)).fetchone()
+                        if not active or active[0] < time.time() + 840:
+                            self.issue(con, user['id'], 'reset', email)
             except HTTPException as error:
                 if error.status_code not in {429, 503}:
                     raise
             return JSONResponse(GENERIC, status_code=202)
+
+        @app.post('/auth/password/reset/check')
+        def check_reset(payload: Token, request: Request):
+            h.require_trusted_origin(request)
+            self.rate(request, 'reset-check', digest(payload.token), ip_limit=30)
+            with h.db() as con:
+                token = con.execute("SELECT 1 FROM member_tokens WHERE digest=? AND kind='reset' AND expires>?", (digest(payload.token), time.time())).fetchone()
+            if not token:
+                raise HTTPException(400, 'member.invalidLink')
+            return {'ok': True}
 
         @app.post('/auth/password/reset')
         def reset(payload: Reset, request: Request):
@@ -509,10 +550,15 @@ class Membership:
             return {'ok': True}
 
         @app.post('/auth/google/start')
-        def google_start(request: Request, user=Depends(full)):
+        def google_start(payload: ActionProof, request: Request, user=Depends(full)):
             self.recent(request, user)
             if not (self.google_id and self.google_secret and self.callback):
                 raise HTTPException(503, 'member.unconfigured')
+            if user['totp_secret']:
+                self.rate(request, 'factor', user['id'], subject_limit=5)
+                with h.db() as con:
+                    con.execute('BEGIN IMMEDIATE')
+                    self.factor(con, user, payload.code)
             state, nonce, verifier = (secrets.token_urlsafe(48) for _ in range(3))
             challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip('=')
             with h.db() as con:
@@ -527,6 +573,11 @@ class Membership:
             # No submitted redirect URL is ever honored; no tokens leave this backend.
             try:
                 user = full(request)
+                # OAuth may complete only within the same live password proof.
+                with h.db() as con:
+                    proof = con.execute('SELECT reauth_until FROM sessions WHERE token_hash=?', (self.session_id(request),)).fetchone()
+                if not proof or proof[0] < time.time():
+                    raise ValueError('Expired proof')
                 if not state or len(state) > 128 or not code or len(code) > 4096 or error:
                     raise ValueError('Invalid callback')
                 with h.db() as con:
@@ -553,9 +604,14 @@ class Membership:
                 return RedirectResponse(self.frontend + '/account/#google=failed', status_code=303)
 
         @app.post('/auth/google/unlink')
-        def google_unlink(request: Request, user=Depends(full)):
+        def google_unlink(payload: ActionProof, request: Request, user=Depends(full)):
             self.recent(request, user)
+            if user['totp_secret']:
+                self.rate(request, 'factor', user['id'], subject_limit=5)
             with h.db() as con:
+                con.execute('BEGIN IMMEDIATE')
+                if user['totp_secret']:
+                    self.factor(con, user, payload.code)
                 con.execute('UPDATE users SET google_sub=NULL,recovery_email=NULL WHERE id=?', (user['id'],))
                 con.execute('DELETE FROM member_tokens WHERE user_id=? AND kind=\'reset\'', (user['id'],))
                 con.execute('DELETE FROM member_oauth WHERE user_id=?', (user['id'],))

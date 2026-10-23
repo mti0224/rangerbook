@@ -1079,10 +1079,10 @@
   },
   {
     "key": "UI:member.user",
-    "zh_TW": "使用者",
-    "en": "User",
-    "jp": "ユーザー",
-    "th": "ผู้ใช้"
+    "zh_TW": "個人頁面",
+    "en": "Personal Pages",
+    "jp": "個人ページ",
+    "th": "หน้าส่วนตัว"
   },
   {
     "key": "UI:member.security",
@@ -1128,10 +1128,10 @@
   },
   {
     "key": "UI:member.reauth",
-    "zh_TW": "再次驗證身分",
-    "en": "Verify your identity again",
-    "jp": "本人確認を再実行",
-    "th": "ยืนยันตัวตนอีกครั้ง"
+    "zh_TW": "驗證身分",
+    "en": "Verify Identity",
+    "jp": "本人確認",
+    "th": "ยืนยันตัวตน"
   },
   {
     "key": "UI:member.currentPassword",
@@ -1198,10 +1198,10 @@
   },
   {
     "key": "UI:member.disable",
-    "zh_TW": "停用 2FA",
-    "en": "Disable 2FA",
-    "jp": "2FAを無効にする",
-    "th": "ปิดใช้ 2FA"
+    "zh_TW": "解除兩步驟驗證（2FA）",
+    "en": "Disable Two-Factor Authentication",
+    "jp": "2段階認証（2FA）を解除",
+    "th": "ปิดการยืนยันตัวตนสองขั้นตอน (2FA)"
   },
   {
     "key": "UI:member.regenerate",
@@ -1247,10 +1247,10 @@
   },
   {
     "key": "UI:member.googleGuide",
-    "zh_TW": "已驗證的 Gmail 將用於帳號救援。",
-    "en": "Your verified Gmail will be used for account recovery.",
-    "jp": "確認済みGmailをアカウント復旧に使用します。",
-    "th": "Gmail ที่ยืนยันแล้วจะใช้สำหรับกู้คืนบัญชี"
+    "zh_TW": "綁定的 Google 信箱可用於密碼救援，不提供 Google 登入。",
+    "en": "Your linked Google email can receive password recovery emails. Login still uses your account and password.",
+    "jp": "連携したGoogleメールはパスワード復旧に使えます。ログインには従来のアカウント名とパスワードを使用します。",
+    "th": "อีเมล Google ที่เชื่อมโยงใช้รับอีเมลกู้รหัสผ่าน การเข้าสู่ระบบยังใช้ชื่อบัญชีและรหัสผ่าน"
   },
   {
     "key": "UI:member.bind",
@@ -1408,17 +1408,17 @@
   },
   {
     "key": "UI:member.reauthDone",
-    "zh_TW": "身分驗證成功，請在五分鐘內完成安全操作。",
-    "en": "Identity verified. Complete the security action within five minutes.",
-    "jp": "本人確認が完了しました。5分以内に操作してください。",
-    "th": "ยืนยันตัวตนแล้ว กรุณาดำเนินการภายใน 5 นาที"
+    "zh_TW": "身分驗證成功，請在 10 分鐘內完成安全操作。",
+    "en": "Identity verified. Complete security actions within 10 minutes.",
+    "jp": "本人確認が完了しました。10分以内に操作してください。",
+    "th": "ยืนยันตัวตนแล้ว โปรดดำเนินการด้านความปลอดภัยภายใน 10 นาที"
   },
   {
     "key": "UI:member.reauthRequired",
-    "zh_TW": "請先再次驗證密碼；已啟用 2FA 時也需輸入驗證碼。",
-    "en": "Verify your password again; enter a verification code if 2FA is enabled.",
-    "jp": "パスワードを再確認してください。2FAが有効な場合はコードも必要です。",
-    "th": "กรุณายืนยันรหัสผ่านอีกครั้ง และป้อนรหัสยืนยันหากเปิดใช้ 2FA"
+    "zh_TW": "身分驗證已失效，請重新確認目前密碼後再試。",
+    "en": "Verify your current password again before continuing.",
+    "jp": "現在のパスワードを再確認してください。",
+    "th": "โปรดยืนยันรหัสผ่านปัจจุบันอีกครั้งก่อนดำเนินการต่อ"
   },
   {
     "key": "UI:member.badProof",
@@ -1499,10 +1499,10 @@
   },
   {
     "key": "UI:member.bound",
-    "zh_TW": "Google 帳號已綁定，Gmail 將用於帳號救援。",
-    "en": "Google account linked. Gmail will be used for account recovery.",
-    "jp": "Googleアカウントを連携しました。Gmailを復旧に使用します。",
-    "th": "เชื่อมโยงบัญชี Google แล้ว โดยจะใช้ Gmail สำหรับกู้คืนบัญชี"
+    "zh_TW": "Google 帳號已綁定，可使用此信箱進行密碼救援。",
+    "en": "Google account linked. This email can receive password recovery messages.",
+    "jp": "Googleアカウントを連携しました。このメールでパスワードを復旧できます。",
+    "th": "เชื่อมโยงบัญชี Google แล้ว ใช้อีเมลนี้กู้รหัสผ่านได้"
   },
   {
     "key": "UI:member.googleFailed",
@@ -1513,17 +1513,17 @@
   },
   {
     "key": "UI:member.disableConfirm",
-    "zh_TW": "確定停用 2FA？所有裝置將登出。",
-    "en": "Disable 2FA? All devices will be signed out.",
-    "jp": "2FAを無効にしますか？すべての端末がログアウトします。",
-    "th": "ปิดใช้ 2FA หรือไม่? อุปกรณ์ทั้งหมดจะออกจากระบบ"
+    "zh_TW": "確定解除 2FA？所有裝置將登出。請輸入當次有效的驗證碼或未使用的恢復碼。",
+    "en": "Disable 2FA? All sessions will end. Enter a current authenticator code or unused recovery code.",
+    "jp": "2FAを解除しますか？すべての端末がログアウトされます。現在の認証コードか未使用のリカバリーコードを入力してください。",
+    "th": "ปิด 2FA? ทุกเซสชันจะสิ้นสุด โปรดกรอกรหัสปัจจุบันจากแอปหรือรหัสกู้คืนที่ยังไม่ใช้"
   },
   {
     "key": "UI:member.unlinkConfirm",
-    "zh_TW": "確定解除 Google 綁定？解除後無法透過此 Gmail 重設密碼。",
-    "en": "Unlink Google? This Gmail will no longer be available for password recovery.",
-    "jp": "Google連携を解除しますか？このGmailでの復旧は利用できなくなります。",
-    "th": "ยกเลิกการเชื่อมโยง Google หรือไม่? จะไม่สามารถใช้ Gmail นี้กู้คืนรหัสผ่านได้"
+    "zh_TW": "確定解除 Google 綁定？你會失去這個密碼救援方式。請確認註冊信箱仍可收信。",
+    "en": "Unlink Google? You will lose this recovery method. Make sure you can access your verified registration email.",
+    "jp": "Google連携を解除しますか？この復旧方法が使えなくなります。登録メールが受信できることを確認してください。",
+    "th": "ยกเลิกการเชื่อมโยง Google? คุณจะเสียช่องทางกู้รหัสผ่านนี้ โปรดตรวจสอบว่ายังรับอีเมลที่ใช้สมัครได้"
   },
   {
     "key": "UI:member.normalUser",
@@ -1562,10 +1562,10 @@
   },
   {
     "key": "UI:member.retryCountdown",
-    "zh_TW": "操作次數已達上限，請在 %s 後再試；目前尚未完成這次操作。",
-    "en": "Too many attempts. Try again in %s; this action has not been completed.",
-    "jp": "試行回数の上限に達しました。%s 後に再試行してください。この操作はまだ完了していません。",
-    "th": "ลองครบจำนวนที่กำหนดแล้ว กรุณาลองอีกครั้งใน %s การดำเนินการนี้ยังไม่เสร็จสมบูรณ์"
+    "zh_TW": "請等待 %s 後再試。",
+    "en": "Try again in %s.",
+    "jp": "%s 後に再試行できます。",
+    "th": "ลองอีกครั้งใน %s"
   },
   {
     "key": "UI:member.retryReady",
@@ -1576,10 +1576,10 @@
   },
   {
     "key": "UI:member.reauthNext",
-    "zh_TW": "請先輸入目前密碼並按確認；成功後五分鐘內可進行 Google 綁定或 2FA 設定。",
-    "en": "Enter your current password and confirm. You can then link Google or manage 2FA for five minutes.",
-    "jp": "現在のパスワードを入力して確認してください。その後5分間、Google連携や2FA設定を行えます。",
-    "th": "ป้อนรหัสผ่านปัจจุบันและกดยืนยัน จากนั้นเชื่อมโยง Google หรือจัดการ 2FA ได้ภายใน 5 นาที"
+    "zh_TW": "輸入目前密碼並按確認，即可解鎖帳號安全設定 10 分鐘。",
+    "en": "Enter your current password to unlock security settings for 10 minutes.",
+    "jp": "現在のパスワードで本人確認すると、10分間セキュリティ設定を変更できます。",
+    "th": "กรอกรหัสผ่านปัจจุบันเพื่อปลดล็อกการตั้งค่าความปลอดภัยเป็นเวลา 10 นาที"
   },
   {
     "key": "UI:member.loginComplete",
@@ -1611,10 +1611,10 @@
   },
   {
     "key": "UI:member.googleUnlinked",
-    "zh_TW": "Google 帳號已解除綁定，此 Gmail 不再用於帳號救援。",
-    "en": "Google account unlinked. This Gmail is no longer available for account recovery.",
-    "jp": "Google連携を解除しました。このGmailはアカウント復旧に使用されません。",
-    "th": "ยกเลิกการเชื่อมโยง Google แล้ว Gmail นี้จะไม่ใช้กู้คืนบัญชีอีกต่อไป"
+    "zh_TW": "Google 帳號已解除綁定，此信箱不再用於密碼救援。",
+    "en": "Google account unlinked. This email is no longer a recovery destination.",
+    "jp": "Google連携を解除しました。このメールでの復旧はできなくなります。",
+    "th": "ยกเลิกการเชื่อมโยง Google แล้ว อีเมลนี้จะใช้กู้รหัสผ่านไม่ได้อีก"
   },
   {
     "key": "UI:member.googleReady",
@@ -1629,5 +1629,376 @@
     "en": "Next, confirm your current password under “Verify identity again”, then use the button below to authorize with Google.",
     "jp": "まず「本人確認」で現在のパスワードを確認し、下のボタンからGoogleで許可してください。",
     "th": "ขั้นต่อไป ยืนยันรหัสผ่านปัจจุบันในส่วนยืนยันตัวตนอีกครั้ง แล้วกดปุ่มด้านล่างเพื่ออนุญาตผ่าน Google"
+  },
+  {
+    "key": "UI:member.personalTeams",
+    "zh_TW": "個人遊戲隊伍",
+    "en": "My Game Teams",
+    "jp": "自分のゲームチーム",
+    "th": "ทีมเกมของฉัน"
+  },
+  {
+    "key": "UI:member.account",
+    "zh_TW": "帳號",
+    "en": "Account",
+    "jp": "アカウント名",
+    "th": "ชื่อบัญชี"
+  },
+  {
+    "key": "UI:member.password",
+    "zh_TW": "密碼",
+    "en": "Password",
+    "jp": "パスワード",
+    "th": "รหัสผ่าน"
+  },
+  {
+    "key": "UI:member.registerTitle",
+    "zh_TW": "註冊",
+    "en": "Register",
+    "jp": "新規登録",
+    "th": "สมัครสมาชิก"
+  },
+  {
+    "key": "UI:member.registerLink",
+    "zh_TW": "還沒有帳號？前往註冊",
+    "en": "No account? Register",
+    "jp": "アカウントをお持ちでない方はこちら",
+    "th": "ยังไม่มีบัญชี? สมัครสมาชิก"
+  },
+  {
+    "key": "UI:member.forgotTitle",
+    "zh_TW": "忘記密碼？",
+    "en": "Forgot Password?",
+    "jp": "パスワードをお忘れですか？",
+    "th": "ลืมรหัสผ่าน?"
+  },
+  {
+    "key": "UI:member.goLogin",
+    "zh_TW": "前往登入",
+    "en": "Go to Login",
+    "jp": "ログインへ",
+    "th": "ไปที่หน้าเข้าสู่ระบบ"
+  },
+  {
+    "key": "UI:member.home",
+    "zh_TW": "返回首頁",
+    "en": "Return Home",
+    "jp": "ホームへ",
+    "th": "กลับหน้าแรก"
+  },
+  {
+    "key": "UI:member.mailSent",
+    "zh_TW": "請檢查你的信箱",
+    "en": "Check Your Email",
+    "jp": "メールを確認してください",
+    "th": "โปรดตรวจสอบอีเมล"
+  },
+  {
+    "key": "UI:member.registrationSent",
+    "zh_TW": "若資料可用，驗證信已寄出。連結有效 15 分鐘，請檢查垃圾郵件，完成驗證後再登入。",
+    "en": "If the details are eligible, a verification email has been sent. The link lasts 15 minutes. Check spam, verify your email, then log in.",
+    "jp": "登録可能な情報の場合、確認メールを送信しました。リンクは15分間有効です。迷惑メールも確認し、認証後にログインしてください。",
+    "th": "หากข้อมูลใช้ได้ ระบบได้ส่งอีเมลยืนยันแล้ว ลิงก์มีอายุ 15 นาที โปรดตรวจสอบโฟลเดอร์สแปม ยืนยันอีเมลแล้วเข้าสู่ระบบ"
+  },
+  {
+    "key": "UI:member.passwordRules",
+    "zh_TW": "密碼長度須為 10–128 字元。",
+    "en": "Use a password of 10–128 characters.",
+    "jp": "パスワードは10～128文字で入力してください。",
+    "th": "ใช้รหัสผ่านความยาว 10–128 ตัวอักษร"
+  },
+  {
+    "key": "UI:member.totpCode",
+    "zh_TW": "六位數驗證碼",
+    "en": "Six-Digit Code",
+    "jp": "6桁の認証コード",
+    "th": "รหัสยืนยัน 6 หลัก"
+  },
+  {
+    "key": "UI:member.recoveryCode",
+    "zh_TW": "恢復碼",
+    "en": "Recovery Code",
+    "jp": "リカバリーコード",
+    "th": "รหัสกู้คืน"
+  },
+  {
+    "key": "UI:member.useRecovery",
+    "zh_TW": "使用恢復碼",
+    "en": "Use a Recovery Code",
+    "jp": "リカバリーコードを使う",
+    "th": "ใช้รหัสกู้คืน"
+  },
+  {
+    "key": "UI:member.useTotp",
+    "zh_TW": "使用驗證器驗證碼",
+    "en": "Use Authenticator Code",
+    "jp": "認証アプリのコードを使う",
+    "th": "ใช้รหัสจากแอปยืนยันตัวตน"
+  },
+  {
+    "key": "UI:member.securitySettings",
+    "zh_TW": "帳號安全設定",
+    "en": "Account Security Settings",
+    "jp": "アカウントのセキュリティ設定",
+    "th": "การตั้งค่าความปลอดภัยบัญชี"
+  },
+  {
+    "key": "UI:member.bindGoogle",
+    "zh_TW": "綁定 Google 帳號",
+    "en": "Link Google Account",
+    "jp": "Google アカウントを連携",
+    "th": "เชื่อมโยงบัญชี Google"
+  },
+  {
+    "key": "UI:member.replaceGoogle",
+    "zh_TW": "更換 Google 帳號",
+    "en": "Change Google Account",
+    "jp": "Google アカウントを変更",
+    "th": "เปลี่ยนบัญชี Google"
+  },
+  {
+    "key": "UI:member.unbindGoogle",
+    "zh_TW": "解除 Google 綁定",
+    "en": "Unlink Google Account",
+    "jp": "Google 連携を解除",
+    "th": "ยกเลิกการเชื่อมโยง Google"
+  },
+  {
+    "key": "UI:member.setupTitle",
+    "zh_TW": "設定兩步驟驗證（2FA）",
+    "en": "Set Up Two-Factor Authentication",
+    "jp": "2段階認証（2FA）の設定",
+    "th": "ตั้งค่าการยืนยันตัวตนสองขั้นตอน (2FA)"
+  },
+  {
+    "key": "UI:member.changePassword",
+    "zh_TW": "變更密碼",
+    "en": "Change Password",
+    "jp": "パスワードを変更",
+    "th": "เปลี่ยนรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.passwordGuide",
+    "zh_TW": "仍須輸入目前密碼。變更後，其他裝置的登入狀態將失效，2FA 與 Google 綁定會保留。",
+    "en": "Enter your current password again. Other sessions will be revoked; 2FA and Google linking stay enabled.",
+    "jp": "現在のパスワードを再入力してください。変更後、他の端末はログアウトされます。2FAとGoogle連携は維持されます。",
+    "th": "กรอกรหัสผ่านปัจจุบันอีกครั้ง เซสชันอื่นจะถูกยกเลิก โดยยังคง 2FA และการเชื่อมโยง Google ไว้"
+  },
+  {
+    "key": "UI:member.passwordChanged",
+    "zh_TW": "密碼已更新。其他裝置已登出，本裝置保持登入；2FA 與 Google 綁定已保留。",
+    "en": "Password updated. Other sessions were revoked. This device remains signed in; 2FA and Google linking were preserved.",
+    "jp": "パスワードを変更しました。他の端末はログアウトされました。この端末のログイン、2FA、Google連携は維持されています。",
+    "th": "เปลี่ยนรหัสผ่านแล้ว เซสชันอื่นถูกยกเลิก อุปกรณ์นี้ยังเข้าสู่ระบบ และคง 2FA กับการเชื่อมโยง Google ไว้"
+  },
+  {
+    "key": "UI:member.recoveryCodes",
+    "zh_TW": "一次性恢復碼",
+    "en": "One-Time Recovery Codes",
+    "jp": "使い捨てリカバリーコード",
+    "th": "รหัสกู้คืนแบบใช้ครั้งเดียว"
+  },
+  {
+    "key": "UI:member.copyCodes",
+    "zh_TW": "複製恢復碼",
+    "en": "Copy Codes",
+    "jp": "コードをコピー",
+    "th": "คัดลอกรหัส"
+  },
+  {
+    "key": "UI:member.downloadCodes",
+    "zh_TW": "下載恢復碼",
+    "en": "Download Codes",
+    "jp": "コードをダウンロード",
+    "th": "ดาวน์โหลดรหัส"
+  },
+  {
+    "key": "UI:member.copied",
+    "zh_TW": "恢復碼已複製，請離線妥善保存。",
+    "en": "Codes copied. Store them safely offline.",
+    "jp": "コピーしました。オフラインで安全に保存してください。",
+    "th": "คัดลอกรหัสแล้ว โปรดเก็บไว้แบบออฟไลน์อย่างปลอดภัย"
+  },
+  {
+    "key": "UI:member.cancel",
+    "zh_TW": "取消",
+    "en": "Cancel",
+    "jp": "キャンセル",
+    "th": "ยกเลิก"
+  },
+  {
+    "key": "UI:member.setupStep1",
+    "zh_TW": "開啟 Google Authenticator 或相容的驗證器 App。",
+    "en": "Open Google Authenticator or a compatible authenticator app.",
+    "jp": "Google Authenticator または対応する認証アプリを開きます。",
+    "th": "เปิด Google Authenticator หรือแอปยืนยันตัวตนที่รองรับ"
+  },
+  {
+    "key": "UI:member.setupStep2",
+    "zh_TW": "新增帳號，選擇「掃描 QR Code」或手動輸入金鑰。",
+    "en": "Add an account and scan the QR code, or enter the key manually.",
+    "jp": "アカウントを追加し、QRコードを読み取るか、キーを手動で入力します。",
+    "th": "เพิ่มบัญชีแล้วสแกน QR Code หรือกรอกคีย์ด้วยตนเอง"
+  },
+  {
+    "key": "UI:member.setupStep3",
+    "zh_TW": "掃描下方圖碼，再輸入 App 顯示的六位數驗證碼。",
+    "en": "Scan the code below, then enter the six-digit code from your app.",
+    "jp": "下のQRコードを読み取り、アプリに表示された6桁のコードを入力します。",
+    "th": "สแกนโค้ดด้านล่าง แล้วกรอกรหัส 6 หลักที่แสดงในแอป"
+  },
+  {
+    "key": "UI:member.showSetup",
+    "zh_TW": "顯示設定圖碼",
+    "en": "Show Setup QR Code",
+    "jp": "設定用QRコードを表示",
+    "th": "แสดง QR Code สำหรับตั้งค่า"
+  },
+  {
+    "key": "UI:member.manualKey",
+    "zh_TW": "手動設定金鑰",
+    "en": "Manual Setup Key",
+    "jp": "手動設定キー",
+    "th": "คีย์สำหรับตั้งค่าด้วยตนเอง"
+  },
+  {
+    "key": "UI:member.backSecurity",
+    "zh_TW": "返回隱私權與密碼",
+    "en": "Back to Privacy & Security",
+    "jp": "セキュリティ設定へ戻る",
+    "th": "กลับไปที่ความเป็นส่วนตัวและความปลอดภัย"
+  },
+  {
+    "key": "UI:member.accountPrompt",
+    "zh_TW": "請輸入註冊時的帳號名稱",
+    "en": "Enter Your Registered Account Name",
+    "jp": "登録したアカウント名を入力",
+    "th": "กรอกชื่อบัญชีที่ใช้สมัคร"
+  },
+  {
+    "key": "UI:member.rescueSource",
+    "zh_TW": "收件來源",
+    "en": "Recovery Destination",
+    "jp": "送信先の種類",
+    "th": "ช่องทางรับอีเมลกู้คืน"
+  },
+  {
+    "key": "UI:member.registrationEmail",
+    "zh_TW": "註冊信箱",
+    "en": "Registration Email",
+    "jp": "登録メールアドレス",
+    "th": "อีเมลที่ใช้สมัคร"
+  },
+  {
+    "key": "UI:member.googleEmail",
+    "zh_TW": "已綁定的 Google 信箱",
+    "en": "Linked Google Email",
+    "jp": "連携済みGoogleメール",
+    "th": "อีเมล Google ที่เชื่อมโยงไว้"
+  },
+  {
+    "key": "UI:member.resetSent",
+    "zh_TW": "若帳號及所選救援方式有效，重設密碼信已寄出。連結有效 15 分鐘，請檢查垃圾郵件。寄件者：noreply@warmycat.com。",
+    "en": "If the account and selected recovery method are eligible, a reset email has been sent. The link lasts 15 minutes. Check spam. Sender: noreply@warmycat.com.",
+    "jp": "アカウントと選択した復旧方法が有効な場合、再設定メールを送信しました。リンクは15分間有効です。迷惑メールも確認してください。送信者：noreply@warmycat.com。",
+    "th": "หากบัญชีและวิธีกู้คืนที่เลือกใช้ได้ ระบบได้ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว ลิงก์มีอายุ 15 นาที โปรดตรวจสอบสแปม ผู้ส่ง: noreply@warmycat.com"
+  },
+  {
+    "key": "UI:member.requestAgain",
+    "zh_TW": "重新申請",
+    "en": "Request a New Link",
+    "jp": "新しいリンクを申請",
+    "th": "ขอลิงก์ใหม่"
+  },
+  {
+    "key": "UI:member.resetSuccess",
+    "zh_TW": "密碼重設成功",
+    "en": "Password Reset Complete",
+    "jp": "パスワード再設定完了",
+    "th": "รีเซ็ตรหัสผ่านสำเร็จ"
+  },
+  {
+    "key": "UI:member.emailSuccess",
+    "zh_TW": "信箱驗證成功",
+    "en": "Email Verified",
+    "jp": "メール認証完了",
+    "th": "ยืนยันอีเมลสำเร็จ"
+  },
+  {
+    "key": "UI:member.proofExpired",
+    "zh_TW": "身分驗證已過期，請重新輸入目前密碼，再繼續安全操作。",
+    "en": "Identity verification expired. Enter your current password again to continue.",
+    "jp": "本人確認の有効期限が切れました。現在のパスワードを再入力してください。",
+    "th": "การยืนยันตัวตนหมดอายุ โปรดกรอกรหัสผ่านปัจจุบันอีกครั้งเพื่อดำเนินการต่อ"
+  },
+  {
+    "key": "UI:member.setupGuide",
+    "zh_TW": "請依照步驟完成驗證；只有驗證碼確認成功後，2FA 才會啟用。",
+    "en": "Follow the steps below. 2FA is enabled only after your code is confirmed.",
+    "jp": "手順に従ってください。コードの確認に成功するまで2FAは有効になりません。",
+    "th": "ทำตามขั้นตอนด้านล่าง 2FA จะเปิดใช้งานเมื่อยืนยันรหัสสำเร็จเท่านั้น"
+  },
+  {
+    "key": "UI:member.disabledLogin",
+    "zh_TW": "2FA 已解除，所有裝置已登出。請重新登入。",
+    "en": "2FA disabled and all sessions revoked. Please log in again.",
+    "jp": "2FAを解除し、すべての端末をログアウトしました。再度ログインしてください。",
+    "th": "ปิด 2FA และยกเลิกทุกเซสชันแล้ว โปรดเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.googleConsent",
+    "zh_TW": "將前往 Google 官方授權頁選擇帳號。新綁定成功前會保留原綁定。",
+    "en": "Continue to Google to select an account. Any existing link stays until the new link succeeds.",
+    "jp": "Google公式画面でアカウントを選択します。新しい連携が成功するまで現在の連携を維持します。",
+    "th": "ไปที่หน้าอนุญาตของ Google เพื่อเลือกบัญชี การเชื่อมโยงเดิมจะคงอยู่จนกว่าการเชื่อมโยงใหม่จะสำเร็จ"
+  },
+  {
+    "key": "UI:member.codesConfirm",
+    "zh_TW": "重新產生後，舊恢復碼將全部失效。請輸入當次有效的驗證碼或未使用的恢復碼。",
+    "en": "All old recovery codes will be invalidated. Enter a current authenticator code or an unused recovery code.",
+    "jp": "古いリカバリーコードはすべて無効になります。現在の認証コードか未使用のリカバリーコードを入力してください。",
+    "th": "รหัสกู้คืนเดิมทั้งหมดจะใช้ไม่ได้ โปรดกรอกรหัสปัจจุบันจากแอปหรือรหัสกู้คืนที่ยังไม่ใช้"
+  },
+  {
+    "key": "UI:member.networkError",
+    "zh_TW": "無法連線，請檢查網路後重試。若剛才已送出，請先確認目前狀態。",
+    "en": "Connection failed. Check your network and try again. If you just submitted an action, check its status first.",
+    "jp": "接続できません。通信状況を確認して再試行してください。送信済みの場合は先に現在の状態を確認してください。",
+    "th": "เชื่อมต่อไม่สำเร็จ โปรดตรวจสอบเครือข่ายแล้วลองอีกครั้ง หากเพิ่งส่งคำขอ โปรดตรวจสอบสถานะก่อน"
+  },
+  {
+    "key": "UI:member.loggedOut",
+    "zh_TW": "已登出。",
+    "en": "Logged out.",
+    "jp": "ログアウトしました。",
+    "th": "ออกจากระบบแล้ว"
+  },
+  {
+    "key": "UI:member.logoutFailed",
+    "zh_TW": "登出失敗，請檢查網路後重試。",
+    "en": "Logout failed. Check your network and try again.",
+    "jp": "ログアウトに失敗しました。通信状況を確認して再試行してください。",
+    "th": "ออกจากระบบไม่สำเร็จ โปรดตรวจสอบเครือข่ายแล้วลองอีกครั้ง"
+  },
+  {
+    "key": "UI:member.invalidInput",
+    "zh_TW": "資料格式不正確，請檢查欄位後重試。",
+    "en": "Invalid input. Check the fields and try again.",
+    "jp": "入力形式が正しくありません。各項目を確認してください。",
+    "th": "รูปแบบข้อมูลไม่ถูกต้อง โปรดตรวจสอบช่องกรอกแล้วลองอีกครั้ง"
+  },
+  {
+    "key": "UI:member.resendReset",
+    "zh_TW": "重新寄送",
+    "en": "Resend",
+    "jp": "再送信",
+    "th": "ส่งอีกครั้ง"
+  },
+  {
+    "key": "UI:member.cancelSetup",
+    "zh_TW": "取消設定",
+    "en": "Cancel Setup",
+    "jp": "設定をキャンセル",
+    "th": "ยกเลิกการตั้งค่า"
   }
 ]

@@ -2,14 +2,10 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
+  <script>window.RB_PRIVATE_PAGE=true;</script>
   <script src="../assets/js/pwa-head.js"></script>
 
-  <script>
-    (() => {
-      const root = location.pathname.startsWith("/rangerbook/") ? "/rangerbook/" : "/";
-      document.write('<script src="' + root + 'assets/js/visitor-region.js?v=20261013-region1"><\/script>');
-    })();
-  </script>
+
   <style>html[data-rb-localizing] body{visibility:hidden}html[data-rb-localizing]::after{content:"Loading…";position:fixed;inset:45% 0;text-align:center;font:16px sans-serif}</style>
 
   <script>
@@ -22,7 +18,7 @@
     }
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="referrer" content="no-referrer"><title>帳號｜LINE Rangers Database</title>
+  <meta name="referrer" content="no-referrer"><title>Privacy & Security｜Rangerbook</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="../assets/css/admin.css?v=20261018-unified980">
@@ -32,33 +28,18 @@
   <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261013-v2.5">
   <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261014-toggle1">
+
+  <link rel="stylesheet" href="../assets/css/member.css?v=20261023-ui">
 </head>
-<body class="gt-app"><div id="site-header"></div><main class="admin-page"><div class="admin-shell"><section class="admin-card"><h1 data-i18n="member.security">隱私權與密碼</h1><p id="memberState" role="status"></p><div class="admin-actions"><a href="../admin/" data-i18n="member.login">登入</a><button id="memberLogout" type="button" data-i18n="member.logout">登出</button></div></section><div id="memberSecurityArea" hidden><section class="admin-card" id="memberProof"><h2 data-i18n="member.reauth">再次驗證身分</h2><form id="memberReauthForm" class="admin-form"><label><span data-i18n="member.currentPassword">目前密碼</span><input name="password" type="password" autocomplete="current-password" maxlength="128" required></label><label><span data-i18n="member.code">驗證碼或恢復碼</span><input name="code" type="text" inputmode="text" autocomplete="one-time-code" maxlength="64"></label><button type="submit" data-i18n="member.confirm">確認</button></form></section><section class="admin-card"><h2 data-i18n="member.twoFactor">兩步驟驗證（2FA）</h2><p id="memberFactorStatus"></p><form id="memberVerifyForm" class="admin-form" hidden><label><span data-i18n="member.code">驗證碼或恢復碼</span><input name="code" type="text" autocomplete="one-time-code" maxlength="64" required></label><button data-i18n="member.verify">驗證</button></form><div class="admin-actions"><button id="memberSetup" data-i18n="member.enable">啟用 2FA</button><button id="memberCodes" data-i18n="member.regenerate">重新產生恢復碼</button><button id="memberDisable" data-i18n="member.disable">停用 2FA</button></div><div id="memberSetupPanel" hidden><p data-i18n="member.scan">使用驗證器掃描，並輸入六位數驗證碼。</p><img id="memberQr" alt="Authenticator QR code" width="240" height="240"><p id="memberManualKey"></p><form id="memberEnableForm" class="admin-form"><input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required aria-label="TOTP"><button data-i18n="member.verify">驗證</button></form></div><div id="memberRecoveryPanel" hidden><p data-i18n="member.saveCodes">恢復碼僅顯示一次，請離線妥善保存。重新整理後將無法再次查看。</p><pre id="memberRecovery"></pre><button id="memberHideCodes" data-i18n="member.saved">已保存並關閉</button></div></section><section class="admin-card" id="memberGoogle"><h2 data-i18n="member.google">Google 帳號綁定</h2><p data-i18n="member.googleGuide">已驗證的 Gmail 將用於帳號救援。</p><p id="memberGoogleStatus"></p><div class="admin-actions"><button id="memberGoogleStart" data-i18n="member.bind">綁定／更換 Google 帳號</button><button id="memberGoogleUnlink" data-i18n="member.unbind">解除綁定</button></div></section><div class="admin-card" id="memberPassword">      <section id="adminPasswordCard" class="admin-workspace-panel">
-        <h2>變更自己的密碼</h2>
-        <p class="admin-muted">所有管理員階級都可以隨時變更自己的登入密碼。更新成功後，其他裝置上的登入狀態會立即失效。</p>
-        <form id="adminPasswordForm" class="admin-form" autocomplete="on">
-          <label>
-            <span>目前密碼</span>
-            <input id="adminCurrentPassword" type="password" autocomplete="current-password" maxlength="128" required>
-          </label>
-          <label>
-            <span>新密碼</span>
-            <input id="adminNewPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
-          </label>
-          <label>
-            <span>確認新密碼</span>
-            <input id="adminNewPasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
-          </label>
-          <div class="admin-actions">
-            <button id="adminPasswordSubmit" class="primary" type="submit">更新密碼</button>
-          </div>
-        </form>
-        <div id="adminPasswordMessage" class="admin-message" role="status" aria-live="polite"></div>
-      </section>
-
-
-</div><section class="admin-card" id="memberApplication"><button id="memberApply" data-i18n="member.apply">提出管理員申請</button></section></div></div></main>
-<script src="../assets/js/v2-data.js"></script><script src="../assets/js/site.js"></script><script src="../assets/js/admin-auth.js"></script>
-<script src="../assets/js/admin-password.js"></script>
+<body class="gt-app" data-member-page="account">
+<div id="site-header"></div>
+<main class="admin-page member-page"><div class="admin-shell">
+  <section class="page-title member-banner"><h1 data-i18n="member.security">隱私權與密碼</h1><p lang="en">Privacy & Security</p></section>
+  <div class="member-content member-narrow"><p id="memberState" class="admin-message" role="status" aria-live="polite" aria-atomic="true"></p><p id="memberLoginGate" hidden><a href="../login/" data-i18n="member.goLogin">前往登入</a></p><div id="memberSecurityArea" hidden><section class="admin-card" id="memberProof"><h2 data-i18n="member.reauth">驗證身分</h2><p id="memberProofStatus" class="member-proof-status" role="status"></p><form id="memberReauthForm" class="admin-form"><label><span data-i18n="member.password">密碼</span><input name="password" type="password" autocomplete="current-password" maxlength="128" required></label><button type="submit" data-i18n="member.confirm" >確認</button></form></section><section class="admin-card"><h2 data-i18n="member.securitySettings">帳號安全設定</h2><fieldset id="memberSettings" disabled><div id="memberGoogle" class="member-setting"><h3 data-i18n="member.google">Google 帳號綁定</h3><div class="admin-actions"><button type="button" id="memberGoogleStart" data-i18n="member.bindGoogle" >綁定 Google 帳號</button><button type="button" id="memberGoogleUnlink" data-i18n="member.unbindGoogle" hidden>解除 Google 綁定</button></div><p id="memberGoogleStatus"></p><p id="memberGoogleNext" class="admin-muted"></p></div><div class="member-setting"><h3 data-i18n="member.twoFactor">兩步驟驗證（2FA）</h3><div class="admin-actions"><button type="button" id="memberSetup" data-i18n="member.setupTitle" >設定兩步驟驗證（2FA）</button><button type="button" id="memberDisable" data-i18n="member.disable" hidden>解除兩步驟驗證（2FA）</button><button type="button" id="memberCodes" data-i18n="member.regenerate" hidden>重新產生恢復碼</button></div><p id="memberFactorStatus"></p></div></fieldset></section><section class="admin-card" id="memberPassword"><h2 data-i18n="member.changePassword">變更密碼</h2><p class="admin-muted" data-i18n="member.passwordGuide">仍須輸入目前密碼。變更後，其他裝置的登入狀態將失效，2FA 與 Google 綁定會保留。</p><form id="memberPasswordForm" class="admin-form"><label><span data-i18n="member.currentPassword">目前密碼</span><input name="current_password" type="password" autocomplete="current-password" maxlength="128" required></label><label><span data-i18n="member.newPassword">新密碼（10–128 字元）</span><input name="new_password" type="password" autocomplete="new-password" minlength="10" maxlength="128" required></label><label><span data-i18n="member.confirmPassword">確認新密碼</span><input name="confirm" type="password" autocomplete="new-password" minlength="10" maxlength="128" required></label><button type="submit" data-i18n="member.changePassword" >變更密碼</button></form></section><section class="admin-card" id="memberRecoveryPanel" hidden><h2 data-i18n="member.recoveryCodes">一次性恢復碼</h2><p data-i18n="member.saveCodes">恢復碼僅顯示一次，請離線妥善保存。重新整理後將無法再次查看。</p><pre id="memberRecovery"></pre><div class="admin-actions"><button type="button" id="memberCopyCodes" data-i18n="member.copyCodes" >複製恢復碼</button><button type="button" id="memberDownloadCodes" data-i18n="member.downloadCodes" >下載恢復碼</button><button type="button" id="memberHideCodes" data-i18n="member.saved" >已保存並關閉</button></div></section></div><dialog id="memberConfirmDialog" aria-labelledby="memberDialogTitle"><form id="memberConfirmForm" class="admin-form"><h2 id="memberDialogTitle"></h2><p id="memberDialogMessage"></p><div id="memberDialogFactor"><label><span data-i18n="member.totpCode">六位數驗證碼</span><input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required></label><button type="button" id="memberDialogRecovery" data-i18n="member.useRecovery" >使用恢復碼</button></div><div class="admin-actions"><button type="button" id="memberDialogCancel" data-i18n="member.cancel" >取消</button><button type="submit" data-i18n="member.confirm" >確認</button></div></form></dialog></div>
+</div></main>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+<script src="../assets/js/admin-auth.js"></script>
+<script src="../assets/js/member-ui.js"></script>
 <script src="../assets/js/member-page.js"></script>
 </body></html>

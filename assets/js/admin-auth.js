@@ -18,12 +18,15 @@
       headers.set("Content-Type", "application/json");
     }
 
-    const response = await fetch(`${API_BASE}${path}`, {
+    let response;
+    try { response = await fetch(`${API_BASE}${path}`, {
       ...options,
       headers,
       credentials: "include",
       cache: "no-store"
-    });
+    }); } catch (_) {
+      throw new Error(window.RangerbookI18n?.t("member.networkError", "Connection failed. Check your network and try again.") || "Connection failed. Check your network and try again.");
+    }
 
     let payload = null;
     const contentType = response.headers.get("content-type") || "";
@@ -35,7 +38,8 @@
     }
 
     if (!response.ok) {
-      const message = payload?.detail || payload?.message || `HTTP ${response.status}`;
+      const rawMessage = payload?.detail || payload?.message;
+      const message = response.status>=500 ? "member.unavailable" : typeof rawMessage==="string" ? rawMessage : "member.invalidInput";
       const i18n = window.RangerbookI18n;
       const prefixes = {
         "無法讀取資源更新紀錄：": "site.resources.readError",

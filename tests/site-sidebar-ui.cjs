@@ -54,9 +54,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       const admin=page.locator(".gt-sidebar-admin-entry");
       await admin.waitFor({state:"attached"});
       assert.equal(await admin.getAttribute("href"),"/admin/");
-      assert.equal(await page.locator(".gt-user-navigation a:last-child").getAttribute("href"),"/admin/");
+      assert.equal(await page.locator(".gt-user-navigation a[href$="/admin/"]").getAttribute("href"),"/admin/");
       assert.equal(await page.locator(".gt-sidebar-bottom a").count(),0);
-      assert.equal(await page.locator(".gt-user-navigation > a").count(),3);
+      assert.equal(await page.locator(".gt-user-navigation > a").count(),4);
       if(["admin","super_admin"].includes(role)){
         await admin.waitFor({state:"visible",timeout:10000});
         assert.equal(await admin.isVisible(),true,pathname+" "+role);

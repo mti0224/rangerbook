@@ -15,7 +15,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const auth=window.RangerbookAuth;
  await auth.ready();assert.equal(auth.getUser().must_change_password,true);assert.equal(auth.isAdmin(),false);
  user.must_change_password=false;await auth.refresh();assert.equal(auth.isAdmin(),true);
- failLogout=true;await assert.rejects(auth.logout(),/offline/);
+ failLogout=true;await assert.rejects(auth.logout(),/Connection failed/);
  assert.equal(auth.getUser().logged_in,true,'A failed server logout must not pretend the session was revoked');
  failLogout=false;await auth.logout();assert.equal(auth.getUser().logged_in,false);
  for(const {options} of requests){assert.equal(options.cache,'no-store');assert.equal(options.credentials,'include');}

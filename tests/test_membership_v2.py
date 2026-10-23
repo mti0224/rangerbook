@@ -123,7 +123,7 @@ def test_super_initial_setup_no_privilege_and_recovery(env):
     assert c.post('/auth/2fa/setup').status_code==403
     secret,codes=enroll(env,'super')
     assert c.get('/admin/users').status_code==200
-    assert c.post('/auth/2fa/disable').status_code==403
+    assert c.post('/auth/2fa/disable',json={'code':codes[2]}).status_code==403
     c.post('/auth/logout');state=login(c,'super')
     assert state['mfa_required'] and not state['logged_in']
     assert c.get('/admin/users').status_code==403
@@ -148,7 +148,7 @@ def test_totp_replay_wrong_expiry_and_encryption(env):
     assert c.post('/auth/2fa/verify',json={'code':codes[1]}).status_code==200
     assert c.get('/member/game-binding/status').status_code==200
     assert reauth(c,codes[2]).status_code==200
-    assert c.post('/auth/2fa/disable').status_code==200
+    assert c.post('/auth/2fa/disable',json={'code':codes[2]}).status_code==200
     assert c.get('/auth/me').json()['logged_in'] is False
 
 
@@ -246,7 +246,7 @@ def test_reset_expiry_single_use_revokes_without_disabling_2fa(env):
     h,m,c=env;secret,codes=enroll(env)
     with h.db() as con:
         con.execute("UPDATE users SET google_sub='sub-a',recovery_email='recovery@gmail.com' WHERE id='a'")
-    a=c.post('/auth/password/forgot',json={'identifier':'test-a'})
+    a=c.post('/auth/password/forgot',json={'identifier':'test-a','source':'google'})
     b=c.post('/auth/password/forgot',json={'identifier':'missing'})
     assert a.status_code==b.status_code==202 and a.json()==b.json()
     with h.db() as con:
@@ -286,7 +286,7 @@ def test_google_state_nonce_signature_and_uniqueness(env,monkeypatch):
     with pytest.raises(ValueError):m.google_claims(encoded,'wrong')
     with pytest.raises(jwt.PyJWTError):m.google_claims(jwt.encode({**claims,'aud':'wrong'},key,algorithm='RS256'),'nonce')
     with pytest.raises(ValueError):m.google_claims(jwt.encode({**claims,'email_verified':False},key,algorithm='RS256'),'nonce')
-    start=c.post('/auth/google/start');assert start.status_code==200
+    start=c.post('/auth/google/start',json={});assert start.status_code==200
     from urllib.parse import urlparse,parse_qs
     q=parse_qs(urlparse(start.json()['url']).query)
     assert q['code_challenge_method']==['S256']
@@ -305,10 +305,10 @@ def test_google_state_nonce_signature_and_uniqueness(env,monkeypatch):
     assert c.get('/auth/security').json()['google_email']=='testname@gmail.com'
     assert c.get('/auth/google/callback',params={'state':state,'code':'test'},follow_redirects=False).headers['location'].endswith('google=failed')
     login(c,'b');reauth(c)
-    start=c.post('/auth/google/start');q=parse_qs(urlparse(start.json()['url']).query)
+    start=c.post('/auth/google/start',json={});q=parse_qs(urlparse(start.json()['url']).query)
     assert c.get('/auth/google/callback',params={'state':q['state'][0],'code':'test'},follow_redirects=False).headers['location'].endswith('google=failed')
     login(c,'a');reauth(c)
-    assert c.post('/auth/google/unlink').status_code==200
+    assert c.post('/auth/google/unlink',json={}).status_code==200
     assert c.get('/auth/security').json()['google_email'] is None
 
 
@@ -340,14 +340,14 @@ def test_reauth_cooldown_reports_remaining_time_without_consuming_attempts(env):
 def test_reauth_validity_is_server_owned_and_expires(env):
     h,m,c=env;login(c)
     assert c.get('/auth/security').json()['reauth_valid_for']==0
-    assert reauth(c).json()['reauth_valid_for']==300
-    assert 295<=c.get('/auth/security').json()['reauth_valid_for']<=300
+    assert reauth(c).json()['reauth_valid_for']==600
+    assert 595<=c.get('/auth/security').json()['reauth_valid_for']<=600
     m.google_id='test-client';m.google_secret='test-secret';m.callback=ORIGIN+'/auth/google/callback'
-    assert c.post('/auth/google/start').status_code==200
+    assert c.post('/auth/google/start',json={}).status_code==200
     with h.db() as con:
         con.execute('UPDATE sessions SET reauth_until=?',(time.time()-1,))
     assert c.get('/auth/security').json()['reauth_valid_for']==0
-    assert c.post('/auth/google/start').status_code==403
+    assert c.post('/auth/google/start',json={}).status_code==403
 
 
 def test_email_worker_retry_and_suppression(env):
@@ -473,3 +473,87 @@ def test_ses_feedback_authenticated_queue(env):
         def delete_message(self,**kw):self.deleted=True
     sqs=SQS();consume_feedback(h.db,sqs,'test-queue','test-topic');assert sqs.deleted
     with h.db() as con:assert con.execute("SELECT reason FROM member_suppression WHERE email='synthetic@example.test'").fetchone()[0]=='Complaint'
+
+
+@pytest.mark.parametrize('source',['registration','google'])
+def test_recovery_destinations_no_disclosure(env,source):
+    h,m,c=env
+    with h.db() as con:
+        con.execute("UPDATE users SET email='registered@outlook.test',email_verified=1,google_sub='stable-sub',recovery_email='linked@example.test' WHERE id='a'")
+    valid=c.post('/auth/password/forgot',json={'identifier':'test-a','source':source})
+    missing=c.post('/auth/password/forgot',json={'identifier':'missing','source':source})
+    assert valid.status_code==missing.status_code==202 and valid.json()==missing.json()
+    assert '@' not in valid.text and 'linked' not in valid.text
+    with h.db() as con:
+        mail=json.loads(m.open(con.execute('SELECT payload FROM member_outbox').fetchone()[0]))
+        assert mail['email']==('registered@outlook.test' if source=='registration' else 'linked@example.test')
+        assert 895<=con.execute('SELECT expires FROM member_tokens').fetchone()[0]-time.time()<=900
+        before=con.execute('SELECT digest FROM member_tokens').fetchone()[0]
+    # A quick resend keeps the existing link and does not queue another mail.
+    assert c.post('/auth/password/forgot',json={'identifier':'test-a','source':source}).json()==valid.json()
+    with h.db() as con:
+        assert con.execute('SELECT digest FROM member_tokens').fetchone()[0]==before
+        assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==1
+    assert c.post('/auth/password/reset/check',json={'token':mail['token']}).status_code==200
+    assert c.post('/auth/password/reset',json={'token':mail['token'],'password':'New-password-123'}).status_code==200
+    assert c.post('/auth/password/reset/check',json={'token':mail['token']}).status_code==400
+
+
+@pytest.mark.parametrize('source',['registration','google'])
+def test_untrusted_or_missing_recovery_source_is_silent(env,source):
+    h,m,c=env
+    with h.db() as con:con.execute("UPDATE users SET email='unverified@example.test',email_verified=0,recovery_email='untrusted@example.test',google_sub=NULL WHERE id='a'")
+    assert c.post('/auth/password/forgot',json={'identifier':'test-a','source':source}).status_code==202
+    with h.db() as con:assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==0
+
+
+def test_cancel_factor_and_sensitive_actions_require_current_factor(env):
+    h,m,c=env;login(c);reauth(c)
+    assert c.post('/auth/2fa/setup').status_code==200
+    assert c.post('/auth/2fa/cancel').status_code==200
+    assert c.get('/auth/security').json()['totp_enabled'] is False
+    assert c.post('/auth/2fa/enable',json={'code':'123456'}).status_code==400
+    secret,codes=enroll(env)
+    assert reauth(c).status_code==200
+    assert c.post('/auth/2fa/disable',json={'code':'wrong'}).status_code==401
+    assert c.get('/auth/security').json()['totp_enabled'] is True
+    assert c.post('/auth/2fa/recovery-codes',json={'code':'wrong'}).status_code==401
+    assert c.post('/auth/2fa/disable',json={'code':codes[3]}).status_code==200
+    assert c.get('/auth/me').json()['logged_in'] is False
+
+
+def test_password_change_preserves_google_factor_and_wrong_password(env):
+    h,m,c=env;secret,codes=enroll(env)
+    with h.db() as con:con.execute("UPDATE users SET google_sub='stable-sub',recovery_email='linked@example.test' WHERE id='a'")
+    assert c.post('/auth/change-password',json={'current_password':'wrong','new_password':'New-password-123'}).status_code==401
+    assert c.post('/auth/change-password',json={'current_password':PASS,'new_password':'New-password-123'}).status_code==200
+    with h.db() as con:
+        user=con.execute("SELECT * FROM users WHERE id='a'").fetchone()
+        assert user['totp_secret'] and user['google_sub']=='stable-sub' and user['recovery_email']=='linked@example.test'
+    c.post('/auth/logout')
+    state=c.post('/auth/login',json={'account':'test-a','password':'New-password-123'}).json()
+    assert state['mfa_required'] and not state['logged_in']
+    # A password proof cannot upgrade the pending MFA session.
+    assert c.post('/auth/reauth',json={'password':'New-password-123'}).status_code==403
+
+
+def test_expired_email_link_and_resend_after_cooldown(env,monkeypatch):
+    h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *args:None)
+    body={'account':'new-outlook','password':PASS,'email':'new@outlook.test','captcha':'x'}
+    assert c.post('/auth/register',json=body).status_code==202
+    with h.db() as con:
+        token=json.loads(m.open(con.execute('SELECT payload FROM member_outbox').fetchone()[0]))['token']
+        con.execute('UPDATE member_tokens SET expires=?',(time.time()-1,))
+    assert c.post('/auth/email/verify',json={'token':token}).status_code==400
+    assert c.post('/auth/email/resend',json={'identifier':'new-outlook'}).status_code==202
+    with h.db() as con:
+        assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==2
+        assert not con.execute("SELECT account_active FROM users WHERE account='new-outlook'").fetchone()[0]
+
+
+@pytest.mark.parametrize('patch',[{'email':'bad-email'},{'account':'bad!name'},{'password':'short'}])
+def test_bad_registration_format(env,monkeypatch,patch):
+    h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *args:None)
+    response=c.post('/auth/register',json={**{'account':'new-valid','email':'new@example.test','password':PASS,'captcha':'x'},**patch})
+    assert response.status_code in {400,422}
+    with h.db() as con:assert con.execute('SELECT count(*) FROM users').fetchone()[0]==4

@@ -4,6 +4,12 @@ on:
     paths:
       - 'backend/**'
       - 'membership/**'
+      - 'login/**'
+      - 'register/**'
+      - 'two-factor/**'
+      - 'forgot-password/**'
+      - 'assets/css/member.css'
+      - 'assets/js/site.js'
       - 'account/**'
       - 'account-action/**'
       - 'personal-teams/**'
@@ -42,7 +48,17 @@ jobs:
       - run: node scripts/check-public-boundary.mjs
       - run: node tests/security-pages.mjs && node tests/security-auth.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
-      - run: node tests/security-browser.cjs && node tests/member-browser.cjs
+      - name: Security and member browser flows
+        run: |
+          mkdir -p "$RUNNER_TEMP/member-ui"
+          node tests/security-browser.cjs
+          QA_SCREENSHOTS="$RUNNER_TEMP/member-ui" node tests/member-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: member-ui-review
+          path: ${{ runner.temp }}/member-ui
+          if-no-files-found: ignore
       - name: Verify isolated acceptance artifact
         run: |
           node membership/stage/build-site.mjs "$RUNNER_TEMP/rangerbook-acceptance"

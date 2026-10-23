@@ -468,10 +468,9 @@
     try {
       const user = await auth.login(account, password);
       $("adminLoginPassword").value = "";
-      renderUserState(user);
-      $("memberLoginStep").hidden = !(user.mfa_required || user.setup_required || user.must_change_password);
-      if (auth.isAdmin()) await loadResourceUpdates();
-      if (auth.isSuperAdmin()) await loadSuperAdminData();
+      if(user.logged_in){location.assign(location.pathname.startsWith("/rangerbook/")?"/rangerbook/":"/");return;}
+      location.assign("../login/");
+
     } catch (error) {
       setMessage(authMessage, error.message, "error");
     }

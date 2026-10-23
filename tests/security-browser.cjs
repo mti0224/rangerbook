@@ -40,12 +40,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   page.on('pageerror',error=>errors.push(error.message));
   page.on('dialog',async dialog=>{dialogs.push(dialog.message());await dialog.accept();});
   await page.goto(base+'/account/',{waitUntil:'domcontentloaded'});
-  await page.locator('#adminPasswordForm').waitFor();
+  await page.locator('#memberPasswordForm').waitFor();
   assert.ok(!requests.some(name=>name.startsWith('/admin/')),'Temporary-password sessions do not load privileged data');
-  await page.locator('#adminCurrentPassword').fill('Temporary-test-password!');
-  await page.locator('#adminNewPassword').fill('New-test-password!42');
-  await page.locator('#adminNewPasswordConfirm').fill('New-test-password!42');
-  await page.locator('#adminPasswordSubmit').click();
+  await page.locator('#memberPasswordForm input[name=current_password]').fill('Temporary-test-password!');
+  await page.locator('#memberPasswordForm input[name=new_password]').fill('New-test-password!42');
+  await page.locator('#memberPasswordForm input[name=confirm]').fill('New-test-password!42');
+  await page.locator('#memberPasswordForm button').click();
   await page.waitForFunction(()=>window.RangerbookAuth?.isAdmin());assert.ok(changed);
   await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
   await page.locator('#adminResourcesTab').waitFor();

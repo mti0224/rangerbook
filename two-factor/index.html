@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <script>window.RB_PRIVATE_PAGE=true;</script>
+  <script src="../assets/js/pwa-head.js"></script>
+
+
+  <style>html[data-rb-localizing] body{visibility:hidden}html[data-rb-localizing]::after{content:"Loading…";position:fixed;inset:45% 0;text-align:center;font:16px sans-serif}</style>
+
+  <script>
+    // Apply the saved theme before any stylesheet can paint the page.
+    try {
+      const theme = localStorage.getItem("rangerbook-theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch (_) {
+      document.documentElement.dataset.theme = "light";
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer"><title>Set Up Two-Factor Authentication｜Rangerbook</title>
+  <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261018-unified980">
+  <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
+  <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
+  <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
+  <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261013-v2.5">
+  <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
+  <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261014-toggle1">
+
+  <link rel="stylesheet" href="../assets/css/member.css?v=20261023-ui">
+</head>
+<body class="gt-app" data-member-page="two-factor">
+<div id="site-header"></div>
+<main class="admin-page member-page"><div class="admin-shell">
+  <section class="page-title member-banner"><h1 data-i18n="member.security">隱私權與密碼</h1><p lang="en">Set Up Two-Factor Authentication</p></section>
+  <div class="member-content member-narrow"><p id="memberState" class="admin-message" role="status" aria-live="polite" aria-atomic="true"></p><p id="memberLoginGate" hidden><a href="../login/" data-i18n="member.goLogin">前往登入</a></p><div id="memberSecurityArea" hidden><section class="admin-card" id="memberProof"><h2 data-i18n="member.reauth">驗證身分</h2><p id="memberProofStatus" class="member-proof-status" role="status"></p><form id="memberReauthForm" class="admin-form"><label><span data-i18n="member.password">密碼</span><input name="password" type="password" autocomplete="current-password" maxlength="128" required></label><button type="submit" data-i18n="member.confirm" >確認</button></form></section><section class="admin-card" id="memberSetupCard"><h2 data-i18n="member.setupTitle">設定兩步驟驗證（2FA）</h2><ol class="member-steps"><li data-i18n="member.setupStep1">開啟 Google Authenticator 或相容的驗證器 App。</li><li data-i18n="member.setupStep2">新增帳號，選擇「掃描 QR Code」或手動輸入金鑰。</li><li data-i18n="member.setupStep3">掃描下方圖碼，再輸入 App 顯示的六位數驗證碼。</li></ol><button type="button" id="memberSetup" data-i18n="member.showSetup" disabled>顯示設定圖碼</button><div id="memberSetupPanel" hidden><img id="memberQr" alt="Authenticator QR Code" width="240" height="240"><p data-i18n="member.manualKey">手動設定金鑰</p><code id="memberManualKey"></code><form id="memberEnableForm" class="admin-form"><label><span data-i18n="member.totpCode">六位數驗證碼</span><input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" minlength="6" maxlength="6" required></label><button type="submit" data-i18n="member.verify" >驗證</button></form></div><div class="member-links"><button type="button" id="memberCancelSetup" data-i18n="member.cancelSetup" >取消設定</button></div></section><section class="admin-card" id="memberRecoveryPanel" hidden><h2 data-i18n="member.recoveryCodes">一次性恢復碼</h2><p data-i18n="member.saveCodes">恢復碼僅顯示一次，請離線妥善保存。重新整理後將無法再次查看。</p><pre id="memberRecovery"></pre><div class="admin-actions"><button type="button" id="memberCopyCodes" data-i18n="member.copyCodes" >複製恢復碼</button><button type="button" id="memberDownloadCodes" data-i18n="member.downloadCodes" >下載恢復碼</button><button type="button" id="memberHideCodes" data-i18n="member.saved" >已保存並關閉</button></div></section><p><a id="memberBackSecurity" href="../account/" data-i18n="member.backSecurity">返回隱私權與密碼</a></p></div></div>
+</div></main>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/site.js"></script>
+<script src="../assets/js/admin-auth.js"></script>
+<script src="../assets/js/member-ui.js"></script>
+<script src="../assets/js/member-page.js"></script>
+</body></html>

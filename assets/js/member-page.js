@@ -1,126 +1,145 @@
 (() => {
   'use strict';
   const auth=window.RangerbookAuth, $=id=>document.getElementById(id);
-  const t=key=>window.RangerbookI18n?.t('member.'+key,key)||key;
-  const format=(key,value)=>window.RangerbookI18n.format('member.'+key,[value]);
-  let features={}, status={}, busy=false, proofUntil=0, proofRetryUntil=0;
-  const cooldowns=new Map();
-  const say=(value,error=false)=>{const el=$('memberState')||$('memberGate');if(el){el.textContent=value;el.classList.toggle('error',error);}};
-  const messageFor=element=>{
-    const card=element?.closest('.admin-card');if(!card)return $('memberState')||$('memberGate');
-    let el=card.querySelector('.member-operation-status');
-    if(!el){el=document.createElement('p');el.className='admin-message member-operation-status';el.setAttribute('role','status');el.setAttribute('aria-live','polite');el.setAttribute('aria-atomic','true');card.append(el);}
-    return el;
-  };
-  const notify=(el,text,type='')=>{if(el){el.textContent=text;el.classList.toggle('error',type==='error');el.classList.toggle('success',type==='success');}};
-  const remaining=until=>Math.max(0,Math.ceil((until-Date.now())/1000));
-  const clock=seconds=>Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');
-  function proofState(){
-    const form=$('memberReauthForm');if(!form)return;
-    let el=$('memberProofStatus');
-    if(!el){el=document.createElement('p');el.id='memberProofStatus';el.className='member-proof-status';form.before(el);}
-    const valid=remaining(proofUntil),wait=remaining(proofRetryUntil);
-    el.textContent=valid?format('reauthValid',clock(valid)):wait?format('retryCountdown',clock(wait)):t('reauthNext');
-    el.classList.toggle('success',valid>0);
-    form.querySelector('button[type=submit]').disabled=busy||valid>0||wait>0;
-    form.elements.code.closest('label').hidden=!status.totp_enabled;
-    form.elements.code.required=Boolean(status.totp_enabled);
-    if($('memberGoogleNext'))$('memberGoogleNext').textContent=t(!features.google?'unconfigured':valid?'googleReady':'googleNext');
-  }
-  function tick(){
-    for(const [button,entry] of cooldowns){
-      const seconds=remaining(entry.until);
-      if(seconds){button.disabled=true;notify(entry.message,format('retryCountdown',clock(seconds)),'error');}
-      else{cooldowns.delete(button);button.disabled=busy;notify(entry.message,t('retryReady'));}
-    }
-    proofState();
-  }
-  setInterval(tick,1000);
-  const api=(path,body)=>auth.api(path,{method:'POST',...(body?{body:JSON.stringify(body)}:{})});
-  const clearSecrets=()=>{
-    $('memberQr')?.removeAttribute('src');if($('memberManualKey'))$('memberManualKey').textContent='';
-    if($('memberRecovery'))$('memberRecovery').textContent='';
-    if($('memberRecoveryPanel'))$('memberRecoveryPanel').hidden=true;
-    if($('memberSetupPanel'))$('memberSetupPanel').hidden=true;
-    document.querySelectorAll('input[type=password],input[autocomplete=one-time-code]').forEach(x=>x.value='');
-  };
-  async function refresh(){
-    const user=await auth.refresh();
-    if($('adminPersonalPanel')){
-      $('adminPersonalPanel').hidden=!user.logged_in;
-      $('memberGate').hidden=user.logged_in;
+  if($('adminPersonalPanel')){
+    auth.ready().then(user=>{
+      $('adminPersonalPanel').hidden=!user.logged_in;$('memberGate').hidden=user.logged_in;
       if(user.logged_in)window.RangerbookPersonalTeams?.refresh();
-      return;
-    }
-    const pending=user.setup_required||user.mfa_required||user.must_change_password;
-    $('memberSecurityArea').hidden=!(user.logged_in||pending);
-    say(t(user.setup_required?'setupRequired':user.mfa_required?'mfaRequired':user.logged_in?'signedIn':'loginRequired'));
-    if(!user.logged_in&&!pending){clearSecrets();return;}
+    });return;
+  }
+  const {t,format,clock,left,notify,message,post,run,factorMode}=window.RangerbookMemberUI;
+  const root=location.pathname.startsWith('/rangerbook/')?'/rangerbook/':'/';
+  const setupPage=document.body.dataset.memberPage==='two-factor';
+  let status={},features={},user={},proofUntil=0,retryUntil=0,wasValid=false,needsProofRefresh=false;
+  const say=(key,error=false)=>notify($('memberState'),t(key),error?'error':'');
+  function renderProof(){
+    const valid=left(proofUntil)>0, wait=left(retryUntil);
+    if(wasValid&&!valid){say('proofExpired',true);clearSetup();}
+    wasValid=valid;
+    const form=$('memberReauthForm');
+    form.elements.password.disabled=valid||window.RangerbookMemberUI.busy();
+    form.querySelector('button').disabled=valid||wait>0||window.RangerbookMemberUI.busy();
+    $('memberProofStatus').textContent=valid?format('reauthValid',clock(left(proofUntil))):wait?format('retryCountdown',clock(wait)):t('reauthNext');
+    if($('memberSettings'))$('memberSettings').disabled=!valid||needsProofRefresh||window.RangerbookMemberUI.busy();
+    if($('memberGoogleStart'))$('memberGoogleStart').disabled=!features.google;
+    if($('memberSetup'))$('memberSetup').disabled=!valid||needsProofRefresh||window.RangerbookMemberUI.busy();
+    if($('memberEnableForm'))$('memberEnableForm').querySelector('button').disabled=!valid||needsProofRefresh||window.RangerbookMemberUI.busy();
+  }
+  function clearSetup(){
+    $('memberQr')?.removeAttribute('src');if($('memberManualKey'))$('memberManualKey').textContent='';
+    if($('memberSetupPanel'))$('memberSetupPanel').hidden=true;
+  }
+  function clearSecrets(){
+    clearSetup();if($('memberRecovery'))$('memberRecovery').textContent='';
+    if($('memberRecoveryPanel'))$('memberRecoveryPanel').hidden=true;
+    document.querySelectorAll('input[type=password],input[autocomplete=one-time-code]').forEach(x=>x.value='');
+  }
+  async function refresh(){
+    user=await auth.refresh();
+    const permitted=user.logged_in||user.setup_required||user.must_change_password;
+    $('memberLoginGate').hidden=Boolean(permitted);$('memberSecurityArea').hidden=!permitted;
+    if(!permitted){clearSecrets();proofUntil=0;say('loginRequired',true);return;}
+    if(user.setup_required&&!setupPage){location.replace(root+'two-factor/');return;}
     status=await auth.api('/auth/security');
     proofUntil=Date.now()+Number(status.reauth_valid_for||0)*1000;
-    proofRetryUntil=Date.now()+Number(status.reauth_retry_after||0)*1000;
-    proofState();
-    $('memberFactorStatus').textContent=t(status.totp_enabled?'enabled':'disabled')+(status.totp_required?' '+t('mandatory2fa'):'');
-    $('memberVerifyForm').hidden=!user.mfa_required;
-    $('memberSetup').hidden=status.totp_enabled||user.mfa_required;
-    $('memberCodes').hidden=!user.logged_in||!status.totp_enabled;
-    $('memberDisable').hidden=!user.logged_in||!status.totp_enabled||status.totp_required;
-    $('memberGoogle').hidden=!user.logged_in;
-    $('memberGoogleStart').disabled=!features.google;
-    $('memberGoogleStatus').textContent=status.google_email||t(features.google?'unbound':'unconfigured');
-    let googleNext=$('memberGoogleNext');
-    if(!googleNext){googleNext=document.createElement('p');googleNext.id='memberGoogleNext';$('memberGoogleStatus').after(googleNext);}
-    googleNext.textContent=t(remaining(proofUntil)?'googleReady':'googleNext');
-    $('memberGoogleUnlink').hidden=!status.google_email;
-    $('memberPassword').hidden=!user.logged_in&&!user.must_change_password;
-    $('memberApplication').hidden=!user.logged_in||user.role!=='user';
-    if($('adminPasswordCard'))$('adminPasswordCard').hidden=false;
+    retryUntil=Date.now()+Number(status.reauth_retry_after||0)*1000;
+    needsProofRefresh=false;
+    if(setupPage){
+      $('memberSetupCard').hidden=status.totp_enabled;
+      if(!status.totp_enabled)say('setupGuide');
+    }else{
+      $('memberGoogleStatus').textContent=status.google_email||t(features.google?'unbound':'unconfigured');
+      $('memberGoogleStart').textContent=t(status.google_email?'replaceGoogle':'bindGoogle');
+      $('memberGoogleUnlink').hidden=!status.google_email;
+      $('memberGoogleNext').textContent=t(features.google?'googleGuide':'unconfigured');
+      $('memberSetup').hidden=status.totp_enabled;
+      $('memberDisable').hidden=!status.totp_enabled||status.totp_required;
+      $('memberCodes').hidden=!status.totp_enabled;
+      $('memberFactorStatus').textContent=t(status.totp_enabled?'enabled':'disabled')+(status.totp_required?' '+t('mandatory2fa'):'');
+      $('memberPassword').hidden=!user.logged_in&&!user.must_change_password;
+    }
+    renderProof();
   }
-  const run=(fn,success,pending='processing')=>async event=>{
-    event?.preventDefault();if(busy)return;
-    const target=event?.currentTarget;
-    const button=event?.submitter||(target?.tagName==='FORM'?target.querySelector('button[type=submit],button'):target);
-    if(cooldowns.has(button)||button?.disabled)return;
-    const message=messageFor(target),buttons=[...document.querySelectorAll('#memberSecurityArea button,#memberLogout')];
-    const disabled=buttons.map(el=>[el,el.disabled]);busy=true;
-    buttons.forEach(el=>el.disabled=true);target?.setAttribute('aria-busy','true');notify(message,t(pending));
-    try{const result=await fn(event);if(result===false)notify(message,'');else if(success){notify(message,t(success),'success');if(message?.closest('[hidden]'))say(t(success));}}
-    catch(error){
-      notify(message,error.message||t('unavailable'),'error');
-      if(error.status===429){const seconds=error.retryAfter||900;cooldowns.set(button,{until:Date.now()+seconds*1000,message});if(target?.id==='memberReauthForm')proofRetryUntil=Date.now()+seconds*1000;}
-    }finally{busy=false;target?.removeAttribute('aria-busy');disabled.forEach(([el,value])=>el.disabled=value);tick();}
-  };
-  const codes=payload=>{if(payload.recovery_codes){$('memberRecovery').textContent=payload.recovery_codes.join('\n');$('memberRecoveryPanel').hidden=false;}};
-  $('memberReauthForm')?.addEventListener('submit',run(async e=>{
-    const form=e.currentTarget;try{await api('/auth/reauth',{password:form.elements.password.value,code:form.elements.code.value});await refresh();}finally{form.reset();}
+  function codes(payload){
+    if(payload.recovery_codes){$('memberRecovery').textContent=payload.recovery_codes.join('\n');$('memberRecoveryPanel').hidden=false;$('memberRecoveryPanel').scrollIntoView({block:'center'});}
+  }
+  let resolveDialog=null;
+  function confirmAction(key,warning){
+    const dialog=$('memberConfirmDialog'), form=$('memberConfirmForm');
+    form.reset();$('memberDialogTitle').textContent=t(key);$('memberDialogMessage').textContent=t(warning);
+    $('memberDialogFactor').hidden=!status.totp_enabled;form.elements.code.required=status.totp_enabled;
+    // Reset a previous recovery mode before opening again.
+    form.elements.code.dataset.recovery='true';factorMode(form,$('memberDialogRecovery'));
+    dialog.showModal();
+    return new Promise(resolve=>{resolveDialog=resolve;});
+  }
+  const closeDialog=value=>{if(!resolveDialog)return;const resolve=resolveDialog;resolveDialog=null;$('memberConfirmDialog').close();$('memberConfirmForm').reset();resolve(value);};
+  $('memberConfirmForm')?.addEventListener('submit',e=>{e.preventDefault();closeDialog({code:e.currentTarget.elements.code.value.trim()});});
+  $('memberDialogCancel')?.addEventListener('click',()=>closeDialog(null));
+  $('memberConfirmDialog')?.addEventListener('cancel',e=>{e.preventDefault();closeDialog(null);});
+  $('memberDialogRecovery')?.addEventListener('click',e=>factorMode($('memberConfirmForm'),e.currentTarget));
+  $('memberReauthForm').addEventListener('submit',run(async e=>{
+    const form=e.currentTarget;
+    try{await post('/auth/reauth',{password:form.elements.password.value});await refresh();}
+    catch(error){if(error.status===429)retryUntil=Date.now()+(error.retryAfter||900)*1000;throw error;}
+    finally{form.reset();}
   },'reauthDone'));
-  $('memberVerifyForm')?.addEventListener('submit',run(async e=>{const form=e.currentTarget;try{await api('/auth/2fa/verify',{code:form.elements.code.value});await refresh();}finally{form.reset();}},'loginComplete'));
   $('memberSetup')?.addEventListener('click',run(async()=>{
-    const payload=await api('/auth/2fa/setup');$('memberQr').src=payload.qr;$('memberManualKey').textContent=payload.manual_key;$('memberSetupPanel').hidden=false;
-  },'scan'));
+    if(!setupPage){location.assign(root+'two-factor/');return;}
+    const payload=await post('/auth/2fa/setup');$('memberQr').src=payload.qr;$('memberManualKey').textContent=payload.manual_key;$('memberSetupPanel').hidden=false;
+  },setupPage?'scan':null));
   $('memberEnableForm')?.addEventListener('submit',run(async e=>{
-    const payload=await api('/auth/2fa/enable',{code:e.currentTarget.elements.code.value});clearSecrets();codes(payload);await refresh();
+    try{const payload=await post('/auth/2fa/enable',{code:e.currentTarget.elements.code.value.trim()});clearSecrets();await refresh();codes(payload);say('factorEnabled');}
+    finally{e.currentTarget.reset();}
   },'factorEnabled'));
-  $('memberCodes')?.addEventListener('click',run(async()=>codes(await api('/auth/2fa/recovery-codes')),'saveCodes'));
-  $('memberHideCodes')?.addEventListener('click',clearSecrets);
-  $('memberDisable')?.addEventListener('click',run(async()=>{if(!confirm(t('disableConfirm')))return false;await api('/auth/2fa/disable');clearSecrets();await refresh();},'factorDisabled'));
-  $('memberGoogleStart')?.addEventListener('click',run(async()=>{
-    const payload=await api('/auth/google/start');const url=new URL(payload.url);
+  $('memberCancelSetup')?.addEventListener('click',run(async()=>{
+    await post('/auth/2fa/cancel');clearSecrets();if(!user.logged_in)await auth.logout();location.assign(root+(user.logged_in?'account/':'login/'));
+  }));
+  // Confirmation dialogs are opened before running the request so their controls remain usable.
+  const guarded=(id,title,warning,operation,success)=>{
+    $(id)?.addEventListener('click',async e=>{
+      if(e.currentTarget.disabled)return;
+      const target=e.currentTarget,payload=await confirmAction(title,warning);if(!payload)return;
+      await run(()=>operation(payload),success)({currentTarget:target,preventDefault(){}});
+    });
+  };
+  guarded('memberGoogleStart','google','googleConsent',async payload=>{
+    const result=await post('/auth/google/start',payload);const url=new URL(result.url);
     if(url.origin!=='https://accounts.google.com')throw new Error(t('unavailable'));
     clearSecrets();location.assign(url.href);
-  },'googleRedirect','googleRedirect'));
-  $('memberGoogleUnlink')?.addEventListener('click',run(async()=>{if(!confirm(t('unlinkConfirm')))return false;await api('/auth/google/unlink');await refresh();},'googleUnlinked'));
-  $('memberApply')?.addEventListener('click',run(async()=>{await api('/member/admin-application');},'applied'));
-  $('memberLogout')?.addEventListener('click',run(async()=>{await auth.logout();clearSecrets();await refresh();}));
-  window.addEventListener('pagehide',clearSecrets);
-  auth.ready().then(async()=>{
-    await window.RangerbookI18n?.ready;
-    features=await auth.api('/auth/features');
-    await refresh();
+  });
+  guarded('memberGoogleUnlink','unbindGoogle','unlinkConfirm',async payload=>{await post('/auth/google/unlink',payload);await refresh();},'googleUnlinked');
+  guarded('memberDisable','disable','disableConfirm',async payload=>{
+    await post('/auth/2fa/disable',payload);clearSecrets();await refresh();say('disabledLogin',true);
+  });
+  guarded('memberCodes','regenerate','codesConfirm',async payload=>codes(await post('/auth/2fa/recovery-codes',payload)),'saveCodes');
+  $('memberPasswordForm')?.addEventListener('submit',run(async e=>{
+    const form=e.currentTarget;
+    if(form.elements.new_password.value!==form.elements.confirm.value)throw new Error(t('passwordMismatch'));
+    try{await post('/auth/change-password',{current_password:form.elements.current_password.value,new_password:form.elements.new_password.value});proofUntil=0;await refresh();}
+    finally{form.reset();}
+  },'passwordChanged'));
+  $('memberCopyCodes')?.addEventListener('click',run(async()=>{await navigator.clipboard.writeText($('memberRecovery').textContent);},'copied'));
+  $('memberDownloadCodes')?.addEventListener('click',()=>{
+    const url=URL.createObjectURL(new Blob([$ ('memberRecovery').textContent+'\n'],{type:'text/plain'}));
+    const a=document.createElement('a');a.href=url;a.download='rangerbook-recovery-codes.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+  $('memberHideCodes')?.addEventListener('click',clearSecrets);
+  window.addEventListener('member:idle',renderProof);
+  window.addEventListener('member:proof-expired',()=>{proofUntil=0;renderProof();});
+  setInterval(renderProof,1000);
+  window.addEventListener('pagehide',()=>{clearSecrets();proofUntil=0;needsProofRefresh=true;});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){needsProofRefresh=true;renderProof();}
+    else refresh().catch(error=>{notify($('memberState'),error.message,'error');needsProofRefresh=true;renderProof();});
+  });
+  window.addEventListener('pageshow',e=>{if(e.persisted)refresh().catch(()=>{proofUntil=0;renderProof();});});
+  (async()=>{
+    await auth.ready();await window.RangerbookI18n?.ready;
+    features=await auth.api('/auth/features');await refresh();
     if(location.hash.startsWith('#google=')){
-      const linked=location.hash==='#google=ok'&&Boolean(status.google_email);
-      const message=t(linked?'bound':'googleFailed');say(message,!linked);notify(messageFor($('memberGoogleStart')),message,linked?'success':'error');
-      $('memberGoogle')?.scrollIntoView({block:'center'});history.replaceState(null,'',location.pathname);
+      const linked=location.hash==='#google=ok'&&Boolean(status.google_email);say(linked?'bound':'googleFailed',!linked);
+      notify(message($('memberGoogleStart')),t(linked?'bound':'googleFailed'),linked?'success':'error');history.replaceState(null,'',location.pathname);
     }
-  }).catch(error=>say(error.message,true));
+  })().catch(error=>notify($('memberState'),error.message,'error'));
 })();
