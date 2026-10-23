@@ -121,6 +121,39 @@ def test_stage_launcher_rejects_production_paths_and_unresolved_secrets():
         validate(env)
 
 
+@pytest.mark.parametrize('fails', [False, True])
+def test_stage_mail_budget_survives_repeated_batches(tmp_path, fails):
+    import json
+    from botocore.exceptions import EndpointConnectionError
+    from membership.mail_worker import deliver_batch
+    database = tmp_path / 'budget.db'
+    legacy(database)
+    cipher = Fernet(Fernet.generate_key())
+    with sqlite3.connect(database) as con:
+        migrate(con)
+        for index in range(7):
+            payload = cipher.encrypt(json.dumps({'email': 'approved@example.test', 'kind': 'security'}).encode()).decode()
+            con.execute('INSERT INTO member_outbox(id,payload,next_attempt) VALUES (?,?,0)', (str(index), payload))
+    def connect():
+        con = sqlite3.connect(database)
+        con.row_factory = sqlite3.Row
+        return con
+    class SES:
+        calls = 0
+        def send_email(self, **kwargs):
+            self.calls += 1
+            if fails: raise EndpointConnectionError(endpoint_url='https://example.test')
+            return {'MessageId': 'synthetic'}
+    ses = SES()
+    for _ in range(3):
+        deliver_batch(connect, cipher, ses, 'synthetic', limit=3,
+            recipient_allowlist={'approved@example.test'}, delivery_budget=5)
+    assert ses.calls == 5
+    with connect() as con:
+        assert con.execute('SELECT used FROM member_stage_mail_budget').fetchone()[0] == 5
+        assert con.execute("SELECT COUNT(*) FROM member_outbox WHERE status='sent'").fetchone()[0] == (0 if fails else 5)
+
+
 @pytest.mark.parametrize('bad', [
     'SES successfully validated the SNS destination',
     '[]',

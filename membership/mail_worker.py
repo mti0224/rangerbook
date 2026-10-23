@@ -17,7 +17,7 @@ SUBJECTS = {'verify': 'Verify your Rangerbook email', 'reset': 'Reset your Range
 
 
 def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmycat.com', limit=10,
-                  recipient_allowlist=None):
+                  recipient_allowlist=None, delivery_budget=None):
     """Leases make overlapping workers safe. SES has no send idempotency token;
     a crash after send may duplicate a message, but links remain single use.
     """
@@ -45,6 +45,18 @@ def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmy
             text = ('This link expires in 15 minutes and can be used once.\n\n' + payload['frontend'] +
                     '/account-action/#' + kind + '=' + payload['token'] +
                     '\n\nIf you did not request this, ignore this email.')
+        if delivery_budget is not None:
+            # Count attempts before calling SES, including ambiguous timeouts. This
+            # durable, atomic ceiling survives restarts and concurrent workers.
+            with connect() as con:
+                con.execute('BEGIN IMMEDIATE')
+                con.execute('CREATE TABLE IF NOT EXISTS member_stage_mail_budget (id INTEGER PRIMARY KEY CHECK(id=1), used INTEGER NOT NULL)')
+                con.execute('INSERT OR IGNORE INTO member_stage_mail_budget VALUES (1,0)')
+                reserved = con.execute('UPDATE member_stage_mail_budget SET used=used+1 WHERE id=1 AND used<? RETURNING used', (delivery_budget,)).fetchone()
+                if not reserved:
+                    con.execute('UPDATE member_outbox SET lease_until=0 WHERE id=?', (row['id'],))
+            if not reserved:
+                break
         try:
             response = ses.send_email(FromEmailAddress=sender, Destination={'ToAddresses': [payload['email']]},
                 Content={'Simple': {'Subject': {'Data': SUBJECTS[kind], 'Charset': 'UTF-8'},
@@ -112,13 +124,15 @@ def main():
     recipients = {value.strip().lower() for value in os.environ.get('RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST', '').split(',') if value.strip()} if restricted else None
     if restricted and not recipients:
         raise RuntimeError('Test mail requires an explicit recipient allowlist')
-    config = Config(retries={'total_max_attempts': 2, 'mode': 'standard'}, connect_timeout=5, read_timeout=10)
+    stage = os.environ.get('RANGERBOOK_STAGE') == '1'
+    # SDK retries would hide extra sends from the explicit test-mail budget.
+    config = Config(retries={'total_max_attempts': 1 if stage else 2, 'mode': 'standard'}, connect_timeout=5, read_timeout=10)
     session = boto3.Session(region_name='ap-south-1')  # Instance role; never static access keys.
     if os.environ.get('RANGERBOOK_FEEDBACK_QUEUE'):
         consume_feedback(connect, session.client('sqs', config=config), os.environ['RANGERBOOK_FEEDBACK_QUEUE'], os.environ['RANGERBOOK_FEEDBACK_TOPIC'])
     result = deliver_batch(connect, Fernet(os.environ['RANGERBOOK_MEMBER_KEY'].encode()),
         session.client('sesv2', config=config), os.environ['RANGERBOOK_SES_CONFIGURATION_SET'],
-        recipient_allowlist=recipients)
+        recipient_allowlist=recipients, delivery_budget=5 if stage else None)
     with connect() as con:
         con.execute('DELETE FROM member_tokens WHERE expires<?', (time.time(),))
         con.execute('DELETE FROM member_totp_setup WHERE expires<?', (time.time(),))

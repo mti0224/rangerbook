@@ -1,0 +1,9 @@
+[Unit]
+Description=Temporary membership acceptance mail polling
+
+[Timer]
+OnActiveSec=15
+OnUnitActiveSec=15
+AccuracySec=2
+Unit=rangerbook-membership-test-mail.service
+# No [Install]. Explicitly started for the owner's time-limited acceptance only.

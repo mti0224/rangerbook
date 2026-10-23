@@ -295,6 +295,8 @@
 
   async function loadSuperAdminData() {
     if (!auth.isSuperAdmin()) return;
+    await window.RangerbookI18n?.ready;
+    if (!auth.isSuperAdmin()) return;
     applicationsList.innerHTML = '<div class="admin-empty">載入中…</div>';
     usersList.innerHTML = '<div class="admin-empty">載入中…</div>';
 

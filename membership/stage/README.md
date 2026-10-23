@@ -1,8 +1,12 @@
 # 第 5 步：真人驗收準備
 
-本目錄是測試設定模板，**不是已上線的服務**。第 4 步的合成資料庫保留，真人驗收使用全新的 `acceptance/`；正式帳號、Session、Google 綁定與遊戲資料不可複製。既有服務不停止、不重新載入。
+本目錄包含隔離測試部署設定。第 4 步的合成資料庫保留，真人驗收使用全新的 `acceptance/`；正式帳號、Session、Google 綁定與遊戲資料不可複製。正式認證服務不停止、不重新載入；新增獨立測試 vhost 時，Nginx 經語法驗證後 graceful reload。
 
 2026-10-23 已完成準備驗證：本機後端 47 項測試通過；產生 47 頁獨立 artifact；4 個會員／登入頁面的實際瀏覽器測試確認正式認證 API 請求、GA 請求與 Service Worker 註冊均為 0。6 份候選設定已寫入 EC2 的 `acceptance-preparation/`，Nginx 以臨時測試憑證及獨立 config 通過 `nginx -t`，未修改或重新載入既有 config。第 4 步 commit `63065388` 的 9 個 CI 工作流程均已通過；本次新增 commit 的 CI 需另外確認。
+
+後續實際進度：站長已完成 DNS／provider console 設定並同意僅寄送到指定信箱、最多 5 封。測試 HTTPS 憑證取得，入口加上 Basic Auth，未登入回傳 401；正式站及正式 API 健康檢查仍為 200。三種角色的合成帳號、受限備份與 migration 已完成。Google／Turnstile 機密文件各只有一個字串欄位，沒有必要的鍵值對，API 已安全停止，測試 mail timer 未啟動，寄送數仍為 0。機密內容沒有回傳給維護代理。需由站長在 Secrets Manager 補齊 `client_id`／`client_secret` 與 `site_key`／`secret_key` 後重新啟動驗證。
+
+新增郵件總額度測試後，核心與私有整合測試共 49 項通過。另修正管理員列表在 i18n ready 之前渲染的競態；四語系實際瀏覽器回歸通過。`f89835be` 的 CI 曾在此競態失敗，不能沿用舊版的 9/9 結果；修正後 commit 需重新檢查。
 
 ## 站長需要完成
 
@@ -16,12 +20,12 @@
 - `node membership/stage/build-site.mjs /fresh/path/outside/repository`，只從 Pages allowlist 產生獨立 artifact；47 頁注入測試設定、替換正式 API 位址、停用 GA 與 PWA 安裝。
 - 上傳 artifact 至獨立 web root；私有 release/config/SQLite 不放入 web root。
 - DNS 確認後以獨立 ACME webroot 取得測試網域憑證；不可使用會停掉既有 Nginx 的 standalone 模式。準備獨立 vhost，先 `nginx -t`，核准測試入口變更後才 graceful reload。
-- 建立 HTTP Basic Auth 外層保護；測試入口密碼由站長透過互動式 SSM session 設定，不放入訊息、URL、Git 或命令參數。所有測試路由（含 callback）均受保護。
-- 複製 `runtime.env.in` 至受限目錄；產生獨立 Fernet key。環境檔模式 0600、目錄 0700。以 dynamic references 與 `asm-exec` 載入機密；**目前主機未安裝 asm-exec，需先完成受信任安裝與執行時載入驗證，不可直接以模板啟動**。
+- 建立 HTTP Basic Auth 外層保護；`bootstrap.py` 在主機產生隨機入口及測試帳號密碼，僅寫入 root-owned 0600 的 `acceptance/operator-credentials.json`，由站長透過互動式 SSM session 查看，不放入訊息、URL、Git 或命令參數。所有測試路由（含 callback）均受保護。
+- 複製 `runtime.env.in` 至受限目錄；產生獨立 Fernet key。環境檔模式 0600、目錄 0700。以 dynamic references 與 `asm-exec` 載入機密。已安裝 AWS Workload Credentials Provider 3.1.1（官方 Linux x86-64 binary，SHA-256 `471c1978f8bf63a0aeefb425e974ac3c816c7e04feb302236512eea375160de4`）及官方 `aws/agent-toolkit-for-aws` commit `9ab50636d12510dc351ff02fd7966efa4dba4341` 的 wrapper，僅放在隔離目錄。Provider 限 loopback、使用隨機 SSRF token 與既有 instance role；CloudTrail 已確認讀取權限成功。用秘密名稱及固定孟買區域解析，IAM 仍限原本兩個 exact ARN。
 - `launch.py` 拒絕正式來源、Cookie、資料路徑、未解析機密，或沒有白名單的測試寄信設定。預設 game core 不存在，真人遊戲綁定須另行準備受控來源；不可默默使用正式資料路徑。
 - 初始化全新 synthetic user/admin/super_admin，站長透過受限操作設定密碼；備份再 migration，檢查完整性。不可使用正式管理員密碼作測試。
 - 使用獨立 systemd unit/venv/loopback port 18765，正式私人資料不可存取；不設定開機啟動。確認第三方功能與 feature flags 後，才提供 HTTPS 入口。
-- 寄信採人工觸發的有界 batch，不啟用 timer；每次確認 outbox 狀態及總數，最多 5 封。`RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST` 在 worker 發送前強制限制實際收件者，空白時停止；缺省不影響正式 worker。
+- 在站長明確核准後，測試專用 timer 可於 24 小時驗收窗每 15 秒檢查待寄郵件，以便真人註冊立即收到信。不得啟用正式 mail timer。`RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST` 強制限制實際收件者，空白時停止；`member_stage_mail_budget` 在 SES 呼叫前以交易保留額度，跨 batch／重啟／並行總計最多 5 次發送嘗試，失敗與結果不明的 timeout 也消耗額度。測試模式停用 SDK 自動重送；`mail_ready.py` 在無待寄信、超過期限或用盡額度時跳過。沒有 timer 開機自動啟用，額度不可自動重設。
 - 正式 worker 目前未啟動。消費共用 feedback queue 前先確認沒有其他 consumer；不可由測試 consumer 刪除正式寄送事件。若並行寄信已開始，先分離 queue/subscription。
 
 ## 真人驗收順序與證據

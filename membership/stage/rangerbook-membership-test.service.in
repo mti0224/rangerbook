@@ -1,7 +1,8 @@
 # Preparation only: do not install/start until the runbook prerequisites pass.
 [Unit]
 Description=Rangerbook isolated membership acceptance
-After=network-online.target
+After=network-online.target rangerbook-membership-test-secrets.service
+Requires=rangerbook-membership-test-secrets.service
 
 [Service]
 Type=simple
@@ -11,7 +12,8 @@ WorkingDirectory=/home/ubuntu/rangerbook-member-stage-20261023/release
 EnvironmentFile=/home/ubuntu/rangerbook-member-stage-20261023/acceptance/runtime.env
 EnvironmentFile=/home/ubuntu/rangerbook-member-stage-20261023/acceptance/key.env
 Environment=AWS_REGION=ap-south-1
-ExecStart=/usr/local/bin/asm-exec -- /home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.stage.launch
+ExecStartPre=/home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.stage.wait_provider
+ExecStart=/home/ubuntu/rangerbook-member-stage-20261023/bin/asm-exec -- /home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.stage.launch
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true
