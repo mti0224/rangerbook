@@ -30,6 +30,8 @@
 
 另在個人隊伍真人測試發現測試帳號建立工具產生 `stage-` ID，既有私人隊伍儲存只接受 `usr_` ID；舊匯入測試替換 private_path，未覆蓋真實格式檢查。建立工具已改用標準格式。既有已發出的測試帳號不改 ID、綁定、Session 或 2FA，而由受限 compatibility helper 支援；只有 stage 旗標及精確 acceptance DB／隊伍目錄符合時才啟用。正式驗證規則不變，路徑穿越與其他格式仍拒絕。匯入測試已移除路徑替身，直接驗證實際檔案權限、讀取、跨帳號不可見及解除刪除，兩種 ID 都通過。
 
+個人隊伍完成匯入後，測試站的全域 X-Frame-Options: DENY 阻擋了內嵌檢視頁。已僅為 /pvp/search/ 及 /pvp/search/index.html 設定 SAMEORIGIN 與 frame-ancestors self，並重述 Nginx add_header 的禁止快取等繼承標頭；其他頁面／API 維持 DENY。Nginx -t、graceful reload 與六個 HTTPS 網址的標頭檢查通過。新增使用實際 snippet 標頭的瀏覽器回歸：手機／桌面載入真正隊伍 iframe、七種隊伍切換與分析呈現均通過，外來源及其他受保護頁面嵌入仍遭拒絕。後端已有一筆成功匯入，真人需重整確認畫面後再完成解除綁定回歸。
+
 ## 3. 前端與權限
 
 新增 `/personal-teams/`、`/account/`、`/account-action/`，沿用既有 CSS、i18n、隊伍檢視與分析模型。管理頁保留登入、註冊及真正的管理工作區；個人隊伍與密碼舊分頁移除。
@@ -83,7 +85,8 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 | 隊伍模型與公開網站 | 既有分析、版型、側欄、PWA、公開邊界回歸通過；沒有重寫分析公式 |
 | 候選 a598d623 CI | 9/9 成功 |
 | 真人帳號安全 | 見第 1 節，通過 |
-| 真實遊戲連線預檢 | 一筆唯讀請求成功；一般會員搜尋及安全候選欄位預檢通過 |
+| 真實遊戲連線及匯入 | 唯讀連線、一般會員搜尋及安全候選欄位通過；真人位置交換綁定及後端一筆匯入成功，修正 iframe 後畫面待站長確認 |
+| 內嵌隊伍安全回歸 | 手機／桌面真 iframe、七種隊伍切換及分析顯示；外來源及其他頁面嵌入被拒絕；測試站六個 HTTPS 標頭檢查通過 |
 
 真人未涵蓋 Google 解除／重複身分的外部授權、重設連結再次兌換，以及真實 Bounce／Complaint；這些後端拒絕分支已有隔離測試，報告不把替身測試寫成真人驗收。iOS／Android 實機 PWA 及 Gandi 收信仍待操作者確認。
 
@@ -154,6 +157,7 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 - `membership/stage/runtime.env.in`
 - `membership/stage/secrets.toml`
 - `membership/stage/storage_compat.py`
+- `membership/stage/viewer-headers.conf.in`
 - `membership/stage/wait_provider.py`
 - `personal-teams/index.html`
 - `pwa-data.json`

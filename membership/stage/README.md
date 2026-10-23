@@ -10,6 +10,8 @@
 
 已修正測試帳號 ID 與私人隊伍儲存不相容：新建立帳號使用標準 usr_ 格式；既有 stage- ID 僅在精確隔離路徑內相容，保留綁定、Session 與 2FA，正式環境規則不放寬。匯入測試不再替換 private_path，實際私人檔案讀寫、權限、跨帳號隔離與解除刪除均驗證。最新本機後端 57 項通過，修正版本的 CI 另以 PR head 確認。
 
+個人隊伍匯入後的灰色 iframe 已確認為測試 vhost 全域 X-Frame-Options: DENY 所致。隊伍檢視的兩個網址改用獨立 viewer-headers.conf.in，僅允許同來源嵌入，並保留 no-store、no-referrer、noindex 及 nosniff；其他頁面與 API 維持 DENY。安裝 nginx.conf.in 前，須將此 snippet 放到 /etc/nginx/snippets/rangerbook-membership-test-viewer.conf。Nginx 語法檢查與實際 HTTPS 標頭通過；瀏覽器已測手機／桌面實際 iframe、七種隊伍切換及分析顯示，外來源與其他頁面嵌入均遭拒絕。原匯入紀錄保留，郵件仍 4/5。
+
 ## 測試入口設定（已由站長完成）
 
 1. 在管理 `warmycat.com` 的 DNS 平台新增 A 記錄：名稱 `rangerbook-test`，值 `13.206.135.210`，TTL 300。先使用 DNS only。不改既有記錄、MX 或 SPF。AWS Route 53 目前沒有此網域的 hosted zone。
