@@ -373,9 +373,20 @@ def test_email_worker_retry_and_suppression(env):
         assert row[0]==1 and row[1]>time.time()
 
 
-def test_full_own_binding_swap_import_unbind(env,monkeypatch,tmp_path):
+@pytest.mark.parametrize('legacy_stage_ids',[False,True])
+def test_full_own_binding_swap_import_unbind(env,monkeypatch,tmp_path,legacy_stage_ids):
     h,m,c=env
     import game_binding as gb
+    prefix='stage-' if legacy_stage_ids else 'usr_'
+    ids={who:prefix+who*24 for who in ['a','b']}
+    with h.db() as con:
+        for who,uid in ids.items():con.execute('UPDATE users SET id=? WHERE id=?',(uid,who))
+    if legacy_stage_ids:
+        from membership.stage import storage_compat
+        monkeypatch.setenv('RANGERBOOK_STAGE','1')
+        monkeypatch.setenv('RANGERBOOK_PRIVATE_TEAM_DIR',str(gb.PRIVATE_DIR))
+        monkeypatch.setattr(storage_compat,'ROOT',tmp_path)
+        assert storage_compat.configure(gb)
     login(c)
     pq=sys.modules['player_query']
     pq.search_players=lambda q,limit=20:{'items':[{'uid':'game-a','name':'<script>fixture</script>','guildName':'Synthetic'}]}
@@ -386,7 +397,6 @@ def test_full_own_binding_swap_import_unbind(env,monkeypatch,tmp_path):
       'team1':{'1':[{'slot':0,'invenId':1,'teamNo':'1','unitCode':'u-test-a'}, {'slot':1,'invenId':2,'teamNo':'1','unitCode':'u-test-b'}]},
       'pvpteam':[{'unitCode':'u-test-a'}], 'guildwar':[{'unitCode':'u-test-b'}]}}
     monkeypatch.setattr(gb,'official_player',lambda uid:raw)
-    monkeypatch.setattr(gb,'private_path',lambda uid:tmp_path / (uid+'.json'))
     candidate=c.get('/member/game-players/search?q=fixture').json()['items'][0]
     # Candidate IDs are account-bound, even when a second user knows the token.
     login(c,'b')
@@ -400,9 +410,20 @@ def test_full_own_binding_swap_import_unbind(env,monkeypatch,tmp_path):
     assert c.post('/member/game-binding/verify',json={'challengeId':challenge['challengeId']}).json()['verified'] is True
     response=c.post('/member/personal-teams/import');assert response.status_code==200,response.text
     assert set(response.json()['teams'])=={'team1','team2','team3','team4','team5','pvpteam','guildwar'}
+    private=gb.PRIVATE_DIR / ids['a'] / 'latest.json'
+    assert private.is_file() and private.stat().st_mode&0o777==0o600
+    assert private.parent.stat().st_mode&0o777==0o700
+    assert json.loads(private.read_text())['teams']==response.json()['teams']
     assert c.get('/member/personal-teams').json()['bound'] is True
+    login(c,'b')
+    assert c.get('/member/personal-teams').json()['bound'] is False
+    assert c.post('/member/game-binding/unbind',json={'password':PASS}).status_code==404
+    assert private.is_file()
+    login(c,'a')
+    assert c.get('/admin/personal-teams').json()['bound'] is True
     assert c.post('/member/game-binding/unbind',json={'password':PASS}).status_code==200
     assert c.get('/member/game-binding/status').json()['bound'] is False
+    assert not private.exists()
 
 
 def test_registration_resend_limits_and_duplicate_email(env,monkeypatch):

@@ -46,7 +46,7 @@ def main():
         for role in ['user', 'admin', 'super_admin']:
             account, password = 'stage-' + role.replace('_', '-'), secrets.token_urlsafe(24)
             con.execute('INSERT INTO users(id,account,password_hash,role,admin_application_status,created_at) VALUES (?,?,?,?,?,?)',
-                ('stage-' + secrets.token_hex(12), account, host.PASSWORD_HASHER.hash(password), role,
+                ('usr_' + secrets.token_hex(12), account, host.PASSWORD_HASHER.hash(password), role,
                  'rejected' if role == 'user' else 'approved', host.isoformat()))
             credentials['accounts'].append({'account': account, 'role': role, 'password': password})
     from membership.manage import migrate_database

@@ -1,6 +1,6 @@
 # 會員 V2：真人驗收與正式切換準備（2026-10-23）
 
-本報告更新初次交付及第 4 步演練後的實際狀態。程式候選版本為 `a598d623879a8feb888e20305992d61f9d985991`，該版本 9 個 GitHub Actions 工作流程全部通過。[PR #176](https://github.com/mti0224/rangerbook/pull/176) 維持 Draft。帳號安全主要真人驗收已通過；個人隊伍的完整真人流程及正式環境切換檢查尚待完成，不可因本報告而直接合併或部署。
+本報告更新初次交付及第 4 步演練後的實際狀態。先前程式候選 `a598d623879a8feb888e20305992d61f9d985991` 的 9 個 GitHub Actions 工作流程全部通過；後續測試 ID 相容修正的 CI 以 PR 最新 head 為準。[PR #176](https://github.com/mti0224/rangerbook/pull/176) 維持 Draft。帳號安全主要真人驗收已通過；個人隊伍的完整真人流程及正式環境切換檢查尚待完成，不可因本報告而直接合併或部署。
 
 正式服務未切換，正式會員資料庫、帳號、角色及私人隊伍未修改。GitHub Pages 在 main 收到 push 後會自動發布，**合併本 PR 本身就是前端發布動作**，須先完成後端切換驗證並取得站長核准。
 
@@ -27,6 +27,8 @@
 - 安全操作原本只在頁首顯示結果，操作區缺少反饋。新增各區處理中、成功、失敗及下一步訊息，防止重複送出。
 - 身分驗證成功後顯示五分鐘有效倒數並避免再次提交；限流依後端實際剩餘時間倒數，CORS 開放讀取 Retry-After。每 15 分鐘 5 次重新驗證的限制維持，沒有清空既有計數。
 - 修正管理員列表在 i18n ready 前渲染的競態；四語系回歸及 CI 通過。
+
+另在個人隊伍真人測試發現測試帳號建立工具產生 `stage-` ID，既有私人隊伍儲存只接受 `usr_` ID；舊匯入測試替換 private_path，未覆蓋真實格式檢查。建立工具已改用標準格式。既有已發出的測試帳號不改 ID、綁定、Session 或 2FA，而由受限 compatibility helper 支援；只有 stage 旗標及精確 acceptance DB／隊伍目錄符合時才啟用。正式驗證規則不變，路徑穿越與其他格式仍拒絕。匯入測試已移除路徑替身，直接驗證實際檔案權限、讀取、跨帳號不可見及解除刪除，兩種 ID 都通過。
 
 ## 3. 前端與權限
 
@@ -74,7 +76,7 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 
 | 範圍 | 實際結果 |
 | --- | --- |
-| 最新本機核心＋私有後端整合 | 51 passed，使用隔離資料庫與測試替身 |
+| 最新本機核心＋私有後端整合 | 57 passed，含實際私人檔案讀寫／刪除、帳號隔離及測試 ID 相容防護 |
 | 會員 UI | 四語系 × 深淺色 × 手機／桌面共 16 組通過，包含處理中、防重複、倒數及 Google 回呼結果 |
 | 管理員安全 UI | 四語系登入／密碼／登出回歸通過 |
 | 先前完整 EC2 ASGI 演練 | 10/10，含重複 Migration、備份與還原登入；見第 4 步報告 |
@@ -151,6 +153,7 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 - `membership/stage/rangerbook-membership-test.service.in`
 - `membership/stage/runtime.env.in`
 - `membership/stage/secrets.toml`
+- `membership/stage/storage_compat.py`
 - `membership/stage/wait_provider.py`
 - `personal-teams/index.html`
 - `pwa-data.json`

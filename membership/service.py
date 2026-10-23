@@ -287,6 +287,10 @@ class Membership:
                 ready = None
             if not ready:
                 raise RuntimeError('Run python -m membership.manage migrate with a verified backup first')
+        if os.environ.get('RANGERBOOK_STAGE') == '1':
+            import game_binding
+            from .stage.storage_compat import configure
+            configure(game_binding)
         app.dependency_overrides[h.require_user] = self.full
         old_paths = {'/auth/register', '/auth/login', '/auth/me'}
         app.router.routes[:] = [route for route in app.router.routes if getattr(route, 'path', '') not in old_paths]

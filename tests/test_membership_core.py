@@ -77,6 +77,50 @@ def test_stage_mail_without_allowlist_stops_before_aws(monkeypatch):
         main()
 
 
+def test_synthetic_storage_compat_is_disabled_outside_stage(monkeypatch,tmp_path):
+    import re
+    from types import SimpleNamespace
+    from membership.stage import storage_compat
+    monkeypatch.delenv('RANGERBOOK_STAGE',raising=False)
+    original=re.compile(r'^usr_[A-Za-z0-9_-]{12,64}$')
+    binding=SimpleNamespace(PRIVATE_DIR=tmp_path/'teams',PRIVATE_USER_ID=original)
+    assert storage_compat.configure(binding) is False
+    assert binding.PRIVATE_USER_ID is original
+    assert not binding.PRIVATE_USER_ID.fullmatch('stage-'+'a'*24)
+
+
+@pytest.mark.parametrize('wrong_path',['database','team_env','team_module'])
+def test_synthetic_storage_compat_rejects_other_roots(monkeypatch,tmp_path,wrong_path):
+    import re
+    from types import SimpleNamespace
+    from membership.stage import storage_compat
+    monkeypatch.setattr(storage_compat,'ROOT',tmp_path)
+    monkeypatch.setenv('RANGERBOOK_STAGE','1')
+    monkeypatch.setenv('RANGERBOOK_AUTH_DB',str(tmp_path/'auth.db'))
+    monkeypatch.setenv('RANGERBOOK_PRIVATE_TEAM_DIR',str(tmp_path/'teams'))
+    binding=SimpleNamespace(PRIVATE_DIR=tmp_path/'teams',PRIVATE_USER_ID=re.compile(r'^usr_.+$'))
+    if wrong_path=='database':monkeypatch.setenv('RANGERBOOK_AUTH_DB',str(tmp_path.parent/'other.db'))
+    if wrong_path=='team_env':monkeypatch.setenv('RANGERBOOK_PRIVATE_TEAM_DIR',str(tmp_path.parent/'teams'))
+    if wrong_path=='team_module':binding.PRIVATE_DIR=tmp_path.parent/'teams'
+    with pytest.raises(RuntimeError,match='isolated acceptance paths'):storage_compat.configure(binding)
+
+
+def test_synthetic_storage_compat_rejects_traversal_and_noncanonical_ids(monkeypatch,tmp_path):
+    import re
+    from types import SimpleNamespace
+    from membership.stage import storage_compat
+    monkeypatch.setattr(storage_compat,'ROOT',tmp_path)
+    monkeypatch.setenv('RANGERBOOK_STAGE','1')
+    monkeypatch.setenv('RANGERBOOK_AUTH_DB',str(tmp_path/'auth.db'))
+    monkeypatch.setenv('RANGERBOOK_PRIVATE_TEAM_DIR',str(tmp_path/'teams'))
+    binding=SimpleNamespace(PRIVATE_DIR=tmp_path/'teams',PRIVATE_USER_ID=re.compile(r'^usr_.+$'))
+    assert storage_compat.configure(binding)
+    assert binding.PRIVATE_USER_ID.fullmatch('stage-'+'a'*24)
+    assert binding.PRIVATE_USER_ID.fullmatch('usr_'+'a'*24)
+    for value in ['../outside','stage-../outside','stage-'+'a'*23,'stage-'+'g'*24,'usr_foo/bar','/tmp/outside']:
+        assert not binding.PRIVATE_USER_ID.fullmatch(value)
+
+
 def test_stage_mail_only_sends_to_approved_recipient(tmp_path):
     import json
     from membership.mail_worker import deliver_batch
