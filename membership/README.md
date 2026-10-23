@@ -68,7 +68,7 @@ Reference: [Cloudflare server validation](https://developers.cloudflare.com/turn
 
 ## SES, feedback and IAM preparation
 
-The inspected Mumbai SES identity is verified and production sending is enabled, with account suppression for BOUNCE and COMPLAINT. No Configuration Set was present. The instance profile has only AmazonSSMManagedInstanceCore and cannot send email.
+The Mumbai SES identity is verified and production sending is enabled, with account suppression for BOUNCE and COMPLAINT. On 2026-10-23 the dedicated Configuration Set and SNS/SQS feedback path were created. The owner-approved `RangerbookMembershipRuntimeV2` inline policy was added to `EC2-SSM-Role`, read back exactly and verified with 10/10 effective-principal simulations; SSM permissions remain intact. See [AWS permission review](aws/README.md). No real email has been sent by this work.
 
 Before enabling mail, an authorized operator must create a dedicated Configuration Set, a feedback SNS topic and SQS queue, and enable delivery/failure/bounce/complaint event destinations. Restrict the SQS queue policy to that exact SNS topic and account; do not expose a public webhook. Use SSE-SQS unless a separately reviewed KMS requirement exists. Set the queue URL, topic ARN and configuration set in the private environment. The worker validates the expected topic envelope, records suppressions and deletes processed queue messages. SES account-level suppression remains the additional sending safeguard.
 
@@ -90,9 +90,9 @@ The existing root-domain SPF and Gandi MX were inspected and left unchanged. Roo
 
 - Real Google client configuration and OAuth consent acceptance.
 - Real Turnstile keys and production-host browser acceptance.
-- Approved, scoped IAM policy; Configuration Set, feedback SNS/SQS and worker timer.
+- Worker timer activation after staged real-email and suppression acceptance. IAM, Configuration Set and the feedback SNS/SQS infrastructure are already provisioned.
 - Controlled SES/suppression feedback acceptance and Gandi mail regression.
-- Full staging run against the prepared release with private collector dependencies and safe synthetic game fixtures.
+- Real game-account and private-team end-to-end acceptance. The complete prepared private ASGI release has passed synthetic loopback TLS login/migration/restore tests on Mumbai; game calls remain blocked in that rehearsal.
 - Existing super administrator's supervised enrollment and operator recovery rehearsal.
 - Owner approval for production backup/migration, backend release, frontend merge and deployment.
 

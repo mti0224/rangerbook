@@ -66,3 +66,33 @@ def test_google_aliases():
 def test_feature_off_has_no_mutation(monkeypatch):
     monkeypatch.delenv('RANGERBOOK_MEMBERS_V2',raising=False)
     assert install(object()) is None
+
+
+@pytest.mark.parametrize('bad', [
+    'SES successfully validated the SNS destination',
+    '[]',
+    '{"eventType":"Complaint","complaint":{"complainedRecipients":[{}]}}',
+])
+def test_feedback_validation_messages_do_not_block_delivery(tmp_path, bad):
+    import json
+    from membership.mail_worker import consume_feedback
+    database = tmp_path / 'feedback.db'
+    legacy(database)
+    with sqlite3.connect(database) as con:
+        migrate(con)
+    class Queue:
+        deleted = []
+        def receive_message(self, **kwargs):
+            events = [bad, json.dumps({'eventType': 'Complaint', 'complaint': {
+                'complainedRecipients': [{'emailAddress': 'synthetic@example.test'}]}})]
+            return {'Messages': [{'ReceiptHandle': str(i), 'Body': json.dumps({
+                'Type': 'Notification', 'TopicArn': 'expected-topic', 'Message': event})}
+                for i, event in enumerate(events)]}
+        def delete_message(self, **kwargs):
+            self.deleted.append(kwargs['ReceiptHandle'])
+    queue = Queue()
+    consume_feedback(lambda: sqlite3.connect(database), queue, 'synthetic-queue', 'expected-topic')
+    assert queue.deleted == ['0', '1']
+    with sqlite3.connect(database) as con:
+        assert con.execute('SELECT email,reason FROM member_suppression').fetchall() == [('synthetic@example.test', 'Complaint')]
+        assert con.execute('SELECT event FROM member_audit ORDER BY id').fetchall() == [('ses_feedback_invalid',), ('ses_Complaint',)]

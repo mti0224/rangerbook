@@ -67,12 +67,24 @@ def consume_feedback(connect, sqs, queue_url, topic_arn):
     """
     response = sqs.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=10, WaitTimeSeconds=1)
     for message in response.get('Messages', []):
-        envelope = json.loads(message['Body'])
-        if envelope.get('Type') != 'Notification' or envelope.get('TopicArn') != topic_arn:
-            continue
-        event = json.loads(envelope['Message'])
-        kind = event.get('eventType', event.get('notificationType'))
-        entries = event.get('bounce', {}).get('bouncedRecipients', []) if kind == 'Bounce' else event.get('complaint', {}).get('complainedRecipients', []) if kind == 'Complaint' else []
+        # SES destination validation can publish plain-text SNS messages. A bad
+        # envelope must not abort every subsequent mail/feedback batch forever.
+        kind, entries = 'feedback_invalid', []
+        try:
+            envelope = json.loads(message['Body'])
+            if envelope.get('Type') != 'Notification' or envelope.get('TopicArn') != topic_arn:
+                raise ValueError('Unexpected notification source')
+            event = json.loads(envelope['Message'])
+            candidate = event.get('eventType', event.get('notificationType'))
+            if candidate not in {'Send', 'Delivery', 'Bounce', 'Complaint', 'Reject', 'Rendering Failure', 'DeliveryDelay'}:
+                raise ValueError('Unexpected event type')
+            key = 'bounce' if candidate == 'Bounce' else 'complaint' if candidate == 'Complaint' else None
+            entries = event.get(key, {}).get('bouncedRecipients' if key == 'bounce' else 'complainedRecipients', []) if key else []
+            if not isinstance(entries, list) or any(not isinstance(e, dict) or not isinstance(e.get('emailAddress'), str) or not 1 <= len(e['emailAddress']) <= 320 for e in entries):
+                raise ValueError('Invalid recipient shape')
+            kind = candidate
+        except (ValueError, TypeError, AttributeError, KeyError):
+            entries = []
         with connect() as con:
             for entry in entries:
                 con.execute('INSERT OR REPLACE INTO member_suppression VALUES (?,?)', (entry['emailAddress'].lower(), kind))

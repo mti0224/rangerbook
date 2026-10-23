@@ -1,0 +1,44 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "MembershipSender",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail"
+      ],
+      "Resource": [
+        "arn:aws:ses:ap-south-1:010421869571:identity/warmycat.com",
+        "arn:aws:ses:ap-south-1:010421869571:configuration-set/rangerbook-membership"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ses:FromAddress": "noreply@warmycat.com",
+          "aws:RequestedRegion": "ap-south-1"
+        }
+      }
+    },
+    {
+      "Sid": "MembershipFeedback",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:DeleteMessage",
+        "sqs:ReceiveMessage"
+      ],
+      "Resource": [
+        "arn:aws:sqs:ap-south-1:010421869571:rangerbook-membership-feedback"
+      ]
+    },
+    {
+      "Sid": "MembershipCredentials",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:ap-south-1:010421869571:secret:rangerbook/membership/google-oauth-i4jAOV",
+        "arn:aws:secretsmanager:ap-south-1:010421869571:secret:rangerbook/membership/turnstile-ZrI6VQ"
+      ]
+    }
+  ]
+}
