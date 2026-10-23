@@ -48,6 +48,8 @@
       const error = new Error(displayMessage);
       error.status = response.status;
       error.payload = payload;
+      const retryAfter = Number(response.headers.get("Retry-After"));
+      error.retryAfter = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.ceil(retryAfter) : 0;
       throw error;
     }
 

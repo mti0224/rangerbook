@@ -1545,5 +1545,89 @@
     "en": "Rangerbook account recovery",
     "jp": "Rangerbook アカウント復旧",
     "th": "กู้คืนบัญชี Rangerbook"
+  },
+  {
+    "key": "UI:member.processing",
+    "zh_TW": "處理中，請稍候…",
+    "en": "Processing. Please wait…",
+    "jp": "処理中です。しばらくお待ちください…",
+    "th": "กำลังดำเนินการ กรุณารอสักครู่…"
+  },
+  {
+    "key": "UI:member.reauthValid",
+    "zh_TW": "身分已驗證，有效時間剩餘 %s。請直接繼續安全操作，無須重複確認。",
+    "en": "Identity verified for another %s. Continue with your security action; no need to verify again.",
+    "jp": "本人確認済みです。有効時間は残り %s です。再確認せずに次の操作へ進んでください。",
+    "th": "ยืนยันตัวตนแล้ว เหลือเวลา %s ดำเนินการด้านความปลอดภัยต่อได้โดยไม่ต้องยืนยันซ้ำ"
+  },
+  {
+    "key": "UI:member.retryCountdown",
+    "zh_TW": "操作次數已達上限，請在 %s 後再試；目前尚未完成這次操作。",
+    "en": "Too many attempts. Try again in %s; this action has not been completed.",
+    "jp": "試行回数の上限に達しました。%s 後に再試行してください。この操作はまだ完了していません。",
+    "th": "ลองครบจำนวนที่กำหนดแล้ว กรุณาลองอีกครั้งใน %s การดำเนินการนี้ยังไม่เสร็จสมบูรณ์"
+  },
+  {
+    "key": "UI:member.retryReady",
+    "zh_TW": "現在可以重試，請確認輸入內容後操作一次。",
+    "en": "You can try again now. Check your entries, then submit once.",
+    "jp": "再試行できます。入力を確認して一度だけ送信してください。",
+    "th": "ลองใหม่ได้แล้ว กรุณาตรวจสอบข้อมูลแล้วส่งเพียงครั้งเดียว"
+  },
+  {
+    "key": "UI:member.reauthNext",
+    "zh_TW": "請先輸入目前密碼並按確認；成功後五分鐘內可進行 Google 綁定或 2FA 設定。",
+    "en": "Enter your current password and confirm. You can then link Google or manage 2FA for five minutes.",
+    "jp": "現在のパスワードを入力して確認してください。その後5分間、Google連携や2FA設定を行えます。",
+    "th": "ป้อนรหัสผ่านปัจจุบันและกดยืนยัน จากนั้นเชื่อมโยง Google หรือจัดการ 2FA ได้ภายใน 5 นาที"
+  },
+  {
+    "key": "UI:member.loginComplete",
+    "zh_TW": "兩步驟驗證成功，已完成登入。",
+    "en": "Two-step verification passed. You are signed in.",
+    "jp": "2段階認証に成功し、ログインが完了しました。",
+    "th": "ยืนยันสองขั้นตอนสำเร็จ เข้าสู่ระบบแล้ว"
+  },
+  {
+    "key": "UI:member.factorEnabled",
+    "zh_TW": "2FA 已成功啟用。請保存下方只顯示一次的恢復碼。",
+    "en": "2FA is now enabled. Save the recovery codes below; they are shown only once.",
+    "jp": "2FAを有効にしました。下の復旧コードは一度だけ表示されるため、保存してください。",
+    "th": "เปิดใช้ 2FA แล้ว กรุณาบันทึกรหัสกู้คืนด้านล่างซึ่งจะแสดงเพียงครั้งเดียว"
+  },
+  {
+    "key": "UI:member.factorDisabled",
+    "zh_TW": "2FA 已停用，所有裝置已登出。請重新登入後繼續。",
+    "en": "2FA is disabled and all devices are signed out. Sign in again to continue.",
+    "jp": "2FAを無効にし、すべての端末をログアウトしました。再ログインしてください。",
+    "th": "ปิดใช้ 2FA และออกจากระบบทุกอุปกรณ์แล้ว กรุณาเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.googleRedirect",
+    "zh_TW": "正在前往 Google 授權頁面。請選擇帳號並完成授權，返回本站後才會完成綁定。",
+    "en": "Opening Google authorization. Select an account and authorize; linking completes after you return here.",
+    "jp": "Googleの認証ページへ移動します。アカウントを選んで許可し、このサイトに戻ると連携が完了します。",
+    "th": "กำลังเปิดหน้าการอนุญาตของ Google เลือกบัญชีและอนุญาต การเชื่อมโยงจะเสร็จเมื่อกลับมายังเว็บไซต์นี้"
+  },
+  {
+    "key": "UI:member.googleUnlinked",
+    "zh_TW": "Google 帳號已解除綁定，此 Gmail 不再用於帳號救援。",
+    "en": "Google account unlinked. This Gmail is no longer available for account recovery.",
+    "jp": "Google連携を解除しました。このGmailはアカウント復旧に使用されません。",
+    "th": "ยกเลิกการเชื่อมโยง Google แล้ว Gmail นี้จะไม่ใช้กู้คืนบัญชีอีกต่อไป"
+  },
+  {
+    "key": "UI:member.googleReady",
+    "zh_TW": "身分已驗證。下一步：點擊「綁定／更換 Google 帳號」，並在 Google 完成授權。",
+    "en": "Identity verified. Next, select “Link / change Google account” and complete authorization with Google.",
+    "jp": "本人確認済みです。次に「Googleアカウントを連携／変更」を選び、Googleで許可してください。",
+    "th": "ยืนยันตัวตนแล้ว ขั้นต่อไป กดเชื่อมโยงหรือเปลี่ยนบัญชี Google แล้วอนุญาตผ่าน Google"
+  },
+  {
+    "key": "UI:member.googleNext",
+    "zh_TW": "下一步：先在「再次驗證身分」確認目前密碼，再點擊下方按鈕前往 Google 授權。",
+    "en": "Next, confirm your current password under “Verify identity again”, then use the button below to authorize with Google.",
+    "jp": "まず「本人確認」で現在のパスワードを確認し、下のボタンからGoogleで許可してください。",
+    "th": "ขั้นต่อไป ยืนยันรหัสผ่านปัจจุบันในส่วนยืนยันตัวตนอีกครั้ง แล้วกดปุ่มด้านล่างเพื่ออนุญาตผ่าน Google"
   }
 ]

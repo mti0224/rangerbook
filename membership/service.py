@@ -7,6 +7,7 @@ import hashlib
 import hmac
 import io
 import json
+import math
 import os
 import re
 import secrets
@@ -23,6 +24,7 @@ from cryptography.fernet import Fernet
 from fastapi import Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, ConfigDict, Field
+from starlette.middleware.cors import CORSMiddleware
 
 from .schema import migrate
 
@@ -147,7 +149,26 @@ class Membership:
         return {'logged_in': True, **self.h.public_user(user)}
 
     def rate(self, request, action, subject, **kw):
-        self.h.limit_auth(request, 'v2-' + action, str(subject), **kw)
+        try:
+            self.h.limit_auth(request, 'v2-' + action, str(subject), **kw)
+        except HTTPException as error:
+            if error.status_code != 429:
+                raise
+            wait = self.rate_wait(request, action, subject, **kw)
+            raise HTTPException(429, 'member.rateLimited', headers={'Retry-After': str(max(1, wait))}) from None
+
+    def rate_wait(self, request, action, subject, ip_limit=30, subject_limit=20, window=900):
+        """Report the existing limiter's remaining window without consuming attempts."""
+        now, wait = time.time(), 0
+        ip = request.client.host if request.client else 'unknown'
+        with self.h.db() as con:
+            for column, value, limit in [('ip_hash', digest(ip), ip_limit),
+                                          ('subject_hash', digest(str(subject).casefold()), subject_limit)]:
+                row = con.execute(f'SELECT created_at FROM auth_rate_events WHERE action=? AND {column}=? AND created_at>? ORDER BY created_at DESC LIMIT 1 OFFSET ?',
+                                  ('v2-' + action, value, now - window, limit - 1)).fetchone()
+                if row:
+                    wait = max(wait, math.ceil(row[0] + window - now))
+        return wait
 
     def password(self, user, password):
         try:
@@ -254,6 +275,11 @@ class Membership:
 
     def install(self):
         h, app = self.h, self.app
+        # Pages and the API use separate origins; browsers need explicit access
+        # to the cooldown header while existing CORS origin rules stay intact.
+        for layer in app.user_middleware:
+            if layer.cls is CORSMiddleware:
+                layer.kwargs['expose_headers'] = sorted(set(layer.kwargs.get('expose_headers', [])) | {'Retry-After'})
         with h.db() as con:
             try:
                 ready = con.execute('SELECT 1 FROM member_migrations WHERE version=2').fetchone()
@@ -307,12 +333,18 @@ class Membership:
         @app.post('/auth/reauth')
         def reauth(payload: PasswordProof, request: Request, user=Depends(raw)):
             self.reauth(request, user, payload)
-            return {'ok': True}
+            return {'ok': True, 'reauth_valid_for': 300}
 
         @app.get('/auth/security')
         def security(request: Request, user=Depends(raw)):
+            with h.db() as con:
+                session = con.execute('SELECT reauth_until FROM sessions WHERE token_hash=?', (self.session_id(request),)).fetchone()
+            if not session:
+                raise HTTPException(401, 'member.loginRequired')
             return {'totp_enabled': bool(user['totp_secret']), 'totp_required': user['role'] == 'super_admin',
-                    'google_email': user['recovery_email'] if self.state(request)['logged_in'] else None, 'email_verified': bool(user['email_verified'])}
+                    'google_email': user['recovery_email'] if self.state(request)['logged_in'] else None, 'email_verified': bool(user['email_verified']),
+                    'reauth_valid_for': max(0, int(session['reauth_until'] - time.time())),
+                    'reauth_retry_after': self.rate_wait(request, 'reauth', user['id'], subject_limit=5)}
 
         @app.post('/auth/2fa/verify')
         def verify(payload: Code, request: Request, user=Depends(raw)):

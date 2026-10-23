@@ -4,9 +4,28 @@
   let token=params.get('reset')||params.get('verify');params.delete('reset');params.delete('verify');
   const $=id=>document.getElementById(id),auth=window.RangerbookAuth;
   const t=key=>window.RangerbookI18n?.t('member.'+key,key)||key;
-  const show=value=>{$('memberActionStatus').textContent=value;};
+  const show=(value,error=false)=>{const el=$('memberActionStatus');el.textContent=value;el.className='admin-message '+(error?'error':'success');el.setAttribute('aria-live','polite');};
   const post=(path,body)=>auth.api(path,{method:'POST',body:JSON.stringify(body)});
-  const run=fn=>async e=>{e.preventDefault();const b=e.submitter||e.currentTarget;b.disabled=true;try{await fn(e);}catch(error){show(error.message);}finally{b.disabled=false;}};
+  let busy=false;
+  const cooldowns=new Map();
+  const run=fn=>async e=>{
+    e.preventDefault();const target=e.currentTarget,b=e.submitter||(target.tagName==='FORM'?target.querySelector('button'):target);
+    if(busy||b.disabled||cooldowns.has(b))return;
+    busy=true;b.disabled=true;target.setAttribute('aria-busy','true');show(t('processing'));
+    try{await fn(e);}catch(error){
+      show(error.message,true);
+      if(error.status===429)cooldowns.set(b,Date.now()+(error.retryAfter||900)*1000);
+      if(error.payload?.detail==='member.invalidLink'){
+        token=null;$('memberResetForm').reset();$('memberResetForm').hidden=true;$('memberVerifyEmail').hidden=true;
+        $('memberResendForm').hidden=kind!=='verify';$('memberForgotForm').hidden=kind==='verify';
+      }
+    }finally{busy=false;b.disabled=cooldowns.has(b);target.removeAttribute('aria-busy');}
+  };
+  setInterval(()=>{for(const [button,until] of cooldowns){
+    const seconds=Math.max(0,Math.ceil((until-Date.now())/1000));
+    if(seconds)show(window.RangerbookI18n.format('member.retryCountdown',[Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0')]),true);
+    else{cooldowns.delete(button);button.disabled=false;show(t('retryReady'));}
+  }},1000);
   // Inline bootstrap keeps the key only long enough to select the form.
   const kind=window.__RB_ACTION_KIND;delete window.__RB_ACTION_KIND;
   $('memberForgotForm').hidden=Boolean(token);

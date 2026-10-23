@@ -312,6 +312,44 @@ def test_google_state_nonce_signature_and_uniqueness(env,monkeypatch):
     assert c.get('/auth/security').json()['google_email'] is None
 
 
+def test_reauth_cooldown_reports_remaining_time_without_consuming_attempts(env):
+    h,m,c=env;login(c)
+    for _ in range(5):
+        assert c.post('/auth/reauth',json={'password':'wrong-password'}).status_code==401
+    with h.db() as con:
+        con.execute("UPDATE auth_rate_events SET created_at=? WHERE action='v2-reauth'", (time.time()-850,))
+    state=c.get('/auth/security').json()
+    assert state['reauth_valid_for']==0
+    assert 45<=state['reauth_retry_after']<=50
+    response=reauth(c)
+    assert response.status_code==429
+    assert response.json()['detail']=='member.rateLimited'
+    assert 'Retry-After' in response.headers['Access-Control-Expose-Headers']
+    assert 45<=int(response.headers['Retry-After'])<=50
+    with h.db() as con:
+        assert con.execute("SELECT count(*) FROM auth_rate_events WHERE action='v2-reauth'").fetchone()[0]==5
+    login(c,'b')
+    assert c.get('/auth/security').json()['reauth_retry_after']==0
+    login(c,'a')
+    with h.db() as con:
+        con.execute("UPDATE auth_rate_events SET created_at=created_at-60 WHERE action='v2-reauth'")
+    assert c.get('/auth/security').json()['reauth_retry_after']==0
+    assert reauth(c).status_code==200
+
+
+def test_reauth_validity_is_server_owned_and_expires(env):
+    h,m,c=env;login(c)
+    assert c.get('/auth/security').json()['reauth_valid_for']==0
+    assert reauth(c).json()['reauth_valid_for']==300
+    assert 295<=c.get('/auth/security').json()['reauth_valid_for']<=300
+    m.google_id='test-client';m.google_secret='test-secret';m.callback=ORIGIN+'/auth/google/callback'
+    assert c.post('/auth/google/start').status_code==200
+    with h.db() as con:
+        con.execute('UPDATE sessions SET reauth_until=?',(time.time()-1,))
+    assert c.get('/auth/security').json()['reauth_valid_for']==0
+    assert c.post('/auth/google/start').status_code==403
+
+
 def test_email_worker_retry_and_suppression(env):
     h,m,c=env
     with h.db() as con:m.issue(con,'a','reset','synthetic@example.test')

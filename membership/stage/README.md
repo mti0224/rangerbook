@@ -10,6 +10,8 @@
 
 真人註冊發現 mail worker 在處理 outbox 前，因為嘗試解析與寄信無關的 Google 機密而停止，SES 呼叫為 0。修正測試 mail unit，直接使用 EC2 instance role 與受限本機加密金鑰啟動 worker，不依賴 Google／Turnstile provider。`systemd-analyze verify` 與實際 oneshot 均成功，第一筆未過期驗證信已由 SES 接受，outbox 為 sent，持久化額度為 1/5；未重建帳號、延長原 token 或繞過驗證。相同 Email 的第二次註冊維持通用回應，不建立重複帳號。收件、連結驗證與 OAuth／TOTP 仍待操作者確認。
 
+後續站長已完成第二封驗證信的啟用流程，後端確認 Email 已驗證、一般會員已啟用並登入，郵件額度累計 2/5。稽核另記錄普通測試會員成功啟用及停用 TOTP；Google 尚未綁定。重複提交身分驗證觸發原有每 15 分鐘 5 次保護，發現原訊息只在頁首，操作區缺少回饋。新增四語系就近提示、處理中狀態、防重複提交、伺服器驗證有效倒數與限流倒數；API 以既有 Session 回傳剩餘時間，保留限額並開放瀏覽器讀取 Retry-After。新測試驗證等待期滿可重試、其他帳號不受此帳號限流影響、驗證過期後仍由後端拒絕安全操作。本機後端 51 項、會員頁四語系 × 深淺色 × 手機／桌面 16 組、四語系管理員安全回歸及 PWA contract 均通過。完整 Google 授權、強制最大管理員 TOTP、恢復碼與救援流程仍須真人驗收。
+
 ## 站長需要完成
 
 1. 在管理 `warmycat.com` 的 DNS 平台新增 A 記錄：名稱 `rangerbook-test`，值 `13.206.135.210`，TTL 300。先使用 DNS only。不改既有記錄、MX 或 SPF。AWS Route 53 目前沒有此網域的 hosted zone。

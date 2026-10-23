@@ -11,17 +11,23 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block'});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-admin',role:'admin',must_change_password:false};
-  let factor=false, email=null;const calls=[],errors=[],outbound=[];
+  let factor=false, email=null, reauthSeconds=0, reauthCooldown=0, rejectReauth=false, holdReauth=true, releaseReauth;
+  const calls=[],errors=[],outbound=[];
   await context.route('**/*',async route=>{
     const req=route.request(),url=new URL(req.url());
     if(url.hostname==='rangerbook-auth.warmycat.com'){
       calls.push({path:url.pathname,method:req.method(),body:req.postData()});
-      const headers={'Access-Control-Allow-Origin':base,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS'};
+      const headers={'Access-Control-Allow-Origin':base,'Access-Control-Allow-Credentials':'true','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Expose-Headers':'Retry-After'};
       if(req.method()==='OPTIONS')return route.fulfill({status:204,headers});
       let data={ok:true};
       if(url.pathname==='/auth/features')data={members_v2:true,google:false,registration:false,member_navigation:false};
       if(url.pathname==='/auth/me')data=user;
-      if(url.pathname==='/auth/security')data={totp_enabled:factor,totp_required:user.role==='super_admin',google_email:email};
+      if(url.pathname==='/auth/security')data={totp_enabled:factor,totp_required:user.role==='super_admin',google_email:email,reauth_valid_for:reauthSeconds,reauth_retry_after:reauthCooldown};
+      if(url.pathname==='/auth/reauth'){
+        if(holdReauth)await new Promise(resolve=>{releaseReauth=resolve;});
+        if(rejectReauth)return route.fulfill({status:429,json:{detail:'member.rateLimited'},headers:{...headers,'Retry-After':'1'}});
+        reauthSeconds=300;data={ok:true,reauth_valid_for:300};
+      }
       if(url.pathname==='/auth/2fa/setup')data={manual_key:'FIXTUREONLY',qr:'data:image/png;base64,'+png.toString('base64')};
       if(url.pathname==='/auth/2fa/enable'){factor=true;user.logged_in=true;user.setup_required=false;data={recovery_codes:['FIXTURE-CODE-ONE']};}
       if(url.pathname==='/auth/2fa/verify'){user.logged_in=true;user.mfa_required=false;}
@@ -47,16 +53,51 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   assert.equal(await page.locator('h1[data-i18n="member.security"]').innerText(),copy('member.security',locale));
   assert.equal(await page.locator('.gt-user-navigation').evaluate(el=>el.hidden),false);
   assert.equal(await page.locator('#memberGoogleStart').isDisabled(),true);
+  assert.equal(await page.locator('#memberReauthForm input[name=code]').isVisible(),false);
+  await page.locator('#memberReauthForm input[name=password]').fill('fixture-password');
+  const reauthRequest=page.waitForRequest(req=>new URL(req.url()).pathname==='/auth/reauth');
+  await page.locator('#memberReauthForm button').click();
+  await reauthRequest;
+  assert.equal(await page.locator('#memberProof .member-operation-status').innerText(),copy('member.processing',locale));
+  assert.equal(await page.locator('#memberReauthForm').getAttribute('aria-busy'),'true');
+  await page.evaluate(()=>document.querySelector('#memberReauthForm').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+  assert.equal(calls.filter(x=>x.path==='/auth/reauth').length,1,'Pending submissions cannot be duplicated');
+  holdReauth=false;releaseReauth();
+  await page.waitForFunction(()=>document.querySelector('#memberReauthForm input').value==='');
+  await page.waitForFunction(()=>!document.querySelector('#memberReauthForm').hasAttribute('aria-busy'));
+  assert.equal(await page.locator('#memberProof .member-operation-status').innerText(),copy('member.reauthDone',locale));
+  assert.match(await page.locator('#memberProofStatus').innerText(),/4:|5:/);
+  assert.equal(await page.locator('#memberReauthForm button').isDisabled(),true,'An active proof does not need another submission');
+  reauthSeconds=0;reauthCooldown=40;await page.reload();await page.locator('#memberSecurityArea').waitFor();
+  await page.waitForFunction(()=>document.querySelector('#memberProofStatus')?.textContent.includes('0:40'));
+  assert.equal(await page.locator('#memberReauthForm button').isDisabled(),true);
+  reauthCooldown=0;rejectReauth=true;await page.reload();await page.locator('#memberSecurityArea').waitFor();
   await page.locator('#memberReauthForm input[name=password]').fill('fixture-password');
   await page.locator('#memberReauthForm button').click();
-  await page.waitForFunction(()=>document.querySelector('#memberReauthForm input').value==='');
+  await page.locator('#memberProof .member-operation-status.error').waitFor();
+  assert.equal(await page.locator('#memberReauthForm button').isDisabled(),true);
+  await page.waitForFunction(()=>!document.querySelector('#memberReauthForm button').disabled);
+  assert.equal(await page.locator('#memberProof .member-operation-status').innerText(),copy('member.retryReady',locale));
+  rejectReauth=false;
+  await page.locator('#memberReauthForm input[name=password]').fill('fixture-password');
+  await page.locator('#memberReauthForm button').click();
+  await page.waitForFunction(()=>!document.querySelector('#memberReauthForm').hasAttribute('aria-busy'));
   await page.locator('#memberSetup').click();await page.locator('#memberSetupPanel').waitFor();
   await page.locator('#memberEnableForm input').fill('123456');await page.locator('#memberEnableForm button').click();
   await page.locator('#memberRecoveryPanel').waitFor();
   assert.match(await page.locator('#memberRecovery').innerText(),/FIXTURE-CODE-ONE/);
+  await page.waitForFunction(()=>!document.querySelector('#memberEnableForm').hasAttribute('aria-busy'));
+  assert.equal(await page.locator('#memberSetup').evaluate(el=>el.closest('.admin-card').querySelector('.member-operation-status').textContent),copy('member.factorEnabled',locale));
   if(process.env.QA_SCREENSHOTS && locale==='zh-Hant' && ((width===390&&theme==='dark')||(width===1440&&theme==='light')))await page.screenshot({path:process.env.QA_SCREENSHOTS+'/member-'+width+'-'+theme+'.png',fullPage:true});
   const storage=await page.evaluate(()=>JSON.stringify({...localStorage}));assert.ok(!/FIXTURE|password|123456/.test(storage));
   await page.locator('#memberHideCodes').click();assert.equal(await page.locator('#memberRecovery').innerText(),'');
+  email='fixture@gmail.com';await page.goto(base+'/account/?callback=ok#google=ok');
+  await page.locator('#memberGoogle .member-operation-status.success').waitFor();
+  assert.equal(await page.locator('#memberGoogleStatus').innerText(),email);
+  assert.equal(await page.locator('#memberGoogle .member-operation-status').innerText(),copy('member.bound',locale));
+  email=null;await page.goto(base+'/account/?callback=failed#google=failed');
+  await page.locator('#memberGoogle .member-operation-status.error').waitFor();
+  assert.equal(await page.locator('#memberGoogle .member-operation-status').innerText(),copy('member.googleFailed',locale));
   await page.goto(base+'/admin/');await page.locator('#adminWorkspace').waitFor();
   assert.equal(await page.locator('#adminPersonalTab,#adminPasswordTab,#adminPersonalPanel,#adminPasswordCard').count(),0);
   assert.equal(await page.locator('#adminResourcesTab').getAttribute('aria-selected'),'true');

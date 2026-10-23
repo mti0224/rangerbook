@@ -131,6 +131,35 @@ body.gt-app .admin-page .admin-shell {
   color: #1a7f37;
 }
 
+.member-operation-status:empty {
+  display: none;
+}
+
+.member-operation-status,
+.member-proof-status {
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.member-proof-status.success {
+  color: #1a7f37;
+}
+
+html[data-theme="dark"] .member-proof-status.success,
+html[data-theme="dark"] .member-operation-status.success {
+  color: #7ee2a8;
+}
+
+html[data-theme="dark"] .member-operation-status.error {
+  color: #ffaaaa;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
+}
+
 .admin-session-head {
   display: flex;
   justify-content: space-between;
