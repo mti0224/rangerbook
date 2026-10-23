@@ -4,6 +4,8 @@
 
 正式服務未切換，正式會員資料庫、帳號、角色及私人隊伍未修改。GitHub Pages 在 main 收到 push 後會自動發布，**合併本 PR 本身就是前端發布動作**，須先完成後端切換驗證並取得站長核准。
 
+站長後續指定：先完成切換以外的準備，等新介面示意圖與介面修改完成後才合併切換。獨立 runtime／unit／Nginx 候選、機密載入、本機受限金鑰備份與 preflight 已完成，詳見 [第 6 步最新狀態](member-production-cutover-20261023.md)；PR 保留 Draft 及介面待完成 hold。
+
 ## 1. 已完成的真人驗收
 
 | 項目 | 操作者與後端證據 | 結果 |
@@ -80,10 +82,11 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 
 | 範圍 | 實際結果 |
 | --- | --- |
-| 最新本機核心＋私有後端整合 | 57 passed，含實際私人檔案讀寫／刪除、帳號隔離及測試 ID 相容防護 |
+| 最新本機核心＋私有後端＋部署保護整合 | 67 passed，含實際私人檔案讀寫／刪除、帳號隔離、測試 ID 相容及切換保護 |
 | 會員 UI | 四語系 × 深淺色 × 手機／桌面共 16 組通過，包含處理中、防重複、倒數及 Google 回呼結果 |
 | 管理員安全 UI | 四語系登入／密碼／登出回歸通過 |
 | 先前完整 EC2 ASGI 演練 | 10/10，含重複 Migration、備份與還原登入；見第 4 步報告 |
+| 獨立正式候選 EC2 驗證 | 合成 ASGI 演練 10/10，部署保護 10/10，provider／Nginx preflight 11/11；正式 DB、PID 與設定維持現況 |
 | 隊伍模型與公開網站 | 既有分析、版型、側欄、PWA、公開邊界回歸通過；沒有重寫分析公式 |
 | 候選 8ccbdbe2 CI | 9/9 成功；本次文件更新另以最新 PR head 為準 |
 | 真人帳號安全 | 見第 1 節，通過 |
@@ -103,8 +106,8 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 ## 9. 第 6 步核准前的具體順序
 
 1. 個人隊伍綁定／匯入／解除已完成。重新確認最新候選及 main 差異；本次查得 main `95da0374` 比已整合的 `9e3fa3ba` 多 38 筆自動資料發布，淨差異僅 `res/v2/resources.json`，不涉及會員程式。合併前仍須再次核對並保留 main 最新資料，避免將時間戳記回退。
-2. 準備獨立正式 release、依賴、systemd／runtime secret 載入及加密金鑰保管方案；不得使用暫時測試 provider 或測試 Fernet key 作正式依賴。核對正式 callback、Turnstile hostname、來源與 Cookie 名稱，會員導覽維持管理員試用設定。
-3. 核對正式 Nginx 的 callback 日誌抑制、HTTPS、Origin／代理 IP 與 request limit；將正式 worker 的 feedback／監控設定具體化。這些正式變更須先供站長審核。
+2. 獨立 release／依賴／systemd／runtime secret 載入及本機受限金鑰備份已準備驗證；不使用測試 provider／key 作依賴。異地備援與正式 callback／Turnstile 瀏覽器確認依切換審核單保留。
+3. 正式 Nginx／unit diff、callback 日誌抑制、代理 IP、request limit、worker 與聚合健康檢查已具體化並測試；檔案未安裝、正式 timer 未啟動。等待介面示意圖，完成介面並重驗後才安排正式審核。
 4. 取得站長明確核准後，停寫、正式備份／Migration、啟動新後端並執行登入及權限 smoke test；保留 SSM 人工恢復通道並陪同最大管理員初始綁定。
 5. 後端通過後才合併 PR，因 main push 會觸發 Pages 發布；驗證 PWA 更新、公開頁、四語系及會員功能，再啟動經核准的正式寄信。
 6. 監控 API／outbox／稽核／回饋。確認穩定後按站長安排撤除測試入口，後續以設定開放一般會員導覽。
@@ -144,6 +147,19 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 - `membership/mail_worker.py`
 - `membership/manage.py`
 - `membership/prepare.py`
+- `membership/production/README.md`
+- `membership/production/__init__.py`
+- `membership/production/health.py`
+- `membership/production/launch.py`
+- `membership/production/prepare.py`
+- `membership/production/rangerbook-auth.service.in`
+- `membership/production/rangerbook-member-health.service.in`
+- `membership/production/rangerbook-member-health.timer.in`
+- `membership/production/rangerbook-member-mail.service.in`
+- `membership/production/rangerbook-member-mail.timer.in`
+- `membership/production/rangerbook-membership-secrets.service.in`
+- `membership/production/runtime.env.in`
+- `membership/production/secrets.toml`
 - `membership/rangerbook-member-mail.service.in`
 - `membership/rangerbook-member-mail.timer.in`
 - `membership/requirements.txt`
@@ -173,6 +189,7 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 - `tests/game-tech-contract.test.js`
 - `tests/local-static-fixture.cjs`
 - `tests/member-browser.cjs`
+- `tests/member-production-preflight.py`
 - `tests/member-release-smoke.py`
 - `tests/member-stage-browser.cjs`
 - `tests/pwa-contract.cjs`
@@ -183,6 +200,7 @@ TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除�
 - `tests/site-sidebar-ui.cjs`
 - `tests/team-analysis-model.cjs`
 - `tests/test_membership_core.py`
+- `tests/test_membership_production.py`
 - `tests/test_membership_v2.py`
 - `tests/test_sitewide_locale_coverage.py`
 - `tests/test_ui_locale_coverage.py`

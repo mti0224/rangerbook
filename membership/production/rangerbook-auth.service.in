@@ -1,0 +1,42 @@
+# Replacement candidate only; the running unit is unchanged.
+[Unit]
+Description=Rangerbook Auth API with membership V2
+After=network-online.target rangerbook-membership-secrets.service
+Requires=rangerbook-membership-secrets.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=@ROOT@/release
+EnvironmentFile=/home/ubuntu/rangerbook-auth/.env
+EnvironmentFile=/etc/rangerbook-auth-paths.env
+EnvironmentFile=@ROOT@/review/runtime.env
+EnvironmentFile=@ROOT@/review/key.env
+EnvironmentFile=@ROOT@/review/provider.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStartPre=/usr/bin/test -f @ROOT@/review/CUTOVER_APPROVED
+ExecStartPre=/usr/bin/test ! -e @ROOT@/review/INTERFACE_PENDING
+ExecStartPre=@ROOT@/venv/bin/python -m membership.production.launch --wait-provider
+ExecStart=@ROOT@/bin/asm-exec -- @ROOT@/venv/bin/python -m membership.production.launch
+Restart=on-failure
+RestartSec=3
+PrivateTmp=true
+NoNewPrivileges=true
+UMask=0077
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/rangerbook-private
+InaccessiblePaths=-/home/ubuntu/.ssh -/home/ubuntu/.aws -/root
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+LimitCORE=0
+
+[Install]
+WantedBy=multi-user.target

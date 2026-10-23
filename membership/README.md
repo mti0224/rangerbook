@@ -1,5 +1,10 @@
 # Membership V2 deployment gate
 
+Owner hold (2026-10-23): finish detached preparation, then wait for the new
+interface mockup and its implementation before merging or cutting over. The
+[production preparation bundle](production/README.md) is rendered and tested on
+EC2; production remains unchanged. Keep the PR draft and interface hold present.
+
 This extension is source-only. Pages packaging and the PWA build exclude this directory. It contains no private game API implementation. The existing production `app.py`, `asgi.py`, `security.py` and `game_binding.py` remain on the private server. `prepare.py` builds a **new release directory**, copies an explicit source allowlist and appends the extension import after the legacy routes have been registered. It does not change the running service.
 
 ## Release procedure (requires owner authorization)

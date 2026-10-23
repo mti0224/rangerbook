@@ -1,0 +1,23 @@
+[Unit]
+Description=Rangerbook bounded transactional email worker
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=@ROOT@/release
+EnvironmentFile=@ROOT@/review/runtime.env
+EnvironmentFile=@ROOT@/review/key.env
+ExecStartPre=/usr/bin/test -f @ROOT@/review/CUTOVER_APPROVED
+ExecStartPre=/usr/bin/test ! -e @ROOT@/review/INTERFACE_PENDING
+ExecStartPre=/usr/bin/test -f @ROOT@/review/MAIL_APPROVED
+ExecStart=@ROOT@/venv/bin/python -m membership.mail_worker
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/ubuntu/rangerbook-private/auth
+LimitCORE=0
+TimeoutStartSec=90
