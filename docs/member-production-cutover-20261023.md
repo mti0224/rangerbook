@@ -11,7 +11,7 @@
 - 私有候選目錄與演練資料限制權限，不在 web root。候選不是測試站 release 的連結，後續不得依賴測試入口繼續運作。
 - 新增 `membership/production/`：可重製候選設定、啟動前檢查、受限金鑰備份、API／provider／mail／health unit 與 timer。EC2 已產生 `review/` 及可審查的 Nginx／systemd diff；候選檔全部未安裝。
 - 產生獨立 Fernet key 與 provider token，分開寫入 0600 環境檔。金鑰副本 root-owned 0400，已實測加密／備份解密，並確認與測試 key 不同。副本仍在同一 EC2 volume，不能宣稱已有異地災難復原。
-- 本機核心＋私有後端＋部署保護共 **67/67**；新增部署保護在 EC2 **10/10**。EC2 實際獨立 provider／Nginx preflight 再 **11/11**：unit 驗證、未核准拒絕啟動、asm-exec 解析機密、完整 Nginx 語法、callback 的 access log 與含授權碼的 upstream error 均不落盤（含真實合成 502）、其他 access log 排除請求內容、代理 IP 正規化、原 16k body limit、正式 PID／設定未改、health 200。
+- 本機核心＋私有後端＋部署保護共 **68/68**；新增部署保護在 EC2 **11/11**。EC2 實際獨立 provider／Nginx preflight 再 **11/11**：unit 驗證、未核准拒絕啟動、asm-exec 解析機密、完整 Nginx 語法、callback 的 access log 與含授權碼的 upstream error 均不落盤（含真實合成 502）、其他 access log 排除請求內容、代理 IP 正規化、原 16k body limit、正式 PID／設定未改、health 200。
 - Provider 僅暫時在 loopback 2774 啟動；asm-exec 將機密傳給僅檢查設定的子程序，沒有匯入正式 app 或讀取正式 DB。測完停止；2774、18767、18768 均已關閉。沒有額外郵件、沒有領取或刪除 feedback 事件。
 - Pages 實際打包及公開邊界檢查通過：`membership/`、`docs/`、`tests/` 不進 web artifact。介面程式本次未更動。
 

@@ -50,7 +50,8 @@ def prepare(root, provider_source, key_backup, nginx_path, unit_path):
     if key_backup.is_relative_to(root) or key_backup.exists():
         raise ValueError('Key backup must be a new path outside the candidate')
     for path in (root, key_backup):
-        if any(part in {'www', 'public_html', '.git'} for part in path.parts):
+        in_git = any((ancestor / '.git').exists() for ancestor in (path, *path.parents))
+        if in_git or any(part in {'www', 'public_html', '.git'} for part in path.parts):
             raise ValueError('Private preparation cannot use public or Git paths')
     provider = (provider_source / 'aws-workload-credentials-provider').read_bytes()
     if hashlib.sha256(provider).hexdigest() != PROVIDER_SHA256:

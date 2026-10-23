@@ -145,3 +145,17 @@ def test_mail_health_is_read_only_and_contains_no_private_payload(tmp_path):
     with pytest.raises(sqlite3.OperationalError):
         inspect(missing)
     assert not missing.exists()
+
+
+def test_generated_credentials_refuse_a_git_checkout(tmp_path):
+    repository = tmp_path / 'repository'
+    (repository / '.git').mkdir(parents=True)
+    candidate = repository / 'candidate'
+    (candidate / 'release').mkdir(parents=True)
+    (candidate / 'release/source-manifest.json').write_text('{}')
+    (candidate / 'requirements.lock').write_text('# synthetic')
+    with pytest.raises(ValueError, match='Git paths'):
+        prepare.prepare(candidate, tmp_path / 'unused-binaries', tmp_path / 'backup/key.env',
+                        tmp_path / 'unused-nginx', tmp_path / 'unused-unit')
+    assert not (candidate / 'review').exists()
+    assert not (tmp_path / 'backup').exists()
