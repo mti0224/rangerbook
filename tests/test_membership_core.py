@@ -68,6 +68,59 @@ def test_feature_off_has_no_mutation(monkeypatch):
     assert install(object()) is None
 
 
+def test_stage_mail_without_allowlist_stops_before_aws(monkeypatch):
+    from membership.mail_worker import main
+    monkeypatch.setenv('RANGERBOOK_STAGE', '1')
+    monkeypatch.setenv('RANGERBOOK_MAIL_ENABLED', '1')
+    monkeypatch.delenv('RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST', raising=False)
+    with pytest.raises(RuntimeError, match='allowlist'):
+        main()
+
+
+def test_stage_mail_only_sends_to_approved_recipient(tmp_path):
+    import json
+    from membership.mail_worker import deliver_batch
+    database = tmp_path / 'outbox.db'
+    legacy(database)
+    cipher = Fernet(Fernet.generate_key())
+    with sqlite3.connect(database) as con:
+        migrate(con)
+        for address in ['approved@example.test', 'blocked@example.test']:
+            payload = cipher.encrypt(json.dumps({'email': address, 'kind': 'security'}).encode()).decode()
+            con.execute('INSERT INTO member_outbox(id,payload,next_attempt) VALUES (?,?,0)', (address, payload))
+    def connect():
+        con = sqlite3.connect(database)
+        con.row_factory = sqlite3.Row
+        return con
+    class SES:
+        recipients = []
+        def send_email(self, **kwargs):
+            self.recipients.extend(kwargs['Destination']['ToAddresses'])
+            return {'MessageId': 'synthetic'}
+    ses = SES()
+    result = deliver_batch(connect, cipher, ses, 'synthetic', recipient_allowlist={'approved@example.test'})
+    assert result == {'sent': 1, 'failed': 0, 'suppressed': 1}
+    assert ses.recipients == ['approved@example.test']
+
+
+def test_stage_launcher_rejects_production_paths_and_unresolved_secrets():
+    from membership.stage.launch import validate, ROOT, ORIGIN
+    env = dict(line.split('=', 1) for line in (Path(__file__).parents[1] / 'membership/stage/runtime.env.in').read_text().splitlines() if line and not line.startswith('#'))
+    env['RANGERBOOK_MEMBER_KEY'] = Fernet.generate_key().decode()
+    with pytest.raises(RuntimeError, match='unresolved'):
+        validate(env)
+    for key in list(env):
+        if '{{resolve:' in env[key]: env[key] = 'synthetic-fixture'
+    validate(env)
+    env['RANGERBOOK_AUTH_DB'] = '/home/ubuntu/rangerbook-private/auth/rangerbook_auth.db'
+    with pytest.raises(RuntimeError, match='isolated directory'):
+        validate(env)
+    env['RANGERBOOK_AUTH_DB'] = str(ROOT / 'auth.db')
+    env['RANGERBOOK_ALLOWED_ORIGINS'] = 'https://rangerbook.warmycat.com'
+    with pytest.raises(RuntimeError, match='origin'):
+        validate(env)
+
+
 @pytest.mark.parametrize('bad', [
     'SES successfully validated the SNS destination',
     '[]',

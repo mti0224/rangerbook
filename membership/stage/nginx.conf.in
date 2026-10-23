@@ -1,0 +1,36 @@
+# PREPARATION ONLY. Install only after DNS, TLS and stage credentials are ready.
+# Keep this separate from every existing virtual host. nginx -t before reload.
+server {
+    listen 443 ssl;
+    server_name rangerbook-test.warmycat.com;
+    ssl_certificate /etc/letsencrypt/live/rangerbook-test.warmycat.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/rangerbook-test.warmycat.com/privkey.pem;
+    root /var/www/rangerbook-membership-test;
+    index index.html;
+    auth_basic "Rangerbook private acceptance";
+    auth_basic_user_file /etc/nginx/rangerbook-membership-test.htpasswd;
+    access_log off;
+    # nginx error logs can contain a full OAuth callback URI. No request logs here.
+    error_log /dev/null crit;
+    client_max_body_size 64k;
+    add_header Cache-Control "no-store, private" always;
+    add_header Referrer-Policy "no-referrer" always;
+    add_header X-Robots-Tag "noindex, nofollow, noarchive" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options DENY always;
+    location = /admin { return 302 /admin/; }
+    location = /admin/ { try_files /admin/index.html =404; }
+    location ~ ^/(auth|member|admin|public)/ {
+        proxy_pass http://127.0.0.1:18765;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header Authorization "";
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 30s;
+    }
+    location = /admin/index.html { try_files $uri =404; }
+    location = /health { proxy_pass http://127.0.0.1:18765; }
+    location / { try_files $uri $uri/ =404; }
+    location ~ /\. { deny all; }
+}

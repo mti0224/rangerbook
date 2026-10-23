@@ -43,3 +43,7 @@ jobs:
       - run: node tests/security-pages.mjs && node tests/security-auth.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: node tests/security-browser.cjs && node tests/member-browser.cjs
+      - name: Verify isolated acceptance artifact
+        run: |
+          node membership/stage/build-site.mjs "$RUNNER_TEMP/rangerbook-acceptance"
+          node tests/member-stage-browser.cjs "$RUNNER_TEMP/rangerbook-acceptance"

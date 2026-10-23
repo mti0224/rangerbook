@@ -16,7 +16,8 @@ SUBJECTS = {'verify': 'Verify your Rangerbook email', 'reset': 'Reset your Range
             'security': 'Rangerbook account security notification'}
 
 
-def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmycat.com', limit=10):
+def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmycat.com', limit=10,
+                  recipient_allowlist=None):
     """Leases make overlapping workers safe. SES has no send idempotency token;
     a crash after send may duplicate a message, but links remain single use.
     """
@@ -31,7 +32,8 @@ def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmy
         payload = json.loads(cipher.decrypt(row['payload'].encode()))
         with connect() as con:
             suppressed = con.execute('SELECT 1 FROM member_suppression WHERE email=?', (payload['email'],)).fetchone()
-        if suppressed or (payload.get('expires') and payload['expires'] < now):
+        outside_allowlist = recipient_allowlist is not None and payload['email'].lower() not in recipient_allowlist
+        if suppressed or outside_allowlist or (payload.get('expires') and payload['expires'] < now):
             with connect() as con:
                 con.execute("UPDATE member_outbox SET status='suppressed',payload='' WHERE id=?", (row['id'],))
             result['suppressed'] += 1
@@ -105,12 +107,18 @@ def main():
             con.close()
     if os.environ.get('RANGERBOOK_MAIL_ENABLED') != '1':
         return
+    # A test deployment may never silently fall back to unrestricted delivery.
+    restricted = os.environ.get('RANGERBOOK_STAGE') == '1' or 'RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST' in os.environ
+    recipients = {value.strip().lower() for value in os.environ.get('RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST', '').split(',') if value.strip()} if restricted else None
+    if restricted and not recipients:
+        raise RuntimeError('Test mail requires an explicit recipient allowlist')
     config = Config(retries={'total_max_attempts': 2, 'mode': 'standard'}, connect_timeout=5, read_timeout=10)
     session = boto3.Session(region_name='ap-south-1')  # Instance role; never static access keys.
     if os.environ.get('RANGERBOOK_FEEDBACK_QUEUE'):
         consume_feedback(connect, session.client('sqs', config=config), os.environ['RANGERBOOK_FEEDBACK_QUEUE'], os.environ['RANGERBOOK_FEEDBACK_TOPIC'])
     result = deliver_batch(connect, Fernet(os.environ['RANGERBOOK_MEMBER_KEY'].encode()),
-        session.client('sesv2', config=config), os.environ['RANGERBOOK_SES_CONFIGURATION_SET'])
+        session.client('sesv2', config=config), os.environ['RANGERBOOK_SES_CONFIGURATION_SET'],
+        recipient_allowlist=recipients)
     with connect() as con:
         con.execute('DELETE FROM member_tokens WHERE expires<?', (time.time(),))
         con.execute('DELETE FROM member_totp_setup WHERE expires<?', (time.time(),))
