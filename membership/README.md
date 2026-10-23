@@ -92,7 +92,7 @@ The existing root-domain SPF and Gandi MX were inspected and left unchanged. Roo
 - Real Turnstile registration passed in staging; production-host browser acceptance remains part of cutover.
 - Production worker activation after controlled feedback/suppression acceptance. The bounded staging timer delivered four approved messages; the production worker remains inactive. IAM, Configuration Set and SNS/SQS are provisioned.
 - Controlled SES/suppression feedback acceptance and Gandi mail regression.
-- Real game-account and private-team end-to-end acceptance. The complete prepared private ASGI release has passed synthetic loopback TLS login/migration/restore tests on Mumbai; game calls remain blocked in that rehearsal.
+- Real game ownership verification, binding, import and unbinding passed protected staging acceptance. Mobile/desktop iframe rendering, seven team modes and analysis display passed browser regression; individual real Ranger/equipment values and repeated updates remain pilot observation items. Synthetic release rehearsals keep external game calls disabled.
 - Existing production super administrator's supervised enrollment and operator recovery readiness. Synthetic super-admin enrollment, TOTP login and recovery-code single use passed staging acceptance; production accounts remain untouched.
 - Owner approval for production backup/migration, backend release, frontend merge and deployment.
 
