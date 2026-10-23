@@ -1,0 +1,176 @@
+# 會員 V2：真人驗收與正式切換準備（2026-10-23）
+
+本報告更新初次交付及第 4 步演練後的實際狀態。程式候選版本為 `a598d623879a8feb888e20305992d61f9d985991`，該版本 9 個 GitHub Actions 工作流程全部通過。[PR #176](https://github.com/mti0224/rangerbook/pull/176) 維持 Draft。帳號安全主要真人驗收已通過；個人隊伍的完整真人流程及正式環境切換檢查尚待完成，不可因本報告而直接合併或部署。
+
+正式服務未切換，正式會員資料庫、帳號、角色及私人隊伍未修改。GitHub Pages 在 main 收到 push 後會自動發布，**合併本 PR 本身就是前端發布動作**，須先完成後端切換驗證並取得站長核准。
+
+## 1. 已完成的真人驗收
+
+| 項目 | 操作者與後端證據 | 結果 |
+| --- | --- | --- |
+| 註冊與 Turnstile | 真實 challenge 通過，建立未啟用一般會員；沒有管理員待審申請 | 通過 |
+| 重複 Email | 第二次使用相同 Email 申請未建立第二帳號，前端維持通用回應 | 通過 |
+| Email 驗證 | 收到新驗證信後啟用；後端 email_verified=1、account_active=1、role=user，含驗證及登入稽核 | 通過 |
+| Google Gmail 綁定 | 真人授權完成，後端有 Google 身分、核准救援信箱與 google_linked 稽核；未輸出身分值或憑證 | 通過 |
+| 普通會員 TOTP | 真人啟用、停用、重新啟用；加密 Secret 與恢復碼雜湊由後端儲存 | 通過 |
+| 忘記／重設密碼 | 真人收取重設信並改用新密碼；受限重設前基準證明密碼雜湊已變更且原 Session 全部消失 | 通過 |
+| 重設保留第二因素 | 加密 TOTP Secret、恢復碼集合、角色與 Google 綁定均未變動；新登入有 factor_verified | 通過 |
+| 最大管理員強制 2FA | 先受限初始設定，再以 TOTP 取得完整 Session；角色保留，操作者可進管理頁 | 通過 |
+| 恢復碼再生與單次使用 | 有 recovery_codes_replaced、recovery_code_used 稽核；首次成功後剩 9 組，同碼再次使用被拒絕 | 通過 |
+| 真實寄信 | 驗證信兩封、重設連結及完成通知各一封，outbox sent=4；受控收件者與總額度 4/5 | 通過 |
+
+恢復碼拒絕測試結束時，最大管理員停在新登入的第二步驗證階段，這不表示已停用 2FA。輸入驗證器當前代碼即可完成該次登入。未把待驗證 Session 當成完整授權。
+
+## 2. 本次驗收發現並修正的問題
+
+- 測試 mail worker 原本嘗試解析與寄信無關的 Google／Turnstile 機密，導致 outbox 有信但尚未呼叫 SES。已改由 instance role 及受限本機加密金鑰直接啟動 worker，保留白名單與持久化額度。
+- 安全操作原本只在頁首顯示結果，操作區缺少反饋。新增各區處理中、成功、失敗及下一步訊息，防止重複送出。
+- 身分驗證成功後顯示五分鐘有效倒數並避免再次提交；限流依後端實際剩餘時間倒數，CORS 開放讀取 Retry-After。每 15 分鐘 5 次重新驗證的限制維持，沒有清空既有計數。
+- 修正管理員列表在 i18n ready 前渲染的競態；四語系回歸及 CI 通過。
+
+## 3. 前端與權限
+
+新增 `/personal-teams/`、`/account/`、`/account-action/`，沿用既有 CSS、i18n、隊伍檢視與分析模型。管理頁保留登入、註冊及真正的管理工作區；個人隊伍與密碼舊分頁移除。
+
+側邊欄「使用者」測試期僅完整登入的 admin／super_admin 可見。一般會員仍可經直接頁面與已驗證 Session 使用個人功能；`RANGERBOOK_MEMBER_NAVIGATION` 是呈現設定，不影響 API 授權。未完成 MFA 不取得完整權限。
+
+| API 範圍 | 後端身分與條件 |
+| --- | --- |
+| `/auth/login`、`me`、`logout` | 原 Cookie／Argon2 系統；需要 MFA 者先取得短期受限 Session |
+| `/auth/security`、`reauth`、`2fa/*` | 自身 Session；安全修改需要近期密碼及適用的第二因素 |
+| `/auth/google/start`、`callback`、`unlink` | 完整登入與再次驗證；Code + PKCE、單次 state、nonce、簽章與 Gmail 驗證 |
+| `/auth/register`、`email/*`、`password/forgot`、`password/reset` | CAPTCHA、Email 啟用、限時單次 Token 與限流；忘記密碼使用通用回應 |
+| `/member/game-*`、`/member/personal-teams*` | 完整登入會員；使用者身分僅取自 Session；原個人 `/admin/` 別名套用相同限制 |
+| 原管理資料／GA4 API | admin 或 super_admin |
+| 使用者權限與管理員申請審核 | super_admin |
+
+前端及 PWA 不儲存密碼、Session Token、TOTP Secret 或恢復碼；私人頁面／API 不進 Service Worker 快取。測試站另停用 GA 及 PWA 安裝，HTTPS 回應 no-store，OAuth callback 不寫入存取日誌。
+
+## 4. Migration、備份與回復
+
+沿用 SQLite，加法式 Migration 新增 Email、Google 綁定、TOTP、Session MFA／重新驗證欄位，以及 Token、恢復碼、稽核、outbox、抑制等資料表。舊帳號預設維持啟用，保留原角色、密碼雜湊、Session 與遊戲綁定；舊帳號可登入後綁定 Google 增加救援方式。
+
+`python -m membership.manage migrate DB --backup NEW_BACKUP` 以 SQLite backup API 建立不可覆寫的 0600 備份，核對原資料及 integrity／foreign keys，並支援重複執行。隔離升級與備份還原已實測。正式 Migration 尚未執行。
+
+正式切換時先停寫及郵件 worker，建立新備份並獨立保管加密金鑰，再遷移與驗證。若須還原，先保留失敗現況，再還原到新檔並核對匹配金鑰；涉及丟棄切換後寫入時須另外核准。**啟用 2FA 後不得回退到不驗證第二因素的舊後端**；優先保留 V2 驗證、回退前端或暫停受保護操作後修復。
+
+## 5. Google、Turnstile、SES 與 IAM
+
+- Secrets Manager 已採 `client_id`／`client_secret` 及 `site_key`／`secret_key`，透過 runtime dynamic references 載入；機密值不進入維護代理輸出、Git、Pages 或日誌。
+- 測試 Google callback 為 `https://rangerbook-test.warmycat.com/auth/google/callback`，已完成真人綁定。正式前須核對 Web client 的精確 callback：`https://rangerbook-auth.warmycat.com/auth/google/callback`。Testing audience 只允許列入的 Google 測試使用者，管理員試用期應確認名單；全面開放前處理發布狀態。
+- Turnstile Managed widget 的測試 hostname 已通過真人註冊；正式 hostname 的實際瀏覽器驗收仍屬切換檢查，不能只看已存在金鑰。
+- 孟買 SES Production Access、網域／DKIM 驗證、Configuration Set、SNS／SQS 回饋已準備。站長已核准並套用 `RangerbookMembershipRuntimeV2`，使用 instance role，不使用長期 Access Key。
+- worker 使用加密 outbox、租約與退避重試，成功或抑制後清除 payload。測試總額度在 SES 呼叫前原子保留，跨重啟／並行最多 5 次；SDK 測試重試停用。已使用 4 次，額度不重設。
+- 實際 SES Send 回饋及真人收信已確認；Bounce／Complaint 程式處理有模擬測試，尚未向 mailbox simulator 寄信。共用 queue 沒有由測試程序刪除事件；正式 consumer 啟動前需確認 queue 歸屬與單一消費者安排。
+- Gandi 根網域 MX／SPF 未變更；DMARC、收件端 DKIM／對齊與既有 Gandi 收信回歸仍需核對。若新增 custom MAIL FROM，只使用獨立子網域，不覆蓋根網域收信。
+
+## 6. 2FA 與人工救援
+
+TOTP Secret 加密，恢復碼只存高熵雜湊、顯示一次並原子刪除；驗證有錯誤次數與步數重放保護。最大管理員禁止一般停用。密碼重設保留第二因素並撤銷所有原 Session。
+
+人工恢復使用受限伺服器操作：先站外確認身分、記錄工單與核准、建立備份，再執行 `membership.manage recover-totp`。保留密碼與角色，撤銷 Session，記錄稽核；最大管理員仍須重新綁定才取得權限。沒有公開繞過驗證的重設 2FA 入口。此程序已有合成測試，正式最大管理員帳號未操作。
+
+## 7. 測試結果及限制
+
+| 範圍 | 實際結果 |
+| --- | --- |
+| 最新本機核心＋私有後端整合 | 51 passed，使用隔離資料庫與測試替身 |
+| 會員 UI | 四語系 × 深淺色 × 手機／桌面共 16 組通過，包含處理中、防重複、倒數及 Google 回呼結果 |
+| 管理員安全 UI | 四語系登入／密碼／登出回歸通過 |
+| 先前完整 EC2 ASGI 演練 | 10/10，含重複 Migration、備份與還原登入；見第 4 步報告 |
+| 隊伍模型與公開網站 | 既有分析、版型、側欄、PWA、公開邊界回歸通過；沒有重寫分析公式 |
+| 候選 a598d623 CI | 9/9 成功 |
+| 真人帳號安全 | 見第 1 節，通過 |
+| 真實遊戲連線預檢 | 一筆唯讀請求成功；一般會員搜尋及安全候選欄位預檢通過 |
+
+真人未涵蓋 Google 解除／重複身分的外部授權、重設連結再次兌換，以及真實 Bounce／Complaint；這些後端拒絕分支已有隔離測試，報告不把替身測試寫成真人驗收。iOS／Android 實機 PWA 及 Gandi 收信仍待操作者確認。
+
+## 8. 個人隊伍：下一個驗收項目
+
+測試站已建立受限遊戲連線副本與公開名稱索引快照，敏感檔案 0600、目錄 0700，位於 web root／公開儲存庫之外。API 僅回傳候選識別、名稱與公會，不洩漏原始遊戲 UID 或未驗證隊伍。一次唯讀連線及會員搜尋已通過；正式綁定與私人隊伍未複製或修改。
+
+請以已驗證的一般測試會員，直接開啟 `/personal-teams/`，搜尋自己的遊戲帳號，完成公會獎章及指定 Ranger 位置交換，再匯入／更新。檢查隊伍 1–5、PvP 防守、公會戰進攻，以及雷達圖、隊伍總覽、Ranger／裝備分析。最後測試解除綁定。完整結果未回報前，仍列為正式切換阻擋項目。
+
+## 9. 第 6 步核准前的具體順序
+
+1. 完成個人隊伍真人回歸，確認最新候選及 main 沒有未納入更新；再跑對應必要檢查。
+2. 準備獨立正式 release、依賴、systemd／runtime secret 載入及加密金鑰保管方案；不得使用暫時測試 provider 或測試 Fernet key 作正式依賴。核對正式 callback、Turnstile hostname、來源與 Cookie 名稱，會員導覽維持管理員試用設定。
+3. 核對正式 Nginx 的 callback 日誌抑制、HTTPS、Origin／代理 IP 與 request limit；將正式 worker 的 feedback／監控設定具體化。這些正式變更須先供站長審核。
+4. 取得站長明確核准後，停寫、正式備份／Migration、啟動新後端並執行登入及權限 smoke test；保留 SSM 人工恢復通道並陪同最大管理員初始綁定。
+5. 後端通過後才合併 PR，因 main push 會觸發 Pages 發布；驗證 PWA 更新、公開頁、四語系及會員功能，再啟動經核准的正式寄信。
+6. 監控 API／outbox／稽核／回饋。確認穩定後按站長安排撤除測試入口，後續以設定開放一般會員導覽。
+
+目前判斷：**核心程式可進行審查，尚不可直接合併或正式部署**。需完成第 8 節及正式設定審核，最後由站長明確核准切換。恢復碼真人測試成功不代表全部部署條件已完成。
+
+## 10. 修改／新增檔案
+
+以下清單由相對 main `9e3fa3ba` 的候選版本差異產生，包含本次交接文件；不包含私有 EC2 後端、設定、資料庫、郵件、遊戲連線憑證或使用者個資。
+
+- `.github/workflows/validate-security.yml`
+- `.gitignore`
+- `account-action/index.html`
+- `account/index.html`
+- `admin/index.html`
+- `assets/css/admin.css`
+- `assets/css/sidebar-drawer.css`
+- `assets/js/admin-auth.js`
+- `assets/js/admin-page.js`
+- `assets/js/admin-personal-teams.js`
+- `assets/js/member-action.js`
+- `assets/js/member-page.js`
+- `assets/js/member-registration.js`
+- `assets/js/pvp-player-search.js`
+- `assets/js/site.js`
+- `assets/locales/sitewide-overrides.json`
+- `assets/pwa/service-worker.js`
+- `docs/member-acceptance-20261023.md`
+- `docs/member-security-v2-20261022.md`
+- `docs/member-stage-validation-20261023.md`
+- `membership/README.md`
+- `membership/__init__.py`
+- `membership/aws/README.md`
+- `membership/aws/runtime-policy.json`
+- `membership/config.example`
+- `membership/mail_worker.py`
+- `membership/manage.py`
+- `membership/prepare.py`
+- `membership/rangerbook-member-mail.service.in`
+- `membership/rangerbook-member-mail.timer.in`
+- `membership/requirements.txt`
+- `membership/schema.py`
+- `membership/service.py`
+- `membership/stage/README.md`
+- `membership/stage/bootstrap.py`
+- `membership/stage/build-site.mjs`
+- `membership/stage/launch.py`
+- `membership/stage/mail_ready.py`
+- `membership/stage/nginx.conf.in`
+- `membership/stage/rangerbook-membership-test-mail.service.in`
+- `membership/stage/rangerbook-membership-test-mail.timer.in`
+- `membership/stage/rangerbook-membership-test-secrets.service.in`
+- `membership/stage/rangerbook-membership-test.service.in`
+- `membership/stage/runtime.env.in`
+- `membership/stage/secrets.toml`
+- `membership/stage/wait_provider.py`
+- `personal-teams/index.html`
+- `pwa-data.json`
+- `scripts/build-pwa.mjs`
+- `scripts/package-pages.mjs`
+- `sw.js`
+- `tests/admin-workspace-ui.cjs`
+- `tests/game-tech-contract.test.js`
+- `tests/local-static-fixture.cjs`
+- `tests/member-browser.cjs`
+- `tests/member-release-smoke.py`
+- `tests/member-stage-browser.cjs`
+- `tests/pwa-contract.cjs`
+- `tests/pwa-worker.cjs`
+- `tests/security-browser.cjs`
+- `tests/security-pages.mjs`
+- `tests/sidebar-drawer-ui.cjs`
+- `tests/site-sidebar-ui.cjs`
+- `tests/team-analysis-model.cjs`
+- `tests/test_membership_core.py`
+- `tests/test_membership_v2.py`
+- `tests/test_sitewide_locale_coverage.py`
+- `tests/test_ui_locale_coverage.py`
