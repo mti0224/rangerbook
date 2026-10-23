@@ -4,9 +4,11 @@
 
 2026-10-23 已完成準備驗證：本機後端 47 項測試通過；產生 47 頁獨立 artifact；4 個會員／登入頁面的實際瀏覽器測試確認正式認證 API 請求、GA 請求與 Service Worker 註冊均為 0。6 份候選設定已寫入 EC2 的 `acceptance-preparation/`，Nginx 以臨時測試憑證及獨立 config 通過 `nginx -t`，未修改或重新載入既有 config。第 4 步 commit `63065388` 的 9 個 CI 工作流程均已通過；本次新增 commit 的 CI 需另外確認。
 
-後續實際進度：站長已完成 DNS／provider console 設定並同意僅寄送到指定信箱、最多 5 封。測試 HTTPS 憑證取得，入口加上 Basic Auth，未登入回傳 401；正式站及正式 API 健康檢查仍為 200。三種角色的合成帳號、受限備份與 migration 已完成。Google／Turnstile 機密文件各只有一個字串欄位，沒有必要的鍵值對，API 已安全停止，測試 mail timer 未啟動，寄送數仍為 0。機密內容沒有回傳給維護代理。需由站長在 Secrets Manager 補齊 `client_id`／`client_secret` 與 `site_key`／`secret_key` 後重新啟動驗證。
+後續實際進度：站長已完成 DNS／provider console 設定並同意僅寄送到指定信箱、最多 5 封。測試 HTTPS 憑證取得，入口加上 Basic Auth，未登入回傳 401；正式站及正式 API 健康檢查仍為 200。三種角色的合成帳號、受限備份與 migration 已完成。站長補齊 `client_id`／`client_secret` 與 `site_key`／`secret_key` 後，API 成功啟動，Google／註冊功能開關可用。機密內容沒有回傳給維護代理。真實 HTTPS 的會員、管理員、未完成 2FA 最大管理員權限、CSRF 拒絕及登出預檢均通過；第三方真人流程仍需逐項驗收。
 
-新增郵件總額度測試後，核心與私有整合測試共 49 項通過。另修正管理員列表在 i18n ready 之前渲染的競態；四語系實際瀏覽器回歸通過。`f89835be` 的 CI 曾在此競態失敗，不能沿用舊版的 9/9 結果；修正後 commit 需重新檢查。
+新增郵件總額度測試後，核心與私有整合測試共 49 項通過。另修正管理員列表在 i18n ready 之前渲染的競態；四語系實際瀏覽器回歸通過。`145a1904` 的 9 個 CI 工作流程全部通過；後續修正仍須檢查各自最新 CI。
+
+真人註冊發現 mail worker 在處理 outbox 前，因為嘗試解析與寄信無關的 Google 機密而停止，SES 呼叫為 0。修正測試 mail unit，直接使用 EC2 instance role 與受限本機加密金鑰啟動 worker，不依賴 Google／Turnstile provider。`systemd-analyze verify` 與實際 oneshot 均成功，第一筆未過期驗證信已由 SES 接受，outbox 為 sent，持久化額度為 1/5；未重建帳號、延長原 token 或繞過驗證。相同 Email 的第二次註冊維持通用回應，不建立重複帳號。收件、連結驗證與 OAuth／TOTP 仍待操作者確認。
 
 ## 站長需要完成
 
@@ -26,14 +28,15 @@
 - 初始化全新 synthetic user/admin/super_admin，站長透過受限操作設定密碼；備份再 migration，檢查完整性。不可使用正式管理員密碼作測試。
 - 使用獨立 systemd unit/venv/loopback port 18765，正式私人資料不可存取；不設定開機啟動。確認第三方功能與 feature flags 後，才提供 HTTPS 入口。
 - 在站長明確核准後，測試專用 timer 可於 24 小時驗收窗每 15 秒檢查待寄郵件，以便真人註冊立即收到信。不得啟用正式 mail timer。`RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST` 強制限制實際收件者，空白時停止；`member_stage_mail_budget` 在 SES 呼叫前以交易保留額度，跨 batch／重啟／並行總計最多 5 次發送嘗試，失敗與結果不明的 timeout 也消耗額度。測試模式停用 SDK 自動重送；`mail_ready.py` 在無待寄信、超過期限或用盡額度時跳過。沒有 timer 開機自動啟用，額度不可自動重設。
+- mail unit 不解析 OAuth／Turnstile dynamic references；這些功能的暫時失敗不得阻擋驗證信。SES 使用 instance role，Fernet key 由受限 `key.env` 注入，收件者白名單、有效期限與 5 次總額度維持不變。
 - 正式 worker 目前未啟動。消費共用 feedback queue 前先確認沒有其他 consumer；不可由測試 consumer 刪除正式寄送事件。若並行寄信已開始，先分離 queue/subscription。
 
 ## 真人驗收順序與證據
 
 | 項目 | 操作與通過條件 |
 | --- | --- |
-| Google | 測試 admin 登入及重新驗證，綁定站長測試 Gmail；後端顯示已驗證信箱。另一測試帳號不能重複綁定；解除須重新驗證。 |
-| Turnstile／註冊 | 使用全新普通測試帳號；真實 challenge 驗證與驗證信通過，Email 啟用前不能取得完整權限，沒有自動管理員申請。 |
+| Turnstile／註冊（先執行） | 使用全新普通測試帳號；真實 challenge 驗證與驗證信通過，Email 啟用前不能取得完整權限，沒有自動管理員申請。指定信箱只建立一個帳號。 |
+| Google | 使用上一列同一個帳號登入及重新驗證，綁定同一測試 Gmail；後端顯示已驗證信箱。另一測試帳號不能重複綁定；解除須重新驗證。 |
 | 救援 | 帳號與 Email 都顯示通用結果；指定信箱收到 fragment link，完成後舊 Session 失效，重用連結失敗。 |
 | 2FA | 測試 super_admin 只能先綁定驗證器；輸入正確 TOTP 後才可管理。測試 admin 可啟停；恢復碼顯示一次、單次使用。 |
 | 重設＋2FA | 已啟用 2FA 的測試帳號重設密碼後仍須驗證第二因素。 |

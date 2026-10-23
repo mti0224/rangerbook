@@ -1,7 +1,7 @@
 [Unit]
 Description=Rangerbook acceptance mail (one recipient, five attempts maximum)
-After=rangerbook-membership-test-secrets.service
-Requires=rangerbook-membership-test-secrets.service
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
@@ -12,8 +12,9 @@ EnvironmentFile=/home/ubuntu/rangerbook-member-stage-20261023/acceptance/runtime
 EnvironmentFile=/home/ubuntu/rangerbook-member-stage-20261023/acceptance/key.env
 Environment=AWS_REGION=ap-south-1
 ExecCondition=/home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.stage.mail_ready
-ExecStartPre=/home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.stage.wait_provider
-ExecStart=/home/ubuntu/rangerbook-member-stage-20261023/bin/asm-exec -- /home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.mail_worker
+# SES uses the instance role. The local encryption key is supplied by key.env;
+# mail does not need Google or Turnstile credentials resolved at all.
+ExecStart=/home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.mail_worker
 UMask=0077
 NoNewPrivileges=true
 PrivateTmp=true
