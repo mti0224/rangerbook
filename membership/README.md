@@ -1,7 +1,7 @@
 # Membership V2 deployment gate
 
-Owner hold (2026-10-23): finish detached preparation, then wait for the new
-interface mockup and its implementation before merging or cutting over. The
+Owner hold (2026-10-23): the PDF interface is implemented in the feature branch.
+Wait for owner review of the new UI and flows before merging or cutting over. The
 [production preparation bundle](production/README.md) is rendered and tested on
 EC2; production remains unchanged. Keep the PR draft and interface hold present.
 
@@ -36,7 +36,7 @@ This extension is source-only. Pages packaging and the PWA build exclude this di
    Public CI runs `tests/test_membership_core.py`; it cannot prove compatibility with unpublished server code. The private-source suite must be repeated before each server release.
 7. Set `RANGERBOOK_MEMBERS_V2=1` only in the isolated environment. Start on loopback on a separate port. Keep `RANGERBOOK_MAIL_ENABLED=0` until SES, the feedback queue and configuration set are ready. Do not expose an unreviewed stage directly to the internet. Verify existing admin login, mandatory super-admin enrollment, recovery codes and operator recovery on synthetic accounts.
 8. Before **authorized** production cutover: stop writes/mail workers briefly, make a fresh verified backup, run the same migration, and configure the new service release. Preserve all existing environment paths and cookie/origin settings. Add `--no-access-log` to Uvicorn. For Nginx, turn off access logging on the exact `/auth/google/callback` location and avoid query strings/body content in all other security logs. Preserve the existing proxy IP normalization, request size and rate limits. Run `nginx -t` before any reload.
-9. After the backend passes acceptance, merge/publish the frontend. New frontend registration and member routes require V2. Keep `RANGERBOOK_MEMBER_NAVIGATION=0` during the administrator pilot: APIs still authorize members independently of navigation. Changing this backend setting later exposes the two member links to ordinary users; the admin link remains role-restricted.
+9. Only after explicit owner approval and backend acceptance, merge/publish the frontend. New registration and member routes require V2. The PDF UI exposes personal teams and security to all fully authenticated members immediately at release; the admin link and APIs remain role-restricted. `RANGERBOOK_MEMBER_NAVIGATION` is retained in the features response for compatibility and does not gate the new navigation.
 10. Keep the migration backup and current encryption key under restricted access; monitor anonymized auth rate events, `member_audit`, outbox failures and SES bounce/complaint events. No email contents, links, passwords, TOTP secrets or OAuth tokens belong in logs. A brief server/operator outage is safer than silently disabling mandatory 2FA.
 
 ## Backout and restore
@@ -61,13 +61,13 @@ This preserves password/role, clears the broken factor and recovery hashes, revo
 1. In Google Cloud Console, select/create the Rangerbook project. Open Google Auth Platform, configure branding, support contact and external audience. For a pilot, keep Testing and add only the operator's Google test accounts. Add `warmycat.com` as the authorized domain and provide the actual site's home/privacy links.
 2. Create an OAuth client with application type **Web application**. Authorized redirect URI must be exactly `https://rangerbook-auth.warmycat.com/auth/google/callback`, with no trailing slash. This is a backend code exchange; do not create a public JavaScript secret or use an implicit flow. A separate staging client must have its own exact staging callback.
 3. Set the client ID, client secret and callback URI in the server environment. This implementation requests only `openid email`; it does not request offline access or store provider access/refresh tokens. Scope expansion is unnecessary.
-4. With a synthetic member, verify normal linking, account switching, invalid/replayed state, nonce, signature/audience validation, duplicate Google identity/Gmail aliases and unlink. An unconfigured provider is disabled. OAuth start requires a complete session and password/factor reauthentication within five minutes; state is single-use and tied to that exact cookie session.
+4. With a synthetic member, verify normal linking, account switching, invalid/replayed state, nonce, signature/audience validation, duplicate Google identity/Gmail aliases and unlink. An unconfigured provider is disabled. OAuth start requires a complete session and password reauthentication within ten minutes plus a current factor for enrolled users; state is single-use and tied to that exact cookie session.
 
 References: [Google web server authorization](https://developers.google.com/identity/protocols/oauth2/web-server), [Google OIDC](https://developers.google.com/identity/openid-connect/openid-connect).
 
 ## Turnstile setup
 
-Create a Managed Turnstile widget restricted to the intended frontend hostname. Put the public site key and private verification secret in the backend environment. The public site key is exposed through `/auth/features`; the secret is never sent to the client. Server verification checks success, hostname and action `register`, with timeout and fail-closed handling. Tokens are single-use through Cloudflare Siteverify. Run a real browser acceptance test before enabling registration. Registration remains on the existing hidden admin/login entry; it does not add a public main navigation link.
+Create a Managed Turnstile widget restricted to the intended frontend hostname. Put the public site key and private verification secret in the backend environment. The public site key is exposed through `/auth/features`; the secret is never sent to the client. Server verification checks success, hostname and action `register`, with timeout and fail-closed handling. Tokens are single-use through Cloudflare Siteverify. Run a real browser acceptance test before enabling registration. The standalone `/register/` entry is linked from `/login/`; registration remains disabled unless server-side CAPTCHA and mail are configured.
 
 Reference: [Cloudflare server validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
 
@@ -102,3 +102,7 @@ The existing root-domain SPF and Gandi MX were inspected and left unchanged. Roo
 - Owner approval for production backup/migration, backend release, frontend merge and deployment.
 
 None of these are implied by public CI passing. The PR remains draft until they are resolved.
+
+## PDF interface update
+
+See [UI acceptance and review](../docs/member-ui-acceptance-20261023.md) for routes, API changes, synthetic tests, preview instructions and cutover restrictions. The new UI does not add Google login.

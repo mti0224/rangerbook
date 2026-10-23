@@ -107,7 +107,7 @@ test("admin workspace displays a single role-gated tab panel",()=>{
   assert.match(html,/id="adminWorkspaceTabs"/);
   for(const id of ["adminResourcesTab","adminAccountsTab"])assert.match(html,new RegExp('id="'+id+'"'));
   assert.doesNotMatch(html,/id="admin(?:Password|Personal)Tab"/);
-  assert.match(read("account/index.html"),/id="adminPasswordCard"/);
+  assert.match(read("account/index.html"),/id="memberPasswordForm"/);
   assert.match(read("personal-teams/index.html"),/id="adminPersonalPanel"/);
   assert.match(html,/id="adminAccountsTab"[^>]*hidden/);
   assert.match(html,/id="adminCurrentAccount"/);
@@ -251,7 +251,8 @@ test("shared navigation groups personal pages and admin behind a complete AWS se
   assert.match(shell,/gtUserGroup\.append\(gtAdminLink\)/);
   assert.match(shell,/gtNav\.append\(gtUserGroup\)/);
   assert.match(shell,/gtAdminLink\.hidden = !admin/);
-  assert.match(shell,/gtMemberNavigation/);
+  assert.match(shell,/gtLoginLink/);
+  assert.match(shell,/gtMemberLinks\.forEach\(link=>link\.hidden=!complete\)/);
   assert.doesNotMatch(shell,/gtFoot\.append\(gtFootCaption, gtAdminLink\)/);
 });
 

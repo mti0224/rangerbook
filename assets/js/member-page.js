@@ -49,6 +49,7 @@
       if(!status.totp_enabled)say('setupGuide');
     }else{
       $('memberGoogleStatus').textContent=status.google_email||t(features.google?'unbound':'unconfigured');
+      $('memberGoogleStart').dataset.i18n='member.'+(status.google_email?'replaceGoogle':'bindGoogle');
       $('memberGoogleStart').textContent=t(status.google_email?'replaceGoogle':'bindGoogle');
       $('memberGoogleUnlink').hidden=!status.google_email;
       $('memberGoogleNext').textContent=t(features.google?'googleGuide':'unconfigured');

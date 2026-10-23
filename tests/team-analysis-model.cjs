@@ -170,7 +170,7 @@ for (const [source, rows] of bySource) {
       'ambiguous '+language+' phrase for '+source+': '+rows.map(row=>row.key).join(', '));
   }
 }
-assert.ok(adminHtml.includes('data-i18n="admin.personal.heading"'));
+assert.ok(adminHtml.includes('data-i18n="member.personalTeams"'));
 assert.ok(adminHtml.includes('data-i18n-placeholder="admin.personal.search.placeholder"'));
 assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
 assert.match(adminJs, /serverErrorKeys/);

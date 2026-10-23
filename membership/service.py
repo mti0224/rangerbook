@@ -592,6 +592,10 @@ class Membership:
                 sub, email = self.google_claims(response.json()['id_token'], flow['nonce'])
                 with h.db() as con:
                     con.execute('BEGIN IMMEDIATE')
+                    live = con.execute('SELECT 1 FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.user_id=? AND s.expires_at>? AND s.reauth_until>? AND u.password_hash=?',
+                        (self.session_id(request), user['id'], h.isoformat(), time.time(), user['password_hash'])).fetchone()
+                    if not live:
+                        raise ValueError('Session changed during authorization')
                     # Also prevent a recovery email from claiming another member's registration email.
                     conflict = con.execute('SELECT 1 FROM users WHERE id<>? AND (email=? COLLATE NOCASE OR recovery_email=? COLLATE NOCASE OR google_sub=?)', (user['id'], email, email, sub)).fetchone()
                     if conflict:

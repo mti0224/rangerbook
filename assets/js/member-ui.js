@@ -8,9 +8,9 @@
   const left=until=>Math.max(0,Math.ceil((until-Date.now())/1000));
   const cooldowns=new Map();
   let busy=false;
-  const notify=(el,value,type='')=>{if(!el)return;el.textContent=value;el.className='admin-message '+type;el.setAttribute('role','status');el.setAttribute('aria-live','polite');};
+  const notify=(el,value,type='')=>{if(!el)return;el.textContent=value;el.classList.add('admin-message');el.classList.toggle('error',type==='error');el.classList.toggle('success',type==='success');el.setAttribute('role','status');el.setAttribute('aria-live','polite');};
   const message=target=>{
-    const card=target?.closest('.admin-card');
+    const card=target?.closest('.member-setting,.admin-card');
     if(!card)return $('memberState')||$('memberActionStatus');
     let el=card.querySelector('.member-operation-status');
     if(!el){el=document.createElement('p');el.className='member-operation-status';card.append(el);}
@@ -37,7 +37,7 @@
     catch(error){
       notify(output,error.message||t('networkError'),'error');
       if(error.status===429&&button)cooldown(button,error.retryAfter||900,output);
-      if(error.status===401&&location.pathname.includes('/account/')){
+      if(error.status===401&&error.payload?.detail==='member.loginRequired'&&location.pathname.includes('/account/')){
         $('memberLoginGate').hidden=false;
       }
       if(error.payload?.detail==='member.reauthRequired')window.dispatchEvent(new Event('member:proof-expired'));
@@ -49,8 +49,9 @@
     const input=form.elements.code,recovery=input.dataset.recovery!=='true';
     input.dataset.recovery=String(recovery);input.value='';input.inputMode=recovery?'text':'numeric';input.maxLength=recovery?64:6;
     input.minLength=recovery?1:6;input.pattern=recovery?'[A-Za-z0-9-]+':'[0-9]{6}';
+    input.previousElementSibling.dataset.i18n='member.'+(recovery?'recoveryCode':'totpCode');
     input.previousElementSibling.textContent=t(recovery?'recoveryCode':'totpCode');
-    button.textContent=t(recovery?'useTotp':'useRecovery');input.focus();
+    button.dataset.i18n='member.'+(recovery?'useTotp':'useRecovery');button.textContent=t(recovery?'useTotp':'useRecovery');input.focus();
   }
   window.RangerbookMemberUI={$,auth,t,format,clock,left,notify,message,post,run,cooldown,factorMode,busy:()=>busy};
 })();

@@ -33,3 +33,5 @@
 
 html[data-theme="dark"] .member-page .admin-message.error { color:#ffaaaa; }
 html[data-theme="dark"] .member-page .admin-message.success { color:#7ee2a8; }
+html[data-theme="dark"] .member-page button[type=submit] { color:#082e29!important; }
+.member-page button:disabled { opacity:1; background:var(--soft)!important; color:var(--muted)!important; border-color:var(--line)!important; }

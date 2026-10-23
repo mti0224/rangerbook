@@ -1,7 +1,7 @@
 # Server-side environment only. Never load this file from GitHub Pages.
 # Leave V2 disabled until isolated migration, configuration and operator recovery are verified.
 RANGERBOOK_MEMBERS_V2=0
-RANGERBOOK_MEMBER_NAVIGATION=0
+RANGERBOOK_MEMBER_NAVIGATION=1
 RANGERBOOK_MEMBER_KEY=
 RANGERBOOK_FRONTEND_URL=https://rangerbook.warmycat.com
 RANGERBOOK_GOOGLE_CLIENT_ID=

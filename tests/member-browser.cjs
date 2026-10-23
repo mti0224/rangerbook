@@ -53,7 +53,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     }
     if(url.hostname==='challenges.cloudflare.com')return route.fulfill({contentType:'text/javascript',body:'window.turnstile={render:(mount,options)=>{options.callback("fixture-captcha");return 1},reset:()=>{}};window.rbTurnstileReady();'});
     if(url.hostname==='accounts.google.com')return route.fulfill({contentType:'text/html',body:'<h1>Fixture OAuth provider</h1>'});
-    if(url.origin!==base){outbound.push(url.href);return route.abort();}
+    if(url.origin!==base){outbound.push({url:url.href,frame:req.frame().url()});return route.abort();}
     let name=decodeURIComponent(url.pathname).slice(1);if(name.endsWith('/')||!name)name+='index.html';
     const file=path.join(root,name);
     if(!fs.existsSync(file))return route.fulfill({status:404,body:''});
@@ -61,16 +61,24 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     return route.fulfill({contentType:types[path.extname(file)]||'application/octet-stream',body:fs.readFileSync(file)});
   });
   const page=await context.newPage();page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));
-  const go=async route=>{await page.goto(base+route);await page.evaluate(()=>window.RangerbookI18n?.ready);};
+  const go=async route=>{await page.goto(base+route);try{await page.evaluate(()=>window.RangerbookI18n?.ready);}catch(error){if(!/Execution context was destroyed/.test(error.message))throw error;await page.waitForLoadState('load');await page.evaluate(()=>window.RangerbookI18n?.ready);}};
   const menu=async()=>{if(width<1000&&!await page.locator('.gt-sidebar').isVisible())await page.locator('.site-menu-toggle').click();};
   const assertPage=async()=>{
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'No horizontal overflow');
     assert.equal(await page.locator('.member-banner').count(),1);
     assert.ok((await page.locator('.member-banner h1').innerText()).trim());
+    const contrast=await page.evaluate(()=>{
+      const button=[...document.querySelectorAll('button[type=submit]')].find(x=>!x.disabled&&x.getBoundingClientRect().height);
+      if(!button)return 100;
+      const luminance=value=>{const rgb=value.match(/[0-9.]+/g).slice(0,3).map(Number).map(x=>x/255).map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
+      const style=getComputedStyle(button),a=luminance(style.color),b=luminance(style.backgroundColor);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+    });
+    assert.ok(contrast>=4.5,'Submit text contrast '+contrast);
+
   };
   await go('/account/');await page.locator('#memberSecurityArea').waitFor();
   assert.equal(await page.locator('.member-banner h1').innerText(),copy('security',locale));
-  assert.equal(await page.locator('#memberSettings').isDisabled(),true);
+  assert.equal(await page.locator('#memberSettings').evaluate(el=>el.disabled),true);
   await menu();assert.equal(await page.locator('.gt-user-navigation a[href$="/personal-teams/"]').isVisible(),true);
   assert.equal(await page.locator('.gt-sidebar-admin-entry').isVisible(),false);
   if(width<1000)await page.keyboard.press('Escape');
@@ -80,10 +88,10 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.evaluate(()=>document.querySelector('#memberReauthForm').dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})));
   assert.equal(calls.filter(x=>x.path==='/auth/reauth'&&x.method==='POST').length,1);
   hold=false;release();
-  await page.waitForFunction(()=>document.querySelector('#memberReauthForm input').disabled);
+  await page.waitForFunction(()=>!document.querySelector('#memberReauthForm').hasAttribute('aria-busy')&&document.querySelector('#memberReauthForm input').disabled);
   assert.match(await page.locator('#memberProofStatus').innerText(),/10:00|09:59/);
   assert.equal(await page.locator('#memberReauthForm input').inputValue(),'');
-  assert.equal(await page.locator('#memberSettings').isDisabled(),false);
+  assert.equal(await page.locator('#memberSettings').evaluate(el=>el.disabled),false);
   await assertPage();
   if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant')await page.screenshot({path:process.env.QA_SCREENSHOTS+`/security-${width}-${theme}.png`,fullPage:true});
   // Rehydrate a server-expired proof; settings stay locked on reload.
@@ -93,7 +101,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   proof=0;reauthRate=true;await page.reload();await page.locator('#memberReauthForm input').fill('fixture-password');await page.locator('#memberReauthForm button').click();
   await page.waitForFunction(()=>document.querySelector('#memberReauthForm button').disabled);
   await page.waitForFunction(()=>!document.querySelector('#memberReauthForm button').disabled);reauthRate=false;
-  await page.locator('#memberReauthForm button').click();await page.waitForFunction(()=>document.querySelector('#memberSettings').disabled===false);
+  await page.locator('#memberReauthForm input').fill('fixture-password');await page.locator('#memberReauthForm button').click();await page.waitForFunction(()=>document.querySelector('#memberSettings').disabled===false);
   await page.locator('#memberSetup').click();await page.waitForURL('**/two-factor/');await page.locator('#memberSetup:not(:disabled)').waitFor();
   await page.locator('#memberSetup').click();await page.locator('#memberSetupPanel').waitFor();
   assert.equal(await page.locator('#memberManualKey').innerText(),'FIXTUREONLY');await assertPage();
@@ -137,7 +145,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await go('/account-action/#reset='+'x'.repeat(64));await page.locator('#memberResetForm').waitFor();assert.equal(new URL(page.url()).hash,'');
   await page.locator('#memberResetForm input[name=password]').fill('fixture-password');await page.locator('#memberResetForm input[name=confirm]').fill('fixture-password');await page.locator('#memberResetForm button').click();
   await page.waitForFunction(()=>document.querySelector('#memberResetForm').hidden);assert.equal(await page.locator('.member-banner h1').innerText(),copy('resetSuccess',locale));
-  await go('/account-action/#verify='+'y'.repeat(64));await page.waitForFunction(()=>document.querySelector('.member-banner h1').dataset.i18n==='member.emailSuccess');
+  await go('/account-action/#verify='+'y'.repeat(64));await page.waitForFunction(()=>document.querySelector('.member-banner h1')?.dataset.i18n==='member.emailSuccess');
   assert.equal(new URL(page.url()).hash,'');assert.equal(await page.locator('#memberActionLogin').isVisible(),true);
   invalidLink=true;await go('/account-action/#reset='+'z'.repeat(64));await page.locator('#memberActionStatus.error').waitFor();assert.equal(await page.locator('#memberResetForm').isVisible(),false);assert.equal(await page.locator('#memberActionAgain').isVisible(),true);invalidLink=false;
   // Guest, member, administrator and super-admin sidebar states, including immediate auth events.
@@ -151,7 +159,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   assert.equal(await page.locator('.gt-user-navigation a[href$="/login/"]').isVisible(),true);
   if(width<1000)await page.keyboard.press('Escape');
   offline=true;await page.locator('#memberForgotForm input').fill('fixture-user');await page.locator('#memberForgotForm button').click();await page.locator('#memberState.error').waitFor();assert.equal(await page.locator('#memberState').innerText(),copy('networkError',locale));offline=false;
-  assert.ok(!outbound.some(url=>/google-analytics|googletagmanager/.test(url)),'Private pages never request analytics');
+  assert.ok(!outbound.some(item=>/google-analytics|googletagmanager/.test(item.url)&&/\/(?:account|login|register|two-factor|forgot-password|account-action)\//.test(new URL(item.frame).pathname)),'Private pages never request analytics');
   assert.deepEqual(errors,[]);
   console.log('MEMBER_BROWSER_OK',locale,theme,width);
   await context.close();

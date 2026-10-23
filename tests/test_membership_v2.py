@@ -84,7 +84,12 @@ def enroll(env, who='a'):
     response=c.post('/auth/2fa/setup');assert response.status_code==200,response.text
     secret=response.json()['manual_key']
     code=pyotp.TOTP(secret).now()
-    response=c.post('/auth/2fa/enable',json={'code':code});assert response.status_code==200,response.text
+    response=c.post('/auth/2fa/enable',json={'code':code})
+    # A real 30-second boundary can pass while the request is in flight.
+    next_code=pyotp.TOTP(secret).now()
+    if response.status_code==400 and code!=next_code:
+        response=c.post('/auth/2fa/enable',json={'code':next_code})
+    assert response.status_code==200,response.text
     return secret,response.json()['recovery_codes']
 
 
@@ -147,7 +152,10 @@ def test_totp_replay_wrong_expiry_and_encryption(env):
     assert c.post('/auth/2fa/verify',json={'code':pyotp.TOTP(secret).at(time.time()-180)}).status_code==401
     assert c.post('/auth/2fa/verify',json={'code':codes[1]}).status_code==200
     assert c.get('/member/game-binding/status').status_code==200
-    assert reauth(c,codes[2]).status_code==200
+    assert reauth(c).status_code==200
+    assert c.post('/auth/2fa/disable',json={'code':codes[2]}).status_code==429
+    with h.db() as con:
+        con.execute("UPDATE auth_rate_events SET created_at=created_at-901 WHERE action='v2-factor'")
     assert c.post('/auth/2fa/disable',json={'code':codes[2]}).status_code==200
     assert c.get('/auth/me').json()['logged_in'] is False
 
@@ -307,6 +315,24 @@ def test_google_state_nonce_signature_and_uniqueness(env,monkeypatch):
     login(c,'b');reauth(c)
     start=c.post('/auth/google/start',json={});q=parse_qs(urlparse(start.json()['url']).query)
     assert c.get('/auth/google/callback',params={'state':q['state'][0],'code':'test'},follow_redirects=False).headers['location'].endswith('google=failed')
+    login(c,'a');reauth(c)
+    # Denial keeps the original identity; replacement commits only after validation.
+    start=c.post('/auth/google/start',json={});q=parse_qs(urlparse(start.json()['url']).query)
+    assert c.get('/auth/google/callback',params={'state':q['state'][0],'error':'access_denied'},follow_redirects=False).headers['location'].endswith('google=failed')
+    assert c.get('/auth/security').json()['google_email']=='testname@gmail.com'
+    start=c.post('/auth/google/start',json={});q=parse_qs(urlparse(start.json()['url']).query)
+    claims.update(sub='google-workspace-a',email='verified@workspace.test')
+    assert c.get('/auth/google/callback',params={'state':q['state'][0],'code':'test'},follow_redirects=False).headers['location'].endswith('google=ok')
+    assert c.get('/auth/security').json()['google_email']=='verified@workspace.test'
+    # Revocation during the external code exchange must defeat the final commit.
+    start=c.post('/auth/google/start',json={});q=parse_qs(urlparse(start.json()['url']).query)
+    claims.update(sub='google-uncommitted',email='uncommitted@workspace.test')
+    def revoke_during_exchange(*args,**kwargs):
+        with h.db() as con:con.execute("DELETE FROM sessions WHERE user_id='a'")
+        return exchange(*args,**kwargs)
+    monkeypatch.setattr('membership.service.requests.post',revoke_during_exchange)
+    assert c.get('/auth/google/callback',params={'state':q['state'][0],'code':'test'},follow_redirects=False).headers['location'].endswith('google=failed')
+    with h.db() as con:assert con.execute("SELECT recovery_email FROM users WHERE id='a'").fetchone()[0]=='verified@workspace.test'
     login(c,'a');reauth(c)
     assert c.post('/auth/google/unlink',json={}).status_code==200
     assert c.get('/auth/security').json()['google_email'] is None

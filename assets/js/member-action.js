@@ -57,6 +57,7 @@
       catch(error){if(error.payload?.detail==='member.invalidLink')invalid();else{notify(output,error.message,'error');$('memberActionAgain').hidden=false;}}
     }
   })();
+  window.addEventListener('hashchange',()=>{if(location.hash)location.reload();});
   window.addEventListener('pagehide',()=>{token=null;$('memberResetForm')?.reset();});
   window.addEventListener('pageshow',e=>{if(e.persisted&&$('memberResetForm'))invalid();});
 })();
