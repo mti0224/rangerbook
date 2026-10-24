@@ -64,7 +64,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});await page.locator('#adminAccountsTab').click();
   const row=page.locator('[data-user-id="qa_target"]');
   await row.locator('summary').click();await row.locator('[data-action="reset-password"]').click();
-  await page.waitForFunction(()=>document.querySelector('[data-user-id="qa_target"] button')?.disabled===false);
+  await page.waitForFunction(()=>document.querySelector('[data-user-id="qa_target"] [data-action="reset-password"]')?.disabled===false);
   assert.ok(dialogs.some(message=>message.includes('Only-a-fixture-temporary-password!42')),'The generated password reaches the authorized operator');
   assert.ok(dialogs.every(message=>!message.includes('qwer1234')));
   assert.deepEqual(errors,[]);
