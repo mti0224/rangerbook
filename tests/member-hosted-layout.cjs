@@ -107,7 +107,8 @@ async function main(){
       assert.equal(await boundPage.locator('#adminPersonalAccountCard h2').innerText(),copy('gameAccountSettings'));
       assert.match(await boundPage.locator('#adminPersonalLastImported').innerText(),/2026\/10\/24 09:02:03/);
       assert.equal(await viewer.locator('#pvpPlayerSearchSelection').isVisible(),false);
-      assert.equal(await viewer.locator('.personal-team-picker span').innerText(),copy('teamToView'));
+      assert.equal(await viewer.locator('h3#personalTeamHeading').innerText(),copy('yourTeams'));
+      assert.equal(await viewer.locator('#pvpPlayerSearchTeamSelect').getAttribute('aria-labelledby'),'personalTeamHeading');
       for(const key of Object.keys(teams))await viewer.locator('#pvpPlayerSearchTeamSelect').selectOption(key);
       await go(boundPage,'/account/');await boundPage.locator('#memberSettings:not([disabled])').waitFor();
       await boundPage.locator('#memberGoogleStart').click();await boundPage.locator('#memberConfirmDialog').waitFor();

@@ -2135,10 +2135,10 @@
     "th": "การตั้งค่าบัญชีเกม"
   },
   {
-    "key": "UI:member.teamToView",
-    "zh_TW": "預查看的隊伍",
-    "en": "Team to view",
-    "jp": "表示するチーム",
-    "th": "ทีมที่ต้องการดู"
+    "key": "UI:member.yourTeams",
+    "zh_TW": "你的隊伍",
+    "en": "Your teams",
+    "jp": "あなたのチーム",
+    "th": "ทีมของคุณ"
   }
 ]

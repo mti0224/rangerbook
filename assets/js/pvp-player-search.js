@@ -616,9 +616,16 @@
       // Reuse the same seven-team picker inside the private viewer card.
       const picker = teamSelect.closest("label");
       picker.classList.add("personal-team-picker");
-      picker.querySelector("span").dataset.i18n = "member.teamToView";
-      picker.querySelector("span").textContent = window.RangerbookI18n?.t("member.teamToView", "預查看的隊伍") || "預查看的隊伍";
-      page.querySelector(".pvp-player-team-pane").prepend(picker);
+      picker.querySelector("span").remove();
+      const heading = document.createElement("h3");
+      heading.id = "personalTeamHeading";
+      heading.dataset.i18n = "member.yourTeams";
+      heading.textContent = window.RangerbookI18n?.t("member.yourTeams", "你的隊伍") || "你的隊伍";
+      teamSelect.setAttribute("aria-labelledby", heading.id);
+      const toolbar = document.createElement("div");
+      toolbar.className = "personal-team-toolbar";
+      toolbar.append(heading, picker);
+      page.querySelector(".pvp-player-team-pane").prepend(toolbar);
       teamTitle.hidden = true;
       if (!(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) { page.hidden = true; return; }
       page.hidden = false;

@@ -91,7 +91,8 @@ async function main(){
         const box=await target.boundingBox();assert.ok(Math.abs(box.x-banner.x)<=1&&Math.abs(box.width-banner.width)<=1,'Bound content matches banner edges');
       }
       assert.equal(await viewer.locator('#pvpPlayerSearchSelection').isVisible(),false,'No separate My teams card');
-      assert.equal(await viewer.locator('.personal-team-picker span').innerText(),copy('teamToView'));
+      assert.equal(await viewer.locator('h3#personalTeamHeading').innerText(),copy('yourTeams'));
+      assert.equal(await viewer.locator('#pvpPlayerSearchTeamSelect').getAttribute('aria-labelledby'),'personalTeamHeading');
       assert.equal(await viewer.locator('.pvp-player-team-pane #pvpPlayerSearchTeamSelect').count(),1,'Picker is inside the viewer card');
       assert.equal(await viewer.locator('#pvpPlayerSearchTeamSelect option').count(),7);
       for(const key of Object.keys(teams)){
