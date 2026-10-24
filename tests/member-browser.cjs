@@ -7,12 +7,12 @@ const copy=(key,locale)=>rows.find(row=>row.key==='UI:member.'+key)?.[locale==='
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6oAAAAABJRU5ErkJggg==','base64');
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||chromium.executablePath(),args:['--no-sandbox','--disable-dev-shm-usage']});
- try{for(const locale of (process.env.QA_ONE?['zh-Hant']:['zh-Hant','en','jp','th']))for(const theme of (process.env.QA_ONE?['dark']:['light','dark']))for(const width of (process.env.QA_ONE?[390]:[390,1440])){
+ try{for(const locale of (process.env.QA_ONE?['zh-Hant']:['zh-Hant','en','jp','th']))for(const theme of (process.env.QA_ONE?['dark']:['light','dark']))for(const width of (process.env.QA_ONE?[390]:[390,768,1440,1920])){
   const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block'});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-user',role:'user'},factor=false,email=null,proof=0,reauthRate=false,offline=false,hold=false,release;
   let loginMfa=false,invalidLink=false;
-  let gameChallenge=null,gameBound=false,swapAttempts=0;
+  let gameChallenge=null,gameBound=false,swapAttempts=0,searchMode="results";
   const calls=[],errors=[],outbound=[];
   await context.route('**/*',async route=>{
     const req=route.request(),url=new URL(req.url());
@@ -49,7 +49,10 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(url.pathname==='/auth/2fa/enable'||url.pathname==='/auth/2fa/recovery-codes')data={recovery_codes:['FIXTURE-CODE-ONE']};
       if(url.pathname==='/auth/google/start')data={url:'https://accounts.google.com/o/oauth2/v2/auth?state=fixture'};
       if(url.pathname==='/member/game-binding/status')data={bound:gameBound,challenge:gameChallenge,player:{player_name:'Fixture',guild_name:'Fixture Guild'}};
-      if(url.pathname==='/member/game-players/search')data={items:[{candidateId:'fixture-candidate',name:'Fixture <img src=x>',guildName:'Fixture Guild'}]};
+      if(url.pathname==='/member/game-players/search'){
+        if(searchMode==='error')return route.fulfill({status:503,json:{detail:'搜尋暫時不可用'},headers});
+        data={items:searchMode==='empty'?[]:[{candidateId:'fixture-candidate',name:'Fixture <img src=x>',guildName:'Fixture Guild'}]};
+      }
       if(url.pathname==='/member/game-binding/start'){
         if(body.medal==='0')return route.fulfill({status:400,json:{detail:'公會獎牌數量不符，請確認後重試。'},headers});
         gameChallenge={challengeId:'fixture-challenge',team:3,side:'A',firstPosition:2,secondPosition:5,expiresAt:new Date(Date.now()+600000).toISOString()};data=gameChallenge;
@@ -74,11 +77,20 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const page=await context.newPage();page.setDefaultTimeout(10000);page.on('pageerror',e=>errors.push(e.message));
   const go=async route=>{await page.goto(base+route);try{await page.evaluate(()=>window.RangerbookI18n?.ready);}catch(error){if(!/Execution context was destroyed/.test(error.message))throw error;await page.waitForLoadState('load');await page.evaluate(()=>window.RangerbookI18n?.ready);}};
   const menu=async()=>{if(width<1000&&!await page.locator('.gt-sidebar').isVisible())await page.locator('.site-menu-toggle').click();};
+  const bannerMetrics=()=>page.locator('.page-title').evaluate(el=>{
+    const box=el.getBoundingClientRect(),style=getComputedStyle(el);
+    const keys=['fontSize','fontWeight','lineHeight','letterSpacing','color','marginTop','marginBottom'];
+    const text=selector=>Object.fromEntries(keys.map(key=>[key,getComputedStyle(el.querySelector(selector))[key]]));
+    return {x:box.x,width:box.width,padding:style.padding,border:style.border,borderLeft:style.borderLeft,borderRadius:style.borderRadius,background:style.backgroundColor,title:text('h1'),brand:text('.eyebrow'),subtitle:text('p:last-child')};
+  });
+  await go('/ranger/');
+  const queryBanner=await bannerMetrics();
   const assertPage=async()=>{
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'No horizontal overflow');
     assert.equal(await page.locator('.member-banner').count(),1);
     assert.ok((await page.locator('.member-banner h1').innerText()).trim());
     assert.equal(await page.locator('.member-banner-brand').innerText(),'LINE RANGERS DATABASE');
+    assert.deepEqual(await bannerMetrics(),queryBanner,'Uses the actual data-query page width and banner styles');
     const banner=await page.locator('.member-banner').boundingBox();
     for(const card of await page.locator('.admin-card:visible').all()){
       const box=await card.boundingBox();
@@ -200,8 +212,18 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   user={logged_in:true,role:'user',account:'fixture-user'};
   await go('/personal-teams/');await page.locator('#adminPersonalPanel:not([hidden])').waitFor();await assertPage();
   assert.equal(await page.locator('#adminPersonalStepGuide').innerText(),copy('teamSearchGuide',locale));
-  await page.locator('#adminPersonalSearch').fill('Fixture');await page.locator('#adminPersonalSearchForm button').click();
+  assert.equal(await page.locator('#adminPersonalResults').isVisible(),false,'No empty candidate frame before search');
+  assert.equal(await page.locator('#adminPersonalResults h3').count(),0,'No candidate heading');
+  if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant')await page.screenshot({path:process.env.QA_SCREENSHOTS+`/team-search-${width}-${theme}.png`,fullPage:true});
+  await page.locator('#adminPersonalSearch').fill('Fixture');
+  searchMode='empty';await page.locator('#adminPersonalSearchForm button').click();
+  await page.waitForFunction(()=>document.querySelector('#adminPersonalStatus').textContent&&!document.querySelector('#adminPersonalSearchForm button').disabled);
+  assert.equal(await page.locator('#adminPersonalResults').isVisible(),false,'No empty frame for zero matches');
+  searchMode='error';await page.locator('#adminPersonalSearchForm button').click();await page.locator('#adminPersonalStatus.error').waitFor();
+  assert.equal(await page.locator('#adminPersonalResults').isVisible(),false,'No empty frame after search error');
+  searchMode='results';await page.locator('#adminPersonalSearchForm button').click();
   await page.locator('.personal-candidate').waitFor();
+  assert.equal(await page.locator('#adminPersonalResults').isVisible(),true);
   assert.equal(await page.locator('.personal-candidate img').count(),0,'Candidate names render as text');
   await page.locator('.personal-candidate').click();await page.locator('#adminPersonalMedal').waitFor();
   assert.equal(await page.locator('#adminPersonalSearchForm').isVisible(),false);

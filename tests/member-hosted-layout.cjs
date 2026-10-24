@@ -26,7 +26,7 @@ async function main(){
     await page.waitForFunction(()=>Boolean(window.RangerbookI18n?.ready));
     await page.evaluate(()=>window.RangerbookI18n.ready);
     await page.waitForFunction(()=>!document.documentElement.hasAttribute('data-rb-localizing'));
-    if(path!=='/admin/')await page.locator('.member-banner-brand').waitFor({state:'visible'});
+    if(path!=='/admin/')await page.locator('.page-title .eyebrow').waitFor({state:'visible'});
   };
   const signIn=async(context,role)=>{
     const account=credentials.accounts.find(row=>row.role===role);
@@ -41,15 +41,23 @@ async function main(){
   };
   try{
     let matrices=0;
-    for(const locale of ['zh-Hant','en','jp','th'])for(const theme of ['light','dark'])for(const width of [390,1440]){
+    for(const locale of ['zh-Hant','en','jp','th'])for(const theme of ['light','dark'])for(const width of [390,768,1440,1920]){
       phase='layout '+locale+' '+theme+' '+width;
       const context=await makeContext(locale,theme,width),page=await context.newPage();
+      await go(page,'/ranger/');
+      const metrics=()=>page.locator('.page-title').evaluate(el=>{
+        const box=el.getBoundingClientRect(),s=getComputedStyle(el);
+        const text=selector=>{const x=getComputedStyle(el.querySelector(selector));return [x.fontSize,x.fontWeight,x.lineHeight,x.letterSpacing,x.color,x.marginBottom];};
+        return {x:box.x,width:box.width,padding:s.padding,border:s.border,borderLeft:s.borderLeft,radius:s.borderRadius,background:s.backgroundColor,title:text('h1'),brand:text('.eyebrow'),subtitle:text('p:last-child')};
+      });
+      const queryBanner=await metrics();
       for(const path of ['/login/','/register/','/forgot-password/','/account/','/two-factor/','/personal-teams/']){
         phase='layout '+locale+' '+theme+' '+width+' '+path;
         await go(page,path);
         assert.equal(await page.locator('.member-banner-brand').innerText(),'LINE RANGERS DATABASE');
         assert(await page.locator('.member-banner h1').innerText());
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'No horizontal overflow');
+        assert.deepEqual(await metrics(),queryBanner,'Data-query banner styles and edges');
         const banner=await page.locator('.member-banner').boundingBox();
         for(const card of await page.locator('main .admin-card:visible').all()){
           const box=await card.boundingBox();assert(Math.abs(box.x-banner.x)<=1&&Math.abs(box.width-banner.width)<=1,'Card/banner edges');
@@ -72,6 +80,8 @@ async function main(){
     assert(status.reauth_valid_for>0&&status.reauth_valid_for<=600);
     await go(page,'/personal-teams/');await page.locator('#adminPersonalPanel:not([hidden])').waitFor();
     await page.locator('#adminPersonalUnbound:not([hidden])').waitFor();
+    assert.equal(await page.locator('#adminPersonalResults').isVisible(),false);
+    assert.equal(await page.locator('#adminPersonalResults h3').count(),0);
     const banner=await page.locator('.member-banner').boundingBox(),card=await page.locator('.personal-binding-card').boundingBox();
     assert(Math.abs(card.x-banner.x)<=1&&Math.abs(card.width-banner.width)<=1);
     await go(page,'/forgot-password/');await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();

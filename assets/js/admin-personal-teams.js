@@ -53,7 +53,7 @@
     unboundPanel.dataset.step = step;
     searchForm.hidden = step !== "search";
     candidatesPanel.hidden = step !== "search";
-    if (get("adminPersonalResults")) get("adminPersonalResults").hidden = step !== "search";
+    if (get("adminPersonalResults")) get("adminPersonalResults").hidden = step !== "search" || !candidatesPanel.childElementCount;
     selectedPanel.hidden = step !== "medal";
     challengePanel.hidden = step !== "challenge";
     const guide = get("adminPersonalStepGuide");
@@ -84,9 +84,9 @@
     challengePanel.hidden = true;
     boundPanel.hidden = true;
     unboundPanel.hidden = false;
+    candidatesPanel.replaceChildren();
     showBindingStep("search");
     if (get("adminPersonalBoundIntro")) get("adminPersonalBoundIntro").hidden = true;
-    candidatesPanel.replaceChildren();
     const viewer = get("adminPersonalViewer");
     if (viewer) { viewer.hidden = true; viewer.removeAttribute("src"); }
     get("adminPersonalUnbindForm").hidden = true;
@@ -173,6 +173,7 @@
     requestBusy(true);
     setStatus(t("status.searching","搜尋玩家中…"));
     candidatesPanel.replaceChildren();
+    if (get("adminPersonalResults")) get("adminPersonalResults").hidden = true;
     selectedPanel.hidden = true;
     selected = null;
     try {
@@ -200,6 +201,7 @@
         });
         candidatesPanel.append(button);
       }
+      if (get("adminPersonalResults")) get("adminPersonalResults").hidden = !items.length;
       setStatus(items.length ? t("status.choose","請從候選名單選擇你的遊戲帳號。") : t("status.notFound","找不到符合名稱的玩家。"));
     } catch (error) {
       if (id === version && adminAllowed()) setStatus(serverMessage(error.message, "status.searchFailed"), true);

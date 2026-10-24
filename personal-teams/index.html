@@ -33,9 +33,9 @@
   <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261013-v2.5">
   <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261014-toggle1">
-  <link rel="stylesheet" href="../assets/css/member.css?v=20261024-refine1">
+  <link rel="stylesheet" href="../assets/css/member.css?v=20261024-query-layout">
 </head>
-<body class="gt-app"><div id="site-header"></div><main class="admin-page personal-teams-page"><div class="admin-shell"><section class="page-title member-banner"><span class="member-banner-brand" lang="en">LINE RANGERS DATABASE</span><h1 data-i18n="member.personalTitle">個人隊伍</h1><p data-i18n="member.personalIntro">檢視並分析你的遊戲隊伍</p></section><section id="memberGate" class="admin-card"><a href="../login/" data-i18n="member.goLogin">前往登入</a></section>      <section id="adminPersonalPanel" class="admin-workspace-panel" hidden>
+<body class="gt-app"><div id="site-header"></div><main class="page personal-teams-page"><div class="admin-shell"><section class="page-title member-banner"><p class="eyebrow member-banner-brand" lang="en">LINE Rangers Database</p><h1 data-i18n="member.personalTitle">個人隊伍</h1><p data-i18n="member.personalIntro">檢視並分析你的遊戲隊伍</p></section><section id="memberGate" class="admin-card"><a href="../login/" data-i18n="member.goLogin">前往登入</a></section>      <section id="adminPersonalPanel" class="admin-workspace-panel" hidden>
         <div id="adminPersonalBoundIntro" class="admin-session-head" hidden>
           <div>
             <h2 data-i18n="member.personalTeams">個人遊戲隊伍</h2>
@@ -52,7 +52,7 @@
             </label>
             <button type="submit" class="primary personal-primary" data-i18n="member.search">搜尋</button>
           </form>
-          <div id="adminPersonalResults" class="personal-search-results"><h3 data-i18n="member.teamCandidates">候選名單</h3><div id="adminPersonalCandidates" class="personal-candidates" role="listbox" aria-label="玩家搜尋候選名單" data-i18n-aria-label="admin.personal.search.candidatesLabel"></div></div>
+          <div id="adminPersonalResults" class="personal-search-results" hidden><div id="adminPersonalCandidates" class="personal-candidates" role="listbox" aria-label="玩家搜尋候選名單" data-i18n-aria-label="admin.personal.search.candidatesLabel"></div></div>
           <div id="adminPersonalSelected" hidden>
             <p id="adminPersonalSelectedName"></p>
             <form id="adminPersonalMedalForm" class="admin-form">

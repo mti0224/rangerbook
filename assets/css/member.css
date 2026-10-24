@@ -1,9 +1,7 @@
 /* Member forms use the existing page-title, admin card and theme tokens. */
 .member-content { display:grid; gap:20px; min-width:0; }
-.member-narrow { width:min(560px,100%); margin-inline:auto; }
+.member-narrow { width:100%; margin-inline:0; }
 .member-page .page-title { margin:0; }
-.member-page .page-title h1 { font-size:clamp(1.6rem,4vw,2.25rem); }
-.member-page .member-banner p { margin:0; }
 .member-page button, .member-page .member-links a, .member-page .admin-actions a {
   min-height:44px; border:1px solid var(--line); border-radius:12px; padding:10px 16px;
   font:inherit; font-weight:700; background:var(--soft); color:var(--text); cursor:pointer;
@@ -37,10 +35,9 @@ html[data-theme="dark"] .member-page button[type=submit] { color:#082e29!importa
 .member-page button:disabled { opacity:1; background:var(--soft)!important; color:var(--muted)!important; border-color:var(--line)!important; }
 
 /* The form cards share the banner's content edges on every member route. */
-.member-narrow { width:100%; margin-inline:0; }
+body.gt-app .page .admin-shell { width:100%; min-width:0; }
 .member-content > *, #memberSecurityArea > * { min-width:0; box-sizing:border-box; }
 #memberSecurityArea { display:grid; gap:20px; }
-.member-banner-brand { display:block; margin-bottom:10px; color:var(--primary-dark); font-size:.75rem; font-weight:800; letter-spacing:.12em; }
 .member-page .member-banner h1, .personal-teams-page .member-banner h1 { margin-top:0; }
 .member-login-actions { display:flex; justify-content:space-between; align-items:last baseline; gap:20px; }
 .member-login-links { display:grid; gap:6px; min-width:0; line-height:1.5; }
@@ -65,7 +62,6 @@ html[data-theme="dark"] .member-page button[type=submit] { color:#082e29!importa
 .personal-binding-card .personal-instruction { padding:0; margin:0 0 16px; border:0; background:none; }
 .personal-binding-card .personal-primary { width:100%; min-height:44px; background:var(--primary-dark); color:#fff; }
 .personal-binding-card .personal-search-results { border:1px solid var(--line); border-radius:12px; padding:16px; min-width:0; }
-.personal-search-results h3 { margin:0 0 12px; color:var(--muted); font-size:1rem; }
 .personal-binding-card .personal-candidates { min-height:48px; }
 .personal-binding-card #adminPersonalSelectedName { margin-top:0; overflow-wrap:anywhere; }
 .personal-binding-card :is(input,button):focus-visible { outline:3px solid var(--primary); outline-offset:3px; }
