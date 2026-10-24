@@ -147,7 +147,10 @@ def main():
         assert response.status_code == 200
         codes = response.json()['recovery_codes']
         assert superuser.get(base + '/admin/users', timeout=5).status_code == 200
-        assert superuser.post(base + '/auth/2fa/disable', timeout=5).status_code == 403
+        assert superuser.post(base + '/auth/reauth', json={'password': password}, timeout=10).status_code == 200
+        denied = superuser.post(base + '/auth/2fa/disable', json={'code': codes[1]}, timeout=5)
+        assert denied.status_code == 403 and denied.json()['detail'] == 'member.mandatory2fa'
+        assert superuser.get(base + '/auth/security', timeout=5).json()['totp_enabled'] is True
         results.append('mandatory_super_admin_enrollment')
         assert superuser.post(base + '/auth/logout', timeout=5).status_code == 200
         superuser, state = login('super_admin')
