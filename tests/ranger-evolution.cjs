@@ -30,11 +30,12 @@ async function fixture(rows, edges, fail=false, embedded=false) {
   const rendered = model.render({ranger_id:'u1626u-cony'});
   assert.equal((rendered.match(/aria-current="page"/g)||[]).length,1);
   assert.ok(rendered.includes('/rangerbook/ranger/ranger/?detail=u1627e-cony'));
+  assert.ok(!/ranger-evolution-(targets|grade|current|note)/.test(rendered), 'only character cards should be rendered');
   assert.ok(!chain.includes('u1628e-cony'),'same-name Rangers must never be inferred');
   // Embedded official relationships override the older rollout snapshot.
   const embedded = await fixture(records.map(row=>({...row,evolutionTargets:[]})),snapshot.edges,true,true);
   assert.equal(embedded.stages('u1626u-cony').length,1);
-  assert.ok(embedded.render({ranger_id:'u1626u-cony'}).includes('官方資料無其他進化階段。'));
+  assert.equal((embedded.render({ranger_id:'u1626u-cony'}).match(/data-evolution-id=/g)||[]).length,1);
   // Official cycles must not hang the viewer, and missing targets cannot make broken links.
   const cyclic = await fixture(records,[{from:chain[0],to:chain[1]},{from:chain[1],to:chain[0]},{from:chain[0],to:'missing'}]);
   assert.equal(cyclic.stages(chain[0]).length,2);

@@ -2224,5 +2224,173 @@
     "en": "Updated sidebar navigation. You can now click a category to expand or collapse its submenu.",
     "th": "ปรับปรุงการใช้งานแถบเมนูด้านข้าง สามารถคลิกหมวดหมู่เพื่อขยายหรือยุบเมนูย่อยได้แล้ว",
     "jp": "サイドバーの操作方法を更新し、カテゴリをクリックしてサブメニューを開閉できるようになりました。"
+  },
+  {
+    "key": "UI:site.admin.directory0",
+    "zh_TW": "搜尋帳號",
+    "en": "Search accounts",
+    "jp": "アカウントを検索",
+    "th": "ค้นหาบัญชี"
+  },
+  {
+    "key": "UI:site.admin.directory1",
+    "zh_TW": "輸入帳號名稱",
+    "en": "Enter an account name",
+    "jp": "アカウント名を入力",
+    "th": "ป้อนชื่อบัญชี"
+  },
+  {
+    "key": "UI:site.admin.directory2",
+    "zh_TW": "一般會員",
+    "en": "Member",
+    "jp": "一般会員",
+    "th": "สมาชิกทั่วไป"
+  },
+  {
+    "key": "UI:site.admin.directory3",
+    "zh_TW": "所有帳號",
+    "en": "All accounts",
+    "jp": "すべてのアカウント",
+    "th": "บัญชีทั้งหมด"
+  },
+  {
+    "key": "UI:site.admin.directory4",
+    "zh_TW": "所有權限",
+    "en": "All roles",
+    "jp": "すべての権限",
+    "th": "ทุกสิทธิ์"
+  },
+  {
+    "key": "UI:site.admin.directory5",
+    "zh_TW": "密碼狀態",
+    "en": "Password status",
+    "jp": "パスワードの状態",
+    "th": "สถานะรหัสผ่าน"
+  },
+  {
+    "key": "UI:site.admin.directory6",
+    "zh_TW": "所有狀態",
+    "en": "All statuses",
+    "jp": "すべての状態",
+    "th": "ทุกสถานะ"
+  },
+  {
+    "key": "UI:site.admin.directory7",
+    "zh_TW": "須更改密碼",
+    "en": "Password change required",
+    "jp": "パスワード変更が必要",
+    "th": "ต้องเปลี่ยนรหัสผ่าน"
+  },
+  {
+    "key": "UI:site.admin.directory8",
+    "zh_TW": "無須更改",
+    "en": "No change required",
+    "jp": "変更不要",
+    "th": "ไม่ต้องเปลี่ยน"
+  },
+  {
+    "key": "UI:site.admin.directory9",
+    "zh_TW": "排序方式",
+    "en": "Sort by",
+    "jp": "並べ替え",
+    "th": "เรียงตาม"
+  },
+  {
+    "key": "UI:site.admin.directory10",
+    "zh_TW": "依權限排序",
+    "en": "Role",
+    "jp": "権限順",
+    "th": "สิทธิ์"
+  },
+  {
+    "key": "UI:site.admin.directory11",
+    "zh_TW": "依帳號名稱",
+    "en": "Account name",
+    "jp": "アカウント名順",
+    "th": "ชื่อบัญชี"
+  },
+  {
+    "key": "UI:site.admin.directory12",
+    "zh_TW": "最新建立優先",
+    "en": "Newest first",
+    "jp": "新しい順",
+    "th": "ใหม่ที่สุดก่อน"
+  },
+  {
+    "key": "UI:site.admin.directory13",
+    "zh_TW": "最早建立優先",
+    "en": "Oldest first",
+    "jp": "古い順",
+    "th": "เก่าที่สุดก่อน"
+  },
+  {
+    "key": "UI:site.admin.directory14",
+    "zh_TW": "帳號清單",
+    "en": "Accounts",
+    "jp": "アカウント一覧",
+    "th": "รายการบัญชี"
+  },
+  {
+    "key": "UI:site.admin.directory15",
+    "zh_TW": "清除篩選",
+    "en": "Clear filters",
+    "jp": "絞り込みを解除",
+    "th": "ล้างตัวกรอง"
+  },
+  {
+    "key": "UI:site.admin.directory16",
+    "zh_TW": "帳號清單分頁",
+    "en": "Account list pages",
+    "jp": "アカウント一覧のページ",
+    "th": "หน้ารายการบัญชี"
+  },
+  {
+    "key": "UI:site.admin.directory17",
+    "zh_TW": "上一頁",
+    "en": "Previous",
+    "jp": "前へ",
+    "th": "ก่อนหน้า"
+  },
+  {
+    "key": "UI:site.admin.directory18",
+    "zh_TW": "下一頁",
+    "en": "Next",
+    "jp": "次へ",
+    "th": "ถัดไป"
+  },
+  {
+    "key": "UI:site.admin.directory19",
+    "zh_TW": "建立時間",
+    "en": "Created at",
+    "jp": "作成日時",
+    "th": "วันที่สร้าง"
+  },
+  {
+    "key": "UI:site.admin.directory20",
+    "zh_TW": "沒有符合條件的帳號。",
+    "en": "No accounts match your filters.",
+    "jp": "条件に一致するアカウントはありません。",
+    "th": "ไม่พบบัญชีที่ตรงกับตัวกรอง"
+  },
+  {
+    "key": "UI:site.admin.directory21",
+    "zh_TW": "搜尋帳號、調整權限及管理密碼。註冊完成電子郵件驗證即可啟用，不需人工審核。",
+    "en": "Search accounts, update roles and manage passwords. Registration is activated through email verification without manual review.",
+    "jp": "アカウントの検索、権限の変更、パスワードの管理ができます。登録はメール認証で有効になり、手動承認は不要です。",
+    "th": "ค้นหาบัญชี ปรับสิทธิ์ และจัดการรหัสผ่าน บัญชีจะเปิดใช้งานหลังยืนยันอีเมลโดยไม่ต้องรอการอนุมัติ"
+  },
+  {
+    "key": "UI:site.admin.accountResults",
+    "zh_TW": "符合 %N1 / 共 %N2 個帳號",
+    "en": "%N1 matching / %N2 accounts",
+    "jp": "該当 %N1 件 / 全 %N2 件",
+    "th": "ตรงเงื่อนไข %N1 / ทั้งหมด %N2 บัญชี"
+  },
+  {
+    "key": "UI:site.admin.accountPage",
+    "zh_TW": "第 %N1 / %N2 頁",
+    "en": "Page %N1 / %N2",
+    "jp": "%N1 / %N2 ページ",
+    "th": "หน้า %N1 / %N2"
   }
 ]

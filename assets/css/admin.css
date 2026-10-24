@@ -873,3 +873,26 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
 #memberRecovery { white-space: pre-wrap; overflow-wrap: anywhere; }
 #memberManualKey { overflow-wrap: anywhere; }
 .gt-user-navigation { margin-top: .85rem; padding-top: .65rem; border-top: 1px solid var(--line); }
+
+/* Account directory: compact full-width rows, with wrapping controls on mobile. */
+#superAdminPanel .admin-account-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:20px 0; }
+.admin-account-summary > div { padding:16px; background:var(--soft); border:1px solid var(--line); border-radius:12px; display:grid; gap:6px; min-width:0; }
+.admin-account-summary span { color:var(--muted); font-size:.85rem; overflow-wrap:anywhere; }
+.admin-account-summary strong { font-size:1.6rem; font-variant-numeric:tabular-nums; }
+.admin-account-toolbar { display:grid; grid-template-columns:minmax(160px,2fr) repeat(3,minmax(120px,1fr)); gap:12px; padding:16px; background:var(--soft); border-radius:14px; }
+.admin-account-toolbar label { display:grid; gap:8px; min-width:0; font-size:.85rem; font-weight:700; }
+.admin-account-toolbar input,.admin-account-toolbar select { width:100%; min-width:0; box-sizing:border-box; border:1px solid var(--line); border-radius:10px; padding:10px; background:var(--panel); color:var(--text); font:inherit; }
+.admin-account-list-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-top:24px; }
+.admin-account-list-heading h3 { margin:0; }
+.admin-text-button { border:0; background:transparent; color:var(--text); text-decoration:underline; text-underline-offset:3px; font:inherit; padding:8px; cursor:pointer; }
+.admin-account-badges { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.admin-password-notice { font-size:.8rem; color:var(--text); background:var(--soft); padding:5px 9px; border:1px solid var(--line); border-radius:999px; }
+#superAdminPanel .admin-user-meta { min-width:0; overflow-wrap:anywhere; }
+#superAdminPanel .admin-user-controls { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-end; flex:0 1 auto; gap:12px; }
+#superAdminPanel .admin-role-control > span { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.admin-account-pagination { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:16px; margin-top:24px; }
+.admin-account-pagination button { padding:10px 16px; border:1px solid var(--line); border-radius:10px; background:var(--soft); color:var(--text); font:inherit; cursor:pointer; }
+.admin-account-pagination button:disabled { opacity:.45; cursor:default; }
+#superAdminPanel :is(input,select,button,summary):focus-visible { outline:2px solid #5587dc; outline-offset:3px; }
+@media(max-width:1000px) { .admin-account-toolbar { grid-template-columns:repeat(3,minmax(0,1fr)); } .admin-account-search { grid-column:1/-1; } }
+@media(max-width:640px) { #superAdminPanel .admin-account-summary { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; } .admin-account-toolbar { grid-template-columns:1fr; } .admin-account-search { grid-column:auto; } #superAdminPanel .admin-user-controls { width:100%; margin:0; justify-content:space-between; } #superAdminPanel .admin-role-control select { min-width:0; max-width:100%; } #superAdminPanel .admin-user-row { gap:14px; } .admin-account-pagination { gap:10px; } }

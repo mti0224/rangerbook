@@ -28,7 +28,6 @@
   const currentAccount = $("adminCurrentAccount");
   const currentRole = $("adminCurrentRole");
   const currentStatus = $("adminCurrentStatus");
-  const applicationsList = $("adminApplicationsList");
   const usersList = $("adminUsersList");
   const refreshBtn = $("adminRefreshBtn");
   const resourceUpdatesCard = $("adminResourceUpdatesCard");
@@ -39,13 +38,7 @@
   const ROLE_LABELS = {
     super_admin: "最大管理者",
     admin: "管理員",
-    user: "非管理員"
-  };
-
-  const STATUS_LABELS = {
-    pending: "等待審核",
-    approved: "已核准",
-    rejected: "已拒絕"
+    user: "一般會員"
   };
 
   function escapeHtml(value) {
@@ -75,7 +68,7 @@
   function formatDate(value) {
     if (!value) return "-";
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString("zh-Hant", { hour12: false });
+    return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString(window.RangerbookI18n?.locale === "jp" ? "ja-JP" : window.RangerbookI18n?.locale === "th" ? "th-TH-u-ca-gregory" : window.RangerbookI18n?.locale === "en" ? "en-GB" : "zh-TW", { hour12: false, timeZone: "Asia/Taipei" });
   }
 
   // Changing tabs affects visibility, not RangerbookAuth / AWS permissions.
@@ -205,25 +198,16 @@
       clearTraffic();
       $("trafficStatus").textContent = "";
     }
+    if (!auth.isSuperAdmin()) clearAccounts();
     if (!user.logged_in) return;
 
     currentAccount.textContent = user.account || "-";
     currentRole.textContent = ROLE_LABELS[user.role] || user.role || "-";
     currentRole.className = `admin-role-badge ${user.role === "super_admin" ? "super-admin" : user.role === "admin" ? "admin" : ""}`.trim();
 
-    const status = user.admin_application_status || (user.role === "super_admin" ? "approved" : "-");
-    currentStatus.textContent = STATUS_LABELS[status] || status;
-    currentStatus.className = `admin-status-badge ${status}`.trim();
-
-    if (user.must_change_password) {
-      setMessage(sessionMessage, "請先更改重設後的臨時密碼。", "error");
-    } else if (user.role === "user" && status === "pending") {
-      setMessage(sessionMessage, "你的管理員申請正在等待最大管理者審核。", "success");
-    } else if (user.role === "user" && status === "rejected") {
-      setMessage(sessionMessage, ui("一般會員；可於隱私權與密碼頁面提出管理員申請。"), "error");
-    } else {
-      setMessage(sessionMessage);
-    }
+    currentStatus.textContent = ui("已登入");
+    currentStatus.className = "admin-status-badge approved";
+    setMessage(sessionMessage, user.must_change_password ? ui("請先更改重設後的臨時密碼。") : "", user.must_change_password ? "error" : "");
   }
 
   function renderResourceUpdates(payload) {
@@ -292,89 +276,114 @@
     }
   }
 
+  let accountItems = [], accountPage = 1, accountsRequestId = 0, accountsBusy = false;
+  const accountPageSize = 12;
+  let filteredAccountCount = 0;
+  const accountControls = ["adminAccountSearch", "adminAccountRole", "adminAccountPassword", "adminAccountSort", "adminAccountClear", "adminAccountPrevious", "adminAccountNext"];
+
+  function clearAccounts() {
+    ++accountsRequestId;
+    accountItems = []; accountPage = 1;
+    usersList.replaceChildren();
+    $("adminAccountSummary")?.replaceChildren();
+    $("adminAccountResults").textContent = "";
+    $("adminAccountPage").textContent = "";
+  }
+
   async function loadSuperAdminData() {
-    if (!auth.isSuperAdmin()) return;
+    if (!auth.isSuperAdmin() || accountsBusy) return;
     await window.RangerbookI18n?.ready;
-    if (!auth.isSuperAdmin()) return;
-    applicationsList.innerHTML = '<div class="admin-empty">載入中…</div>';
-    usersList.innerHTML = '<div class="admin-empty">載入中…</div>';
-
+    if (!auth.isSuperAdmin() || accountsBusy) return;
+    const requestId = ++accountsRequestId;
+    usersList.setAttribute("aria-busy", "true");
+    refreshBtn.disabled = true;
+    $("adminAccountResults").textContent = ui("載入中…");
     try {
-      const [applications, users] = await Promise.all([
-        auth.api("/admin/applications"),
-        auth.api("/admin/users")
-      ]);
-      renderApplications(applications?.items || []);
-      renderUsers(users?.items || []);
+      const users = await auth.api("/admin/users");
+      if (requestId !== accountsRequestId || !auth.isSuperAdmin()) return;
+      accountItems = Array.isArray(users?.items) ? users.items : [];
+      renderUsers();
     } catch (error) {
-      applicationsList.innerHTML = `<div class="admin-empty">${escapeHtml(error.message)}</div>`;
-      usersList.innerHTML = `<div class="admin-empty">${escapeHtml(error.message)}</div>`;
+      if (requestId !== accountsRequestId || !auth.isSuperAdmin()) return;
+      accountItems = []; renderUsers();
+      usersList.innerHTML = `<div class="admin-empty" role="alert">${escapeHtml(ui(error.message))}</div>`;
+    } finally {
+      if (requestId === accountsRequestId || !auth.isSuperAdmin()) {
+        usersList.setAttribute("aria-busy", "false");
+        refreshBtn.disabled = false;
+      }
     }
   }
 
-  function renderApplications(items) {
-    if (!items.length) {
-      applicationsList.innerHTML = '<div class="admin-empty">目前沒有待審核申請。</div>';
-      return;
-    }
-
-    applicationsList.innerHTML = items.map((item) => `
-      <article class="admin-user-row" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}">
-        <div class="admin-user-meta">
-          <strong>${escapeHtml(item.account)}</strong>
-          <small>${escapeHtml(formatUi("site.admin.appliedAt",[formatDate(item.created_at)],"申請時間："+formatDate(item.created_at)))}</small>
-        </div>
-        <div class="admin-user-actions">
-          <button class="approve" type="button" data-action="approve">核准管理員</button>
-          <button class="reject" type="button" data-action="reject">拒絕</button>
-        </div>
-      </article>
-    `).join("");
-  }
-
-  function renderUsers(items) {
-    if (!items.length) {
-      usersList.innerHTML = '<div class="admin-empty">目前沒有使用者。</div>';
-      return;
-    }
-
-    usersList.innerHTML = items.map((item) => {
+  function renderUsers() {
+    if (!auth.isSuperAdmin()) return;
+    const total = accountItems.length;
+    $("adminAccountSummary").innerHTML = [["所有帳號",total], ["一般會員",accountItems.filter(x=>x.role==="user").length], ["管理員",accountItems.filter(x=>x.role==="admin").length], ["最大管理者",accountItems.filter(x=>x.role==="super_admin").length]].map(([title,count])=>`<div><span>${escapeHtml(ui(title))}</span><strong>${count}</strong></div>`).join("");
+    const query = $("adminAccountSearch").value.trim().toLocaleLowerCase();
+    const role = $("adminAccountRole").value, password = $("adminAccountPassword").value;
+    const rank = {super_admin:0,admin:1,user:2};
+    const items = accountItems.filter(item => String(item.account || "").toLocaleLowerCase().includes(query) && (role === "all" || item.role === role) && (password === "all" || Boolean(item.must_change_password) === (password === "required")));
+    const byName = (a,b) => String(a.account).localeCompare(String(b.account), undefined, {numeric:true,sensitivity:"base"});
+    const dateValue = item => Date.parse(item.created_at) || 0;
+    items.sort((a,b) => {
+      switch ($("adminAccountSort").value) {
+        case "name": return byName(a,b);
+        case "newest": return dateValue(b)-dateValue(a) || byName(a,b);
+        case "oldest": return dateValue(a)-dateValue(b) || byName(a,b);
+        default: return (rank[a.role] ?? 3)-(rank[b.role] ?? 3) || byName(a,b);
+      }
+    });
+    filteredAccountCount = items.length;
+    const pages = Math.max(1, Math.ceil(items.length/accountPageSize));
+    accountPage = Math.max(1,Math.min(accountPage,pages));
+    $("adminAccountResults").textContent = formatUi("site.admin.accountResults", [items.length,total], `符合 ${items.length} / 共 ${total} 個帳號`);
+    $("adminAccountPage").textContent = formatUi("site.admin.accountPage",[accountPage,pages],`第 ${accountPage} / ${pages} 頁`);
+    $("adminAccountPrevious").disabled = accountsBusy || accountPage === 1;
+    $("adminAccountNext").disabled = accountsBusy || accountPage === pages;
+    usersList.innerHTML = items.slice((accountPage-1)*accountPageSize,accountPage*accountPageSize).map(item => {
       const isSuperAdmin = item.role === "super_admin";
-      const controls = isSuperAdmin ? '<div class="admin-locked-note">此帳號只能由伺服器端管理</div>' : `
+      const controls = isSuperAdmin ? `<div class="admin-locked-note">${escapeHtml(ui("此帳號只能由伺服器端管理"))}</div>` : `
         <div class="admin-user-controls">
-          <label class="admin-role-control">
-            <span>帳號權限</span>
-            <select data-role-select>
-              <option value="user" ${item.role === "user" ? "selected" : ""}>非管理員</option>
-              <option value="admin" ${item.role === "admin" ? "selected" : ""}>管理員</option>
+          <label class="admin-role-control"><span>${escapeHtml(ui("帳號權限"))}</span>
+            <select data-role-select aria-label="${escapeHtml(item.account)} · ${escapeHtml(ui("帳號權限"))}">
+              <option value="user" ${item.role === "user" ? "selected" : ""}>${escapeHtml(ui("一般會員"))}</option>
+              <option value="admin" ${item.role === "admin" ? "selected" : ""}>${escapeHtml(ui("管理員"))}</option>
             </select>
           </label>
           <div class="admin-user-actions admin-user-actions--management">
-            <button class="approve" type="button" data-action="change-role">套用權限</button>
+            <button class="approve" type="button" data-action="change-role" disabled>${escapeHtml(ui("套用權限"))}</button>
             <details class="admin-overflow">
-              <summary class="admin-overflow-trigger" aria-label="更多帳號操作" title="更多帳號操作">⋯</summary>
+              <summary class="admin-overflow-trigger" aria-label="${escapeHtml(item.account)} · ${escapeHtml(ui("更多帳號操作"))}" title="${escapeHtml(ui("更多帳號操作"))}">⋯</summary>
               <div class="admin-overflow-menu" role="menu">
-                <button class="warning" type="button" role="menuitem" data-action="reset-password">重置密碼</button>
-                <button class="danger" type="button" role="menuitem" data-action="delete-user">刪除帳號</button>
+                <button class="warning" type="button" role="menuitem" data-action="reset-password">${escapeHtml(ui("重置密碼"))}</button>
+                <button class="danger" type="button" role="menuitem" data-action="delete-user">${escapeHtml(ui("刪除帳號"))}</button>
               </div>
             </details>
           </div>
         </div>`;
-
-      return `
-        <article class="admin-user-row admin-user-row--management" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}">
-          <div class="admin-user-meta">
-            <strong>${escapeHtml(item.account)}</strong>
-            <small>
-              ${escapeHtml(ui(ROLE_LABELS[item.role] || item.role))} ·
-              ${escapeHtml(ui(STATUS_LABELS[item.admin_application_status] || item.admin_application_status || "-"))}
-            </small>
-          </div>
-          ${controls}
-        </article>
-      `;
-    }).join("");
+      return `<article class="admin-user-row admin-user-row--management" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}" data-user-role="${escapeHtml(item.role)}">
+          <div class="admin-user-meta"><strong data-i18n-ignore>${escapeHtml(item.account)}</strong>
+            <div class="admin-account-badges"><span class="admin-role-badge ${isSuperAdmin ? "super-admin" : item.role === "admin" ? "admin" : ""}">${escapeHtml(ui(ROLE_LABELS[item.role] || item.role))}</span>${item.must_change_password ? `<span class="admin-password-notice">${escapeHtml(ui("須更改密碼"))}</span>` : ""}</div>
+            <small>${escapeHtml(ui("建立時間"))}：${escapeHtml(formatDate(item.created_at))}</small>
+          </div>${controls}</article>`;
+    }).join("") || `<div class="admin-empty">${escapeHtml(ui(total ? "沒有符合條件的帳號。" : "目前沒有使用者。"))}</div>`;
   }
+
+  for (const id of ["adminAccountSearch", "adminAccountRole", "adminAccountPassword", "adminAccountSort"]) {
+    $(id)?.addEventListener(id === "adminAccountSearch" ? "input" : "change", () => { accountPage = 1; renderUsers(); });
+  }
+  $("adminAccountClear")?.addEventListener("click", () => {
+    $("adminAccountSearch").value = "";
+    $("adminAccountRole").value = $("adminAccountPassword").value = "all";
+    $("adminAccountSort").value = "role"; accountPage = 1; renderUsers();
+  });
+  $("adminAccountPrevious")?.addEventListener("click", () => { --accountPage; renderUsers(); });
+  $("adminAccountNext")?.addEventListener("click", () => { ++accountPage; renderUsers(); });
+  usersList?.addEventListener("change", event => {
+    if (!event.target.matches("[data-role-select]")) return;
+    const row = event.target.closest(".admin-user-row");
+    row.querySelector('[data-action="change-role"]').disabled = accountsBusy || event.target.value === row.dataset.userRole;
+  });
 
   function setRowDisabled(row, disabled) {
     row.querySelectorAll("button, select").forEach((element) => { element.disabled = disabled; });
@@ -387,7 +396,7 @@
   async function runUserAction(row, action) {
     const userId = row?.dataset.userId;
     const account = row?.dataset.userAccount || ui("此帳號");
-    if (!userId) return;
+    if (!userId || accountsBusy || !auth.isSuperAdmin()) return;
 
     row.querySelectorAll("details[open]").forEach((details) => details.removeAttribute("open"));
 
@@ -395,13 +404,9 @@
     let options = { method: "POST" };
     let successMessage = "";
 
-    if (action === "approve") {
-      endpoint = `/admin/applications/${encodeURIComponent(userId)}/approve`;
-    } else if (action === "reject") {
-      endpoint = `/admin/applications/${encodeURIComponent(userId)}/reject`;
-    } else if (action === "change-role") {
+    if (action === "change-role") {
       const role = row.querySelector("[data-role-select]")?.value;
-      if (!role) return;
+      if (!role || role === row.dataset.userRole) return;
       const roleLabel = ui(ROLE_LABELS[role] || role);
       if (!window.confirm(formatUi("site.admin.roleConfirm",[account,roleLabel],`確定要將「${account}」的權限更改為「${roleLabel}」？ 變更後該帳號目前所有登入狀態會立即失效。`))) return;
       endpoint = `/admin/users/${encodeURIComponent(userId)}/role`;
@@ -420,17 +425,32 @@
       return;
     }
 
-    setRowDisabled(row, true);
+    ++accountsRequestId;
+    accountsBusy = true;
+    [refreshBtn, ...accountControls.map($)].filter(Boolean).forEach(element => { element.disabled = true; });
+    usersList.querySelectorAll(".admin-user-row").forEach(item => setRowDisabled(item, true));
     try {
       const payload = await auth.api(endpoint, options);
       if (action === "reset-password") {
         successMessage = formatUi("site.admin.resetDone",[account,payload.reset_password],`已為「${account}」產生臨時密碼：${payload.reset_password}。請以安全方式交給本人，首次登入須先更改密碼。`);
       }
       if (successMessage) window.alert(successMessage);
+      accountsBusy = false;
       await loadSuperAdminData();
     } catch (error) {
-      window.alert(ui(error.message));
-      setRowDisabled(row, false);
+      if (auth.isSuperAdmin()) window.alert(ui(error.message));
+    } finally {
+      accountsBusy = false;
+      [refreshBtn, ...accountControls.map($)].filter(Boolean).forEach(element => { element.disabled = false; });
+      if (auth.isSuperAdmin()) {
+        usersList.querySelectorAll(".admin-user-row").forEach(item => {
+          setRowDisabled(item, false);
+          const button = item.querySelector('[data-action="change-role"]');
+          if (button) button.disabled = item.querySelector('[data-role-select]').value === item.dataset.userRole;
+        });
+        $("adminAccountPrevious").disabled = accountPage === 1;
+        $("adminAccountNext").disabled = accountPage * accountPageSize >= filteredAccountCount;
+      }
     }
   }
 
@@ -502,14 +522,14 @@
   refreshBtn?.addEventListener("click", loadSuperAdminData);
   resourceUpdatesRefreshBtn?.addEventListener("click", loadResourceUpdates);
 
-  applicationsList?.addEventListener("click", (event) => {
+  usersList?.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
     if (button) runUserAction(button.closest(".admin-user-row"), button.dataset.action);
   });
 
-  usersList?.addEventListener("click", (event) => {
-    const button = event.target.closest("button[data-action]");
-    if (button) runUserAction(button.closest(".admin-user-row"), button.dataset.action);
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    document.querySelectorAll(".admin-overflow[open]").forEach(details => { details.removeAttribute("open"); details.querySelector("summary").focus(); });
   });
 
   document.addEventListener("click", (event) => {
