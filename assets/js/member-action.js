@@ -13,6 +13,9 @@
   };
   let rescue=null;
   const sendRescue=async()=>{
+    const features=await window.RangerbookAuth.api('/auth/features');
+    if(features.mail===false)throw new Error(t('mailPaused'));
+    rescue.locale=window.RangerbookI18n?.locale||'zh-Hant';
     await post('/auth/password/forgot',rescue);$('memberMailSent').hidden=false;$('memberForgotConfirm').hidden=true;
     notify(output,t('resetSent'),'success');cooldown($('memberForgotResend'),60,$('memberResendStatus'));
   };
@@ -27,14 +30,14 @@
   });
   $('memberForgotResend')?.addEventListener('click',run(async()=>{const form=$('memberForgotForm');if(!form.reportValidity())return false;rescue={identifier:form.elements.identifier.value.trim(),source:form.elements.source.value};await sendRescue();},null,output));
   $('memberResendForm')?.addEventListener('submit',run(async e=>{
-    await post('/auth/email/resend',{identifier:e.currentTarget.elements.identifier.value.trim()});
+    await post('/auth/email/resend',{identifier:e.currentTarget.elements.identifier.value.trim(),locale:window.RangerbookI18n?.locale||'zh-Hant'});
     cooldown(e.submitter||e.currentTarget.querySelector('button'),60,output);
   },'checkEmail',output));
   $('memberResetForm')?.addEventListener('submit',run(async e=>{
     const f=e.currentTarget;
     if(f.elements.password.value!==f.elements.confirm.value)throw new Error(t('passwordMismatch'));
     try{
-      await post('/auth/password/reset',{token,password:f.elements.password.value});token=null;f.reset();f.hidden=true;
+      await post('/auth/password/reset',{token,password:f.elements.password.value,locale:window.RangerbookI18n?.locale||'zh-Hant'});token=null;f.reset();f.hidden=true;
       setTitle('resetSuccess','resetSuccessIntro');$('memberActionLogin').hidden=false;$('memberActionAgain').hidden=true;
       notify(output,t('resetDone'),'success');
     }catch(error){if(error.payload?.detail==='member.invalidLink')invalid();throw error;}

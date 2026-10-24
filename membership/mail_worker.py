@@ -1,7 +1,9 @@
 """Run one bounded batch from a systemd timer. No email/token content is logged."""
 import importlib
+import hashlib
 import json
 import os
+import re
 import secrets
 import sqlite3
 import time
@@ -12,18 +14,19 @@ from botocore.config import Config
 from botocore.exceptions import BotoCoreError, ClientError
 from cryptography.fernet import Fernet
 
-SUBJECTS = {'verify': 'Verify your Rangerbook email', 'reset': 'Reset your Rangerbook password',
-            'security': 'Rangerbook account security notification'}
+from .mail_templates import render_email
 
 
 def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmycat.com', limit=10,
-                  recipient_allowlist=None, delivery_budget=None):
+                  recipient_allowlist=None, delivery_budget=None, delivery_deadline=None):
     """Leases make overlapping workers safe. SES has no send idempotency token;
     a crash after send may duplicate a message, but links remain single use.
     """
     result = {'sent': 0, 'failed': 0, 'suppressed': 0}
     for _ in range(limit):
         now = time.time()
+        if delivery_deadline is not None and now >= delivery_deadline:
+            break
         with connect() as con:
             con.execute('BEGIN IMMEDIATE')
             row = con.execute("UPDATE member_outbox SET lease_until=? WHERE id=(SELECT id FROM member_outbox WHERE status='pending' AND next_attempt<=? AND lease_until<? ORDER BY next_attempt LIMIT 1) RETURNING *", (now + 120, now, now)).fetchone()
@@ -33,23 +36,35 @@ def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmy
         with connect() as con:
             suppressed = con.execute('SELECT 1 FROM member_suppression WHERE email=?', (payload['email'],)).fetchone()
         outside_allowlist = recipient_allowlist is not None and payload['email'].lower() not in recipient_allowlist
-        if suppressed or outside_allowlist or (payload.get('expires') and payload['expires'] < now):
+        kind = payload['kind']
+        link_mail = kind in {'verify', 'reset'}
+        invalid_link = kind not in {'verify', 'reset', 'security'} or link_mail and (payload.get('frontend') not in {
+            'https://rangerbook.warmycat.com', 'https://rangerbook-test.warmycat.com'} or
+            not isinstance(payload.get('token'), str) or
+            not re.fullmatch(r'[A-Za-z0-9_-]{32,128}', payload.get('token', '')))
+        if suppressed or outside_allowlist or invalid_link or (payload.get('expires') and payload['expires'] < now):
             with connect() as con:
                 con.execute("UPDATE member_outbox SET status='suppressed',payload='' WHERE id=?", (row['id'],))
             result['suppressed'] += 1
             continue
-        kind = payload['kind']
-        # Tokens stay in a URL fragment. They never reach Pages, analytics or access logs.
-        text = 'Your Rangerbook account security settings were changed. If this was not you, contact the site owner.'
-        if kind in {'verify', 'reset'}:
-            text = ('This link expires in 15 minutes and can be used once.\n\n' + payload['frontend'] +
-                    '/account-action/#' + kind + '=' + payload['token'] +
-                    '\n\nIf you did not request this, ignore this email.')
-        if delivery_budget is not None:
-            # Count attempts before calling SES, including ambiguous timeouts. This
-            # durable, atomic ceiling survives restarts and concurrent workers.
-            with connect() as con:
-                con.execute('BEGIN IMMEDIATE')
+        token_hash = hashlib.sha256(payload.get('token', '').encode()).hexdigest() if link_mail else None
+        # Check the still-current token before spending any sending budget.
+        # Resends may have superseded an encrypted message already in the queue.
+        with connect() as con:
+            con.execute('BEGIN IMMEDIATE')
+            current = con.execute('SELECT u.account FROM member_tokens t JOIN users u ON u.id=t.user_id WHERE t.digest=? AND t.kind=? AND t.email=? AND t.expires>?',
+                                  (token_hash, kind, payload['email'], now)).fetchone() if link_mail else None
+            if link_mail and not current:
+                con.execute("UPDATE member_outbox SET status='suppressed',payload='' WHERE id=?", (row['id'],))
+                result['suppressed'] += 1
+                continue
+            if delivery_deadline is not None and time.time() >= delivery_deadline:
+                con.execute('UPDATE member_outbox SET lease_until=0 WHERE id=?', (row['id'],))
+                break
+            reserved = True
+            if delivery_budget is not None:
+                # Count attempts before calling SES, including ambiguous timeouts.
+                # This atomic ceiling survives restarts and concurrent workers.
                 con.execute('CREATE TABLE IF NOT EXISTS member_stage_mail_budget (id INTEGER PRIMARY KEY CHECK(id=1), used INTEGER NOT NULL)')
                 con.execute('INSERT OR IGNORE INTO member_stage_mail_budget VALUES (1,0)')
                 reserved = con.execute('UPDATE member_stage_mail_budget SET used=used+1 WHERE id=1 AND used<? RETURNING used', (delivery_budget,)).fetchone()
@@ -57,10 +72,19 @@ def deliver_batch(connect, cipher, ses, configuration_set, sender='noreply@warmy
                     con.execute('UPDATE member_outbox SET lease_until=0 WHERE id=?', (row['id'],))
             if not reserved:
                 break
+            if link_mail:
+                # The copy promises fifteen minutes from sending. Never revive an
+                # expired/revoked token; only the current live token gets this TTL.
+                payload['expires'] = time.time() + 900
+                con.execute('UPDATE member_tokens SET expires=? WHERE digest=? AND kind=?', (payload['expires'], token_hash, kind))
+                payload['username'] = current['account']
+                con.execute('UPDATE member_outbox SET payload=? WHERE id=?', (cipher.encrypt(json.dumps(payload).encode()).decode(), row['id']))
+        # The token remains in the fragment, absent from access logs and Referer.
+        url = payload['frontend'] + '/account-action/#' + kind + '=' + payload['token'] if link_mail else ''
+        content = render_email(kind, payload.get('username', ''), url, payload.get('locale', 'zh-Hant'))
         try:
             response = ses.send_email(FromEmailAddress=sender, Destination={'ToAddresses': [payload['email']]},
-                Content={'Simple': {'Subject': {'Data': SUBJECTS[kind], 'Charset': 'UTF-8'},
-                                   'Body': {'Text': {'Data': text, 'Charset': 'UTF-8'}}}},
+                Content={'Simple': content},
                 ConfigurationSetName=configuration_set)
         except (BotoCoreError, ClientError):
             attempts = row['attempts'] + 1
@@ -125,6 +149,12 @@ def main():
     if restricted and not recipients:
         raise RuntimeError('Test mail requires an explicit recipient allowlist')
     stage = os.environ.get('RANGERBOOK_STAGE') == '1'
+    budget, deadline = None, None
+    if stage:
+        from .stage.mail_policy import mail_limits
+        budget, deadline = mail_limits()
+        if time.time() >= deadline:
+            return
     # SDK retries would hide extra sends from the explicit test-mail budget.
     config = Config(retries={'total_max_attempts': 1 if stage else 2, 'mode': 'standard'}, connect_timeout=5, read_timeout=10)
     session = boto3.Session(region_name='ap-south-1')  # Instance role; never static access keys.
@@ -132,7 +162,7 @@ def main():
         consume_feedback(connect, session.client('sqs', config=config), os.environ['RANGERBOOK_FEEDBACK_QUEUE'], os.environ['RANGERBOOK_FEEDBACK_TOPIC'])
     result = deliver_batch(connect, Fernet(os.environ['RANGERBOOK_MEMBER_KEY'].encode()),
         session.client('sesv2', config=config), os.environ['RANGERBOOK_SES_CONFIGURATION_SET'],
-        recipient_allowlist=recipients, delivery_budget=5 if stage else None)
+        recipient_allowlist=recipients, delivery_budget=budget, delivery_deadline=deadline)
     with connect() as con:
         con.execute('DELETE FROM member_tokens WHERE expires<?', (time.time(),))
         con.execute('DELETE FROM member_totp_setup WHERE expires<?', (time.time(),))

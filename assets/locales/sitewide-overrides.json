@@ -2154,5 +2154,12 @@
     "en": "The login verification expired. Please sign in again.",
     "jp": "ログイン認証の有効期限が切れました。もう一度ログインしてください。",
     "th": "การยืนยันเข้าสู่ระบบหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.mailPaused",
+    "zh_TW": "測試寄信目前暫停，請聯絡站長確認寄信期限與額度。",
+    "en": "Test email delivery is paused. Contact the site owner to check the approved time window and budget.",
+    "jp": "テストメールの送信は現在停止中です。送信期間と上限についてサイト管理者にご確認ください。",
+    "th": "การส่งอีเมลทดสอบหยุดชั่วคราว โปรดติดต่อผู้ดูแลเว็บไซต์เพื่อตรวจสอบระยะเวลาและโควตาที่อนุมัติ"
   }
 ]

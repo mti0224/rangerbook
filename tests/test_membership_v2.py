@@ -399,6 +399,46 @@ def test_email_worker_retry_and_suppression(env):
         assert row[0]==1 and row[1]>time.time()
 
 
+@pytest.mark.parametrize('locale',['zh-Hant','en','jp','th'])
+def test_mail_locale_and_username_come_from_validated_request_and_account(env,monkeypatch,locale):
+    h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *args:None)
+    response=c.post('/auth/register',json={'account':'new-locale','password':PASS,'email':'new-locale@example.test','captcha':'fixture','locale':locale})
+    assert response.status_code==202
+    with h.db() as con:
+        payload=json.loads(m.open(con.execute('SELECT payload FROM member_outbox').fetchone()[0]))
+        assert payload['locale']==locale and payload['username']=='new-locale'
+        con.execute("UPDATE users SET email='approved@example.test',email_verified=1 WHERE id='a'")
+    good=c.post('/auth/password/forgot',json={'identifier':'test-a','source':'registration','locale':locale})
+    missing=c.post('/auth/password/forgot',json={'identifier':'missing','source':'registration','locale':locale})
+    assert good.status_code==missing.status_code==202 and good.json()==missing.json()
+    with h.db() as con:
+        payload=json.loads(m.open(con.execute('SELECT payload FROM member_outbox ORDER BY next_attempt DESC LIMIT 1').fetchone()[0]))
+        assert payload['kind']=='reset' and payload['locale']==locale and payload['username']=='test-a'
+    assert c.post('/auth/password/forgot',json={'identifier':'test-a','locale':'<script>'}).status_code==422
+    assert c.post('/auth/password/reset',json={'token':payload['token'],'password':'new-localized-password','locale':locale}).status_code==200
+    with h.db() as con:
+        notice=json.loads(m.open(con.execute('SELECT payload FROM member_outbox ORDER BY next_attempt DESC LIMIT 1').fetchone()[0]))
+        assert notice['kind']=='security' and notice['locale']==locale and notice['username']=='test-a'
+
+
+def test_stage_mail_paused_state_is_global_and_does_not_enumerate(env,monkeypatch):
+    h,m,c=env
+    monkeypatch.setenv('RANGERBOOK_STAGE','1')
+    monkeypatch.setenv('RANGERBOOK_STAGE_MAIL_MAX_ATTEMPTS','20')
+    monkeypatch.setenv('RANGERBOOK_STAGE_EXPIRES_AT','0')
+    monkeypatch.setenv('RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST','approved@example.test')
+    assert c.get('/auth/features').json()['mail'] is False
+    a=c.post('/auth/password/forgot',json={'identifier':'test-a'})
+    b=c.post('/auth/password/forgot',json={'identifier':'missing'})
+    assert a.status_code==b.status_code==202 and a.json()==b.json()
+    monkeypatch.setenv('RANGERBOOK_STAGE_EXPIRES_AT',str(time.time()+900))
+    assert c.get('/auth/features').json()['mail'] is True
+    with h.db() as con:
+        con.execute('CREATE TABLE member_stage_mail_budget(id INTEGER PRIMARY KEY,used INTEGER NOT NULL)')
+        con.execute('INSERT INTO member_stage_mail_budget VALUES(1,20)')
+    assert c.get('/auth/features').json()['mail'] is False
+
+
 @pytest.mark.parametrize('legacy_stage_ids',[False,True])
 def test_full_own_binding_swap_import_unbind(env,monkeypatch,tmp_path,legacy_stage_ids):
     h,m,c=env

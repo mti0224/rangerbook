@@ -105,7 +105,7 @@
   async function register(account, password, email, captcha) {
     return api("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ account, password, email, captcha })
+      body: JSON.stringify({ account, password, email, captcha, locale: window.RangerbookI18n?.locale || 'zh-Hant' })
     });
   }
 

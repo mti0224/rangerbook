@@ -57,7 +57,7 @@
     }finally{form.elements.password.value='';form.elements.confirm.value='';window.RangerbookCaptcha?.reset();}
   },null,$('memberState')));
   $('memberRegistrationResend')?.addEventListener('click',run(async()=>{
-    await post('/auth/email/resend',{identifier:account});cooldown($('memberRegistrationResend'),60,$('memberResendStatus'));
+    await post('/auth/email/resend',{identifier:account,locale:window.RangerbookI18n?.locale||'zh-Hant'});cooldown($('memberRegistrationResend'),60,$('memberResendStatus'));
   },'checkEmail',$('memberState')));
   auth.ready().then(async user=>{await window.RangerbookI18n?.ready;if($('memberLoginForm'))routeUser(user);});
   window.addEventListener('pagehide',()=>document.querySelectorAll('input[type=password],input[autocomplete=one-time-code]').forEach(x=>x.value=''));

@@ -73,10 +73,12 @@ class Register(Payload):
     password: str = Field(min_length=10, max_length=128)
     email: str = Field(min_length=3, max_length=254)
     captcha: str = Field(min_length=1, max_length=2048)
+    locale: Literal['zh-Hant', 'zh_TW', 'en', 'jp', 'ja', 'th'] = 'zh-Hant'
 
 
 class Identifier(Payload):
     identifier: str = Field(min_length=1, max_length=254)
+    locale: Literal['zh-Hant', 'zh_TW', 'en', 'jp', 'ja', 'th'] = 'zh-Hant'
 
 
 class Rescue(Identifier):
@@ -93,6 +95,7 @@ class Token(Payload):
 
 class Reset(Token):
     password: str = Field(min_length=10, max_length=128)
+    locale: Literal['zh-Hant', 'zh_TW', 'en', 'jp', 'ja', 'th'] = 'zh-Hant'
 
 
 class Membership:
@@ -237,21 +240,42 @@ class Membership:
         con.executemany('INSERT INTO member_recovery_codes VALUES (?,?)', [(uid, digest(v)) for v in values])
         return values
 
-    def queue(self, con, email, kind, token=None):
-        if not self.mail_enabled and kind != 'security':
+    def mail_ready(self):
+        if not self.mail_enabled:
+            return False
+        if os.environ.get('RANGERBOOK_STAGE') == '1':
+            from .stage.mail_policy import mail_limits
+            try:
+                budget, deadline = mail_limits()
+            except ValueError:
+                return False
+            if time.time() >= deadline or not os.environ.get('RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST', '').strip():
+                return False
+            with self.h.db() as con:
+                exists = con.execute("SELECT 1 FROM sqlite_master WHERE name='member_stage_mail_budget'").fetchone()
+                if exists:
+                    row = con.execute('SELECT used FROM member_stage_mail_budget WHERE id=1').fetchone()
+                    if row and row[0] >= budget:
+                        return False
+        return True
+
+    def queue(self, con, email, kind, token=None, locale='zh-Hant', username=''):
+        if not self.mail_ready() and kind != 'security':
             raise HTTPException(503, 'member.unconfigured')
         # A global cap is also enforced; failures cannot become an SES flood.
         if con.execute("SELECT COUNT(*) FROM member_outbox WHERE next_attempt>?", (time.time() - 86400,)).fetchone()[0] >= 100:
             raise HTTPException(429, 'member.rateLimited')
-        data = {'email': email, 'kind': kind, 'token': token, 'frontend': self.frontend, 'expires': time.time() + 900 if token else None}
+        data = {'email': email, 'kind': kind, 'token': token, 'frontend': self.frontend,
+                'expires': time.time() + 900 if token else None, 'locale': locale, 'username': username}
         con.execute('INSERT INTO member_outbox(id,payload,next_attempt) VALUES (?,?,?)',
                     (secrets.token_hex(16), self.seal(json.dumps(data)), time.time()))
 
-    def issue(self, con, uid, kind, email):
+    def issue(self, con, uid, kind, email, locale='zh-Hant'):
         token = secrets.token_urlsafe(48)
         con.execute('DELETE FROM member_tokens WHERE user_id=? AND kind=?', (uid, kind))
         con.execute('INSERT INTO member_tokens VALUES (?,?,?,?,?)', (digest(token), uid, kind, email, time.time() + 900))
-        self.queue(con, email, kind, token)
+        username = con.execute('SELECT account FROM users WHERE id=?', (uid,)).fetchone()['account']
+        self.queue(con, email, kind, token, locale, username)
 
     def take(self, con, token, kind):
         row = con.execute('DELETE FROM member_tokens WHERE digest=? AND kind=? AND expires>? RETURNING *',
@@ -313,7 +337,8 @@ class Membership:
         @app.get('/auth/features')
         def features():
             return {'members_v2': True, 'google': bool(self.google_id and self.google_secret and self.callback),
-                    'registration': bool(self.turnstile_key and self.turnstile_site and self.mail_enabled),
+                    'mail': self.mail_ready(),
+                    'registration': bool(self.turnstile_key and self.turnstile_site and self.mail_ready()),
                     'turnstile_site_key': self.turnstile_site,
                     'member_navigation': os.environ.get('RANGERBOOK_MEMBER_NAVIGATION') == '1'}
 
@@ -449,7 +474,7 @@ class Membership:
         @app.post('/auth/register')
         def register(payload: Register, request: Request):
             h.require_trusted_origin(request)
-            if not self.mail_enabled:
+            if not self.mail_ready():
                 raise HTTPException(503, 'member.unconfigured')
             account, email = h.normalize_account(payload.account), email_value(payload.email)
             self.rate(request, 'register', account, ip_limit=5, subject_limit=3, window=3600)
@@ -464,7 +489,7 @@ class Membership:
                 if not exists:
                     # Existing schema has no "none" application status: rejected means no active application.
                     con.execute("INSERT INTO users(id,account,password_hash,role,admin_application_status,created_at,email,account_active) VALUES (?,?,?,'user','rejected',?,?,0)", (uid, account, hashed, h.isoformat(), email))
-                    self.issue(con, uid, 'verify', email)
+                    self.issue(con, uid, 'verify', email, payload.locale)
                     self.audit(con, uid, 'registration_requested')
             return JSONResponse(GENERIC, status_code=202)
 
@@ -477,7 +502,7 @@ class Membership:
                 if user and not user['account_active']:
                     token = con.execute("SELECT expires FROM member_tokens WHERE user_id=? AND kind='verify'", (user['id'],)).fetchone()
                     if not token or token[0] < time.time() + 840:
-                        self.issue(con, user['id'], 'verify', user['email'])
+                        self.issue(con, user['id'], 'verify', user['email'], payload.locale)
             return JSONResponse(GENERIC, status_code=202)
 
         @app.post('/auth/email/verify')
@@ -506,13 +531,13 @@ class Membership:
                         email = user['email']
                     elif payload.source == 'google' and user['google_sub']:
                         email = user['recovery_email']
-                if email and self.mail_enabled:
+                if email and self.mail_ready():
                     self.rate(request, 'forgot-email', email, ip_limit=10, subject_limit=3, window=3600)
                     with h.db() as con:
                         # A resend inside 60s must not invalidate a link already in transit.
                         active = con.execute("SELECT expires FROM member_tokens WHERE user_id=? AND kind='reset'", (user['id'],)).fetchone()
                         if not active or active[0] < time.time() + 840:
-                            self.issue(con, user['id'], 'reset', email)
+                            self.issue(con, user['id'], 'reset', email, payload.locale)
             except HTTPException as error:
                 if error.status_code not in {429, 503}:
                     raise
@@ -540,7 +565,8 @@ class Membership:
                 con.execute('UPDATE users SET password_hash=?,must_change_password=0 WHERE id=?', (hashed, token['user_id']))
                 con.execute('DELETE FROM sessions WHERE user_id=?', (token['user_id'],))
                 con.execute('DELETE FROM member_oauth WHERE user_id=?', (token['user_id'],))
-                self.queue(con, token['email'], 'security')
+                username = con.execute('SELECT account FROM users WHERE id=?', (token['user_id'],)).fetchone()['account']
+                self.queue(con, token['email'], 'security', locale=payload.locale, username=username)
                 self.audit(con, token['user_id'], 'password_reset')
             response = JSONResponse({'ok': True})
             h.clear_session_cookie(response)

@@ -11,7 +11,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block'});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-user',role:'user'},factor=false,email=null,proof=0,reauthRate=false,offline=false,hold=false,release;
-  let loginMfa=false,loginPasswordChange=false,invalidLink=false,failCancel=false,expireFactor=false;
+  let loginMfa=false,loginPasswordChange=false,invalidLink=false,failCancel=false,expireFactor=false,mailPaused=false;
   let gameChallenge=null,gameBound=false,swapAttempts=0,searchMode="results";
   const calls=[],errors=[],outbound=[];
   await context.route('**/*',async route=>{
@@ -47,7 +47,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(invalidLink&&['/auth/password/reset/check','/auth/email/verify'].includes(url.pathname))return route.fulfill({status:400,json:{detail:'member.invalidLink'},headers});
       let data={ok:true};
       if(url.pathname==='/auth/login'||url.pathname==='/auth/me')data=user;
-      if(url.pathname==='/auth/features')data={members_v2:true,google:true,registration:true,turnstile_site_key:'fixture-key',member_navigation:false};
+      if(url.pathname==='/auth/features')data={members_v2:true,google:true,registration:true,mail:!mailPaused,turnstile_site_key:'fixture-key',member_navigation:false};
       if(url.pathname==='/auth/security')data={totp_enabled:factor,totp_required:user.role==='super_admin',google_email:email,reauth_valid_for:proof};
       if(url.pathname==='/auth/2fa/setup')data={manual_key:'FIXTUREONLY',qr:'data:image/png;base64,'+png.toString('base64')};
       if(url.pathname==='/auth/2fa/enable'||url.pathname==='/auth/2fa/recovery-codes')data={recovery_codes:['FIXTURE-CODE-ONE']};
@@ -239,10 +239,17 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   user={logged_in:false,role:'user'};await go('/register/');await page.locator('#adminRegisterForm input[name=account]').fill('fixture-new');await page.locator('#adminRegisterForm input[name=email]').fill('fixture@outlook.test');
   await page.locator('#adminRegisterForm input[name=password]').fill('fixture-password');await page.locator('#adminRegisterForm input[name=confirm]').fill('fixture-password');await page.locator('#adminRegisterForm button').click();await page.locator('#memberRegistrationSent').waitFor();
   assert.equal(await page.locator('#memberRegistrationResend').isDisabled(),true);await assertPage();
+  assert.equal(JSON.parse(calls.findLast(x=>x.path==='/auth/register').body).locale,locale);
   await go('/forgot-password/');await page.locator('#memberForgotForm input').fill('missing-account');
   assert.equal(await page.locator('#memberForgotForm select option').count(),2);
   const confirmWidth=(await page.locator('#memberForgotConfirm').boundingBox()).width;
+  mailPaused=true;const beforePaused=calls.filter(x=>x.path==='/auth/password/forgot').length;
+  await page.locator('#memberForgotConfirm').click();await page.locator('#memberState.error').waitFor();
+  assert.equal(await page.locator('#memberState').innerText(),copy('mailPaused',locale));
+  assert.equal(calls.filter(x=>x.path==='/auth/password/forgot').length,beforePaused);
+  mailPaused=false;
   await page.locator('#memberForgotForm select').selectOption('google');await page.locator('#memberForgotConfirm').click();await page.locator('#memberMailSent').waitFor();
+  assert.equal(JSON.parse(calls.findLast(x=>x.path==='/auth/password/forgot').body).locale,locale);
   assert.equal(await page.locator('#memberForgotResend').isDisabled(),true);assert.ok(!(await page.locator('#memberMailSent').innerText()).includes('fixture@'));
   assert.equal(await page.locator('main .admin-card').count(),1);
   assert.equal(await page.getByText(copy('resetSent',locale),{exact:true}).count(),1,'One generic success message');
