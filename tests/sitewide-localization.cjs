@@ -159,11 +159,10 @@ async function assertTranslated(page,locale,selector) {
       assert.equal(await evolution.locator('h3').innerText(),expected('site.evolution.title',locale));
       assert.equal(await evolution.locator('[data-evolution-id]').count(),4);
       assert.equal(await evolution.locator('[aria-current="page"]').count(),1);
-      assert.equal(await evolution.locator('.ranger-evolution-current').innerText(),expected('site.evolution.current',locale));
+      assert.equal(await evolution.locator('.ranger-evolution-stage > :not(a)').count(),0);
       assert.equal(await evolution.evaluate(el => el.previousElementSibling.querySelector('h3').dataset.i18n),'detail.basicStats');
       assert.ok(await evolution.evaluate(el => !!el.nextElementSibling.querySelector('.ranger-skill-card')));
-      assert.equal(await evolution.locator('[data-evolution-id="u1626e-cony"] [data-evolution-target]').count(),2);
-      assert.equal(await evolution.locator('[data-evolution-id="u1626u-cony"] [data-evolution-target="u1627e-cony"]').count(),1);
+      assert.equal(await evolution.locator('.ranger-evolution-character[href*="u1627e-cony"]').count(),1);
       await page.setViewportSize({width:375,height:812});
       const menuToggle = page.locator('.site-menu-toggle');
       if(await menuToggle.getAttribute('aria-expanded') === 'true') await menuToggle.click();

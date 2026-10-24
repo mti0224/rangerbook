@@ -52,6 +52,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/member-ui"
           node tests/security-browser.cjs
+          node tests/admin-account-directory.cjs
           QA_SCREENSHOTS="$RUNNER_TEMP/member-ui" node tests/member-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()

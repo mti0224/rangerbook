@@ -25,7 +25,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261024-query-width">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261025-accounts1">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -129,23 +129,28 @@
           <div>
             <p class="eyebrow">Super Admin</p>
             <h2>帳號管理</h2>
-            <p class="admin-muted">核准或拒絕管理員申請，並可管理帳號權限、重置密碼與刪除帳號。最大管理者帳號本身只能由伺服器端管理。</p>
+            <p class="admin-muted">搜尋帳號、調整權限及管理密碼。註冊完成電子郵件驗證即可啟用，不需人工審核。</p>
           </div>
           <div class="admin-actions">
             <button id="adminRefreshBtn" class="secondary" type="button">重新整理</button>
           </div>
         </div>
 
-        <div class="admin-grid">
-          <section>
-            <h3>待審核申請</h3>
-            <div id="adminApplicationsList" class="admin-user-list"></div>
-          </section>
-          <section>
-            <h3>使用者與權限</h3>
-            <div id="adminUsersList" class="admin-user-list"></div>
-          </section>
+        <div id="adminAccountSummary" class="admin-account-summary"></div>
+        <div class="admin-account-toolbar">
+          <label class="admin-account-search"><span>搜尋帳號</span><input id="adminAccountSearch" type="search" maxlength="64" autocomplete="off" placeholder="輸入帳號名稱"></label>
+          <label><span>帳號權限</span><select id="adminAccountRole"><option value="all">所有權限</option><option value="user">一般會員</option><option value="admin">管理員</option><option value="super_admin">最大管理者</option></select></label>
+          <label><span>密碼狀態</span><select id="adminAccountPassword"><option value="all">所有狀態</option><option value="required">須更改密碼</option><option value="normal">無須更改</option></select></label>
+          <label><span>排序方式</span><select id="adminAccountSort"><option value="role">依權限排序</option><option value="name">依帳號名稱</option><option value="newest">最新建立優先</option><option value="oldest">最早建立優先</option></select></label>
         </div>
+        <div class="admin-account-list-heading"><h3>帳號清單</h3><button id="adminAccountClear" class="admin-text-button" type="button">清除篩選</button></div>
+        <p id="adminAccountResults" class="admin-muted" role="status" aria-live="polite"></p>
+        <div id="adminUsersList" class="admin-user-list" aria-busy="false"></div>
+        <nav class="admin-account-pagination" aria-label="帳號清單分頁">
+          <button id="adminAccountPrevious" class="secondary" type="button">上一頁</button>
+          <span id="adminAccountPage" aria-live="polite"></span>
+          <button id="adminAccountNext" class="secondary" type="button">下一頁</button>
+        </nav>
       </section>
 
         <section id="adminTrafficPanel" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminTrafficTab" tabindex="0" hidden>
@@ -180,7 +185,7 @@
   <script src="../assets/js/site.js?v=20261018-distbars2"></script>
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-traffic-charts.js?v=20261013-v2.5"></script>
-  <script src="../assets/js/admin-page.js?v=20261017-personal1"></script>
+  <script src="../assets/js/admin-page.js?v=20261025-accounts1"></script>
 <script src="../assets/js/member-registration.js"></script>
 </body>
 </html>

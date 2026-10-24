@@ -6,6 +6,10 @@ const {chromium}=require('playwright');
 const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
 const root=path.join(__dirname,'..');
 const uiRows=JSON.parse(fs.readFileSync(path.join(root,'res/v2/locales/ui.json')));
+const overrides=JSON.parse(fs.readFileSync(path.join(root,'assets/locales/sitewide-overrides.json')));
+const logs=JSON.parse(fs.readFileSync(path.join(root,'res/更新日誌.json')));
+const latest=[...logs].sort((a,b)=>b.日期.localeCompare(a.日期))[0];
+const expectedLog=locale=>latest.內容.map(text=>(overrides.find(row=>row.zh_TW===text)||uiRows.find(row=>row.zh_TW===text))?.[locale==='zh-Hant'?'zh_TW':locale]||text);
 const custom=JSON.parse(fs.readFileSync(path.join(root,'res/v2/locales/custom.json')));
 const rangers=JSON.parse(fs.readFileSync(path.join(root,'res/v2/rangers.json'))).rangers;
 const actor=rangers.find(r=>r.category==='STR'&&r.element==='FIRE')||rangers[0];
@@ -14,7 +18,7 @@ const fill=(key,l,...args)=>get(key,l).replace(/%N(\d+)/g,(_,n)=>args[Number(n)-
 const traffic={status:'ready',updatedAt:'2026-10-13T00:00:00Z',summary:{users:30,views:1234,sessions:12,engagedSessions:8},
  daily:[{date:'2026-10-12',views:1234},{date:'2026-10-13',views:1800}],sources:[{source:'直接',sessions:12}],pages:[{path:'/ranger/',views:1234}]};
 (async()=>{
- const browser=await chromium.launch({headless:true});
+ const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH});
  try{
   for(const locale of ['zh-Hant','en','jp','th']){
    console.log('OCT13_START '+locale);
@@ -32,7 +36,7 @@ const traffic={status:'ready',updatedAt:'2026-10-13T00:00:00Z',summary:{users:30
     const body=n.includes('usage_index')?{metadata:{guildCount:5,sampleCount:10,generatedAtUtc:'2026-10-13T00:00:00Z'},rangers:[{unitCode:actor.rangerCode,playerCount:3,guildCount:2,usageRate:30}]}:{metadata:{},guilds:[]};
     return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(body)});
    });
-   const p=await ctx.newPage();p.setDefaultTimeout(60000);const errors=[],legacy=[];
+   const p=await ctx.newPage();await require("./local-static-fixture.cjs").install(p,base);p.setDefaultTimeout(60000);const errors=[],legacy=[];
    p.on('pageerror',e=>errors.push(e.message));p.on('request',r=>{const u=new URL(r.url());if(u.origin===new URL(base).origin&&/\/res\//.test(u.pathname)&&!u.pathname.includes('/res/v2/')&&!['/res/更新日誌.json','/res/ranger_stats_config.json'].includes(decodeURIComponent(u.pathname)))legacy.push(u.pathname)});
    async function go(url){await p.goto(base+url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>!!window.RangerbookI18n);await p.evaluate(()=>window.RangerbookI18n.ready)}
    await go('/ranger/ranger/');await p.locator('.ranger-card').first().click();
@@ -78,11 +82,11 @@ const traffic={status:'ready',updatedAt:'2026-10-13T00:00:00Z',summary:{users:30
    // Compare layout positions, excluding the hover transform/transition.
    const tops=await p.locator('.labyrinth-entry-card').evaluateAll(xs=>xs.map(x=>x.offsetTop));assert.equal(tops[0],tops[1]);assert.ok(tops[2]>tops[0]);
    await go('/');await p.locator('.home-update-list li').first().waitFor();assert.equal(await p.locator('.gt-home-characters img').count(),0);
-   assert.equal(await p.locator('.home-update-date').innerText(),'2026-10-13');
-   assert.deepEqual(await p.locator('.home-update-list li').allTextContents(),[get('update.log.2026-10-13.1',locale),get('update.log.2026-10-13.2',locale)]);
+   assert.equal(await p.locator('.home-update-date').innerText(),latest.日期);
+   assert.deepEqual(await p.locator('.home-update-list li').allTextContents(),expectedLog(locale));
    const fonts=await p.locator('.home-tool-content').first().evaluate(x=>({title:parseFloat(getComputedStyle(x.querySelector('h2')).fontSize),description:parseFloat(getComputedStyle(x.querySelector('p')).fontSize)}));assert.ok(fonts.title>=20&&fonts.description>=16,JSON.stringify(fonts));
-   await go('/update/');await p.locator('.update-log-card').first().waitFor();assert.equal(await p.locator('.update-log-card h2').first().innerText(),'2026-10-13');
-   assert.deepEqual(await p.locator('.update-log-card').first().locator('li').allTextContents(),[get('update.log.2026-10-13.1',locale),get('update.log.2026-10-13.2',locale)]);
+   await go('/update/');await p.locator('.update-log-card').first().waitFor();assert.equal(await p.locator('.update-log-card h2').first().innerText(),latest.日期);
+   assert.deepEqual(await p.locator('.update-log-card').first().locator('li').allTextContents(),expectedLog(locale));
    for(const width of [1400,390]){
     await p.setViewportSize({width,height:900});await go('/settings/');
     const icon=p.locator('.rb-settings-language-icon');assert.equal(await icon.innerText(),get('copy.language',locale));
