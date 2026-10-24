@@ -20,4 +20,4 @@ ProtectSystem=strict
 ProtectHome=read-only
 ReadWritePaths=/home/ubuntu/rangerbook-private/auth
 LimitCORE=0
-TimeoutStartSec=90
+TimeoutStartSec=300

@@ -1,5 +1,13 @@
 # Detached production preparation
 
+2026-10-24 update: the owner accepted the tested interface and explicitly
+authorized production publication after a final check. The historical holds
+below describe the preparation phase. For this cutover, validate the current
+release and production baseline first, verify an encrypted off-host key restore,
+then create the approval markers and remove the interface hold on the host.
+Preserve all production identities and data; never copy staging accounts or
+secrets. Backend acceptance still precedes the Pages merge.
+
 This directory prepares a review bundle outside the public checkout. It does
 not install units, reload Nginx, migrate/read the production database, send mail,
 or merge/publish the frontend. The owner is designing another interface; keep
