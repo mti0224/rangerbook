@@ -266,7 +266,7 @@
     if (!challengeId || !adminAllowed() || busy) return;
     const id = version;
     requestBusy(true);
-    setStatus(t("status.checkingSwap","正在向官方 API 查詢最新隊伍配置…"));
+    setStatus(t("status.checkingSwap","正在驗證中..."));
     try {
       const response = await auth.api("/member/game-binding/verify", {
         method: "POST", body: JSON.stringify({ challengeId })
