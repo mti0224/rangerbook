@@ -65,7 +65,22 @@
     if (get("adminPersonalChooseAgain")) get("adminPersonalChooseAgain").hidden = step === "search";
   }
 
+  function placeStatus() {
+    const target = boundPanel.hidden ? unboundPanel : get("adminPersonalAccountCard");
+    if (target && status.parentElement !== target) target.append(status);
+  }
+  function importedTime(value) {
+    if (!value) return null;
+    const date = new Date(value);
+    if (!Number.isFinite(date.getTime())) return null;
+    const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Taipei", calendar: "gregory", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+    }).formatToParts(date).map(part => [part.type, part.value]));
+    return `${parts.year}/${parts.month}/${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+  }
   function setStatus(message = "", error = false) {
+    placeStatus();
     status.textContent = message;
     status.className = "admin-message" + (error ? " error" : "");
   }
@@ -86,7 +101,6 @@
     unboundPanel.hidden = false;
     candidatesPanel.replaceChildren();
     showBindingStep("search");
-    if (get("adminPersonalBoundIntro")) get("adminPersonalBoundIntro").hidden = true;
     const viewer = get("adminPersonalViewer");
     if (viewer) { viewer.hidden = true; viewer.removeAttribute("src"); }
     get("adminPersonalUnbindForm").hidden = true;
@@ -142,10 +156,9 @@
         section.dataset.bindingState = "bound";
         unboundPanel.hidden = true;
         boundPanel.hidden = false;
-        if (get("adminPersonalBoundIntro")) get("adminPersonalBoundIntro").hidden = false;
+        placeStatus();
         const player = info.player || {};
-        get("adminPersonalBoundLabel").textContent = (player.player_name || t("status.unknownPlayer","未知玩家")) +
-          " · " + (player.guild_name || t("status.noGuild","無公會"));
+        get("adminPersonalBoundLabel").textContent = player.player_name || t("status.unknownPlayer","未知玩家");
         const privateInfo = await auth.api("/member/personal-teams");
         if (id !== version || !adminAllowed()) return;
         drawTeams(privateInfo.teams);
@@ -153,7 +166,7 @@
           setStatus(t("status.migration","已新增 PvP 防守與公會戰進攻隊伍，請按「匯入／更新我的隊伍」取得完整隊伍資料。"));
         }
         get("adminPersonalLastImported").textContent =
-          player.last_imported_at ? f("status.lastImported", [new Date(player.last_imported_at).toLocaleString(dateLocale(), { hour12: false })], "最後匯入：%N1") :
+          importedTime(player.last_imported_at) ? f("status.lastImported", [importedTime(player.last_imported_at)], "最後匯入時間：%N1") :
             t("status.noImport","尚未匯入隊伍。完成驗證後，請先恢復原本配置再匯入。");
       } else if (info.challenge) {
         showChallenge(info.challenge);

@@ -1,7 +1,7 @@
 (() => {
   const auth = window.RangerbookAuth;
   if (!auth) return;
-  // Only authenticated admins can load their own imported data in this mode.
+  // Authenticated members can load only their own imported data in this mode.
   const personalMode = new URLSearchParams(window.location.search).get("personal") === "1";
   const pt = (key, fallback) => window.RangerbookI18n?.t("admin.personal.viewer." + key, fallback) || fallback;
   const pf = (key, args, fallback) => window.RangerbookI18n?.format("admin.personal.viewer." + key, args, fallback) || fallback;
@@ -586,10 +586,8 @@
         result.hidden = true;
         return;
       }
-      selectedName.textContent = pt("mine","我的隊伍");
-      selectedMeta.textContent = pt("private","管理員私人匯入資料");
       teamSelect.value = TEAM_LABELS[teamSelect.value] ? teamSelect.value : "team1";
-      selection.hidden = false;
+      selection.hidden = true;
       result.hidden = false;
       renderTeam();
       setStatus("");
@@ -615,9 +613,13 @@
       document.body.classList.add("personal-embedded");
       page.querySelector(".page-title")?.setAttribute("hidden", "");
       page.querySelector(".pvp-search-card")?.setAttribute("hidden", "");
-      // Move the existing team picker out of the hidden name-search card.
-      // This retains the same 7-team navigation without exposing player search.
-      result.prepend(selection);
+      // Reuse the same seven-team picker inside the private viewer card.
+      const picker = teamSelect.closest("label");
+      picker.classList.add("personal-team-picker");
+      picker.querySelector("span").dataset.i18n = "member.teamToView";
+      picker.querySelector("span").textContent = window.RangerbookI18n?.t("member.teamToView", "預查看的隊伍") || "預查看的隊伍";
+      page.querySelector(".pvp-player-team-pane").prepend(picker);
+      teamTitle.hidden = true;
       if (!(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) { page.hidden = true; return; }
       page.hidden = false;
       teamSelect.value = "team1";

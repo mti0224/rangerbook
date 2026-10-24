@@ -49,6 +49,11 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.waitForFunction(()=>window.RangerbookAuth?.isAdmin());assert.ok(changed);
   await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
   await page.locator('#adminResourcesTab').waitFor();
+  const adminEdges=await page.locator('#adminSessionCard').boundingBox();
+  for(const el of await page.locator('#adminWorkspace, #adminSessionCard').all()){
+    const box=await el.boundingBox();assert.ok(Math.abs(box.x-adminEdges.x)<=1&&Math.abs(box.width-adminEdges.width)<=1);
+  }
+  assert.equal(await page.locator('main.page').count(),1);
   assert.equal(await page.locator('main a[href="../"],main a[href="../account/"],#adminLogoutBtn').count(),0,'Admin navigation actions live in the shared sidebar');
   failLogout=true;await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
   await page.waitForFunction(text=>document.querySelector('.gt-logout-status').textContent===text,copy('member.logoutFailed',locale));

@@ -26,23 +26,16 @@
   <meta name="referrer" content="no-referrer"><title>帳號｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261018-unified980">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261024-query-width">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
   <link rel="stylesheet" href="../assets/css/game-tech.css?v=20261013-v2.5">
   <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261014-toggle1">
-  <link rel="stylesheet" href="../assets/css/member.css?v=20261024-query-layout">
+  <link rel="stylesheet" href="../assets/css/member.css?v=20261024-bound-layout">
 </head>
 <body class="gt-app"><div id="site-header"></div><main class="page personal-teams-page"><div class="admin-shell"><section class="page-title member-banner"><p class="eyebrow member-banner-brand" lang="en">LINE Rangers Database</p><h1 data-i18n="member.personalTitle">個人隊伍</h1><p data-i18n="member.personalIntro">檢視並分析你的遊戲隊伍</p></section><section id="memberGate" class="admin-card"><a href="../login/" data-i18n="member.goLogin">前往登入</a></section>      <section id="adminPersonalPanel" class="admin-workspace-panel" hidden>
-        <div id="adminPersonalBoundIntro" class="admin-session-head" hidden>
-          <div>
-            <h2 data-i18n="member.personalTeams">個人遊戲隊伍</h2>
-            <p class="admin-muted" data-i18n="admin.personal.intro">綁定自己的 LINE Rangers 遊戲帳號後，可匯入一般隊伍 1～5、PvP 防守及公會戰進攻隊伍，並檢視隊伍分析。</p>
-          </div>
-        </div>
-        <div id="adminPersonalStatus" class="admin-message" role="status" aria-live="polite"></div>
         <div id="adminPersonalUnbound" class="admin-card personal-verify personal-binding-card" data-step="search">
           <div class="personal-binding-heading"><h2 data-i18n="member.personalTeams">個人遊戲隊伍</h2><button type="button" id="adminPersonalChooseAgain" data-i18n="member.teamChooseAgain" hidden>重新選擇遊戲帳號</button></div>
           <p id="adminPersonalStepGuide" class="personal-step-guide" data-i18n="member.teamSearchGuide">尚未綁定，請搜尋你目前的遊戲內暱稱</p>
@@ -68,9 +61,11 @@
             <p id="adminPersonalChallengeExpiry" class="admin-muted"></p>
             <button id="adminPersonalVerify" type="button" class="primary personal-primary" data-i18n="member.verify">驗證</button>
           </div>
+        <div id="adminPersonalStatus" class="admin-message" role="status" aria-live="polite"></div>
         </div>
         <div id="adminPersonalBound" hidden>
-          <h3 data-i18n="admin.personal.bound.title">已綁定的遊戲帳號</h3>
+          <section id="adminPersonalAccountCard" class="admin-card personal-account-card">
+          <h2 data-i18n="member.gameAccountSettings">遊戲帳號資料設定</h2>
           <p id="adminPersonalBoundLabel" class="admin-muted"></p>
           <div class="admin-actions">
             <button id="adminPersonalImport" class="primary" type="button" data-i18n="admin.personal.bound.import">匯入／更新我的隊伍</button>
@@ -88,6 +83,7 @@
               <button id="adminPersonalUnbindCancel" type="button" class="secondary" data-i18n="admin.personal.unbind.cancel">取消</button>
             </div>
           </form>
+          </section>
           <div id="adminPersonalTeams" class="personal-team-viewer">
             <iframe id="adminPersonalViewer" title="我的 LINE Rangers 隊伍與隊伍分析" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
           </div>

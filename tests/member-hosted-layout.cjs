@@ -84,6 +84,39 @@ async function main(){
     assert.equal(await page.locator('#adminPersonalResults h3').count(),0);
     const banner=await page.locator('.member-banner').boundingBox(),card=await page.locator('.personal-binding-card').boundingBox();
     assert(Math.abs(card.x-banner.x)<=1&&Math.abs(card.width-banner.width)<=1);
+    // Browser-only bound data exercises the deployed HTML/iframe without changing server bindings.
+    const rangerRows=await (await context.request.get(origin+'/res/Rangers_data.json')).json();
+    const unit={unitCode:rangerRows.find(row=>row.ranger_id).ranger_id,level:1,equipMap:{}};
+    const teams=Object.fromEntries(['team1','team2','team3','team4','team5'].map(key=>[key,{A:[unit],B:[]}]));teams.pvpteam=[unit];teams.guildwar=[unit];
+    const localeRows=await (await context.request.get(origin+'/assets/locales/sitewide-overrides.json')).json();
+    const cookies=await context.cookies();let boundMatrices=0;
+    for(const locale of ['zh-Hant','en','jp','th'])for(const width of [390,1440]){
+      phase='bound fixture '+locale+' '+width;
+      const boundContext=await makeContext(locale,width===390?'dark':'light',width);await boundContext.addCookies(cookies);
+      await boundContext.route('**/member/game-binding/status',route=>route.fulfill({json:{bound:true,player:{player_name:'Synthetic',last_imported_at:'2026-10-24T01:02:03Z'}}}));
+      await boundContext.route('**/member/personal-teams',route=>route.fulfill({json:{bound:true,teams}}));
+      await boundContext.route('**/auth/security',route=>route.fulfill({json:{totp_enabled:true,totp_required:false,google_email:null,reauth_valid_for:600}}));
+      const boundPage=await boundContext.newPage();await go(boundPage,'/personal-teams/');
+      const iframe=boundPage.locator('#adminPersonalViewer');await iframe.waitFor();await iframe.scrollIntoViewIfNeeded();
+      const viewer=boundPage.frameLocator('#adminPersonalViewer');await viewer.locator('.pvp-player-unit-button').first().waitFor();
+      const banner=await boundPage.locator('.member-banner').boundingBox();
+      for(const target of [boundPage.locator('#adminPersonalAccountCard'),iframe,viewer.locator('.pvp-player-team-pane')]){
+        const box=await target.boundingBox();assert(Math.abs(box.x-banner.x)<=1&&Math.abs(box.width-banner.width)<=1,'Bound content/banner edges');
+      }
+      const copy=key=>localeRows.find(row=>row.key==='UI:member.'+key)[locale==='zh-Hant'?'zh_TW':locale];
+      assert.equal(await boundPage.locator('#adminPersonalAccountCard h2').innerText(),copy('gameAccountSettings'));
+      assert.match(await boundPage.locator('#adminPersonalLastImported').innerText(),/2026\/10\/24 09:02:03/);
+      assert.equal(await viewer.locator('#pvpPlayerSearchSelection').isVisible(),false);
+      assert.equal(await viewer.locator('.personal-team-picker span').innerText(),copy('teamToView'));
+      for(const key of Object.keys(teams))await viewer.locator('#pvpPlayerSearchTeamSelect').selectOption(key);
+      await go(boundPage,'/account/');await boundPage.locator('#memberSettings:not([disabled])').waitFor();
+      await boundPage.locator('#memberGoogleStart').click();await boundPage.locator('#memberConfirmDialog').waitFor();
+      const input=await boundPage.locator('#memberConfirmForm input').boundingBox(),toggle=await boundPage.locator('#memberDialogRecovery').boundingBox();
+      assert(toggle.y>=input.y+input.height+8&&Math.abs(toggle.x-input.x)<=1&&Math.abs(toggle.width-input.width)<=1);
+      assert.equal(await boundPage.locator('#memberDialogRecovery').innerText(),copy('useRecovery'));
+      await boundPage.locator('#memberDialogRecovery').click();await boundPage.locator('#memberDialogCancel').click();
+      boundMatrices++;await boundContext.close();
+    }
     await go(page,'/forgot-password/');await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
     await page.waitForFunction(()=>!window.RangerbookAuth.getUser().logged_in);
     await page.waitForFunction(()=>document.querySelector('.gt-logout-status').hidden&&document.querySelector('.gt-logout-status').textContent==='');
@@ -92,6 +125,10 @@ async function main(){
     const admin=await makeContext(),loggedAdmin=await signIn(admin,'admin');
     await go(loggedAdmin.page,'/admin/');await loggedAdmin.page.locator('#adminResourcesTab').waitFor();
     assert.equal(await loggedAdmin.page.locator('main a[href="../"],main a[href="../account/"],#adminLogoutBtn').count(),0);
+    const adminEdges=await loggedAdmin.page.locator('#adminSessionCard').boundingBox();
+    const workspaceEdges=await loggedAdmin.page.locator('#adminWorkspace').boundingBox();
+    await go(loggedAdmin.page,'/ranger/');const queryEdges=await loggedAdmin.page.locator('.page-title').boundingBox();
+    for(const box of [adminEdges,workspaceEdges])assert(Math.abs(box.x-queryEdges.x)<=1&&Math.abs(box.width-queryEdges.width)<=1,'Admin uses query-page width');
     assert.equal((await admin.request.get(origin+'/admin/users')).status(),403);
     await loggedAdmin.page.evaluate(()=>window.RangerbookAuth.logout());await admin.close();
     phase='super administrator MFA';
@@ -100,7 +137,7 @@ async function main(){
     assert.equal((await superContext.request.get(origin+'/admin/users')).status(),403);
     await loggedSuper.page.evaluate(()=>window.RangerbookAuth.logout());await superContext.close();
     assert.deepEqual(errors,[]);assert.deepEqual(outbound,[]);
-    console.log(JSON.stringify({matrices,pages:6,ordinary_login:true,proof_600_seconds:true,unbound_card:true,quiet_logout:true,admin_main_actions_removed:true,admin_super_api_denied:true,mfa_login_card_only:true,production_requests:0,mail_sent:false,game_provider_calls:0,mfa_codes_used:0}));
+    console.log(JSON.stringify({matrices,pages:6,bound_fixture_matrices:boundMatrices,google_factor_dialog:true,admin_width_matches_query:true,ordinary_login:true,proof_600_seconds:true,unbound_card:true,quiet_logout:true,admin_main_actions_removed:true,admin_super_api_denied:true,mfa_login_card_only:true,production_requests:0,mail_sent:false,game_provider_calls:0,mfa_codes_used:0}));
   }finally{await browser.close();}
 }
 main().catch(error=>{

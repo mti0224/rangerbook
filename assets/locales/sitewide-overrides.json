@@ -2126,5 +2126,19 @@
     "en": "Search",
     "jp": "検索",
     "th": "ค้นหา"
+  },
+  {
+    "key": "UI:member.gameAccountSettings",
+    "zh_TW": "遊戲帳號資料設定",
+    "en": "Game account settings",
+    "jp": "ゲームアカウント設定",
+    "th": "การตั้งค่าบัญชีเกม"
+  },
+  {
+    "key": "UI:member.teamToView",
+    "zh_TW": "預查看的隊伍",
+    "en": "Team to view",
+    "jp": "表示するチーム",
+    "th": "ทีมที่ต้องการดู"
   }
 ]

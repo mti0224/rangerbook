@@ -40,17 +40,13 @@ html.rb-personal-embed body.gt-app #pvpPlayerSearchResult {
   box-shadow: none;
   border: 0;
 }
-html.rb-personal-embed body.gt-app .pvp-search-selection {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 16px !important;
-  padding: 12px 16px !important;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
+html.rb-personal-embed body.gt-app .pvp-search-selection { display:none!important; }
+html.rb-personal-embed body.gt-app .personal-team-picker {
+  display:grid; grid-template-columns:auto minmax(0,330px); align-items:center;
+  gap:12px; margin:0 0 20px; min-width:0;
 }
+html.rb-personal-embed body.gt-app .personal-team-picker select { width:100%; min-width:0; }
+html.rb-personal-embed body.gt-app #pvpPlayerSearchTeamTitle { display:none; }
 html.rb-personal-embed body.gt-app #pvpPlayerSearchStatus:empty {
   display: none !important;
 }
@@ -92,7 +88,7 @@ html.rb-personal-embed body.gt-app .team-analysis {
   margin-top: 18px;
 }
 @media (max-width: 740px) {
-  html.rb-personal-embed body.gt-app .pvp-search-selection {
+  html.rb-personal-embed body.gt-app .personal-team-picker {
     grid-template-columns: minmax(0, 1fr);
   }
   html.rb-personal-embed body.gt-app .pvp-player-team-grid {
@@ -102,8 +98,5 @@ html.rb-personal-embed body.gt-app .team-analysis {
 @media (max-width: 460px) {
   html.rb-personal-embed body.gt-app .pvp-player-team-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  html.rb-personal-embed body.gt-app .pvp-search-selection {
-    padding: 12px !important;
   }
 }

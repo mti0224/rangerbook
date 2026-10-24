@@ -48,7 +48,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(url.pathname==='/auth/2fa/setup')data={manual_key:'FIXTUREONLY',qr:'data:image/png;base64,'+png.toString('base64')};
       if(url.pathname==='/auth/2fa/enable'||url.pathname==='/auth/2fa/recovery-codes')data={recovery_codes:['FIXTURE-CODE-ONE']};
       if(url.pathname==='/auth/google/start')data={url:'https://accounts.google.com/o/oauth2/v2/auth?state=fixture'};
-      if(url.pathname==='/member/game-binding/status')data={bound:gameBound,challenge:gameChallenge,player:{player_name:'Fixture',guild_name:'Fixture Guild'}};
+      if(url.pathname==='/member/game-binding/status')data={bound:gameBound,challenge:gameChallenge,player:{player_name:'Fixture',guild_name:'Fixture Guild',last_imported_at:'2026-10-24T01:02:03Z'}};
       if(url.pathname==='/member/game-players/search'){
         if(searchMode==='error')return route.fulfill({status:503,json:{detail:'搜尋暫時不可用'},headers});
         data={items:searchMode==='empty'?[]:[{candidateId:'fixture-candidate',name:'Fixture <img src=x>',guildName:'Fixture Guild'}]};
@@ -152,7 +152,15 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.locator('#memberConfirmForm input').fill('123456');await page.locator('#memberConfirmForm button[type=submit]').click();
   await page.waitForFunction(()=>document.querySelector('#memberGoogleUnlink').hidden);
   assert.equal(calls.filter(x=>x.path==='/auth/google/unlink'&&x.method==='POST').length,1);
-  await page.locator('#memberGoogleStart').click();await page.locator('#memberConfirmForm input').fill('234567');await page.locator('#memberConfirmForm button[type=submit]').click();
+  await page.locator('#memberGoogleStart').click();await page.locator('#memberConfirmDialog').waitFor();
+  const factorBox=await page.locator('#memberConfirmForm input').boundingBox(),recoveryBox=await page.locator('#memberDialogRecovery').boundingBox();
+  assert.ok(recoveryBox.y>=factorBox.y+factorBox.height+8,'Recovery toggle is below the factor input');
+  assert.ok(Math.abs(recoveryBox.x-factorBox.x)<=1&&Math.abs(recoveryBox.width-factorBox.width)<=1,'Recovery toggle aligns with the input');
+  assert.equal(await page.locator('#memberDialogRecovery').innerText(),copy('useRecovery',locale));
+  await page.locator('#memberDialogRecovery').click();assert.equal(await page.locator('#memberConfirmForm input').getAttribute('inputmode'),'text');
+  await page.locator('#memberDialogRecovery').click();assert.equal(await page.locator('#memberConfirmForm input').getAttribute('inputmode'),'numeric');
+  if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant')await page.screenshot({path:process.env.QA_SCREENSHOTS+`/google-factor-${width}-${theme}.png`,fullPage:true});
+  await page.locator('#memberConfirmForm input').fill('234567');await page.locator('#memberConfirmForm button[type=submit]').click();
   await page.waitForURL('https://accounts.google.com/**');
   assert.equal(JSON.parse(calls.findLast(x=>x.path==='/auth/google/start'&&x.method==='POST').body).code,'234567');
   proof=600;await go('/account/');await page.locator('#memberDisable').click();await page.locator('#memberConfirmForm input').fill('345678');await page.locator('#memberConfirmForm button[type=submit]').click();
@@ -211,6 +219,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   // Unbound ownership verification uses one focused step at a time, with server state on reload.
   user={logged_in:true,role:'user',account:'fixture-user'};
   await go('/personal-teams/');await page.locator('#adminPersonalPanel:not([hidden])').waitFor();await assertPage();
+  assert.equal(await page.locator('#adminPersonalStatus').evaluate(el=>el.parentElement.id),'adminPersonalUnbound');
   assert.equal(await page.locator('#adminPersonalStepGuide').innerText(),copy('teamSearchGuide',locale));
   assert.equal(await page.locator('#adminPersonalResults').isVisible(),false,'No empty candidate frame before search');
   assert.equal(await page.locator('#adminPersonalResults h3').count(),0,'No candidate heading');
@@ -242,7 +251,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   assert.equal(await page.locator('#adminPersonalChallenge').isVisible(),true);
   await page.locator('#adminPersonalVerify').click();await page.locator('#adminPersonalBound').waitFor();
   assert.equal(await page.locator('#adminPersonalUnbound').isVisible(),false);
-  assert.equal(await page.locator('#adminPersonalBoundIntro').isVisible(),true);
+  assert.equal(await page.locator('#adminPersonalBoundIntro').count(),0);
+  await assertPage();
+  assert.equal(await page.locator('#adminPersonalAccountCard h2').innerText(),copy('gameAccountSettings',locale));
+  assert.equal(await page.locator('#adminPersonalBoundLabel').innerText(),'Fixture');
+  assert.match(await page.locator('#adminPersonalLastImported').innerText(),/2026\/10\/24 09:02:03/);
+  assert.equal(await page.locator('#adminPersonalStatus').evaluate(el=>el.parentElement.id),'adminPersonalAccountCard');
   // Sidebar logout is quiet on success; failure behavior is covered by security-browser.
   await go('/forgot-password/');await menu();await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
   await page.waitForFunction(()=>!window.RangerbookAuth.getUser().logged_in);

@@ -52,7 +52,7 @@ async function main(){
         calls.push(url.pathname);
         let data={logged_in:loggedIn,role:'user',account:'fixture-member'};
         if(url.pathname==='/auth/features')data={registration:false,google:false,member_navigation:false};
-        if(url.pathname==='/member/game-binding/status')data={bound:true,player:{player_name:'Synthetic',guild_name:'Fixture'}};
+        if(url.pathname==='/member/game-binding/status')data={bound:true,player:{player_name:'Synthetic',guild_name:'Fixture',last_imported_at:'2026-10-24T01:02:03Z'}};
         if(url.pathname==='/member/personal-teams')data={bound:true,teams};
         return route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Credentials':'true'},body:JSON.stringify(data)});
       }
@@ -71,24 +71,48 @@ async function main(){
     assert.deepEqual(blocked,[]);
     assert(calls.includes('/auth/me')&&calls.includes('/auth/features'));
     loggedIn=true;
-    for(const viewport of [{width:390,height:900},{width:1440,height:1000}]){
+    const localeRows=JSON.parse(await fs.readFile(path.join(root,'assets/locales/sitewide-overrides.json'),'utf8'));
+    let boundMatrices=0;
+    for(const locale of (process.env.QA_ONE?['zh-Hant']:['zh-Hant','en','jp','th']))for(const theme of ['light','dark'])for(const width of (process.env.QA_ONE?[390,1440]:[390,768,1440,1920])){
+      const viewport={width,height:1000};
+      await page.evaluate(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
       await page.setViewportSize(viewport);
       await page.goto(origin+'/personal-teams/');
       const iframe=page.locator('#adminPersonalViewer');await iframe.waitFor();await iframe.scrollIntoViewIfNeeded();
       const viewer=page.frameLocator('#adminPersonalViewer');
       await viewer.locator('#pvpPlayerSearchTeamGrid .pvp-player-unit-button').first().waitFor();
       await viewer.locator('#pvpPlayerTeamAnalysis:not([hidden])').waitFor();
+      const copy=key=>localeRows.find(row=>row.key==='UI:member.'+key)[locale==='zh-Hant'?'zh_TW':locale];
+      assert.equal(await page.locator('#adminPersonalAccountCard h2').innerText(),copy('gameAccountSettings'));
+      assert.equal(await page.locator('#adminPersonalBoundLabel').innerText(),'Synthetic');
+      assert.match(await page.locator('#adminPersonalLastImported').innerText(),/2026\/10\/24 09:02:03/);
+      const banner=await page.locator('.member-banner').boundingBox();
+      for(const target of [page.locator('#adminPersonalAccountCard'),iframe,viewer.locator('.pvp-player-team-pane')]){
+        const box=await target.boundingBox();assert.ok(Math.abs(box.x-banner.x)<=1&&Math.abs(box.width-banner.width)<=1,'Bound content matches banner edges');
+      }
+      assert.equal(await viewer.locator('#pvpPlayerSearchSelection').isVisible(),false,'No separate My teams card');
+      assert.equal(await viewer.locator('.personal-team-picker span').innerText(),copy('teamToView'));
+      assert.equal(await viewer.locator('.pvp-player-team-pane #pvpPlayerSearchTeamSelect').count(),1,'Picker is inside the viewer card');
       assert.equal(await viewer.locator('#pvpPlayerSearchTeamSelect option').count(),7);
       for(const key of Object.keys(teams)){
         await viewer.locator('#pvpPlayerSearchTeamSelect').selectOption(key);
         assert.equal(await viewer.locator('#pvpPlayerSearchTeamGrid .pvp-player-unit-button').count(),1);
       }
+      await viewer.locator('#pvpPlayerSearchTeamSelect').selectOption('team1');
+      await viewer.locator('.pvp-player-unit-button').first().click();
+      assert.equal(await viewer.locator('#pvpPlayerSearchUnitDetail').isVisible(),true);
+      if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant'&&[390,1440].includes(width)){
+        await page.evaluate(()=>window.scrollTo(0,0));
+        await page.screenshot({path:process.env.QA_SCREENSHOTS+`/bound-top-${width}-${theme}.png`});
+        await page.screenshot({path:process.env.QA_SCREENSHOTS+`/bound-viewer-${width}-${theme}.png`,fullPage:true});
+      }
+      boundMatrices++;
     }
     let refusal=page.waitForEvent('console',{predicate:msg=>/frame-ancestors|X-Frame-Options/.test(msg.text())});
     await page.goto(`http://127.0.0.1:${foreign.address().port}/`);await refusal;
     refusal=page.waitForEvent('console',{predicate:msg=>/X-Frame-Options/.test(msg.text())});
     await page.goto(origin+'/__frame_guard');await refusal;
-    console.log(JSON.stringify({pages:4,production_auth_requests:0,analytics_requests:0,service_worker_registrations:0,same_origin_viewer_devices:2,team_modes:7,foreign_frame_blocked:true,other_pages_frame_blocked:true}));
+    console.log(JSON.stringify({pages:4,production_auth_requests:0,analytics_requests:0,service_worker_registrations:0,same_origin_viewer_matrices:boundMatrices,team_modes:7,foreign_frame_blocked:true,other_pages_frame_blocked:true}));
   }finally{if(browser)await browser.close();await new Promise(r=>server.close(r));await new Promise(r=>foreign.close(r));}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

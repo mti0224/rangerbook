@@ -10,13 +10,10 @@
   gap: 20px;
 }
 
-/* Match the width of every admin tab, overriding Game-Tech's wider defaults. */
-body.gt-app main.admin-page {
-  width: min(980px, calc(100% - 2rem));
-}
-body.gt-app .admin-page .admin-shell {
-  width: 100%;
-  min-width: 0;
+/* Shared query-page container owns the width; inner admin/member grids fill it. */
+body.gt-app .page .admin-shell {
+  width:100%;
+  min-width:0;
 }
 
 .admin-card {
