@@ -505,9 +505,9 @@
   gtUserGroup.append(gtAdminLink);
   const gtLoginLink=document.createElement("a");gtLoginLink.href=rootPrefix+"login/";gtLoginLink.dataset.i18n="member.login";gtLoginLink.textContent="登入";
   const gtLogout=document.createElement("button");gtLogout.type="button";gtLogout.dataset.i18n="member.logout";gtLogout.textContent="登出";gtLogout.hidden=true;
-  const gtLogoutStatus=document.createElement("p");gtLogoutStatus.setAttribute("role","status");gtLogoutStatus.className="gt-logout-status";
+  const gtLogoutStatus=document.createElement("p");gtLogoutStatus.setAttribute("role","status");gtLogoutStatus.className="gt-logout-status";gtLogoutStatus.hidden=true;
   gtLogout.addEventListener("click",async()=>{
-    gtLogout.disabled=true;gtLogoutStatus.textContent=window.RangerbookI18n?.t("member.processing","處理中…");
+    gtLogout.disabled=true;gtLogoutStatus.hidden=false;gtLogoutStatus.textContent=window.RangerbookI18n?.t("member.processing","處理中…");
     try {
       if(window.RangerbookAuth)await window.RangerbookAuth.logout();
       else {
@@ -515,7 +515,7 @@
         if(!response.ok)throw new Error();
         window.dispatchEvent(new CustomEvent("rangerbook:auth-changed",{detail:{logged_in:false,role:"user"}}));
       }
-      gtLogoutStatus.textContent=window.RangerbookI18n?.t("member.loggedOut","已登出。");
+      gtLogoutStatus.textContent="";gtLogoutStatus.hidden=true;
       if(/\/(?:account|personal-teams|admin|two-factor)\//.test(location.pathname))location.assign(rootPrefix);
     }catch {gtLogoutStatus.textContent=window.RangerbookI18n?.t("member.logoutFailed","登出失敗，請檢查網路後重試。");}
     finally{gtLogout.disabled=false;}

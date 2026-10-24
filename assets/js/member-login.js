@@ -4,7 +4,7 @@
   const root=location.pathname.startsWith('/rangerbook/')?'/rangerbook/':'/';
   const routeUser=user=>{
     if(user.setup_required){location.assign(root+'two-factor/');return;}
-    if(user.mfa_required){$('memberLoginForm').hidden=true;$('memberLoginFactor').hidden=false;notify($('memberState'),t('mfaRequired'));$('memberLoginFactorForm').elements.code.focus();return;}
+    if(user.mfa_required){$('memberLoginCard').hidden=true;$('memberLoginFactor').hidden=false;notify($('memberState'),'');$('memberLoginFactorForm').elements.code.focus();return;}
     if(user.must_change_password){location.assign(root+'account/');return;}
     if(user.logged_in)location.assign(root);
   };

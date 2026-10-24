@@ -30,7 +30,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
    }
    if(route.request().resourceType()==='image')return route.fulfill({contentType:'image/png',body:png});
    if(url.origin!==base)return route.abort();
-   let name=decodeURIComponent(url.pathname).slice(1);if(name.endsWith('/'))name+='index.html';
+   let name=decodeURIComponent(url.pathname).slice(1);if(name.endsWith('/')||!name)name+='index.html';
    const file=[path.join(root,name),path.join(fallback,name)].find(file=>fs.existsSync(file));
    if(!file)return route.fulfill({status:404,body:''});
    const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
@@ -49,12 +49,13 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.waitForFunction(()=>window.RangerbookAuth?.isAdmin());assert.ok(changed);
   await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
   await page.locator('#adminResourcesTab').waitFor();
-  failLogout=true;await page.locator('#adminLogoutBtn').click();
-  await page.waitForFunction(text=>document.querySelector('#adminSessionMessage').textContent===text,copy('site.auth.logoutFailed',locale));
+  assert.equal(await page.locator('main a[href="../"],main a[href="../account/"],#adminLogoutBtn').count(),0,'Admin navigation actions live in the shared sidebar');
+  failLogout=true;await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
+  await page.waitForFunction(text=>document.querySelector('.gt-logout-status').textContent===text,copy('member.logoutFailed',locale));
   assert.ok(await page.locator('#adminSessionCard').isVisible(),'Failed logout keeps the authenticated state visible');
-  failLogout=false;await page.locator('#adminLogoutBtn').click();await page.locator('#adminLoginForm').waitFor();
+  failLogout=false;await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();await page.waitForURL(base+'/');
   user={logged_in:true,account:'fixture_root',role:'super_admin',admin_application_status:'approved',must_change_password:false};
-  await page.reload({waitUntil:'domcontentloaded'});await page.locator('#adminAccountsTab').click();
+  await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});await page.locator('#adminAccountsTab').click();
   const row=page.locator('[data-user-id="qa_target"]');
   await row.locator('summary').click();await row.locator('[data-action="reset-password"]').click();
   await page.waitForFunction(()=>document.querySelector('[data-user-id="qa_target"] button')?.disabled===false);

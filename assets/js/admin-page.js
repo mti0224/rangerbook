@@ -25,7 +25,6 @@
   const registerForm = $("adminRegisterForm");
   const authMessage = $("adminAuthMessage");
   const sessionMessage = $("adminSessionMessage");
-  const logoutBtn = $("adminLogoutBtn");
   const currentAccount = $("adminCurrentAccount");
   const currentRole = $("adminCurrentRole");
   const currentStatus = $("adminCurrentStatus");
@@ -499,15 +498,6 @@
     } finally { window.RangerbookCaptcha?.reset(); }
   });
 
-  logoutBtn?.addEventListener("click", async () => {
-    try {
-      await auth.logout();
-      renderUserState(auth.getUser());
-      showAuthPanel("login");
-    } catch (_) {
-      setMessage(sessionMessage, "登出失敗，請確認網路後重試。", "error");
-    }
-  });
 
   refreshBtn?.addEventListener("click", loadSuperAdminData);
   resourceUpdatesRefreshBtn?.addEventListener("click", loadResourceUpdates);

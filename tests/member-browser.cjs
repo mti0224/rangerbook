@@ -12,6 +12,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-user',role:'user'},factor=false,email=null,proof=0,reauthRate=false,offline=false,hold=false,release;
   let loginMfa=false,invalidLink=false;
+  let gameChallenge=null,gameBound=false,swapAttempts=0;
   const calls=[],errors=[],outbound=[];
   await context.route('**/*',async route=>{
     const req=route.request(),url=new URL(req.url());
@@ -47,7 +48,17 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(url.pathname==='/auth/2fa/setup')data={manual_key:'FIXTUREONLY',qr:'data:image/png;base64,'+png.toString('base64')};
       if(url.pathname==='/auth/2fa/enable'||url.pathname==='/auth/2fa/recovery-codes')data={recovery_codes:['FIXTURE-CODE-ONE']};
       if(url.pathname==='/auth/google/start')data={url:'https://accounts.google.com/o/oauth2/v2/auth?state=fixture'};
-      if(url.pathname==='/member/game-binding/status')data={bound:false};
+      if(url.pathname==='/member/game-binding/status')data={bound:gameBound,challenge:gameChallenge,player:{player_name:'Fixture',guild_name:'Fixture Guild'}};
+      if(url.pathname==='/member/game-players/search')data={items:[{candidateId:'fixture-candidate',name:'Fixture <img src=x>',guildName:'Fixture Guild'}]};
+      if(url.pathname==='/member/game-binding/start'){
+        if(body.medal==='0')return route.fulfill({status:400,json:{detail:'公會獎牌數量不符，請確認後重試。'},headers});
+        gameChallenge={challengeId:'fixture-challenge',team:3,side:'A',firstPosition:2,secondPosition:5,expiresAt:new Date(Date.now()+600000).toISOString()};data=gameChallenge;
+      }
+      if(url.pathname==='/member/game-binding/verify'){
+        if(++swapAttempts===1)data={verified:false,message:'尚未偵測到指定的正確位置交換，請確認遊戲已儲存隊伍。'};
+        else {gameBound=true;gameChallenge=null;data={verified:true};}
+      }
+      if(url.pathname==='/member/personal-teams')data={bound:gameBound,teams:{pvpteam:[],guildwar:[]}};
       if(url.pathname.startsWith('/admin/'))data={items:[]};
       return route.fulfill({json:data,headers});
     }
@@ -67,6 +78,12 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'No horizontal overflow');
     assert.equal(await page.locator('.member-banner').count(),1);
     assert.ok((await page.locator('.member-banner h1').innerText()).trim());
+    assert.equal(await page.locator('.member-banner-brand').innerText(),'LINE RANGERS DATABASE');
+    const banner=await page.locator('.member-banner').boundingBox();
+    for(const card of await page.locator('.admin-card:visible').all()){
+      const box=await card.boundingBox();
+      assert.ok(Math.abs(box.x-banner.x)<=1&&Math.abs(box.width-banner.width)<=1,'Card edges match banner');
+    }
     const contrast=await page.evaluate(()=>{
       const button=[...document.querySelectorAll('button[type=submit]')].find(x=>!x.disabled&&x.getBoundingClientRect().height);
       if(!button)return 100;
@@ -93,6 +110,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   assert.equal(await page.locator('#memberReauthForm input').inputValue(),'');
   assert.equal(await page.locator('#memberSettings').evaluate(el=>el.disabled),false);
   await assertPage();
+  assert.equal(await page.locator('[data-i18n="member.passwordGuide"],#memberGoogleNext').count(),0);
   if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant')await page.screenshot({path:process.env.QA_SCREENSHOTS+`/security-${width}-${theme}.png`,fullPage:true});
   // Rehydrate a server-expired proof; settings stay locked on reload.
   proof=1;await page.reload();await page.waitForFunction(()=>document.querySelector('#memberSettings').disabled);
@@ -116,6 +134,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   // Google callback updates the linked email; unlink and disable require an explicit current factor.
   proof=600;email='fixture@example.test';await go('/account/#google=ok');await page.locator('#memberGoogle .member-operation-status.success').waitFor();
   assert.equal(await page.locator('#memberGoogleStatus').innerText(),email);
+  assert.equal(await page.locator('#memberFactorStatus').innerText(),copy('factorConfigured',locale));
   assert.equal(await page.locator('#memberGoogleStart').innerText(),copy('replaceGoogle',locale));
   await page.locator('#memberGoogleUnlink').click();await page.locator('#memberConfirmDialog').waitFor();
   await page.locator('#memberConfirmForm input').fill('123456');await page.locator('#memberConfirmForm button[type=submit]').click();
@@ -127,11 +146,22 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   proof=600;await go('/account/');await page.locator('#memberDisable').click();await page.locator('#memberConfirmForm input').fill('345678');await page.locator('#memberConfirmForm button[type=submit]').click();
   await page.locator('#memberLoginGate').waitFor();
   // Login is independent and always finishes at the homepage, including recovery-code MFA.
-  await go('/login/');await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('wrong');await page.locator('#memberLoginForm button').click();
+  await go('/login/');await assertPage();
+  assert.deepEqual(await page.locator('.member-login-links a').evaluateAll(nodes=>nodes.map(a=>new URL(a.href).pathname)),['/forgot-password/','/register/']);
+  const baselines=await page.evaluate(()=>{
+    const textBox=el=>{const r=document.createRange();r.selectNodeContents(el);const box=r.getBoundingClientRect();return box.bottom;};
+    const link=document.querySelector('.member-login-links a:last-child'),button=document.querySelector('.member-login-actions button');
+    return [textBox(link),textBox(button),getComputedStyle(link).borderWidth,getComputedStyle(link).backgroundColor];
+  });
+  assert.ok(Math.abs(baselines[0]-baselines[1])<=1,'Login and last link text baseline');
+  assert.equal(baselines[2],'0px');assert.equal(baselines[3],'rgba(0, 0, 0, 0)');
+  if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant')await page.screenshot({path:process.env.QA_SCREENSHOTS+`/login-${width}-${theme}.png`,fullPage:true});
+  await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('wrong');await page.locator('#memberLoginForm button').click();
   await page.locator('#memberState.error').waitFor();
   await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.waitForURL(base+'/');
   user={logged_in:false,role:'user'};loginMfa=true;await go('/login/');
   await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.locator('#memberLoginFactor').waitFor();
+  assert.equal(await page.locator('#memberLoginCard').isVisible(),false);await assertPage();
   await page.locator('#memberLoginFactorForm input').fill('000000');await page.locator('#memberLoginFactorForm button[type=submit]').click();await page.locator('#memberState.error').waitFor();
   await page.locator('#memberUseRecovery').click();await page.locator('#memberLoginFactorForm input').fill('FIXTURE-RECOVERY');await page.locator('#memberLoginFactorForm button[type=submit]').click();await page.waitForURL(base+'/');
   user={logged_in:false,role:'user'};await go('/register/');await page.locator('#adminRegisterForm input[name=account]').fill('fixture-new');await page.locator('#adminRegisterForm input[name=email]').fill('fixture@outlook.test');
@@ -139,8 +169,15 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   assert.equal(await page.locator('#memberRegistrationResend').isDisabled(),true);await assertPage();
   await go('/forgot-password/');await page.locator('#memberForgotForm input').fill('missing-account');
   assert.equal(await page.locator('#memberForgotForm select option').count(),2);
-  await page.locator('#memberForgotForm select').selectOption('google');await page.locator('#memberForgotForm button').click();await page.locator('#memberMailSent').waitFor();
+  const confirmWidth=(await page.locator('#memberForgotConfirm').boundingBox()).width;
+  await page.locator('#memberForgotForm select').selectOption('google');await page.locator('#memberForgotConfirm').click();await page.locator('#memberMailSent').waitFor();
   assert.equal(await page.locator('#memberForgotResend').isDisabled(),true);assert.ok(!(await page.locator('#memberMailSent').innerText()).includes('fixture@'));
+  assert.equal(await page.locator('main .admin-card').count(),1);
+  assert.equal(await page.getByText(copy('resetSent',locale),{exact:true}).count(),1,'One generic success message');
+  for(const control of ['#memberForgotResend','#memberMailSent a'])assert.ok(Math.abs((await page.locator(control).boundingBox()).width-confirmWidth)<=1,'Resend and home use full confirm width');
+  const rescueCalls=calls.filter(x=>x.path==='/auth/password/forgot').length;
+  await page.locator('#memberForgotForm input').press('Enter');
+  assert.equal(calls.filter(x=>x.path==='/auth/password/forgot').length,rescueCalls,'Enter respects resend cooldown');
   await assertPage();
   await go('/account-action/#reset='+'x'.repeat(64));await page.locator('#memberResetForm').waitFor();assert.equal(new URL(page.url()).hash,'');
   await page.locator('#memberResetForm input[name=password]').fill('fixture-password');await page.locator('#memberResetForm input[name=confirm]').fill('fixture-password');await page.locator('#memberResetForm button').click();
@@ -158,7 +195,36 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.evaluate(()=>window.dispatchEvent(new CustomEvent('rangerbook:auth-changed',{detail:{logged_in:false,role:'user'}})));
   assert.equal(await page.locator('.gt-user-navigation a[href$="/login/"]').isVisible(),true);
   if(width<1000)await page.keyboard.press('Escape');
-  offline=true;await page.locator('#memberForgotForm input').fill('fixture-user');await page.locator('#memberForgotForm button').click();await page.locator('#memberState.error').waitFor();assert.equal(await page.locator('#memberState').innerText(),copy('networkError',locale));offline=false;
+  offline=true;await page.locator('#memberForgotForm input').fill('fixture-user');await page.locator('#memberForgotConfirm').click();await page.locator('#memberState.error').waitFor();assert.equal(await page.locator('#memberState').innerText(),copy('networkError',locale));offline=false;
+  // Unbound ownership verification uses one focused step at a time, with server state on reload.
+  user={logged_in:true,role:'user',account:'fixture-user'};
+  await go('/personal-teams/');await page.locator('#adminPersonalPanel:not([hidden])').waitFor();await assertPage();
+  assert.equal(await page.locator('#adminPersonalStepGuide').innerText(),copy('teamSearchGuide',locale));
+  await page.locator('#adminPersonalSearch').fill('Fixture');await page.locator('#adminPersonalSearchForm button').click();
+  await page.locator('.personal-candidate').waitFor();
+  assert.equal(await page.locator('.personal-candidate img').count(),0,'Candidate names render as text');
+  await page.locator('.personal-candidate').click();await page.locator('#adminPersonalMedal').waitFor();
+  assert.equal(await page.locator('#adminPersonalSearchForm').isVisible(),false);
+  assert.equal(await page.locator('#adminPersonalResults').isVisible(),false);
+  assert.equal(await page.locator('#adminPersonalStepGuide').innerText(),copy('teamMedalGuide',locale));
+  await page.locator('#adminPersonalChooseAgain').click();await page.locator('.personal-candidate').click();
+  await page.locator('#adminPersonalMedal').fill('0');await page.locator('#adminPersonalMedalForm button').click();await page.locator('#adminPersonalStatus.error').waitFor();
+  assert.equal(await page.locator('#adminPersonalMedalForm').isVisible(),true);
+  await page.locator('#adminPersonalMedal').fill('123');await page.locator('#adminPersonalMedalForm button').click();await page.locator('#adminPersonalChallenge').waitFor();
+  await page.reload();await page.locator('#adminPersonalChallenge').waitFor();
+  assert.equal(await page.locator('#adminPersonalMedalForm').isVisible(),false);
+  const instruction=await page.locator('#adminPersonalChallengeInstruction').innerText();
+  for(const value of ['3','A','2','5'])assert.ok(instruction.includes(value),'Complete server-assigned challenge');
+  if(process.env.QA_SCREENSHOTS&&locale==='zh-Hant')await page.screenshot({path:process.env.QA_SCREENSHOTS+`/team-challenge-${width}-${theme}.png`,fullPage:true});
+  await page.locator('#adminPersonalVerify').click();await page.locator('#adminPersonalStatus.error').waitFor();
+  assert.equal(await page.locator('#adminPersonalChallenge').isVisible(),true);
+  await page.locator('#adminPersonalVerify').click();await page.locator('#adminPersonalBound').waitFor();
+  assert.equal(await page.locator('#adminPersonalUnbound').isVisible(),false);
+  assert.equal(await page.locator('#adminPersonalBoundIntro').isVisible(),true);
+  // Sidebar logout is quiet on success; failure behavior is covered by security-browser.
+  await go('/forgot-password/');await menu();await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
+  await page.waitForFunction(()=>!window.RangerbookAuth.getUser().logged_in);
+  assert.equal(await page.locator('.gt-logout-status').innerText(),'');
   assert.ok(!outbound.some(item=>/google-analytics|googletagmanager/.test(item.url)&&/\/(?:account|login|register|two-factor|forgot-password|account-action)\//.test(new URL(item.frame).pathname)),'Private pages never request analytics');
   assert.deepEqual(errors,[]);
   console.log('MEMBER_BROWSER_OK',locale,theme,width);

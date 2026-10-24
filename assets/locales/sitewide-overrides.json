@@ -2000,5 +2000,131 @@
     "en": "Cancel Setup",
     "jp": "設定をキャンセル",
     "th": "ยกเลิกการตั้งค่า"
+  },
+  {
+    "key": "UI:member.loginIntro",
+    "zh_TW": "登入帳號",
+    "en": "Sign in to your account.",
+    "jp": "アカウントにログイン",
+    "th": "เข้าสู่ระบบบัญชีของคุณ"
+  },
+  {
+    "key": "UI:member.registerIntro",
+    "zh_TW": "註冊帳號",
+    "en": "Create an account.",
+    "jp": "アカウントを登録",
+    "th": "สร้างบัญชี"
+  },
+  {
+    "key": "UI:member.securityIntro",
+    "zh_TW": "設定兩步驟驗證、帳號綁定及更改密碼",
+    "en": "Manage two-factor authentication, account linking and your password.",
+    "jp": "2段階認証・アカウント連携・パスワードを設定",
+    "th": "ตั้งค่าการยืนยันสองขั้นตอน การเชื่อมโยงบัญชี และรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.forgotIntro",
+    "zh_TW": "請根據步驟重新設定您的密碼",
+    "en": "Follow the steps to reset your password.",
+    "jp": "手順に従ってパスワードを再設定してください。",
+    "th": "ทำตามขั้นตอนเพื่อตั้งรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.resetIntro",
+    "zh_TW": "請設定新的密碼並確認",
+    "en": "Set and confirm your new password.",
+    "jp": "新しいパスワードを入力して確認してください。",
+    "th": "ตั้งและยืนยันรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.resetSuccessIntro",
+    "zh_TW": "密碼已重設，請使用新密碼登入",
+    "en": "Your password has been reset. Sign in with your new password.",
+    "jp": "パスワードを再設定しました。新しいパスワードでログインしてください。",
+    "th": "ตั้งรหัสผ่านใหม่แล้ว โปรดเข้าสู่ระบบด้วยรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.emailSuccessIntro",
+    "zh_TW": "信箱驗證成功，請前往登入",
+    "en": "Email verified. You can now sign in.",
+    "jp": "メールアドレスを確認しました。ログインしてください。",
+    "th": "ยืนยันอีเมลแล้ว คุณสามารถเข้าสู่ระบบได้"
+  },
+  {
+    "key": "UI:member.verifyEmailIntro",
+    "zh_TW": "請驗證信箱以啟用帳號",
+    "en": "Verify your email to activate your account.",
+    "jp": "メールアドレスを確認してアカウントを有効にしてください。",
+    "th": "ยืนยันอีเมลเพื่อเปิดใช้งานบัญชี"
+  },
+  {
+    "key": "UI:member.noAccount",
+    "zh_TW": "還沒有帳號？",
+    "en": "No account yet?",
+    "jp": "アカウントをお持ちでない方",
+    "th": "ยังไม่มีบัญชี?"
+  },
+  {
+    "key": "UI:member.factorConfigured",
+    "zh_TW": "兩步驟驗證已設定",
+    "en": "Two-factor authentication is configured.",
+    "jp": "2段階認証を設定済みです。",
+    "th": "ตั้งค่าการยืนยันสองขั้นตอนแล้ว"
+  },
+  {
+    "key": "UI:member.personalTitle",
+    "zh_TW": "個人隊伍",
+    "en": "Personal Teams",
+    "jp": "マイチーム",
+    "th": "ทีมส่วนตัว"
+  },
+  {
+    "key": "UI:member.personalIntro",
+    "zh_TW": "檢視並分析你的遊戲隊伍",
+    "en": "View and analyze your game teams.",
+    "jp": "ゲームのチームを表示・分析",
+    "th": "ดูและวิเคราะห์ทีมในเกมของคุณ"
+  },
+  {
+    "key": "UI:member.teamSearchGuide",
+    "zh_TW": "尚未綁定，請搜尋你目前的遊戲內暱稱",
+    "en": "No game account linked. Search for your current in-game nickname.",
+    "jp": "未連携です。現在のゲーム内ニックネームを検索してください。",
+    "th": "ยังไม่ได้เชื่อมโยงบัญชีเกม โปรดค้นหาชื่อเล่นปัจจุบันในเกม"
+  },
+  {
+    "key": "UI:member.teamMedalGuide",
+    "zh_TW": "請輸入你目前持有的公會獎牌數量（步驟1/2）",
+    "en": "Enter your current guild medal count (step 1/2).",
+    "jp": "現在のギルドメダル数を入力してください（手順1/2）。",
+    "th": "กรอกจำนวนเหรียญกิลด์ที่มีอยู่ในปัจจุบัน (ขั้นตอน 1/2)"
+  },
+  {
+    "key": "UI:member.teamCandidates",
+    "zh_TW": "候選名單",
+    "en": "Matching Players",
+    "jp": "候補プレイヤー",
+    "th": "รายชื่อผู้เล่นที่พบ"
+  },
+  {
+    "key": "UI:member.teamChooseAgain",
+    "zh_TW": "重新選擇遊戲帳號",
+    "en": "Choose another game account",
+    "jp": "ゲームアカウントを選び直す",
+    "th": "เลือกบัญชีเกมอีกครั้ง"
+  },
+  {
+    "key": "UI:member.teamChallengeInstruction",
+    "zh_TW": "請將「第 %N1 隊／%N2 隊」的「第 %N3 隻 Ranger」跟「第 %N4 隻 Ranger」對調（步驟2/2）",
+    "en": "In team %N1, squad %N2, swap Rangers in positions %N3 and %N4 (step 2/2).",
+    "jp": "第%N1チームの%N2部隊で、%N3番目と%N4番目のRangerを入れ替えてください（手順2/2）。",
+    "th": "ในทีม %N1 ชุด %N2 ให้สลับ Ranger ตำแหน่ง %N3 กับ %N4 (ขั้นตอน 2/2)"
+  },
+  {
+    "key": "UI:member.search",
+    "zh_TW": "搜尋",
+    "en": "Search",
+    "jp": "検索",
+    "th": "ค้นหา"
   }
 ]

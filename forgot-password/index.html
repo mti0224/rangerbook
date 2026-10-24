@@ -29,13 +29,13 @@
   <link rel="stylesheet" href="../assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="../assets/css/sidebar-drawer.css?v=20261014-toggle1">
 
-  <link rel="stylesheet" href="../assets/css/member.css?v=20261023-ui">
+  <link rel="stylesheet" href="../assets/css/member.css?v=20261024-refine1">
 </head>
 <body class="gt-app" data-member-page="forgot-password">
 <div id="site-header"></div>
 <main class="admin-page member-page"><div class="admin-shell">
-  <section class="page-title member-banner"><h1 data-i18n="member.forgotTitle">忘記密碼？</h1><p lang="en">Forgot Your Password?</p></section>
-  <div class="member-content member-narrow"><section class="admin-card"><p id="memberState" class="admin-message" role="status" aria-live="polite" aria-atomic="true"></p><form id="memberForgotForm" class="admin-form"><label><span data-i18n="member.accountPrompt">請輸入註冊時的帳號名稱</span><input name="identifier" type="text" autocomplete="username" maxlength="32" required></label><label><span data-i18n="member.rescueSource">收件來源</span><select name="source"><option value="registration" data-i18n="member.registrationEmail">註冊信箱</option><option value="google" data-i18n="member.googleEmail">已綁定的 Google 信箱</option></select></label><button type="submit" data-i18n="member.confirm" >確認</button></form></section><section id="memberMailSent" class="admin-card" hidden><p data-i18n="member.resetSent">若帳號及所選救援方式有效，重設密碼信已寄出。連結有效 15 分鐘，請檢查垃圾郵件。寄件者：noreply@warmycat.com。</p><div class="admin-actions"><button type="button" id="memberForgotResend" data-i18n="member.resendReset" >重新寄送</button><a href="..//" data-i18n="member.home">返回首頁</a></div><p id="memberResendStatus" role="status" aria-live="polite"></p></section></div>
+  <section class="page-title member-banner"><span class="member-banner-brand" lang="en">LINE RANGERS DATABASE</span><h1 data-i18n="member.forgotTitle">忘記密碼？</h1><p data-i18n="member.forgotIntro">請根據步驟重新設定您的密碼</p></section>
+  <div class="member-content member-narrow"><section class="admin-card"><p id="memberState" class="admin-message" role="status" aria-live="polite" aria-atomic="true"></p><form id="memberForgotForm" class="admin-form"><label><span data-i18n="member.accountPrompt">請輸入註冊時的帳號名稱</span><input name="identifier" type="text" autocomplete="username" maxlength="32" required></label><label><span data-i18n="member.rescueSource">收件來源</span><select name="source"><option value="registration" data-i18n="member.registrationEmail">註冊信箱</option><option value="google" data-i18n="member.googleEmail">已綁定的 Google 信箱</option></select></label><button id="memberForgotConfirm" type="submit" data-i18n="member.confirm">確認</button><div id="memberMailSent" class="member-rescue-actions" hidden><button type="button" id="memberForgotResend" data-i18n="member.resendReset" >重新寄送</button><a href="../" data-i18n="member.home">返回首頁</a><p id="memberResendStatus" role="status" aria-live="polite"></p></div></form></section></div>
 </div></main>
 <script src="../assets/js/i18n.js"></script>
 <script src="../assets/js/site.js"></script>

@@ -48,6 +48,23 @@
   const boundPanel = get("adminPersonalBound");
   const unboundPanel = get("adminPersonalUnbound");
 
+  function showBindingStep(step) {
+    section.dataset.bindingState = "unbound";
+    unboundPanel.dataset.step = step;
+    searchForm.hidden = step !== "search";
+    candidatesPanel.hidden = step !== "search";
+    if (get("adminPersonalResults")) get("adminPersonalResults").hidden = step !== "search";
+    selectedPanel.hidden = step !== "medal";
+    challengePanel.hidden = step !== "challenge";
+    const guide = get("adminPersonalStepGuide");
+    if (guide) {
+      guide.hidden = step === "challenge";
+      guide.dataset.i18n = "member." + (step === "medal" ? "teamMedalGuide" : "teamSearchGuide");
+      guide.textContent = window.RangerbookI18n?.t(guide.dataset.i18n) || guide.textContent;
+    }
+    if (get("adminPersonalChooseAgain")) get("adminPersonalChooseAgain").hidden = step === "search";
+  }
+
   function setStatus(message = "", error = false) {
     status.textContent = message;
     status.className = "admin-message" + (error ? " error" : "");
@@ -67,6 +84,8 @@
     challengePanel.hidden = true;
     boundPanel.hidden = true;
     unboundPanel.hidden = false;
+    showBindingStep("search");
+    if (get("adminPersonalBoundIntro")) get("adminPersonalBoundIntro").hidden = true;
     candidatesPanel.replaceChildren();
     const viewer = get("adminPersonalViewer");
     if (viewer) { viewer.hidden = true; viewer.removeAttribute("src"); }
@@ -78,13 +97,10 @@
 
   function showChallenge(challenge) {
     unboundPanel.hidden = false;
-    searchForm.hidden = true;
-    selectedPanel.hidden = true;
-    candidatesPanel.hidden = true;
-    challengePanel.hidden = false;
+    showBindingStep("challenge");
     const a = Number(challenge.firstPosition);
     const b = Number(challenge.secondPosition);
-    get("adminPersonalChallengeInstruction").textContent = f("challenge.instruction",
+    get("adminPersonalChallengeInstruction").textContent = window.RangerbookI18n.format("member.teamChallengeInstruction",
       [challenge.team, challenge.side, a, b],
       "請至遊戲「第 %N1 隊」的「%N2 隊」，將第 %N3 格與第 %N4 格的 Ranger 交換位置。");
     get("adminPersonalChallengeExpiry").textContent = f("challenge.expiry",
@@ -123,8 +139,10 @@
       const info = await auth.api("/member/game-binding/status");
       if (id !== version || !adminAllowed()) return;
       if (info.bound) {
+        section.dataset.bindingState = "bound";
         unboundPanel.hidden = true;
         boundPanel.hidden = false;
+        if (get("adminPersonalBoundIntro")) get("adminPersonalBoundIntro").hidden = false;
         const player = info.player || {};
         get("adminPersonalBoundLabel").textContent = (player.player_name || t("status.unknownPlayer","未知玩家")) +
           " · " + (player.guild_name || t("status.noGuild","無公會"));
@@ -171,11 +189,14 @@
         guild.textContent = f("status.guild", [item.guildName || t("status.none","無")], "公會：%N1");
         button.append(name, guild);
         button.addEventListener("click", () => {
+          if (busy || !adminAllowed()) return;
           selected = item;
-          selectedPanel.hidden = false;
+          showBindingStep("medal");
+          get("adminPersonalMedal").value = "";
           get("adminPersonalSelectedName").textContent =
             f("status.selected", [item.name || t("status.unknownName","未公開名稱"), item.guildName || t("status.noGuild","無公會")], "已選擇：%N1 · %N2");
           setStatus("");
+          get("adminPersonalMedal").focus();
         });
         candidatesPanel.append(button);
       }
@@ -185,6 +206,16 @@
     } finally {
       requestBusy(false);
     }
+  });
+
+  get("adminPersonalChooseAgain")?.addEventListener("click", () => {
+    if (busy || !adminAllowed()) return;
+    selected = null;
+    get("adminPersonalMedal").value = "";
+    delete get("adminPersonalVerify").dataset.challengeId;
+    showBindingStep("search");
+    setStatus("");
+    get("adminPersonalSearch").focus();
   });
 
   get("adminPersonalMedal").addEventListener("input", event => {

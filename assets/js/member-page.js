@@ -52,11 +52,10 @@
       $('memberGoogleStart').dataset.i18n='member.'+(status.google_email?'replaceGoogle':'bindGoogle');
       $('memberGoogleStart').textContent=t(status.google_email?'replaceGoogle':'bindGoogle');
       $('memberGoogleUnlink').hidden=!status.google_email;
-      $('memberGoogleNext').textContent=t(features.google?'googleGuide':'unconfigured');
       $('memberSetup').hidden=status.totp_enabled;
       $('memberDisable').hidden=!status.totp_enabled||status.totp_required;
       $('memberCodes').hidden=!status.totp_enabled;
-      $('memberFactorStatus').textContent=t(status.totp_enabled?'enabled':'disabled')+(status.totp_required?' '+t('mandatory2fa'):'');
+      $('memberFactorStatus').textContent=t(status.totp_enabled?'factorConfigured':'disabled');
       $('memberPassword').hidden=!user.logged_in&&!user.must_change_password;
     }
     renderProof();
