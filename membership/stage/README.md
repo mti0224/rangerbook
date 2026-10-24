@@ -1,5 +1,13 @@
 # 第 5 步：真人驗收準備
 
+## 四語系信件與本次寄信續期（2026-10-24）
+
+站長另行核准24小時與總額度20次；已套用至 **2026-10-25 21:28:46 台灣時間**，保留已用4次及原白名單。應用版本 `80ca6282fef985886c525392a8a2603bf78fccd5` 於21:25同步，21:28完成續期與一封繁中重設信，SES接受，當時累計5/20、剩15；後續操作仍會使用同一累計計數，不會自動續期。
+
+驗證／重設信依站長原文完成四語系、HTML及純文字；前端傳送網站語言，後端填入帳號名稱。worker跳過被取代／過期Token而不扣額度，readiness與worker共用 `RANGERBOOK_STAGE_MAIL_MAX_ATTEMPTS=20` 及核准期限；範本仍預設5。寄信暫停時忘記密碼頁顯示全站狀態，不洩漏帳號存在與否。
+
+118項後端、四語系互動4/4、信件版面16/16及實際HTTPS替身4/4通過；三封舊失效重設信抑制未寄，真人2FA／身份及正式服務保留。[信件全文](../../docs/member-email-copy-20261024.md)／[寄送、測試與回復報告](../../docs/member-mail-refresh-20261024.md)。以下5封／舊期限數字為先前階段歷史，不代表本次的新核准。
+
 ## 2FA 成功後的登入階段修正（2026-10-24）
 
 應用版本 `3b640fcb450e45561c568b677e82daeae4f280ad` 已於台灣時間 **20:50** 同步前後端。後端依真正未完成的限制回報狀態，不再將「TOTP 已綁定」誤報為「仍需 MFA」；必要改密碼者會顯示單一改密碼表單與明確提示，成功後回首頁，正常 2FA 直接回首頁。未完成因素或必要改密碼的個人／管理 API 仍拒絕，真人旗標未直接更改。
@@ -77,7 +85,7 @@
 - `launch.py` 拒絕正式來源、Cookie、資料路徑、未解析機密，或沒有白名單的測試寄信設定。預設 game core 不存在；本次真人驗收另於 acceptance/game-acceptance 準備受限副本與私有設定，唯讀連線已成功。不可使用正式會員資料／綁定／私人隊伍路徑，私有原始碼與憑證不得進入公開儲存庫或 web root。
 - 初始化全新 synthetic user/admin/super_admin，站長透過受限操作設定密碼；備份再 migration，檢查完整性。不可使用正式管理員密碼作測試。
 - 使用獨立 systemd unit/venv/loopback port 18765，正式私人資料不可存取；不設定開機啟動。確認第三方功能與 feature flags 後，才提供 HTTPS 入口。
-- 在站長明確核准後，測試專用 timer 可於 24 小時驗收窗每 15 秒檢查待寄郵件，以便真人註冊立即收到信。不得啟用正式 mail timer。`RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST` 強制限制實際收件者，空白時停止；`member_stage_mail_budget` 在 SES 呼叫前以交易保留額度，跨 batch／重啟／並行總計最多 5 次發送嘗試，失敗與結果不明的 timeout 也消耗額度。測試模式停用 SDK 自動重送；`mail_ready.py` 在無待寄信、超過期限或用盡額度時跳過。沒有 timer 開機自動啟用，額度不可自動重設。
+- 在站長明確核准後，測試專用 timer 可於核准驗收窗每15秒檢查待寄郵件。不得啟用正式mail timer。`RANGERBOOK_MAIL_RECIPIENT_ALLOWLIST` 限定收件者，空白時停止；`member_stage_mail_budget` 在SES呼叫前以交易保留額度，跨batch／重啟／並行遵守 `RANGERBOOK_STAGE_MAIL_MAX_ATTEMPTS`（預設5，本次核准20），失敗與結果不明的timeout也消耗額度。readiness與worker均遵守 `RANGERBOOK_STAGE_EXPIRES_AT`；無待寄信、期限已過或額度用盡時跳過。SDK自動重送、timer開機啟用與額度自動重設均停用。
 - mail unit 不解析 OAuth／Turnstile dynamic references；這些功能的暫時失敗不得阻擋驗證信。SES 使用 instance role，Fernet key 由受限 `key.env` 注入，收件者白名單、有效期限與 5 次總額度維持不變。
 - 正式 worker 目前未啟動。消費共用 feedback queue 前先確認沒有其他 consumer；不可由測試 consumer 刪除正式寄送事件。若並行寄信已開始，先分離 queue/subscription。
 

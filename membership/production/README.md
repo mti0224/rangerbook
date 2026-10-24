@@ -80,8 +80,11 @@ operator error guards, not an application authorization boundary. The existing
 backend still enforces Session, role, reauthentication and MFA independently.
 
 The mail flag remains 0. Do not consume the shared feedback queue during these
-checks, delete events, reset the staging 4/5 budget, or treat the five-message
-test approval as production sending approval. Review consumer ownership again
+checks, delete events, reset the cumulative staging budget, or treat any
+test-mail approval as production sending approval. The owner's 2026-10-24
+extension permits twenty cumulative test attempts for one additional 24-hour
+window, preserving the previous four attempts; it does not authorize production
+mail. Review consumer ownership again
 before activation. SES, SNS and SQS metadata checks do not prove a live
 bounce/complaint path; actual simulator sending remains unperformed.
 
