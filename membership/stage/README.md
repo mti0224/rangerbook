@@ -1,5 +1,15 @@
 # 第 5 步：真人驗收準備
 
+## 登入中斷、切換帳號與入口提示修正（2026-10-24）
+
+應用版本 `7e9ab9e0536bb4bace430d94311ace7302788e4b` 已於台灣時間 **20:01** 同步測試前後端。MFA 頁面新增「取消並使用其他帳號」，只有後端撤銷目前 pending Session 成功後才回到帳密表單；側欄亦可結束未完成的登入，過期驗證可重新登入。四語系實際 HTTPS 取消、舊 Cookie 重放拒絕及切換帳號 **4/4** 通過。
+
+隔離啟動器使用 `http_transport:create_app --factory`，將會員 API 的 401 以 403 加 `X-Rangerbook-Auth-Status: 401` 傳送，測試前端限定同來源還原其語意；權限、Cookie、回應內容及限流不變。Nginx 入口仍是受保護的 401 Basic，正式服務不用此轉換。新增同來源 stage-bootstrap flag，維持 no-store、無正式 API／GA／PWA。
+
+同步前除了 `/ping`，必須以既有 `asm-exec` 在服務帳號／環境內執行無副作用子程序，確認機密已動態解析且 `launch.validate` 與 Fernet key 格式有效；只回傳成功狀態，禁止輸出環境值。預檢失敗不得停止目前正常的測試 auth。Provider 的 IAM 必須同時允許兩筆 exact ARN 的 `GetSecretValue` 與 `DescribeSecret`，缺少後者會在快取更新時失敗。此次已備份並補齊既有政策，未增加資源範圍。
+
+本機後端 84 項、會員畫面 32 組、iframe 32 組及應用 CI 9/9 通過；實際檢查保留身份／2FA／恢復碼／綁定／私人隊伍／金鑰／入口設定，DB integrity=ok，郵件 4/5 不變。正式 auth、Nginx 未重啟，PR 維持 Draft。完整測試、曾遇到的回復與限制見 [登入修正報告](../../docs/member-login-recovery-20261024.md)。後續測試／文件／IAM 範本提交不改變已部署應用版本。
+
 ## 隊伍驗證進度文字（2026-10-24）
 
 最新應用版本 `4207dc250d41630358bf8bd17159924fc1bc1caa` 已於台灣時間 18:18 同步，位置交換驗證的提示改為「正在驗證中...」並同步四語系／各詞庫。實際 HTTPS 四語系進度顯示 4/4 通過，既有資料、設定及郵件額度保留，正式服務未切換。[修正與回復紀錄](../../docs/member-verification-copy-20261024.md)。後續文件提交不改變應用版本。

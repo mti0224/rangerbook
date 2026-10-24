@@ -593,6 +593,8 @@ def test_abandon_pending_mfa_revokes_only_current_session_and_can_switch_account
         recovery=con.execute("SELECT digest FROM member_recovery_codes WHERE user_id='a' ORDER BY digest").fetchall()
     c.post('/auth/logout')
     other=h.create_session('b')
+    same_account_device=h.create_session('a')
+    with h.db() as con:con.execute('UPDATE sessions SET mfa_verified=1 WHERE token_hash=?',(digest(same_account_device),))
     state=login(c,'a')
     assert state['mfa_required'] and not state['logged_in']
     pending=c.cookies.get(h.SESSION_COOKIE)
@@ -602,6 +604,7 @@ def test_abandon_pending_mfa_revokes_only_current_session_and_can_switch_account
     with h.db() as con:
         assert not con.execute('SELECT 1 FROM sessions WHERE token_hash=?',(digest(pending),)).fetchone()
         assert con.execute('SELECT 1 FROM sessions WHERE token_hash=?',(digest(other),)).fetchone()
+        assert con.execute('SELECT 1 FROM sessions WHERE token_hash=? AND mfa_verified=1',(digest(same_account_device),)).fetchone()
         assert con.execute("SELECT totp_secret FROM users WHERE id='a'").fetchone()[0]==factor
         assert con.execute("SELECT digest FROM member_recovery_codes WHERE user_id='a' ORDER BY digest").fetchall()==recovery
     c.cookies.set(h.SESSION_COOKIE,pending)

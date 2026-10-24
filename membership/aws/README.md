@@ -39,6 +39,18 @@ Statements:
 - `MembershipCredentials`: read only the existing Google OAuth and Turnstile
   secrets, without write/list/rotation access.
 
+2026-10-24 runtime correction: this statement includes both `GetSecretValue`
+and `DescribeSecret`, scoped to the same two exact ARNs. The installed AWS
+Workload Credentials Provider needs metadata access when refreshing its cache;
+the missing permission caused successful cold starts followed by refresh
+failures. This dependency is documented in the [AWS provider guide](https://docs.aws.amazon.com/secretsmanager/latest/userguide/workload-credentials-provider.html).
+The existing `RangerbookMembershipRuntimeV2` inline policy on `EC2-SSM-Role`
+was backed up, updated, read back, and validated with zero Access Analyzer
+findings. Three additional custom-policy simulations permit metadata reads for
+the two configured secrets and implicitly deny an unrelated secret. Sending,
+queue permissions, trust policy, and secret values were unchanged. See the
+[login recovery deployment record](../../docs/member-login-recovery-20261024.md).
+
 The worker always passes ConfigurationSetName. IAM's identity permission alone
 does not require that a caller supplies a configuration set; enforce that in the
 application and test the complete request at staging. This policy is additive:

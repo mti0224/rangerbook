@@ -72,6 +72,7 @@ async function main(){
       assert.equal((await context.request.get(origin+'/admin/users')).status(),403);
       const pending=(await context.cookies()).find(cookie=>cookie.name==='__Host-rangerbook_stage_session');assert(pending);
       await page.goto(origin+'/',{waitUntil:'domcontentloaded'});
+      await page.locator('.site-menu-toggle').click();
       await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').waitFor();
       await go(page,'/login/');await page.locator('#memberLoginFactor').waitFor();
       assert.equal(await page.locator('#memberCancelLogin').innerText(),copy('cancelLogin'));
@@ -96,7 +97,13 @@ async function main(){
     }
     assert.deepEqual(errors,[]);assert.deepEqual(outbound,[]);
     console.log(JSON.stringify({login_recovery_locales:cases,entrance_still_challenges:true,application_errors_do_not_challenge:true,cancelled_pending_sessions:cases,replayed_sessions_denied:cases,switched_accounts:cases,production_requests:0,mail_sent:false,game_provider_calls:0,mfa_codes_used:0}));
-  }finally{await browser.close();}
+  }finally{
+    // A failed operator test must not leave its own pending login behind.
+    for(const context of browser.contexts()){
+      try{await context.request.post(origin+'/auth/logout',{headers:{Origin:origin}});}catch{}
+    }
+    await browser.close();
+  }
 }
 main().catch(error=>{
   // Playwright failures can include fill arguments; keep diagnostics host-private.
