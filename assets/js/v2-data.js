@@ -100,7 +100,7 @@
   const catalogPromises={};
   function loadCatalog(name) {
     return catalogPromises[name] ||= (async()=>{
-    const version=name==="ui"?"20261017-analysis1":"20261013-thai1";
+    const version=name==="ui"?"20261024-updatelog1":"20261013-thai1";
     let rows=name==='official' ? (await (listPage?previewBundle():detailBundle()))?.locales : null;
     if(!rows) {
       let r;
@@ -120,7 +120,7 @@
     if (name==="ui") {
       const overrides=(await Promise.all([
         "personal-analysis-overrides.json?v=20261018-2",
-        "sitewide-overrides.json?v=20261021-1"
+        "sitewide-overrides.json?v=20261024-updatelog1"
       ].map(async file=>{
         const response=await nativeFetch(root+"assets/locales/"+file);
         if (!response.ok) throw new Error("UI overrides unavailable: "+file);

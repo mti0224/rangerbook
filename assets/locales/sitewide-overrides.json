@@ -2161,5 +2161,68 @@
     "en": "Test email delivery is paused. Contact the site owner to check the approved time window and budget.",
     "jp": "テストメールの送信は現在停止中です。送信期間と上限についてサイト管理者にご確認ください。",
     "th": "การส่งอีเมลทดสอบหยุดชั่วคราว โปรดติดต่อผู้ดูแลเว็บไซต์เพื่อตรวจสอบระยะเวลาและโควตาที่อนุมัติ"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.1",
+    "zh_TW": "【重要】新增會員系統，現在可以註冊會員帳號，使用更多個人化功能（Beta）",
+    "en": "【Important】Added a membership system. You can now register an account to use more personalized features (Beta).",
+    "th": "【สำคัญ】เพิ่มระบบสมาชิก สามารถสมัครบัญชีสมาชิกเพื่อใช้ฟีเจอร์ส่วนบุคคลเพิ่มเติมได้แล้ว (Beta)",
+    "jp": "【重要】会員システムを追加しました。会員登録して、より多くの個人向け機能を利用できるようになりました（ベータ版）。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.2",
+    "zh_TW": "【重要】會員現在可以透過遊戲內驗證綁定自己的 LINE Rangers 帳號，查看個人隊伍、裝備及隊伍分析資訊（Beta）",
+    "en": "【Important】Members can now link their LINE Rangers accounts through in-game verification to view their teams, equipment, and team analysis (Beta).",
+    "th": "【สำคัญ】สมาชิกสามารถยืนยันตัวตนภายในเกมเพื่อเชื่อมบัญชี LINE Rangers และดูทีม อุปกรณ์ และผลการวิเคราะห์ทีมของตนเองได้แล้ว (Beta)",
+    "jp": "【重要】ゲーム内認証でLINE Rangersアカウントを連携し、自分のチーム・装備・チーム分析を確認できるようになりました（ベータ版）。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.3",
+    "zh_TW": "改善全站資料載入效率，大幅縮短 Ranger 列表及詳細資料頁面的等待時間",
+    "en": "Improved site-wide data loading performance, greatly reducing wait times for Ranger lists and detail pages.",
+    "th": "ปรับปรุงความเร็วในการโหลดข้อมูลทั่วทั้งเว็บไซต์ ลดเวลารอในหน้ารายการ Ranger และหน้ารายละเอียดลงอย่างมาก",
+    "jp": "サイト全体のデータ読み込みを高速化し、レンジャー一覧と詳細ページの待ち時間を大幅に短縮しました。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.4",
+    "zh_TW": "修復 Ranger 才能條件與效果篩選無法正常使用的問題",
+    "en": "Fixed an issue where Ranger talent condition and effect filters did not work correctly.",
+    "th": "แก้ไขปัญหาตัวกรองเงื่อนไขและเอฟเฟกต์ความสามารถพิเศษของ Ranger ที่ทำงานผิดปกติ",
+    "jp": "レンジャーの才能の条件・効果フィルターが正常に機能しない問題を修正しました。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.5",
+    "zh_TW": "更新 Ranger 進階篩選器，星級、類型及屬性現在可以同時勾選多個條件",
+    "en": "Updated advanced Ranger filters so you can select multiple star ratings, types, and elements at the same time.",
+    "th": "ปรับปรุงตัวกรองขั้นสูงของ Ranger ให้เลือกดาว ประเภท และธาตุได้หลายตัวเลือกพร้อมกัน",
+    "jp": "レンジャーの詳細フィルターを更新し、星数・タイプ・属性をそれぞれ複数選択できるようにしました。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.6",
+    "zh_TW": "Ranger 詳細資料頁面新增「進化階段」，現在可以查看角色的不同進化形態並切換至對應角色",
+    "en": "Added Evolution Stages to Ranger detail pages so you can view and switch between different evolution forms.",
+    "th": "เพิ่มส่วนขั้นวิวัฒนาการในหน้ารายละเอียด Ranger เพื่อดูร่างวิวัฒนาการต่าง ๆ และสลับไปยังร่างที่ต้องการ",
+    "jp": "レンジャー詳細ページに「進化段階」を追加し、各進化形態の確認と切り替えができるようにしました。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.7",
+    "zh_TW": "新增 PWA 支援，現在可以將資料站安裝至手機或電腦，像一般應用程式一樣使用",
+    "en": "Added PWA support. You can now install the site on a phone or computer and use it like an app.",
+    "th": "เพิ่มการรองรับ PWA สามารถติดตั้งเว็บไซต์บนมือถือหรือคอมพิวเตอร์เพื่อใช้งานเหมือนแอปได้แล้ว",
+    "jp": "PWAに対応し、スマートフォンやパソコンにサイトをインストールしてアプリのように使えるようになりました。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.8",
+    "zh_TW": "首頁新增「大家都在找…」，可以查看最近 7 天最多人瀏覽的三個資料頁面",
+    "en": "Added “Popular Right Now…” to the home page, showing the three most-viewed data pages over the past seven days.",
+    "th": "เพิ่มส่วน “กำลังเป็นที่นิยม…” บนหน้าแรก แสดงหน้าข้อมูลที่มีผู้เข้าชมมากที่สุด 3 อันดับในช่วง 7 วันที่ผ่านมา",
+    "jp": "トップページに「みんなが探している…」を追加し、過去7日間で閲覧数が多いデータページ上位3件を表示します。"
+  },
+  {
+    "key": "UI:update.log.2026-10-24.9",
+    "zh_TW": "更新側邊欄操作方式，現在點擊分類可以直接展開或收合子選單",
+    "en": "Updated sidebar navigation. You can now click a category to expand or collapse its submenu.",
+    "th": "ปรับปรุงการใช้งานแถบเมนูด้านข้าง สามารถคลิกหมวดหมู่เพื่อขยายหรือยุบเมนูย่อยได้แล้ว",
+    "jp": "サイドバーの操作方法を更新し、カテゴリをクリックしてサブメニューを開閉できるようになりました。"
   }
 ]
