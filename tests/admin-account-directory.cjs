@@ -39,6 +39,7 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
   });
   const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(window.RangerbookI18n?.ready));
   await page.evaluate(()=>window.RangerbookI18n.ready);
   await page.locator('#adminAccountsTab').click();
   await page.waitForFunction(()=>document.querySelectorAll('#adminUsersList article').length===12);
