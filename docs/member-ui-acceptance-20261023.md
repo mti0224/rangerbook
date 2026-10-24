@@ -1,5 +1,7 @@
 # Rangerbook 帳號介面與流程驗收（2026-10-23）
 
+2026-10-24 更新：新版已獲授權同步至 [rangerbook-test](https://rangerbook-test.warmycat.com/login/)，供站長直接操作；實際 HTTPS、資料保留、後端健康及後續同步規則見 [測試站同步報告](member-test-sync-20261024.md)。以下保留原本實作與測試紀錄；正式站仍未發布。
+
 本次沿用 PR #176 的 `codex/member-security-v2`，整合 11 頁 PDF 與最新文字規格，沒有建立第二套帳號系統。PR 保持 Draft，未合併 main、未部署正式網站或後端、未讀寫正式會員 DB、未寄送額外真實郵件。正式認證服務 PID 119300 的活動狀態已於檢查時確認。
 
 補充附件與最初設計稿的 SHA-256 相同：`720cee265c15fa98dc4c7747adb87edbad04f6a45e8603acddf0210b2dca6811`。文字規格優先於示意圖的舊細節：註冊加入一般 Email；忘記密碼不顯示任何實際／遮蔽信箱；Google 更換與解除為分開按鈕；不增加 Google 登入。
