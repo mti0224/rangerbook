@@ -11,7 +11,7 @@ async function main(){
   const errors=[],outbound=[];
   const makeContext=async(locale='zh-Hant',theme='light',width=1440)=>{
     const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block',httpCredentials:{origin,username:credentials.entrance_user,password:credentials.entrance_password}});
-    await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
+    await context.addInitScript(({locale,theme})=>{try{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);}catch{}},{locale,theme});
     await context.route('**/*',route=>{
       const url=new URL(route.request().url());
       if(url.origin===origin||['data:','blob:'].includes(url.protocol))return route.continue();
@@ -23,7 +23,10 @@ async function main(){
   };
   const go=async(page,path)=>{
     await page.goto(origin+path,{waitUntil:'domcontentloaded'});
-    await page.evaluate(()=>window.RangerbookI18n?.ready);
+    await page.waitForFunction(()=>Boolean(window.RangerbookI18n?.ready));
+    await page.evaluate(()=>window.RangerbookI18n.ready);
+    await page.waitForFunction(()=>!document.documentElement.hasAttribute('data-rb-localizing'));
+    if(path!=='/admin/')await page.locator('.member-banner-brand').waitFor({state:'visible'});
   };
   const signIn=async(context,role)=>{
     const account=credentials.accounts.find(row=>row.role===role);
@@ -42,6 +45,7 @@ async function main(){
       phase='layout '+locale+' '+theme+' '+width;
       const context=await makeContext(locale,theme,width),page=await context.newPage();
       for(const path of ['/login/','/register/','/forgot-password/','/account/','/two-factor/','/personal-teams/']){
+        phase='layout '+locale+' '+theme+' '+width+' '+path;
         await go(page,path);
         assert.equal(await page.locator('.member-banner-brand').innerText(),'LINE RANGERS DATABASE');
         assert(await page.locator('.member-banner h1').innerText());
@@ -72,6 +76,7 @@ async function main(){
     assert(Math.abs(card.x-banner.x)<=1&&Math.abs(card.width-banner.width)<=1);
     await go(page,'/forgot-password/');await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
     await page.waitForFunction(()=>!window.RangerbookAuth.getUser().logged_in);
+    await page.waitForFunction(()=>document.querySelector('.gt-logout-status').hidden&&document.querySelector('.gt-logout-status').textContent==='');
     assert.equal(await page.locator('.gt-logout-status').innerText(),'');await context.close();
     phase='administrator';
     const admin=await makeContext(),loggedAdmin=await signIn(admin,'admin');

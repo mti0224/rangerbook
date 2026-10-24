@@ -224,6 +224,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   // Sidebar logout is quiet on success; failure behavior is covered by security-browser.
   await go('/forgot-password/');await menu();await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
   await page.waitForFunction(()=>!window.RangerbookAuth.getUser().logged_in);
+  await page.waitForFunction(()=>document.querySelector('.gt-logout-status').hidden&&document.querySelector('.gt-logout-status').textContent==='');
   assert.equal(await page.locator('.gt-logout-status').innerText(),'');
   assert.ok(!outbound.some(item=>/google-analytics|googletagmanager/.test(item.url)&&/\/(?:account|login|register|two-factor|forgot-password|account-action)\//.test(new URL(item.frame).pathname)),'Private pages never request analytics');
   assert.deepEqual(errors,[]);
