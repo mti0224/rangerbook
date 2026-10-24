@@ -11,7 +11,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block'});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-user',role:'user'},factor=false,email=null,proof=0,reauthRate=false,offline=false,hold=false,release;
-  let loginMfa=false,invalidLink=false;
+  let loginMfa=false,invalidLink=false,failCancel=false,expireFactor=false;
   let gameChallenge=null,gameBound=false,swapAttempts=0,searchMode="results";
   const calls=[],errors=[],outbound=[];
   await context.route('**/*',async route=>{
@@ -27,11 +27,14 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
         if(reauthRate)return route.fulfill({status:429,json:{detail:'member.rateLimited'},headers:{...headers,'Retry-After':'1'}});
         proof=600;
       }
+      if(url.pathname==='/auth/logout'&&failCancel)return route.abort();
       if(url.pathname==='/auth/login'){
         if(body.password==='wrong')return route.fulfill({status:401,json:{detail:'member.badProof'},headers});
-        user={account:'fixture-user',role:'user',logged_in:!loginMfa,mfa_required:loginMfa};
+        user={account:body.account,role:'user',logged_in:!loginMfa,mfa_required:loginMfa};
       }
       if(url.pathname==='/auth/2fa/verify'){
+        if(expireFactor){user={logged_in:false,role:'user'};return route.fulfill({status:401,json:{detail:'member.loginRequired'},headers});}
+        if(body.code==='999999')return route.fulfill({status:429,json:{detail:'member.rateLimited'},headers:{...headers,'Retry-After':'900'}});
         if(body.code==='000000')return route.fulfill({status:401,json:{detail:'member.badProof'},headers});
         user.logged_in=true;user.mfa_required=false;
       }
@@ -183,6 +186,31 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.locator('#memberLoginFactor').waitFor();
   assert.equal(await page.locator('#memberLoginCard').isVisible(),false);await assertPage();
   await page.locator('#memberLoginFactorForm input').fill('000000');await page.locator('#memberLoginFactorForm button[type=submit]').click();await page.locator('#memberState.error').waitFor();
+  await page.reload();await page.locator('#memberLoginFactor').waitFor();
+  await page.locator('#memberLoginFactorForm input').fill('999999');await page.locator('#memberLoginFactorForm button[type=submit]').click();
+  await page.waitForFunction(()=>document.querySelector('#memberLoginFactorForm button[type=submit]').disabled);
+  await page.locator('#memberUseRecovery').click();
+  failCancel=true;await page.locator('#memberCancelLogin').click();await page.locator('#memberState.error').waitFor();
+  assert.equal(await page.locator('#memberLoginFactor').isVisible(),true,'Failed logout retains pending state');
+  failCancel=false;await page.locator('#memberCancelLogin').click();await page.locator('#memberLoginCard').waitFor();
+  assert.equal(user.logged_in,false);assert.equal(user.mfa_required,undefined);
+  assert.equal(await page.locator('#memberLoginFactor').isVisible(),false);
+  assert.equal(await page.locator('#memberLoginForm input[name=account]').inputValue(),'');
+  assert.equal(await page.locator('#memberLoginFactorForm input').inputValue(),'');
+  assert.equal(await page.locator('#memberUseRecovery').innerText(),copy('useRecovery',locale));
+  assert.equal(await page.locator('#memberLoginFactorForm button[type=submit]').isDisabled(),false,'Old factor cooldown is not inherited by another account');
+  loginMfa=false;await page.locator('#memberLoginForm input[name=account]').fill('fixture-other');await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.waitForURL(base+'/');
+  assert.equal(user.account,'fixture-other');
+  user={logged_in:false,role:'user',mfa_required:true};await go('/login/');await page.locator('#memberLoginFactor').waitFor();
+  expireFactor=true;await page.locator('#memberLoginFactorForm input').fill('123456');await page.locator('#memberLoginFactorForm button[type=submit]').click();
+  await page.locator('#memberLoginCard').waitFor();await page.locator('#memberState.error').waitFor();
+  assert.equal(await page.locator('#memberState').innerText(),copy('loginExpired',locale));expireFactor=false;loginMfa=true;
+  // Rehydrated pending sessions also expose a sidebar logout on other pages.
+  user={logged_in:false,role:'user',mfa_required:true};await go('/');await menu();
+  await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
+  await page.waitForFunction(()=>document.querySelector('.gt-logout-status').hidden&&document.querySelector('.gt-logout-status').textContent==='');
+  await go('/login/');assert.equal(await page.locator('#memberLoginCard').isVisible(),true);
+  await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.locator('#memberLoginFactor').waitFor();
   await page.locator('#memberUseRecovery').click();await page.locator('#memberLoginFactorForm input').fill('FIXTURE-RECOVERY');await page.locator('#memberLoginFactorForm button[type=submit]').click();await page.waitForURL(base+'/');
   user={logged_in:false,role:'user'};await go('/register/');await page.locator('#adminRegisterForm input[name=account]').fill('fixture-new');await page.locator('#adminRegisterForm input[name=email]').fill('fixture@outlook.test');
   await page.locator('#adminRegisterForm input[name=password]').fill('fixture-password');await page.locator('#adminRegisterForm input[name=confirm]').fill('fixture-password');await page.locator('#adminRegisterForm button').click();await page.locator('#memberRegistrationSent').waitFor();

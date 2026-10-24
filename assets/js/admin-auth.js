@@ -37,9 +37,13 @@
       payload = text ? { detail: text } : null;
     }
 
+    // The isolated Basic-auth entrance must not receive a second HTTP challenge
+    // for a membership failure. Preserve application semantics in this client.
+    const appStatus = window.RANGERBOOK_STAGE_BASIC_AUTH === true && API_BASE === window.location?.origin &&
+      response.status === 403 && response.headers.get("X-Rangerbook-Auth-Status") === "401" ? 401 : response.status;
     if (!response.ok) {
       const rawMessage = payload?.detail || payload?.message;
-      const message = response.status>=500 ? "member.unavailable" : typeof rawMessage==="string" ? rawMessage : "member.invalidInput";
+      const message = appStatus>=500 ? "member.unavailable" : typeof rawMessage==="string" ? rawMessage : "member.invalidInput";
       const i18n = window.RangerbookI18n;
       const prefixes = {
         "無法讀取資源更新紀錄：": "site.resources.readError",
@@ -50,7 +54,7 @@
         ? i18n.format(prefixes[prefix], [i18n.uiText(message.slice(prefix.length))], message)
         : i18n?.uiText(message) || message;
       const error = new Error(displayMessage);
-      error.status = response.status;
+      error.status = appStatus;
       error.payload = payload;
       const retryAfter = Number(response.headers.get("Retry-After"));
       error.retryAfter = Number.isFinite(retryAfter) && retryAfter > 0 ? Math.ceil(retryAfter) : 0;

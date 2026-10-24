@@ -30,7 +30,7 @@ async function visit(dir) {
   }
 }
 await visit(output);
-await writeFile(path.join(output,'assets/js/stage-bootstrap.js'),`window.RANGERBOOK_AUTH_API_BASE=${JSON.stringify(origin)};\nwindow.gtag=function(){};\ndocument.addEventListener('DOMContentLoaded',()=>{document.title='[TEST] '+document.title;});\n`);
+await writeFile(path.join(output,'assets/js/stage-bootstrap.js'),`window.RANGERBOOK_STAGE_BASIC_AUTH=true;\nwindow.RANGERBOOK_AUTH_API_BASE=${JSON.stringify(origin)};\nwindow.gtag=function(){};\ndocument.addEventListener('DOMContentLoaded',()=>{document.title='[TEST] '+document.title;});\n`);
 for(const filename of ['pwa-head.js','pwa.js'])await writeFile(path.join(output,'assets/js',filename),'/* Acceptance environment: PWA installation disabled. */\n');
 await cp(path.join(root,'assets/pwa/disabled-worker.js'),path.join(output,'sw.js'));
 await writeFile(path.join(output,'robots.txt'),'User-agent: *\nDisallow: /\n');

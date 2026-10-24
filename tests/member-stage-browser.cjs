@@ -65,6 +65,7 @@ async function main(){
       await page.waitForTimeout(500);
       assert.match(await page.title(),/^\[TEST\]/);
       assert.equal(await page.evaluate(()=>window.RANGERBOOK_AUTH_API_BASE),'https://rangerbook-test.warmycat.com');
+      assert.equal(await page.evaluate(()=>window.RANGERBOOK_STAGE_BASIC_AUTH),true);
       assert.equal(await page.evaluate(async()=> (await navigator.serviceWorker.getRegistrations()).length),0);
       assert.equal(await page.locator('meta[name=robots]').getAttribute('content'),'noindex,nofollow,noarchive');
     }

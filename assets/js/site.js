@@ -532,7 +532,7 @@
     gtUserGroup.hidden = false;
     gtMemberLinks.forEach(link=>link.hidden=!complete);
     gtLoginLink.hidden=Boolean(complete);
-    gtLogout.hidden=!complete;
+    gtLogout.hidden=!(complete||user?.mfa_required||user?.setup_required||user?.must_change_password);
     gtAdminLink.hidden = !admin;
     gtProtectedLinks.forEach(({ link, roles }) => {
       link.hidden = !(complete && roles.includes(user.role));

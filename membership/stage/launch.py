@@ -34,7 +34,7 @@ def validate(env):
 
 def main():
     validate(os.environ)
-    os.execv(sys.executable, [sys.executable, '-m', 'uvicorn', 'asgi:app',
+    os.execv(sys.executable, [sys.executable, '-m', 'uvicorn', 'membership.stage.http_transport:create_app', '--factory',
         '--host', '127.0.0.1', '--port', '18765', '--no-access-log',
         '--proxy-headers', '--forwarded-allow-ips', '127.0.0.1',
         '--timeout-graceful-shutdown', '5'])

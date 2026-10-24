@@ -226,3 +226,35 @@ def test_feedback_validation_messages_do_not_block_delivery(tmp_path, bad):
     with sqlite3.connect(database) as con:
         assert con.execute('SELECT email,reason FROM member_suppression').fetchall() == [('synthetic@example.test', 'Complaint')]
         assert con.execute('SELECT event FROM member_audit ORDER BY id').fetchall() == [('ses_feedback_invalid',), ('ses_Complaint',)]
+
+
+@pytest.mark.parametrize('status', [200, 401, 403, 429])
+def test_stage_transport_preserves_failure_body_cookie_and_authorization(status):
+    from fastapi import FastAPI
+    from fastapi.responses import JSONResponse
+    from fastapi.testclient import TestClient
+    from membership.stage.http_transport import StageAuthTransport
+    app = FastAPI()
+    @app.get('/auth/probe')
+    def probe():
+        response = JSONResponse({'detail': 'member.badProof'}, status_code=status,
+                                headers={'Cache-Control': 'no-store, private', 'Retry-After': '13'})
+        response.set_cookie('fixture', 'synthetic', secure=True, httponly=True)
+        if status == 401:
+            response.headers['WWW-Authenticate'] = 'Basic realm="application-must-not-prompt"'
+        return response
+    response = TestClient(StageAuthTransport(app)).get('/auth/probe')
+    assert response.status_code == (403 if status == 401 else status)
+    assert response.json() == {'detail': 'member.badProof'}
+    assert response.headers.get('X-Rangerbook-Auth-Status') == ('401' if status == 401 else None)
+    assert 'www-authenticate' not in response.headers
+    assert response.headers['Cache-Control'] == 'no-store, private'
+    assert response.headers['Retry-After'] == '13'
+    assert 'HttpOnly' in response.headers['Set-Cookie']
+
+
+def test_stage_transport_factory_cannot_start_with_production_environment(monkeypatch):
+    from membership.stage.http_transport import create_app
+    monkeypatch.delenv('RANGERBOOK_STAGE', raising=False)
+    with pytest.raises(RuntimeError, match='isolated'):
+        create_app()

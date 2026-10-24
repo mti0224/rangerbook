@@ -2140,5 +2140,19 @@
     "en": "Your teams",
     "jp": "あなたのチーム",
     "th": "ทีมของคุณ"
+  },
+  {
+    "key": "UI:member.cancelLogin",
+    "zh_TW": "取消並使用其他帳號",
+    "en": "Cancel and use another account",
+    "jp": "キャンセルして別のアカウントを使用",
+    "th": "ยกเลิกและใช้บัญชีอื่น"
+  },
+  {
+    "key": "UI:member.loginExpired",
+    "zh_TW": "登入驗證已逾時，請重新登入。",
+    "en": "The login verification expired. Please sign in again.",
+    "jp": "ログイン認証の有効期限が切れました。もう一度ログインしてください。",
+    "th": "การยืนยันเข้าสู่ระบบหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง"
   }
 ]

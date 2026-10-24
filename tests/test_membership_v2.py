@@ -583,3 +583,30 @@ def test_bad_registration_format(env,monkeypatch,patch):
     response=c.post('/auth/register',json={**{'account':'new-valid','email':'new@example.test','password':PASS,'captcha':'x'},**patch})
     assert response.status_code in {400,422}
     with h.db() as con:assert con.execute('SELECT count(*) FROM users').fetchone()[0]==4
+
+
+def test_abandon_pending_mfa_revokes_only_current_session_and_can_switch_accounts(env):
+    h,m,c=env
+    secret,codes=enroll(env,'a')
+    with h.db() as con:
+        factor=con.execute("SELECT totp_secret FROM users WHERE id='a'").fetchone()[0]
+        recovery=con.execute("SELECT digest FROM member_recovery_codes WHERE user_id='a' ORDER BY digest").fetchall()
+    c.post('/auth/logout')
+    other=h.create_session('b')
+    state=login(c,'a')
+    assert state['mfa_required'] and not state['logged_in']
+    pending=c.cookies.get(h.SESSION_COOKIE)
+    assert c.get('/member/game-binding/status').status_code==403
+    assert c.post('/auth/logout').status_code==200
+    assert c.get('/auth/me').json()['logged_in'] is False
+    with h.db() as con:
+        assert not con.execute('SELECT 1 FROM sessions WHERE token_hash=?',(digest(pending),)).fetchone()
+        assert con.execute('SELECT 1 FROM sessions WHERE token_hash=?',(digest(other),)).fetchone()
+        assert con.execute("SELECT totp_secret FROM users WHERE id='a'").fetchone()[0]==factor
+        assert con.execute("SELECT digest FROM member_recovery_codes WHERE user_id='a' ORDER BY digest").fetchall()==recovery
+    c.cookies.set(h.SESSION_COOKIE,pending)
+    assert c.get('/member/game-binding/status').status_code==401
+    c.cookies.clear()
+    state=login(c,'b')
+    assert state['logged_in'] and not state['mfa_required']
+    assert c.get('/member/game-binding/status').status_code==200
