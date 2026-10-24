@@ -130,7 +130,8 @@ async function main(){
     await go(loggedAdmin.page,'/ranger/');const queryEdges=await loggedAdmin.page.locator('.page-title').boundingBox();
     for(const box of [adminEdges,workspaceEdges])assert(Math.abs(box.x-queryEdges.x)<=1&&Math.abs(box.width-queryEdges.width)<=1,'Admin uses query-page width');
     assert.equal((await admin.request.get(origin+'/admin/users')).status(),403);
-    await loggedAdmin.page.evaluate(()=>window.RangerbookAuth.logout());await admin.close();
+    await loggedAdmin.page.waitForFunction(()=>Boolean(window.RangerbookAuth?.logout));
+    await loggedAdmin.page.evaluate(async()=>{await window.RangerbookAuth.ready();await window.RangerbookAuth.logout();});await admin.close();
     phase='super administrator MFA';
     const superContext=await makeContext(),loggedSuper=await signIn(superContext,'super_admin');
     assert.equal(await loggedSuper.page.locator('#memberLoginCard').isVisible(),false);
