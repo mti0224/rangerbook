@@ -1,0 +1,10 @@
+[Unit]
+Description=Rangerbook outbox health check every minute
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+Unit=rangerbook-member-health.service
+
+[Install]
+WantedBy=timers.target

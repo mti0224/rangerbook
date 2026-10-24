@@ -25,7 +25,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261018-unified980">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261024-query-width">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -36,7 +36,7 @@
 <body class="gt-app">
   <div id="site-header"></div>
 
-  <main class="admin-page">
+  <main class="page admin-console-page">
     <div class="admin-shell">
       <section id="adminAuthCard" class="admin-card">
         <h1>管理員登入</h1>
@@ -59,7 +59,7 @@
             </label>
             <div class="admin-actions">
               <button class="primary" type="submit">登入</button>
-              <a href="../">回首頁</a>
+              <a href="../forgot-password/" data-i18n="member.forgot">忘記密碼</a>
             </div>
           </form>
         </div>
@@ -78,14 +78,14 @@
               <span>確認密碼</span>
               <input id="adminRegisterPasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
             </label>
-            <div class="admin-warning">註冊完成後會建立非管理員帳號並送出管理員申請。只有最大管理者核准後，才會取得目前的 admin 隱藏資料檢視權限。</div>
+            <label><span data-i18n="member.email">Email</span><input id="adminRegisterEmail" type="email" autocomplete="email" maxlength="254" required></label><div id="memberCaptcha"></div><p data-i18n="member.registerGuide">完成 Email 驗證後啟用一般會員；管理員申請須另外提出。</p>
             <div class="admin-actions">
-              <button class="primary" type="submit">註冊並送出申請</button>
+              <button class="primary" type="submit" data-i18n="member.register">註冊帳號</button>
             </div>
           </form>
         </div>
 
-        <div id="adminAuthMessage" class="admin-message" role="status" aria-live="polite"></div>
+        <p id="memberLoginStep" hidden><a href="../login/" data-i18n="member.continue2fa">繼續兩步驟驗證</a></p><div id="adminAuthMessage" class="admin-message" role="status" aria-live="polite"></div>
       </section>
 
       <section id="adminSessionCard" class="admin-card" hidden>
@@ -98,108 +98,16 @@
               <span id="adminCurrentStatus" class="admin-status-badge">-</span>
             </div>
           </div>
-          <div class="admin-actions">
-            <a href="../">回首頁</a>
-            <button id="adminLogoutBtn" class="secondary" type="button">登出</button>
-          </div>
         </div>
         <div id="adminSessionMessage" class="admin-message" role="status" aria-live="polite"></div>
       </section>
 
       <div id="adminWorkspace" class="admin-card admin-workspace" hidden>
         <div id="adminWorkspaceTabs" class="admin-workspace-tabs" role="tablist" aria-label="管理員功能分頁">
-          <button id="adminPersonalTab" data-i18n="admin.personal.tab" type="button" role="tab" data-admin-section="personal" aria-controls="adminPersonalPanel" aria-selected="true" tabindex="0">個人隊伍</button>
-          <button id="adminPasswordTab" type="button" role="tab" data-admin-section="password" aria-controls="adminPasswordCard" aria-selected="false" tabindex="-1">更改密碼</button>
           <button id="adminResourcesTab" type="button" role="tab" data-admin-section="resources" aria-controls="adminResourceUpdatesCard" aria-selected="false" tabindex="-1">數據更新追蹤</button>
           <button id="adminTrafficTab" type="button" role="tab" data-admin-section="traffic" aria-controls="adminTrafficPanel" aria-selected="false" tabindex="-1" hidden>網站流量</button>
           <button id="adminAccountsTab" type="button" role="tab" data-admin-section="accounts" aria-controls="superAdminPanel" aria-selected="false" tabindex="-1" hidden>帳號管理</button>
         </div>
-
-      <section id="adminPersonalPanel" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminPersonalTab" tabindex="0" hidden>
-        <div class="admin-session-head">
-          <div>
-            <h2 data-i18n="admin.personal.heading">個人隊伍</h2>
-            <p class="admin-muted" data-i18n="admin.personal.intro">綁定自己的 LINE Rangers 遊戲帳號後，可匯入一般隊伍 1～5、PvP 防守及公會戰進攻隊伍，並檢視隊伍分析。</p>
-          </div>
-        </div>
-        <div id="adminPersonalStatus" class="admin-message" role="status" aria-live="polite"></div>
-        <div id="adminPersonalUnbound" class="personal-verify">
-          <h3 data-i18n="admin.personal.unbound.title">尚未匯入任何隊伍</h3>
-          <p class="admin-muted" data-i18n="admin.personal.unbound.guide">請先搜尋遊戲內名稱，再完成公會獎牌確認與隊伍位置交換。</p>
-          <form id="adminPersonalSearchForm" class="admin-form">
-            <label><span data-i18n="admin.personal.search.label">遊戲內名稱</span>
-              <input id="adminPersonalSearch" type="search" minlength="2" maxlength="64" data-i18n-placeholder="admin.personal.search.placeholder" placeholder="輸入至少兩個字元" autocomplete="off" required>
-            </label>
-            <button type="submit" class="primary personal-primary" data-i18n="admin.personal.search.button">搜尋玩家</button>
-          </form>
-          <div id="adminPersonalCandidates" class="personal-candidates" role="listbox" aria-label="玩家搜尋候選名單" data-i18n-aria-label="admin.personal.search.candidatesLabel"></div>
-          <div id="adminPersonalSelected" hidden>
-            <p id="adminPersonalSelectedName"></p>
-            <form id="adminPersonalMedalForm" class="admin-form">
-              <h3 data-i18n="admin.personal.medal.title">1／2：確認公會獎牌數量</h3>
-              <p class="admin-muted" data-i18n="admin.personal.medal.guide">請輸入遊戲內目前持有的公會獎牌數量（半形數字）。</p>
-              <label><span data-i18n="admin.personal.medal.label">公會獎牌</span>
-                <input id="adminPersonalMedal" type="text" inputmode="numeric" pattern="[0-9]+" maxlength="12" autocomplete="off" data-i18n-placeholder="admin.personal.medal.placeholder" placeholder="例如：125" required>
-              </label>
-              <button type="submit" class="primary personal-primary" data-i18n="admin.personal.medal.submit">確認並繼續</button>
-            </form>
-          </div>
-          <div id="adminPersonalChallenge" hidden>
-            <h3 data-i18n="admin.personal.challenge.title">2／2：交換指定 Ranger 的位置</h3>
-            <p id="adminPersonalChallengeInstruction" class="personal-instruction"></p>
-            <p class="admin-muted" data-i18n="admin.personal.challenge.guide">請在遊戲中完成並儲存交換，再返回資料站驗證。成功後請恢復原本位置，再匯入隊伍。</p>
-            <p id="adminPersonalChallengeExpiry" class="admin-muted"></p>
-            <button id="adminPersonalVerify" type="button" class="primary personal-primary" data-i18n="admin.personal.challenge.verify">我已交換，開始驗證</button>
-          </div>
-        </div>
-        <div id="adminPersonalBound" hidden>
-          <h3 data-i18n="admin.personal.bound.title">已綁定的遊戲帳號</h3>
-          <p id="adminPersonalBoundLabel" class="admin-muted"></p>
-          <div class="admin-actions">
-            <button id="adminPersonalImport" class="primary" type="button" data-i18n="admin.personal.bound.import">匯入／更新我的隊伍</button>
-            <button id="adminPersonalUnbind" class="secondary" type="button" data-i18n="admin.personal.bound.unbind">解除遊戲帳號綁定</button>
-          </div>
-          <p id="adminPersonalLastImported" class="admin-muted"></p>
-          <form id="adminPersonalUnbindForm" class="admin-form personal-unbind-form" hidden>
-            <h4 data-i18n="admin.personal.unbind.title">請確認解除綁定</h4>
-            <p class="admin-muted" data-i18n="admin.personal.unbind.guide">解除後此帳號已匯入的個人隊伍將刪除。公開排名不受影響；之後可重新驗證其他遊戲帳號。</p>
-            <label><span data-i18n="admin.personal.unbind.password">請輸入目前資料站帳號密碼</span>
-              <input id="adminPersonalUnbindPassword" type="password" autocomplete="current-password" maxlength="128" required>
-            </label>
-            <div class="admin-actions">
-              <button type="submit" class="danger" data-i18n="admin.personal.unbind.confirm">確認解除綁定</button>
-              <button id="adminPersonalUnbindCancel" type="button" class="secondary" data-i18n="admin.personal.unbind.cancel">取消</button>
-            </div>
-          </form>
-          <div id="adminPersonalTeams" class="personal-team-viewer">
-            <iframe id="adminPersonalViewer" title="我的 LINE Rangers 隊伍與隊伍分析" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
-          </div>
-        </div>
-      </section>
-
-      <section id="adminPasswordCard" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminPasswordTab" tabindex="0" hidden>
-        <h2>變更自己的密碼</h2>
-        <p class="admin-muted">所有管理員階級都可以隨時變更自己的登入密碼。更新成功後，其他裝置上的登入狀態會立即失效。</p>
-        <form id="adminPasswordForm" class="admin-form" autocomplete="on">
-          <label>
-            <span>目前密碼</span>
-            <input id="adminCurrentPassword" type="password" autocomplete="current-password" maxlength="128" required>
-          </label>
-          <label>
-            <span>新密碼</span>
-            <input id="adminNewPassword" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
-          </label>
-          <label>
-            <span>確認新密碼</span>
-            <input id="adminNewPasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="128" required>
-          </label>
-          <div class="admin-actions">
-            <button id="adminPasswordSubmit" class="primary" type="submit">更新密碼</button>
-          </div>
-        </form>
-        <div id="adminPasswordMessage" class="admin-message" role="status" aria-live="polite"></div>
-      </section>
-
 
       <section id="adminResourceUpdatesCard" class="admin-workspace-panel" role="tabpanel" aria-labelledby="adminResourcesTab" tabindex="0" hidden>
         <div class="admin-session-head">
@@ -273,7 +181,6 @@
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-traffic-charts.js?v=20261013-v2.5"></script>
   <script src="../assets/js/admin-page.js?v=20261017-personal1"></script>
-  <script src="../assets/js/admin-personal-teams.js?v=20261018-i18n1"></script>
-  <script src="../assets/js/admin-password.js?v=20261010a"></script>
+<script src="../assets/js/member-registration.js"></script>
 </body>
 </html>

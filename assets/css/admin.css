@@ -10,13 +10,10 @@
   gap: 20px;
 }
 
-/* Match the width of every admin tab, overriding Game-Tech's wider defaults. */
-body.gt-app main.admin-page {
-  width: min(980px, calc(100% - 2rem));
-}
-body.gt-app .admin-page .admin-shell {
-  width: 100%;
-  min-width: 0;
+/* Shared query-page container owns the width; inner admin/member grids fill it. */
+body.gt-app .page .admin-shell {
+  width:100%;
+  min-width:0;
 }
 
 .admin-card {
@@ -129,6 +126,35 @@ body.gt-app .admin-page .admin-shell {
 
 .admin-message.success {
   color: #1a7f37;
+}
+
+.member-operation-status:empty {
+  display: none;
+}
+
+.member-operation-status,
+.member-proof-status {
+  padding: 10px 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.member-proof-status.success {
+  color: #1a7f37;
+}
+
+html[data-theme="dark"] .member-proof-status.success,
+html[data-theme="dark"] .member-operation-status.success {
+  color: #7ee2a8;
+}
+
+html[data-theme="dark"] .member-operation-status.error {
+  color: #ffaaaa;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
 }
 
 .admin-session-head {
@@ -840,3 +866,10 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
   background: transparent;
   overflow: hidden;
 }
+
+/* Member security cards retain the existing admin shell spacing. */
+#memberSecurityArea { display: grid; gap: 20px; }
+#memberSecurityArea[hidden] { display: none; }
+#memberRecovery { white-space: pre-wrap; overflow-wrap: anywhere; }
+#memberManualKey { overflow-wrap: anywhere; }
+.gt-user-navigation { margin-top: .85rem; padding-top: .65rem; border-top: 1px solid var(--line); }

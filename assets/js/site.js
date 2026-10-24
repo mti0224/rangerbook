@@ -1,4 +1,5 @@
 (() => {
+  if (window.RB_PRIVATE_PAGE) return;
   const GA_MEASUREMENT_ID = "G-RPSQY1WHPP";
 
   if (!window.gtag) {
@@ -488,17 +489,53 @@
   if (gtPath.startsWith(rootPrefix + "admin/")) {
     gtAdminLink.setAttribute("aria-current", "page");
   }
-  // Admin is an ordinary sidebar link directly following Sponsor, not a footer.
-  gtNav.append(gtAdminLink);
+  const gtUserGroup = document.createElement("div");
+  gtUserGroup.className = "gt-user-navigation";
+  const gtUserLabel = document.createElement("div");
+  gtUserLabel.className = "gt-sidebar-label";
+  gtUserLabel.dataset.i18n = "member.user";
+  gtUserLabel.textContent = "個人頁面";
+  gtUserGroup.append(gtUserLabel);
+  const gtMemberLinks=[];
+  for (const [path,key,label] of [["personal-teams/","member.personalTeams","個人遊戲隊伍"],["account/","member.security","隱私權與密碼"]]) {
+    const link=document.createElement("a");link.href=rootPrefix+path;link.dataset.i18n=key;link.textContent=label;link.hidden=true;
+    if(gtPath.startsWith(rootPrefix+path))link.setAttribute("aria-current","page");
+    gtMemberLinks.push(link);gtUserGroup.append(link);
+  }
+  gtUserGroup.append(gtAdminLink);
+  const gtLoginLink=document.createElement("a");gtLoginLink.href=rootPrefix+"login/";gtLoginLink.dataset.i18n="member.login";gtLoginLink.textContent="登入";
+  const gtLogout=document.createElement("button");gtLogout.type="button";gtLogout.dataset.i18n="member.logout";gtLogout.textContent="登出";gtLogout.hidden=true;
+  const gtLogoutStatus=document.createElement("p");gtLogoutStatus.setAttribute("role","status");gtLogoutStatus.className="gt-logout-status";gtLogoutStatus.hidden=true;
+  gtLogout.addEventListener("click",async()=>{
+    gtLogout.disabled=true;gtLogoutStatus.hidden=false;gtLogoutStatus.textContent=window.RangerbookI18n?.t("member.processing","處理中…");
+    try {
+      if(window.RangerbookAuth)await window.RangerbookAuth.logout();
+      else {
+        const response=await fetch("https://rangerbook-auth.warmycat.com/auth/logout",{method:"POST",credentials:"include",cache:"no-store",headers:{"Content-Type":"application/json"},body:"{}"});
+        if(!response.ok)throw new Error();
+        window.dispatchEvent(new CustomEvent("rangerbook:auth-changed",{detail:{logged_in:false,role:"user"}}));
+      }
+      gtLogoutStatus.textContent="";gtLogoutStatus.hidden=true;
+      if(/\/(?:account|personal-teams|admin|two-factor)\//.test(location.pathname))location.assign(rootPrefix);
+    }catch {gtLogoutStatus.textContent=window.RangerbookI18n?.t("member.logoutFailed","登出失敗，請檢查網路後重試。");}
+    finally{gtLogout.disabled=false;}
+  });
+  gtUserGroup.append(gtLoginLink,gtLogout,gtLogoutStatus);gtNav.append(gtUserGroup);
   gtFoot.append(gtFootCaption);
   gtSidebar.append(gtDrawerTop, gtLabel, gtNav, gtFoot);
 
   // The admin link is a navigation convenience, never an authorization check.
   // Verify the existing server-side session. Protected APIs still enforce roles.
   function setAdminLinkVisibility(user) {
-    gtAdminLink.hidden = !(user?.logged_in && (user.role === "admin" || user.role === "super_admin"));
+    const complete = user?.logged_in && !user.must_change_password && !user.mfa_required && !user.setup_required;
+    const admin = complete && ["admin","super_admin"].includes(user.role);
+    gtUserGroup.hidden = false;
+    gtMemberLinks.forEach(link=>link.hidden=!complete);
+    gtLoginLink.hidden=Boolean(complete);
+    gtLogout.hidden=!(complete||user?.mfa_required||user?.setup_required||user?.must_change_password);
+    gtAdminLink.hidden = !admin;
     gtProtectedLinks.forEach(({ link, roles }) => {
-      link.hidden = !(user?.logged_in && roles.includes(user.role));
+      link.hidden = !(complete && roles.includes(user.role));
     });
   }
   window.addEventListener("rangerbook:auth-changed", event => {
@@ -512,7 +549,7 @@
     // Admin and player-search pages load the existing RangerbookAuth module
     // immediately after site.js; it will emit rangerbook:auth-changed.
     fetch("https://rangerbook-auth.warmycat.com/auth/me", {
-      method: "GET", credentials: "include", headers: { Accept: "application/json" }
+      method: "GET", credentials: "include", cache: "no-store", headers: { Accept: "application/json" }
     }).then(response => response.ok ? response.json() : null)
       .then(setAdminLinkVisibility)
       .catch(() => setAdminLinkVisibility(null));

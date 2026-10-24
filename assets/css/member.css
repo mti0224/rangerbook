@@ -1,0 +1,77 @@
+/* Member forms use the existing page-title, admin card and theme tokens. */
+.member-content { display:grid; gap:20px; min-width:0; }
+.member-narrow { width:100%; margin-inline:0; }
+.member-page .page-title { margin:0; }
+.member-page button, .member-page .member-links a, .member-page .admin-actions a {
+  min-height:44px; border:1px solid var(--line); border-radius:12px; padding:10px 16px;
+  font:inherit; font-weight:700; background:var(--soft); color:var(--text); cursor:pointer;
+  text-decoration:none; box-sizing:border-box;
+}
+.member-page button[type=submit] { background:var(--primary-dark); color:#fff; border-color:transparent; }
+.member-page button:disabled, .member-page input:disabled { opacity:.6; cursor:not-allowed; }
+.member-page :is(button,a,input,select):focus-visible { outline:3px solid var(--primary); outline-offset:3px; }
+.member-page .admin-form select { background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px; font:inherit; width:100%; }
+.member-page select option { background:var(--panel); color:var(--text); }
+.member-form-end { justify-content:flex-end; }
+.member-links { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:16px; }
+.member-page fieldset { margin:0; padding:0; border:0; min-width:0; }
+.member-setting + .member-setting { margin-top:24px; padding-top:20px; border-top:1px solid var(--line); }
+.member-setting h3 { font-size:1rem; }
+.member-steps { padding-left:1.4rem; line-height:1.8; }
+#memberQr { display:block; max-width:100%; height:auto; margin:20px auto; background:#fff; border:12px solid #fff; box-sizing:border-box; border-radius:12px; }
+#memberManualKey { display:block; padding:14px; background:var(--soft); overflow-wrap:anywhere; margin-bottom:20px; user-select:all; }
+#memberProofStatus { font-variant-numeric:tabular-nums; }
+.member-page :is(.admin-message,.member-proof-status) { overflow-wrap:anywhere; }
+.member-page [hidden] { display:none!important; }
+.member-page dialog { max-width:min(480px,calc(100% - 32px)); max-height:calc(100dvh - 32px); overflow:auto; border:1px solid var(--line); border-radius:20px; padding:24px; background:var(--panel); color:var(--text); box-shadow:var(--shadow); }
+.member-page dialog::backdrop { background:rgba(0,0,0,.6); }
+.member-page dialog p { margin-top:0; line-height:1.6; }
+.member-page .admin-message:empty { display:none; }
+@media(max-width:640px) { .member-page .admin-card { padding:20px 16px; } .member-page .admin-actions > * { flex:1 1 auto; text-align:center; } }
+
+html[data-theme="dark"] .member-page .admin-message.error { color:#ffaaaa; }
+html[data-theme="dark"] .member-page .admin-message.success { color:#7ee2a8; }
+html[data-theme="dark"] .member-page button[type=submit] { color:#082e29!important; }
+.member-page button:disabled { opacity:1; background:var(--soft)!important; color:var(--muted)!important; border-color:var(--line)!important; }
+
+/* The form cards share the banner's content edges on every member route. */
+.member-content > *, #memberSecurityArea > * { min-width:0; box-sizing:border-box; }
+#memberSecurityArea { display:grid; gap:20px; }
+.member-page .member-banner h1, .personal-teams-page .member-banner h1 { margin-top:0; }
+.member-login-actions { display:flex; justify-content:space-between; align-items:last baseline; gap:20px; }
+.member-login-links { display:grid; gap:6px; min-width:0; line-height:1.5; }
+.member-page .member-login-links a { color:var(--primary-dark); text-decoration:underline; text-underline-offset:3px; font-weight:600; overflow-wrap:anywhere; }
+.member-login-actions > button { flex:0 0 auto; min-width:100px; }
+.member-rescue-actions { display:grid; gap:12px; }
+.member-page .member-rescue-actions a { display:block; min-height:44px; box-sizing:border-box; border:1px solid var(--line); border-radius:12px; padding:10px 16px; text-align:center; background:var(--soft); color:var(--text); font-weight:700; text-decoration:none; }
+.member-rescue-actions :is(button,a) { width:100%; }
+.member-visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+
+/* Personal account controls and imported viewer align with the shared banner. */
+.personal-teams-page [hidden] { display:none!important; }
+.personal-teams-page #memberGate, .personal-teams-page #adminPersonalStatus { margin:0; }
+.personal-teams-page #adminPersonalStatus:empty { display:none; }
+.personal-teams-page .member-banner { margin:0; }
+.personal-teams-page #adminPersonalPanel { padding:0; }
+.personal-teams-page .personal-binding-card { max-width:none; width:100%; box-sizing:border-box; gap:20px; }
+.personal-binding-heading { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+.personal-binding-heading h2 { margin:0; }
+.personal-binding-heading button { padding:0; border:0; background:none; color:var(--primary-dark); text-decoration:underline; text-underline-offset:3px; font:inherit; cursor:pointer; }
+.personal-binding-card .personal-step-guide { margin:0; line-height:1.7; color:var(--text); }
+.personal-binding-card .personal-instruction { padding:0; margin:0 0 16px; border:0; background:none; }
+.personal-binding-card .personal-primary { width:100%; min-height:44px; background:var(--primary-dark); color:#fff; }
+.personal-binding-card .personal-search-results { border:1px solid var(--line); border-radius:12px; padding:16px; min-width:0; }
+.personal-binding-card .personal-candidates { min-height:48px; }
+.personal-binding-card #adminPersonalSelectedName { margin-top:0; overflow-wrap:anywhere; }
+.personal-binding-card :is(input,button):focus-visible { outline:3px solid var(--primary); outline-offset:3px; }
+html[data-theme="dark"] .personal-binding-card .personal-primary { color:#082e29; }
+@media(max-width:640px) { .personal-binding-card { padding:20px 16px; } }
+
+.personal-teams-page #adminPersonalStatus:not(:empty) { margin-top:16px; }
+.personal-teams-page #adminPersonalBound { display:grid; gap:20px; }
+.personal-teams-page #adminPersonalTeams { margin-top:0; }
+.personal-account-card { min-width:0; }
+.personal-account-card #adminPersonalBoundLabel { font-weight:700; color:var(--text); overflow-wrap:anywhere; }
+.personal-account-card #adminPersonalLastImported { margin:16px 0 0; font-variant-numeric:tabular-nums; }
+#memberDialogFactor { display:grid; gap:12px; min-width:0; }
+#memberDialogRecovery { width:100%; justify-self:stretch; }

@@ -10,7 +10,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
  try {for(const locale of ['zh-Hant','en','th','jp']) {
   const context=await browser.newContext({serviceWorkers:'block',viewport:{width:1200,height:1000}});
   await context.addInitScript(locale=>localStorage.setItem('rangerbook-language',locale),locale);
-  let user={logged_in:true,account:'fixture_admin',role:'admin',admin_application_status:'approved',must_change_password:true};
+  let user={logged_in:false,account:'fixture_admin',role:'admin',admin_application_status:'approved',must_change_password:true};
   let failLogout=false,changed=false;const requests=[],dialogs=[],errors=[];
   await context.route('**/*',async route=>{
    const url=new URL(route.request().url());
@@ -20,7 +20,9 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     if(url.pathname==='/auth/logout' && failLogout)return route.abort();
     let json={items:[],totalRecordedBatches:0};
     if(url.pathname==='/auth/me')json={...user};
-    if(url.pathname==='/auth/change-password'){changed=true;user.must_change_password=false;json={ok:true};}
+    if(url.pathname==='/auth/features')json={members_v2:true,google:false,registration:false};
+    if(url.pathname==='/auth/security')json={totp_enabled:false,totp_required:false};
+    if(url.pathname==='/auth/change-password'){changed=true;user.must_change_password=false;user.logged_in=true;json={ok:true};}
     if(url.pathname==='/auth/logout'){user.logged_in=false;json={ok:true};}
     if(url.pathname==='/admin/users')json={items:[{id:'qa_target',account:'fixture_target',role:'admin',admin_application_status:'approved'}]};
     if(url.pathname.endsWith('/reset-password'))json={ok:true,account:'fixture_target',reset_password:'Only-a-fixture-temporary-password!42',must_change_password:true};
@@ -28,7 +30,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
    }
    if(route.request().resourceType()==='image')return route.fulfill({contentType:'image/png',body:png});
    if(url.origin!==base)return route.abort();
-   let name=decodeURIComponent(url.pathname).slice(1);if(name.endsWith('/'))name+='index.html';
+   let name=decodeURIComponent(url.pathname).slice(1);if(name.endsWith('/')||!name)name+='index.html';
    const file=[path.join(root,name),path.join(fallback,name)].find(file=>fs.existsSync(file));
    if(!file)return route.fulfill({status:404,body:''});
    const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
@@ -37,25 +39,29 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const page=await context.newPage();page.setDefaultTimeout(15000);
   page.on('pageerror',error=>errors.push(error.message));
   page.on('dialog',async dialog=>{dialogs.push(dialog.message());await dialog.accept();});
-  await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
-  await page.locator('#adminPasswordForm').waitFor();
-  assert.equal(await page.locator('#adminPersonalTab').isVisible(),false);
-  assert.equal(await page.locator('#adminAccountsTab').isVisible(),false);
-  assert.equal(await page.locator('#adminPasswordTab').getAttribute('aria-selected'),'true');
-  assert.equal(await page.locator('#adminSessionMessage').innerText(),copy('site.auth.passwordChangeRequired',locale));
+  await page.goto(base+'/account/',{waitUntil:'domcontentloaded'});
+  await page.locator('#memberPasswordForm').waitFor();
+  assert.equal(await page.locator('#memberProof').isVisible(),false);
   assert.ok(!requests.some(name=>name.startsWith('/admin/')),'Temporary-password sessions do not load privileged data');
-  await page.locator('#adminCurrentPassword').fill('Temporary-test-password!');
-  await page.locator('#adminNewPassword').fill('New-test-password!42');
-  await page.locator('#adminNewPasswordConfirm').fill('New-test-password!42');
-  await page.locator('#adminPasswordSubmit').click();
-  await page.waitForFunction(()=>window.RangerbookAuth?.isAdmin());assert.ok(changed);
-  await page.locator('#adminPersonalTab').waitFor();
-  failLogout=true;await page.locator('#adminLogoutBtn').click();
-  await page.waitForFunction(text=>document.querySelector('#adminSessionMessage').textContent===text,copy('site.auth.logoutFailed',locale));
+  await page.locator('#memberPasswordForm input[name=current_password]').fill('Temporary-test-password!');
+  await page.locator('#memberPasswordForm input[name=new_password]').fill('New-test-password!42');
+  await page.locator('#memberPasswordForm input[name=confirm]').fill('New-test-password!42');
+  await page.locator('#memberPasswordForm button').click();
+  await page.waitForURL(base+'/');assert.ok(changed);
+  await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});
+  await page.locator('#adminResourcesTab').waitFor();
+  const adminEdges=await page.locator('#adminSessionCard').boundingBox();
+  for(const el of await page.locator('#adminWorkspace, #adminSessionCard').all()){
+    const box=await el.boundingBox();assert.ok(Math.abs(box.x-adminEdges.x)<=1&&Math.abs(box.width-adminEdges.width)<=1);
+  }
+  assert.equal(await page.locator('main.page').count(),1);
+  assert.equal(await page.locator('main a[href="../"],main a[href="../account/"],#adminLogoutBtn').count(),0,'Admin navigation actions live in the shared sidebar');
+  failLogout=true;await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();
+  await page.waitForFunction(text=>document.querySelector('.gt-logout-status').textContent===text,copy('member.logoutFailed',locale));
   assert.ok(await page.locator('#adminSessionCard').isVisible(),'Failed logout keeps the authenticated state visible');
-  failLogout=false;await page.locator('#adminLogoutBtn').click();await page.locator('#adminLoginForm').waitFor();
+  failLogout=false;await page.locator('.gt-user-navigation button[data-i18n="member.logout"]').click();await page.waitForURL(base+'/');
   user={logged_in:true,account:'fixture_root',role:'super_admin',admin_application_status:'approved',must_change_password:false};
-  await page.reload({waitUntil:'domcontentloaded'});await page.locator('#adminAccountsTab').click();
+  await page.goto(base+'/admin/',{waitUntil:'domcontentloaded'});await page.locator('#adminAccountsTab').click();
   const row=page.locator('[data-user-id="qa_target"]');
   await row.locator('summary').click();await row.locator('[data-action="reset-password"]').click();
   await page.waitForFunction(()=>document.querySelector('[data-user-id="qa_target"] button')?.disabled===false);

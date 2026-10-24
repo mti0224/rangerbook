@@ -1,0 +1,16 @@
+# Server-side environment only. Never load this file from GitHub Pages.
+# Leave V2 disabled until isolated migration, configuration and operator recovery are verified.
+RANGERBOOK_MEMBERS_V2=0
+RANGERBOOK_MEMBER_NAVIGATION=1
+RANGERBOOK_MEMBER_KEY=
+RANGERBOOK_FRONTEND_URL=https://rangerbook.warmycat.com
+RANGERBOOK_GOOGLE_CLIENT_ID=
+RANGERBOOK_GOOGLE_CLIENT_SECRET=
+RANGERBOOK_GOOGLE_REDIRECT_URI=https://rangerbook-auth.warmycat.com/auth/google/callback
+RANGERBOOK_TURNSTILE_SITE_KEY=
+RANGERBOOK_TURNSTILE_SECRET=
+RANGERBOOK_MAIL_ENABLED=0
+RANGERBOOK_SES_CONFIGURATION_SET=
+RANGERBOOK_FEEDBACK_QUEUE=
+RANGERBOOK_FEEDBACK_TOPIC=
+# Preserve the existing AUTH_DB, SESSION_COOKIE, ALLOWED_ORIGINS and private team paths.

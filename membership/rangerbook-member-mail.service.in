@@ -1,0 +1,17 @@
+[Unit]
+Description=Rangerbook bounded transactional email worker
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=@AUTH_SERVICE_USER@
+WorkingDirectory=@RELEASE_DIRECTORY@
+EnvironmentFile=@PRIVATE_ENVIRONMENT_FILE@
+ExecStart=@VENV_DIRECTORY@/bin/python -m membership.mail_worker
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=@PRIVATE_AUTH_DIRECTORY@
+TimeoutStartSec=90

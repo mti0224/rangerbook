@@ -69,7 +69,7 @@ class UITests(unittest.TestCase):
         pages = list(ROOT.rglob("*.html"))
         self.assertGreaterEqual(len(pages), 40)
         for page in pages:
-            if any(folder in page.parts for folder in (".git", "node_modules", "dist")):
+            if any(folder in page.parts for folder in (".git", "node_modules", "dist", "_site")):
                 continue
             parser = UIParser()
             parser.feed(page.read_text(encoding="utf-8"))
@@ -92,6 +92,12 @@ class UITests(unittest.TestCase):
                 self.assertTrue(all(r.get("en", "").strip() for r in overrides))
                 page_source = {**page_source, **{r["key"].removeprefix("UI:"): r["zh_TW"] for r in overrides}}
                 page_known |= set(page_source.values())
+            # The shared i18n loader always merges sitewide overrides, even
+            # on the isolated account-action page without the V2 adapter.
+            shared = json.loads((ROOT / "assets/locales/sitewide-overrides.json").read_text(encoding="utf-8"))
+            self.assertTrue(all(r.get("en", "").strip() for r in shared))
+            page_source = {**page_source, **{r["key"].removeprefix("UI:"): r["zh_TW"] for r in shared}}
+            page_known |= set(page_source.values())
             pwa = json.loads((ROOT / "assets/locales/pwa.json").read_text(encoding="utf-8"))
             page_source = {**page_source, **pwa["zh-Hant"]}
             page_known |= set(pwa["zh-Hant"].values())

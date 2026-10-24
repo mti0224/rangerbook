@@ -11,9 +11,11 @@ for(const icon of manifest.icons) {
  assert.equal(bytes.subarray(1,4).toString(),'PNG');assert.equal(bytes.readUInt32BE(16),size);assert.equal(bytes.readUInt32BE(20),size);
 }
 assert.ok(manifest.icons.some(x=>x.purpose==='maskable'));
-function walk(dir='') {return fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.name.startsWith('.')||['node_modules'].includes(e.name)?[]:e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
+function walk(dir='') {return fs.readdirSync(path.join(root,dir),{withFileTypes:true}).flatMap(e=>e.name.startsWith('.')||['node_modules','_site'].includes(e.name)?[]:e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);}
 for(const name of walk().filter(x=>x.endsWith('.html'))) {
- const html=read(name).toString();assert.ok(html.includes('assets/js/pwa-head.js'),name);assert.ok(html.includes('viewport-fit=cover'),name);
+ const html=read(name).toString();
+ assert.ok(html.includes('assets/js/pwa-head.js'),name);
+ if(name==='account-action/index.html')assert.ok(html.includes('window.RB_PRIVATE_PAGE=true'),'Token page disables analytics before shared shell');assert.ok(html.includes('viewport-fit=cover'),name);
 }
 const words=JSON.parse(read('assets/locales/pwa.json'));
 for(const lang of ['zh-Hant','en','jp','th']) {

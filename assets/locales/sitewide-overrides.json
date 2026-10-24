@@ -1076,5 +1076,1090 @@
     "en": "The request is too large.",
     "th": "ข้อมูลคำขอมีขนาดใหญ่เกินไป",
     "jp": "リクエストが大きすぎます。"
+  },
+  {
+    "key": "UI:member.user",
+    "zh_TW": "個人頁面",
+    "en": "Personal Pages",
+    "jp": "個人ページ",
+    "th": "หน้าส่วนตัว"
+  },
+  {
+    "key": "UI:member.security",
+    "zh_TW": "隱私權與密碼",
+    "en": "Privacy and password",
+    "jp": "プライバシーとパスワード",
+    "th": "ความเป็นส่วนตัวและรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.email",
+    "zh_TW": "Email",
+    "en": "Email",
+    "jp": "メールアドレス",
+    "th": "อีเมล"
+  },
+  {
+    "key": "UI:member.registerGuide",
+    "zh_TW": "完成 Email 驗證後啟用一般會員；管理員申請須另外提出。",
+    "en": "Verify your email to activate membership. Apply for administrator access separately.",
+    "jp": "メール認証で一般会員を有効にします。管理者申請は別途必要です。",
+    "th": "ยืนยันอีเมลเพื่อเปิดใช้บัญชีสมาชิก โดยต้องสมัครเป็นผู้ดูแลแยกต่างหาก"
+  },
+  {
+    "key": "UI:member.register",
+    "zh_TW": "註冊帳號",
+    "en": "Create account",
+    "jp": "アカウント登録",
+    "th": "สร้างบัญชี"
+  },
+  {
+    "key": "UI:member.forgot",
+    "zh_TW": "忘記密碼",
+    "en": "Forgot password",
+    "jp": "パスワードを忘れた場合",
+    "th": "ลืมรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.continue2fa",
+    "zh_TW": "繼續兩步驟驗證",
+    "en": "Continue security verification",
+    "jp": "セキュリティ認証を続行",
+    "th": "ดำเนินการยืนยันความปลอดภัยต่อ"
+  },
+  {
+    "key": "UI:member.reauth",
+    "zh_TW": "驗證身分",
+    "en": "Verify Identity",
+    "jp": "本人確認",
+    "th": "ยืนยันตัวตน"
+  },
+  {
+    "key": "UI:member.currentPassword",
+    "zh_TW": "目前密碼",
+    "en": "Current password",
+    "jp": "現在のパスワード",
+    "th": "รหัสผ่านปัจจุบัน"
+  },
+  {
+    "key": "UI:member.code",
+    "zh_TW": "驗證碼或恢復碼",
+    "en": "Verification or recovery code",
+    "jp": "認証コードまたはリカバリーコード",
+    "th": "รหัสยืนยันหรือรหัสกู้คืน"
+  },
+  {
+    "key": "UI:member.confirm",
+    "zh_TW": "確認",
+    "en": "Confirm",
+    "jp": "確認",
+    "th": "ยืนยัน"
+  },
+  {
+    "key": "UI:member.login",
+    "zh_TW": "登入",
+    "en": "Sign in",
+    "jp": "ログイン",
+    "th": "เข้าสู่ระบบ"
+  },
+  {
+    "key": "UI:member.logout",
+    "zh_TW": "登出",
+    "en": "Sign out",
+    "jp": "ログアウト",
+    "th": "ออกจากระบบ"
+  },
+  {
+    "key": "UI:member.loginRequired",
+    "zh_TW": "請先登入並完成驗證。",
+    "en": "Sign in and complete verification.",
+    "jp": "ログインして認証を完了してください。",
+    "th": "กรุณาเข้าสู่ระบบและยืนยันให้เสร็จสิ้น"
+  },
+  {
+    "key": "UI:member.signedIn",
+    "zh_TW": "已登入。安全操作前請再次驗證身分。",
+    "en": "Signed in. Verify your identity before changing security settings.",
+    "jp": "ログイン済みです。設定変更の前に本人確認を行ってください。",
+    "th": "เข้าสู่ระบบแล้ว กรุณายืนยันตัวตนก่อนเปลี่ยนการตั้งค่าความปลอดภัย"
+  },
+  {
+    "key": "UI:member.twoFactor",
+    "zh_TW": "兩步驟驗證（2FA）",
+    "en": "Two-factor authentication (2FA)",
+    "jp": "二要素認証（2FA）",
+    "th": "การยืนยันตัวตนสองขั้นตอน (2FA)"
+  },
+  {
+    "key": "UI:member.enable",
+    "zh_TW": "啟用 2FA",
+    "en": "Enable 2FA",
+    "jp": "2FAを有効にする",
+    "th": "เปิดใช้ 2FA"
+  },
+  {
+    "key": "UI:member.disable",
+    "zh_TW": "解除兩步驟驗證（2FA）",
+    "en": "Disable Two-Factor Authentication",
+    "jp": "2段階認証（2FA）を解除",
+    "th": "ปิดการยืนยันตัวตนสองขั้นตอน (2FA)"
+  },
+  {
+    "key": "UI:member.regenerate",
+    "zh_TW": "重新產生恢復碼",
+    "en": "Generate new recovery codes",
+    "jp": "リカバリーコードを再生成",
+    "th": "สร้างรหัสกู้คืนใหม่"
+  },
+  {
+    "key": "UI:member.scan",
+    "zh_TW": "使用驗證器掃描，並輸入六位數驗證碼。",
+    "en": "Scan with an authenticator and enter the six-digit code.",
+    "jp": "認証アプリで読み取り、6桁のコードを入力してください。",
+    "th": "สแกนด้วยแอปยืนยันตัวตน แล้วป้อนรหัส 6 หลัก"
+  },
+  {
+    "key": "UI:member.verify",
+    "zh_TW": "驗證",
+    "en": "Verify",
+    "jp": "認証",
+    "th": "ยืนยัน"
+  },
+  {
+    "key": "UI:member.saveCodes",
+    "zh_TW": "恢復碼僅顯示一次，請離線妥善保存。重新整理後將無法再次查看。",
+    "en": "Recovery codes are shown once. Save them securely offline before leaving this page.",
+    "jp": "コードは一度だけ表示されます。ページを離れる前に安全な場所に保存してください。",
+    "th": "รหัสกู้คืนแสดงเพียงครั้งเดียว โปรดเก็บไว้ในที่ปลอดภัยก่อนออกจากหน้านี้"
+  },
+  {
+    "key": "UI:member.saved",
+    "zh_TW": "已保存並關閉",
+    "en": "Saved, close",
+    "jp": "保存して閉じる",
+    "th": "บันทึกแล้ว ปิด"
+  },
+  {
+    "key": "UI:member.google",
+    "zh_TW": "Google 帳號綁定",
+    "en": "Google account linking",
+    "jp": "Googleアカウント連携",
+    "th": "การเชื่อมโยงบัญชี Google"
+  },
+  {
+    "key": "UI:member.googleGuide",
+    "zh_TW": "綁定的 Google 信箱可用於密碼救援，不提供 Google 登入。",
+    "en": "Your linked Google email can receive password recovery emails. Login still uses your account and password.",
+    "jp": "連携したGoogleメールはパスワード復旧に使えます。ログインには従来のアカウント名とパスワードを使用します。",
+    "th": "อีเมล Google ที่เชื่อมโยงใช้รับอีเมลกู้รหัสผ่าน การเข้าสู่ระบบยังใช้ชื่อบัญชีและรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.bind",
+    "zh_TW": "綁定／更換 Google 帳號",
+    "en": "Link or change Google account",
+    "jp": "Googleアカウントを連携・変更",
+    "th": "เชื่อมโยงหรือเปลี่ยนบัญชี Google"
+  },
+  {
+    "key": "UI:member.unbind",
+    "zh_TW": "解除綁定",
+    "en": "Unlink",
+    "jp": "連携解除",
+    "th": "ยกเลิกการเชื่อมโยง"
+  },
+  {
+    "key": "UI:member.apply",
+    "zh_TW": "提出管理員申請",
+    "en": "Apply for administrator access",
+    "jp": "管理者権限を申請",
+    "th": "สมัครเป็นผู้ดูแล"
+  },
+  {
+    "key": "UI:member.applied",
+    "zh_TW": "管理員申請已送出。",
+    "en": "Administrator application submitted.",
+    "jp": "管理者申請を送信しました。",
+    "th": "ส่งคำขอเป็นผู้ดูแลแล้ว"
+  },
+  {
+    "key": "UI:member.recovery",
+    "zh_TW": "帳號驗證與救援",
+    "en": "Account verification and recovery",
+    "jp": "アカウント認証と復旧",
+    "th": "การยืนยันและกู้คืนบัญชี"
+  },
+  {
+    "key": "UI:member.identifier",
+    "zh_TW": "帳號或已驗證的救援 Email",
+    "en": "Account or verified recovery email",
+    "jp": "アカウント名または確認済み復旧メール",
+    "th": "บัญชีหรืออีเมลกู้คืนที่ยืนยันแล้ว"
+  },
+  {
+    "key": "UI:member.sendLink",
+    "zh_TW": "寄送重設連結",
+    "en": "Send reset link",
+    "jp": "再設定リンクを送信",
+    "th": "ส่งลิงก์ตั้งรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.newPassword",
+    "zh_TW": "新密碼（10–128 字元）",
+    "en": "New password (10–128 characters)",
+    "jp": "新しいパスワード（10～128文字）",
+    "th": "รหัสผ่านใหม่ (10–128 ตัวอักษร)"
+  },
+  {
+    "key": "UI:member.confirmPassword",
+    "zh_TW": "確認新密碼",
+    "en": "Confirm new password",
+    "jp": "新しいパスワードを確認",
+    "th": "ยืนยันรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.reset",
+    "zh_TW": "重設密碼",
+    "en": "Reset password",
+    "jp": "パスワードを再設定",
+    "th": "ตั้งรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.verifyEmail",
+    "zh_TW": "驗證 Email",
+    "en": "Verify email",
+    "jp": "メールアドレスを確認",
+    "th": "ยืนยันอีเมล"
+  },
+  {
+    "key": "UI:member.resend",
+    "zh_TW": "重寄驗證信",
+    "en": "Resend verification email",
+    "jp": "確認メールを再送信",
+    "th": "ส่งอีเมลยืนยันอีกครั้ง"
+  },
+  {
+    "key": "UI:member.checkEmail",
+    "zh_TW": "若資料符合條件，將寄出限時驗證信，請查看信箱。",
+    "en": "If the details are eligible, a time-limited email will be sent. Check your inbox.",
+    "jp": "条件を満たす場合、有効期限付きメールを送信します。受信箱をご確認ください。",
+    "th": "หากข้อมูลตรงตามเงื่อนไข ระบบจะส่งอีเมลที่มีเวลาจำกัด โปรดตรวจสอบกล่องจดหมาย"
+  },
+  {
+    "key": "UI:member.resetDone",
+    "zh_TW": "密碼已重設，舊登入已撤銷；已啟用的 2FA 仍然有效。請重新登入。",
+    "en": "Password reset. Previous sessions were revoked; 2FA remains enabled. Sign in again.",
+    "jp": "パスワードを再設定し、既存のログインを無効にしました。2FAは維持されます。再度ログインしてください。",
+    "th": "ตั้งรหัสผ่านใหม่และยกเลิกเซสชันเดิมแล้ว โดยยังคงใช้ 2FA กรุณาเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.verified",
+    "zh_TW": "Email 驗證完成，現在可以登入。",
+    "en": "Email verified. You can now sign in.",
+    "jp": "メール認証が完了しました。ログインできます。",
+    "th": "ยืนยันอีเมลแล้ว สามารถเข้าสู่ระบบได้"
+  },
+  {
+    "key": "UI:member.passwordMismatch",
+    "zh_TW": "兩次輸入的新密碼不一致。",
+    "en": "The passwords do not match.",
+    "jp": "パスワードが一致しません。",
+    "th": "รหัสผ่านไม่ตรงกัน"
+  },
+  {
+    "key": "UI:member.setupRequired",
+    "zh_TW": "最大管理員必須先設定 2FA。請再次驗證密碼，再啟用驗證器。",
+    "en": "Super administrators must set up 2FA. Verify your password again, then enroll an authenticator.",
+    "jp": "最高管理者は2FAの設定が必要です。パスワードを再確認して認証アプリを登録してください。",
+    "th": "ผู้ดูแลสูงสุดต้องตั้งค่า 2FA กรุณายืนยันรหัสผ่านอีกครั้งแล้วลงทะเบียนแอปยืนยันตัวตน"
+  },
+  {
+    "key": "UI:member.mfaRequired",
+    "zh_TW": "請輸入驗證碼完成登入。",
+    "en": "Enter your verification code to finish signing in.",
+    "jp": "認証コードを入力してログインを完了してください。",
+    "th": "ป้อนรหัสยืนยันเพื่อเข้าสู่ระบบให้เสร็จสิ้น"
+  },
+  {
+    "key": "UI:member.passwordRequired",
+    "zh_TW": "請先變更密碼以完成登入。",
+    "en": "Change your password to finish signing in.",
+    "jp": "ログインを完了するには、パスワードを変更してください。",
+    "th": "กรุณาเปลี่ยนรหัสผ่านเพื่อเข้าสู่ระบบให้เสร็จสิ้น"
+  },
+  {
+    "key": "UI:member.mandatory2fa",
+    "zh_TW": "最大管理員必須啟用 2FA，不能停用。",
+    "en": "Super administrators must use 2FA and cannot disable it.",
+    "jp": "最高管理者の2FAは必須で、無効にできません。",
+    "th": "ผู้ดูแลสูงสุดต้องใช้ 2FA และไม่สามารถปิดได้"
+  },
+  {
+    "key": "UI:member.enabled",
+    "zh_TW": "已啟用 2FA。",
+    "en": "2FA is enabled.",
+    "jp": "2FAは有効です。",
+    "th": "เปิดใช้ 2FA แล้ว"
+  },
+  {
+    "key": "UI:member.disabled",
+    "zh_TW": "尚未啟用 2FA。",
+    "en": "2FA is not enabled.",
+    "jp": "2FAは無効です。",
+    "th": "ยังไม่ได้เปิดใช้ 2FA"
+  },
+  {
+    "key": "UI:member.reauthDone",
+    "zh_TW": "身分驗證成功，請在 10 分鐘內完成安全操作。",
+    "en": "Identity verified. Complete security actions within 10 minutes.",
+    "jp": "本人確認が完了しました。10分以内に操作してください。",
+    "th": "ยืนยันตัวตนแล้ว โปรดดำเนินการด้านความปลอดภัยภายใน 10 นาที"
+  },
+  {
+    "key": "UI:member.reauthRequired",
+    "zh_TW": "身分驗證已失效，請重新確認目前密碼後再試。",
+    "en": "Verify your current password again before continuing.",
+    "jp": "現在のパスワードを再確認してください。",
+    "th": "โปรดยืนยันรหัสผ่านปัจจุบันอีกครั้งก่อนดำเนินการต่อ"
+  },
+  {
+    "key": "UI:member.badProof",
+    "zh_TW": "帳號、密碼或驗證碼不正確，請確認後重試。",
+    "en": "The account, password or verification code is incorrect.",
+    "jp": "アカウント名、パスワードまたは認証コードが正しくありません。",
+    "th": "บัญชี รหัสผ่าน หรือรหัสยืนยันไม่ถูกต้อง"
+  },
+  {
+    "key": "UI:member.alreadyEnabled",
+    "zh_TW": "此帳號已啟用 2FA。",
+    "en": "2FA is already enabled for this account.",
+    "jp": "このアカウントでは2FAが有効です。",
+    "th": "บัญชีนี้เปิดใช้ 2FA แล้ว"
+  },
+  {
+    "key": "UI:member.invalidEmail",
+    "zh_TW": "請輸入有效的 Email。",
+    "en": "Enter a valid email address.",
+    "jp": "有効なメールアドレスを入力してください。",
+    "th": "กรุณาป้อนอีเมลที่ถูกต้อง"
+  },
+  {
+    "key": "UI:member.invalidLink",
+    "zh_TW": "連結無效、已過期或已使用，請重新申請。",
+    "en": "The link is invalid, expired or already used. Request a new one.",
+    "jp": "リンクが無効、期限切れ、または使用済みです。再申請してください。",
+    "th": "ลิงก์ไม่ถูกต้อง หมดอายุ หรือใช้แล้ว กรุณาขอใหม่"
+  },
+  {
+    "key": "UI:member.unconfigured",
+    "zh_TW": "此功能尚未完成設定，目前安全停用。",
+    "en": "This feature is disabled until configuration is complete.",
+    "jp": "設定が完了するまで、この機能は無効です。",
+    "th": "ฟีเจอร์นี้ปิดอยู่จนกว่าจะตั้งค่าเสร็จ"
+  },
+  {
+    "key": "UI:member.unavailable",
+    "zh_TW": "服務暫時無法使用，請稍後重試。",
+    "en": "Service temporarily unavailable. Try again later.",
+    "jp": "一時的に利用できません。後でもう一度お試しください。",
+    "th": "บริการไม่พร้อมใช้งานชั่วคราว กรุณาลองอีกครั้งภายหลัง"
+  },
+  {
+    "key": "UI:member.rateLimited",
+    "zh_TW": "操作過於頻繁，請稍後再試。",
+    "en": "Too many requests. Try again later.",
+    "jp": "操作が多すぎます。後でもう一度お試しください。",
+    "th": "คำขอมากเกินไป กรุณาลองอีกครั้งภายหลัง"
+  },
+  {
+    "key": "UI:member.captchaFailed",
+    "zh_TW": "機器人驗證失敗，請重新驗證。",
+    "en": "CAPTCHA failed. Verify again.",
+    "jp": "ボット認証に失敗しました。再認証してください。",
+    "th": "การยืนยัน CAPTCHA ล้มเหลว กรุณายืนยันอีกครั้ง"
+  },
+  {
+    "key": "UI:member.adminRequired",
+    "zh_TW": "需要管理員權限。",
+    "en": "Administrator access required.",
+    "jp": "管理者権限が必要です。",
+    "th": "ต้องมีสิทธิ์ผู้ดูแล"
+  },
+  {
+    "key": "UI:member.superRequired",
+    "zh_TW": "需要最大管理員權限。",
+    "en": "Super administrator access required.",
+    "jp": "最高管理者権限が必要です。",
+    "th": "ต้องมีสิทธิ์ผู้ดูแลสูงสุด"
+  },
+  {
+    "key": "UI:member.unbound",
+    "zh_TW": "尚未綁定 Google 帳號。",
+    "en": "No Google account is linked.",
+    "jp": "Googleアカウントは未連携です。",
+    "th": "ยังไม่ได้เชื่อมโยงบัญชี Google"
+  },
+  {
+    "key": "UI:member.bound",
+    "zh_TW": "Google 帳號已綁定，可使用此信箱進行密碼救援。",
+    "en": "Google account linked. This email can receive password recovery messages.",
+    "jp": "Googleアカウントを連携しました。このメールでパスワードを復旧できます。",
+    "th": "เชื่อมโยงบัญชี Google แล้ว ใช้อีเมลนี้กู้รหัสผ่านได้"
+  },
+  {
+    "key": "UI:member.googleFailed",
+    "zh_TW": "Google 綁定失敗或身分已被使用，請重新驗證後再試。",
+    "en": "Google linking failed or the identity is already in use. Verify again and retry.",
+    "jp": "連携に失敗したか、既に使用中のIDです。本人確認後、再試行してください。",
+    "th": "เชื่อมโยง Google ไม่สำเร็จหรือมีผู้ใช้ข้อมูลนี้แล้ว กรุณายืนยันตัวตนและลองใหม่"
+  },
+  {
+    "key": "UI:member.disableConfirm",
+    "zh_TW": "確定解除 2FA？所有裝置將登出。請輸入當次有效的驗證碼或未使用的恢復碼。",
+    "en": "Disable 2FA? All sessions will end. Enter a current authenticator code or unused recovery code.",
+    "jp": "2FAを解除しますか？すべての端末がログアウトされます。現在の認証コードか未使用のリカバリーコードを入力してください。",
+    "th": "ปิด 2FA? ทุกเซสชันจะสิ้นสุด โปรดกรอกรหัสปัจจุบันจากแอปหรือรหัสกู้คืนที่ยังไม่ใช้"
+  },
+  {
+    "key": "UI:member.unlinkConfirm",
+    "zh_TW": "確定解除 Google 綁定？你會失去這個密碼救援方式。請確認註冊信箱仍可收信。",
+    "en": "Unlink Google? You will lose this recovery method. Make sure you can access your verified registration email.",
+    "jp": "Google連携を解除しますか？この復旧方法が使えなくなります。登録メールが受信できることを確認してください。",
+    "th": "ยกเลิกการเชื่อมโยง Google? คุณจะเสียช่องทางกู้รหัสผ่านนี้ โปรดตรวจสอบว่ายังรับอีเมลที่ใช้สมัครได้"
+  },
+  {
+    "key": "UI:member.normalUser",
+    "zh_TW": "一般會員；可於隱私權與密碼頁面提出管理員申請。",
+    "en": "Member. Apply for administrator access on the Privacy and password page.",
+    "jp": "一般会員です。管理者申請はプライバシーとパスワードページから行えます。",
+    "th": "สมาชิกทั่วไป สามารถสมัครเป็นผู้ดูแลได้ที่หน้าความเป็นส่วนตัวและรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.documentTitle",
+    "zh_TW": "帳號｜LINE Rangers Database",
+    "en": "Account | LINE Rangers Database",
+    "jp": "アカウント｜LINE Rangers Database",
+    "th": "บัญชี | LINE Rangers Database"
+  },
+  {
+    "key": "UI:member.actionTitle",
+    "zh_TW": "Rangerbook 帳號救援",
+    "en": "Rangerbook account recovery",
+    "jp": "Rangerbook アカウント復旧",
+    "th": "กู้คืนบัญชี Rangerbook"
+  },
+  {
+    "key": "UI:member.processing",
+    "zh_TW": "處理中，請稍候…",
+    "en": "Processing. Please wait…",
+    "jp": "処理中です。しばらくお待ちください…",
+    "th": "กำลังดำเนินการ กรุณารอสักครู่…"
+  },
+  {
+    "key": "UI:member.reauthValid",
+    "zh_TW": "身分已驗證，有效時間剩餘 %s。請直接繼續安全操作，無須重複確認。",
+    "en": "Identity verified for another %s. Continue with your security action; no need to verify again.",
+    "jp": "本人確認済みです。有効時間は残り %s です。再確認せずに次の操作へ進んでください。",
+    "th": "ยืนยันตัวตนแล้ว เหลือเวลา %s ดำเนินการด้านความปลอดภัยต่อได้โดยไม่ต้องยืนยันซ้ำ"
+  },
+  {
+    "key": "UI:member.retryCountdown",
+    "zh_TW": "請等待 %s 後再試。",
+    "en": "Try again in %s.",
+    "jp": "%s 後に再試行できます。",
+    "th": "ลองอีกครั้งใน %s"
+  },
+  {
+    "key": "UI:member.retryReady",
+    "zh_TW": "現在可以重試，請確認輸入內容後操作一次。",
+    "en": "You can try again now. Check your entries, then submit once.",
+    "jp": "再試行できます。入力を確認して一度だけ送信してください。",
+    "th": "ลองใหม่ได้แล้ว กรุณาตรวจสอบข้อมูลแล้วส่งเพียงครั้งเดียว"
+  },
+  {
+    "key": "UI:member.reauthNext",
+    "zh_TW": "輸入目前密碼並按確認，即可解鎖帳號安全設定 10 分鐘。",
+    "en": "Enter your current password to unlock security settings for 10 minutes.",
+    "jp": "現在のパスワードで本人確認すると、10分間セキュリティ設定を変更できます。",
+    "th": "กรอกรหัสผ่านปัจจุบันเพื่อปลดล็อกการตั้งค่าความปลอดภัยเป็นเวลา 10 นาที"
+  },
+  {
+    "key": "UI:member.loginComplete",
+    "zh_TW": "兩步驟驗證成功，已完成登入。",
+    "en": "Two-step verification passed. You are signed in.",
+    "jp": "2段階認証に成功し、ログインが完了しました。",
+    "th": "ยืนยันสองขั้นตอนสำเร็จ เข้าสู่ระบบแล้ว"
+  },
+  {
+    "key": "UI:member.factorEnabled",
+    "zh_TW": "2FA 已成功啟用。請保存下方只顯示一次的恢復碼。",
+    "en": "2FA is now enabled. Save the recovery codes below; they are shown only once.",
+    "jp": "2FAを有効にしました。下の復旧コードは一度だけ表示されるため、保存してください。",
+    "th": "เปิดใช้ 2FA แล้ว กรุณาบันทึกรหัสกู้คืนด้านล่างซึ่งจะแสดงเพียงครั้งเดียว"
+  },
+  {
+    "key": "UI:member.factorDisabled",
+    "zh_TW": "2FA 已停用，所有裝置已登出。請重新登入後繼續。",
+    "en": "2FA is disabled and all devices are signed out. Sign in again to continue.",
+    "jp": "2FAを無効にし、すべての端末をログアウトしました。再ログインしてください。",
+    "th": "ปิดใช้ 2FA และออกจากระบบทุกอุปกรณ์แล้ว กรุณาเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.googleRedirect",
+    "zh_TW": "正在前往 Google 授權頁面。請選擇帳號並完成授權，返回本站後才會完成綁定。",
+    "en": "Opening Google authorization. Select an account and authorize; linking completes after you return here.",
+    "jp": "Googleの認証ページへ移動します。アカウントを選んで許可し、このサイトに戻ると連携が完了します。",
+    "th": "กำลังเปิดหน้าการอนุญาตของ Google เลือกบัญชีและอนุญาต การเชื่อมโยงจะเสร็จเมื่อกลับมายังเว็บไซต์นี้"
+  },
+  {
+    "key": "UI:member.googleUnlinked",
+    "zh_TW": "Google 帳號已解除綁定，此信箱不再用於密碼救援。",
+    "en": "Google account unlinked. This email is no longer a recovery destination.",
+    "jp": "Google連携を解除しました。このメールでの復旧はできなくなります。",
+    "th": "ยกเลิกการเชื่อมโยง Google แล้ว อีเมลนี้จะใช้กู้รหัสผ่านไม่ได้อีก"
+  },
+  {
+    "key": "UI:member.googleReady",
+    "zh_TW": "身分已驗證。下一步：點擊「綁定／更換 Google 帳號」，並在 Google 完成授權。",
+    "en": "Identity verified. Next, select “Link / change Google account” and complete authorization with Google.",
+    "jp": "本人確認済みです。次に「Googleアカウントを連携／変更」を選び、Googleで許可してください。",
+    "th": "ยืนยันตัวตนแล้ว ขั้นต่อไป กดเชื่อมโยงหรือเปลี่ยนบัญชี Google แล้วอนุญาตผ่าน Google"
+  },
+  {
+    "key": "UI:member.googleNext",
+    "zh_TW": "下一步：先在「再次驗證身分」確認目前密碼，再點擊下方按鈕前往 Google 授權。",
+    "en": "Next, confirm your current password under “Verify identity again”, then use the button below to authorize with Google.",
+    "jp": "まず「本人確認」で現在のパスワードを確認し、下のボタンからGoogleで許可してください。",
+    "th": "ขั้นต่อไป ยืนยันรหัสผ่านปัจจุบันในส่วนยืนยันตัวตนอีกครั้ง แล้วกดปุ่มด้านล่างเพื่ออนุญาตผ่าน Google"
+  },
+  {
+    "key": "UI:member.personalTeams",
+    "zh_TW": "個人遊戲隊伍",
+    "en": "My Game Teams",
+    "jp": "自分のゲームチーム",
+    "th": "ทีมเกมของฉัน"
+  },
+  {
+    "key": "UI:member.account",
+    "zh_TW": "帳號",
+    "en": "Account",
+    "jp": "アカウント名",
+    "th": "ชื่อบัญชี"
+  },
+  {
+    "key": "UI:member.password",
+    "zh_TW": "密碼",
+    "en": "Password",
+    "jp": "パスワード",
+    "th": "รหัสผ่าน"
+  },
+  {
+    "key": "UI:member.registerTitle",
+    "zh_TW": "註冊",
+    "en": "Register",
+    "jp": "新規登録",
+    "th": "สมัครสมาชิก"
+  },
+  {
+    "key": "UI:member.registerLink",
+    "zh_TW": "還沒有帳號？前往註冊",
+    "en": "No account? Register",
+    "jp": "アカウントをお持ちでない方はこちら",
+    "th": "ยังไม่มีบัญชี? สมัครสมาชิก"
+  },
+  {
+    "key": "UI:member.forgotTitle",
+    "zh_TW": "忘記密碼？",
+    "en": "Forgot Password?",
+    "jp": "パスワードをお忘れですか？",
+    "th": "ลืมรหัสผ่าน?"
+  },
+  {
+    "key": "UI:member.goLogin",
+    "zh_TW": "前往登入",
+    "en": "Go to Login",
+    "jp": "ログインへ",
+    "th": "ไปที่หน้าเข้าสู่ระบบ"
+  },
+  {
+    "key": "UI:member.home",
+    "zh_TW": "返回首頁",
+    "en": "Return Home",
+    "jp": "ホームへ",
+    "th": "กลับหน้าแรก"
+  },
+  {
+    "key": "UI:member.mailSent",
+    "zh_TW": "請檢查你的信箱",
+    "en": "Check Your Email",
+    "jp": "メールを確認してください",
+    "th": "โปรดตรวจสอบอีเมล"
+  },
+  {
+    "key": "UI:member.registrationSent",
+    "zh_TW": "若資料可用，驗證信已寄出。連結有效 15 分鐘，請檢查垃圾郵件，完成驗證後再登入。",
+    "en": "If the details are eligible, a verification email has been sent. The link lasts 15 minutes. Check spam, verify your email, then log in.",
+    "jp": "登録可能な情報の場合、確認メールを送信しました。リンクは15分間有効です。迷惑メールも確認し、認証後にログインしてください。",
+    "th": "หากข้อมูลใช้ได้ ระบบได้ส่งอีเมลยืนยันแล้ว ลิงก์มีอายุ 15 นาที โปรดตรวจสอบโฟลเดอร์สแปม ยืนยันอีเมลแล้วเข้าสู่ระบบ"
+  },
+  {
+    "key": "UI:member.passwordRules",
+    "zh_TW": "密碼長度須為 10–128 字元。",
+    "en": "Use a password of 10–128 characters.",
+    "jp": "パスワードは10～128文字で入力してください。",
+    "th": "ใช้รหัสผ่านความยาว 10–128 ตัวอักษร"
+  },
+  {
+    "key": "UI:member.totpCode",
+    "zh_TW": "六位數驗證碼",
+    "en": "Six-Digit Code",
+    "jp": "6桁の認証コード",
+    "th": "รหัสยืนยัน 6 หลัก"
+  },
+  {
+    "key": "UI:member.recoveryCode",
+    "zh_TW": "恢復碼",
+    "en": "Recovery Code",
+    "jp": "リカバリーコード",
+    "th": "รหัสกู้คืน"
+  },
+  {
+    "key": "UI:member.useRecovery",
+    "zh_TW": "使用恢復碼",
+    "en": "Use a Recovery Code",
+    "jp": "リカバリーコードを使う",
+    "th": "ใช้รหัสกู้คืน"
+  },
+  {
+    "key": "UI:member.useTotp",
+    "zh_TW": "使用驗證器驗證碼",
+    "en": "Use Authenticator Code",
+    "jp": "認証アプリのコードを使う",
+    "th": "ใช้รหัสจากแอปยืนยันตัวตน"
+  },
+  {
+    "key": "UI:member.securitySettings",
+    "zh_TW": "帳號安全設定",
+    "en": "Account Security Settings",
+    "jp": "アカウントのセキュリティ設定",
+    "th": "การตั้งค่าความปลอดภัยบัญชี"
+  },
+  {
+    "key": "UI:member.bindGoogle",
+    "zh_TW": "綁定 Google 帳號",
+    "en": "Link Google Account",
+    "jp": "Google アカウントを連携",
+    "th": "เชื่อมโยงบัญชี Google"
+  },
+  {
+    "key": "UI:member.replaceGoogle",
+    "zh_TW": "更換 Google 帳號",
+    "en": "Change Google Account",
+    "jp": "Google アカウントを変更",
+    "th": "เปลี่ยนบัญชี Google"
+  },
+  {
+    "key": "UI:member.unbindGoogle",
+    "zh_TW": "解除 Google 綁定",
+    "en": "Unlink Google Account",
+    "jp": "Google 連携を解除",
+    "th": "ยกเลิกการเชื่อมโยง Google"
+  },
+  {
+    "key": "UI:member.setupTitle",
+    "zh_TW": "設定兩步驟驗證（2FA）",
+    "en": "Set Up Two-Factor Authentication",
+    "jp": "2段階認証（2FA）の設定",
+    "th": "ตั้งค่าการยืนยันตัวตนสองขั้นตอน (2FA)"
+  },
+  {
+    "key": "UI:member.changePassword",
+    "zh_TW": "變更密碼",
+    "en": "Change Password",
+    "jp": "パスワードを変更",
+    "th": "เปลี่ยนรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.passwordGuide",
+    "zh_TW": "仍須輸入目前密碼。變更後，其他裝置的登入狀態將失效，2FA 與 Google 綁定會保留。",
+    "en": "Enter your current password again. Other sessions will be revoked; 2FA and Google linking stay enabled.",
+    "jp": "現在のパスワードを再入力してください。変更後、他の端末はログアウトされます。2FAとGoogle連携は維持されます。",
+    "th": "กรอกรหัสผ่านปัจจุบันอีกครั้ง เซสชันอื่นจะถูกยกเลิก โดยยังคง 2FA และการเชื่อมโยง Google ไว้"
+  },
+  {
+    "key": "UI:member.passwordChanged",
+    "zh_TW": "密碼已更新。其他裝置已登出，本裝置保持登入；2FA 與 Google 綁定已保留。",
+    "en": "Password updated. Other sessions were revoked. This device remains signed in; 2FA and Google linking were preserved.",
+    "jp": "パスワードを変更しました。他の端末はログアウトされました。この端末のログイン、2FA、Google連携は維持されています。",
+    "th": "เปลี่ยนรหัสผ่านแล้ว เซสชันอื่นถูกยกเลิก อุปกรณ์นี้ยังเข้าสู่ระบบ และคง 2FA กับการเชื่อมโยง Google ไว้"
+  },
+  {
+    "key": "UI:member.recoveryCodes",
+    "zh_TW": "一次性恢復碼",
+    "en": "One-Time Recovery Codes",
+    "jp": "使い捨てリカバリーコード",
+    "th": "รหัสกู้คืนแบบใช้ครั้งเดียว"
+  },
+  {
+    "key": "UI:member.copyCodes",
+    "zh_TW": "複製恢復碼",
+    "en": "Copy Codes",
+    "jp": "コードをコピー",
+    "th": "คัดลอกรหัส"
+  },
+  {
+    "key": "UI:member.downloadCodes",
+    "zh_TW": "下載恢復碼",
+    "en": "Download Codes",
+    "jp": "コードをダウンロード",
+    "th": "ดาวน์โหลดรหัส"
+  },
+  {
+    "key": "UI:member.copied",
+    "zh_TW": "恢復碼已複製，請離線妥善保存。",
+    "en": "Codes copied. Store them safely offline.",
+    "jp": "コピーしました。オフラインで安全に保存してください。",
+    "th": "คัดลอกรหัสแล้ว โปรดเก็บไว้แบบออฟไลน์อย่างปลอดภัย"
+  },
+  {
+    "key": "UI:member.cancel",
+    "zh_TW": "取消",
+    "en": "Cancel",
+    "jp": "キャンセル",
+    "th": "ยกเลิก"
+  },
+  {
+    "key": "UI:member.setupStep1",
+    "zh_TW": "開啟 Google Authenticator 或相容的驗證器 App。",
+    "en": "Open Google Authenticator or a compatible authenticator app.",
+    "jp": "Google Authenticator または対応する認証アプリを開きます。",
+    "th": "เปิด Google Authenticator หรือแอปยืนยันตัวตนที่รองรับ"
+  },
+  {
+    "key": "UI:member.setupStep2",
+    "zh_TW": "新增帳號，選擇「掃描 QR Code」或手動輸入金鑰。",
+    "en": "Add an account and scan the QR code, or enter the key manually.",
+    "jp": "アカウントを追加し、QRコードを読み取るか、キーを手動で入力します。",
+    "th": "เพิ่มบัญชีแล้วสแกน QR Code หรือกรอกคีย์ด้วยตนเอง"
+  },
+  {
+    "key": "UI:member.setupStep3",
+    "zh_TW": "掃描下方圖碼，再輸入 App 顯示的六位數驗證碼。",
+    "en": "Scan the code below, then enter the six-digit code from your app.",
+    "jp": "下のQRコードを読み取り、アプリに表示された6桁のコードを入力します。",
+    "th": "สแกนโค้ดด้านล่าง แล้วกรอกรหัส 6 หลักที่แสดงในแอป"
+  },
+  {
+    "key": "UI:member.showSetup",
+    "zh_TW": "顯示設定圖碼",
+    "en": "Show Setup QR Code",
+    "jp": "設定用QRコードを表示",
+    "th": "แสดง QR Code สำหรับตั้งค่า"
+  },
+  {
+    "key": "UI:member.manualKey",
+    "zh_TW": "手動設定金鑰",
+    "en": "Manual Setup Key",
+    "jp": "手動設定キー",
+    "th": "คีย์สำหรับตั้งค่าด้วยตนเอง"
+  },
+  {
+    "key": "UI:member.backSecurity",
+    "zh_TW": "返回隱私權與密碼",
+    "en": "Back to Privacy & Security",
+    "jp": "セキュリティ設定へ戻る",
+    "th": "กลับไปที่ความเป็นส่วนตัวและความปลอดภัย"
+  },
+  {
+    "key": "UI:member.accountPrompt",
+    "zh_TW": "請輸入註冊時的帳號名稱",
+    "en": "Enter Your Registered Account Name",
+    "jp": "登録したアカウント名を入力",
+    "th": "กรอกชื่อบัญชีที่ใช้สมัคร"
+  },
+  {
+    "key": "UI:member.rescueSource",
+    "zh_TW": "收件來源",
+    "en": "Recovery Destination",
+    "jp": "送信先の種類",
+    "th": "ช่องทางรับอีเมลกู้คืน"
+  },
+  {
+    "key": "UI:member.registrationEmail",
+    "zh_TW": "註冊信箱",
+    "en": "Registration Email",
+    "jp": "登録メールアドレス",
+    "th": "อีเมลที่ใช้สมัคร"
+  },
+  {
+    "key": "UI:member.googleEmail",
+    "zh_TW": "已綁定的 Google 信箱",
+    "en": "Linked Google Email",
+    "jp": "連携済みGoogleメール",
+    "th": "อีเมล Google ที่เชื่อมโยงไว้"
+  },
+  {
+    "key": "UI:member.resetSent",
+    "zh_TW": "若帳號及所選救援方式有效，重設密碼信已寄出。連結有效 15 分鐘，請檢查垃圾郵件。寄件者：noreply@warmycat.com。",
+    "en": "If the account and selected recovery method are eligible, a reset email has been sent. The link lasts 15 minutes. Check spam. Sender: noreply@warmycat.com.",
+    "jp": "アカウントと選択した復旧方法が有効な場合、再設定メールを送信しました。リンクは15分間有効です。迷惑メールも確認してください。送信者：noreply@warmycat.com。",
+    "th": "หากบัญชีและวิธีกู้คืนที่เลือกใช้ได้ ระบบได้ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว ลิงก์มีอายุ 15 นาที โปรดตรวจสอบสแปม ผู้ส่ง: noreply@warmycat.com"
+  },
+  {
+    "key": "UI:member.requestAgain",
+    "zh_TW": "重新申請",
+    "en": "Request a New Link",
+    "jp": "新しいリンクを申請",
+    "th": "ขอลิงก์ใหม่"
+  },
+  {
+    "key": "UI:member.resetSuccess",
+    "zh_TW": "密碼重設成功",
+    "en": "Password Reset Complete",
+    "jp": "パスワード再設定完了",
+    "th": "รีเซ็ตรหัสผ่านสำเร็จ"
+  },
+  {
+    "key": "UI:member.emailSuccess",
+    "zh_TW": "信箱驗證成功",
+    "en": "Email Verified",
+    "jp": "メール認証完了",
+    "th": "ยืนยันอีเมลสำเร็จ"
+  },
+  {
+    "key": "UI:member.proofExpired",
+    "zh_TW": "身分驗證已過期，請重新輸入目前密碼，再繼續安全操作。",
+    "en": "Identity verification expired. Enter your current password again to continue.",
+    "jp": "本人確認の有効期限が切れました。現在のパスワードを再入力してください。",
+    "th": "การยืนยันตัวตนหมดอายุ โปรดกรอกรหัสผ่านปัจจุบันอีกครั้งเพื่อดำเนินการต่อ"
+  },
+  {
+    "key": "UI:member.setupGuide",
+    "zh_TW": "請依照步驟完成驗證；只有驗證碼確認成功後，2FA 才會啟用。",
+    "en": "Follow the steps below. 2FA is enabled only after your code is confirmed.",
+    "jp": "手順に従ってください。コードの確認に成功するまで2FAは有効になりません。",
+    "th": "ทำตามขั้นตอนด้านล่าง 2FA จะเปิดใช้งานเมื่อยืนยันรหัสสำเร็จเท่านั้น"
+  },
+  {
+    "key": "UI:member.disabledLogin",
+    "zh_TW": "2FA 已解除，所有裝置已登出。請重新登入。",
+    "en": "2FA disabled and all sessions revoked. Please log in again.",
+    "jp": "2FAを解除し、すべての端末をログアウトしました。再度ログインしてください。",
+    "th": "ปิด 2FA และยกเลิกทุกเซสชันแล้ว โปรดเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.googleConsent",
+    "zh_TW": "將前往 Google 官方授權頁選擇帳號。新綁定成功前會保留原綁定。",
+    "en": "Continue to Google to select an account. Any existing link stays until the new link succeeds.",
+    "jp": "Google公式画面でアカウントを選択します。新しい連携が成功するまで現在の連携を維持します。",
+    "th": "ไปที่หน้าอนุญาตของ Google เพื่อเลือกบัญชี การเชื่อมโยงเดิมจะคงอยู่จนกว่าการเชื่อมโยงใหม่จะสำเร็จ"
+  },
+  {
+    "key": "UI:member.codesConfirm",
+    "zh_TW": "重新產生後，舊恢復碼將全部失效。請輸入當次有效的驗證碼或未使用的恢復碼。",
+    "en": "All old recovery codes will be invalidated. Enter a current authenticator code or an unused recovery code.",
+    "jp": "古いリカバリーコードはすべて無効になります。現在の認証コードか未使用のリカバリーコードを入力してください。",
+    "th": "รหัสกู้คืนเดิมทั้งหมดจะใช้ไม่ได้ โปรดกรอกรหัสปัจจุบันจากแอปหรือรหัสกู้คืนที่ยังไม่ใช้"
+  },
+  {
+    "key": "UI:member.networkError",
+    "zh_TW": "無法連線，請檢查網路後重試。若剛才已送出，請先確認目前狀態。",
+    "en": "Connection failed. Check your network and try again. If you just submitted an action, check its status first.",
+    "jp": "接続できません。通信状況を確認して再試行してください。送信済みの場合は先に現在の状態を確認してください。",
+    "th": "เชื่อมต่อไม่สำเร็จ โปรดตรวจสอบเครือข่ายแล้วลองอีกครั้ง หากเพิ่งส่งคำขอ โปรดตรวจสอบสถานะก่อน"
+  },
+  {
+    "key": "UI:member.loggedOut",
+    "zh_TW": "已登出。",
+    "en": "Logged out.",
+    "jp": "ログアウトしました。",
+    "th": "ออกจากระบบแล้ว"
+  },
+  {
+    "key": "UI:member.logoutFailed",
+    "zh_TW": "登出失敗，請檢查網路後重試。",
+    "en": "Logout failed. Check your network and try again.",
+    "jp": "ログアウトに失敗しました。通信状況を確認して再試行してください。",
+    "th": "ออกจากระบบไม่สำเร็จ โปรดตรวจสอบเครือข่ายแล้วลองอีกครั้ง"
+  },
+  {
+    "key": "UI:member.invalidInput",
+    "zh_TW": "資料格式不正確，請檢查欄位後重試。",
+    "en": "Invalid input. Check the fields and try again.",
+    "jp": "入力形式が正しくありません。各項目を確認してください。",
+    "th": "รูปแบบข้อมูลไม่ถูกต้อง โปรดตรวจสอบช่องกรอกแล้วลองอีกครั้ง"
+  },
+  {
+    "key": "UI:member.resendReset",
+    "zh_TW": "重新寄送",
+    "en": "Resend",
+    "jp": "再送信",
+    "th": "ส่งอีกครั้ง"
+  },
+  {
+    "key": "UI:member.cancelSetup",
+    "zh_TW": "取消設定",
+    "en": "Cancel Setup",
+    "jp": "設定をキャンセル",
+    "th": "ยกเลิกการตั้งค่า"
+  },
+  {
+    "key": "UI:member.loginIntro",
+    "zh_TW": "登入帳號",
+    "en": "Sign in to your account.",
+    "jp": "アカウントにログイン",
+    "th": "เข้าสู่ระบบบัญชีของคุณ"
+  },
+  {
+    "key": "UI:member.registerIntro",
+    "zh_TW": "註冊帳號",
+    "en": "Create an account.",
+    "jp": "アカウントを登録",
+    "th": "สร้างบัญชี"
+  },
+  {
+    "key": "UI:member.securityIntro",
+    "zh_TW": "設定兩步驟驗證、帳號綁定及更改密碼",
+    "en": "Manage two-factor authentication, account linking and your password.",
+    "jp": "2段階認証・アカウント連携・パスワードを設定",
+    "th": "ตั้งค่าการยืนยันสองขั้นตอน การเชื่อมโยงบัญชี และรหัสผ่าน"
+  },
+  {
+    "key": "UI:member.forgotIntro",
+    "zh_TW": "請根據步驟重新設定您的密碼",
+    "en": "Follow the steps to reset your password.",
+    "jp": "手順に従ってパスワードを再設定してください。",
+    "th": "ทำตามขั้นตอนเพื่อตั้งรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.resetIntro",
+    "zh_TW": "請設定新的密碼並確認",
+    "en": "Set and confirm your new password.",
+    "jp": "新しいパスワードを入力して確認してください。",
+    "th": "ตั้งและยืนยันรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.resetSuccessIntro",
+    "zh_TW": "密碼已重設，請使用新密碼登入",
+    "en": "Your password has been reset. Sign in with your new password.",
+    "jp": "パスワードを再設定しました。新しいパスワードでログインしてください。",
+    "th": "ตั้งรหัสผ่านใหม่แล้ว โปรดเข้าสู่ระบบด้วยรหัสผ่านใหม่"
+  },
+  {
+    "key": "UI:member.emailSuccessIntro",
+    "zh_TW": "信箱驗證成功，請前往登入",
+    "en": "Email verified. You can now sign in.",
+    "jp": "メールアドレスを確認しました。ログインしてください。",
+    "th": "ยืนยันอีเมลแล้ว คุณสามารถเข้าสู่ระบบได้"
+  },
+  {
+    "key": "UI:member.verifyEmailIntro",
+    "zh_TW": "請驗證信箱以啟用帳號",
+    "en": "Verify your email to activate your account.",
+    "jp": "メールアドレスを確認してアカウントを有効にしてください。",
+    "th": "ยืนยันอีเมลเพื่อเปิดใช้งานบัญชี"
+  },
+  {
+    "key": "UI:member.noAccount",
+    "zh_TW": "還沒有帳號？",
+    "en": "No account yet?",
+    "jp": "アカウントをお持ちでない方",
+    "th": "ยังไม่มีบัญชี?"
+  },
+  {
+    "key": "UI:member.factorConfigured",
+    "zh_TW": "兩步驟驗證已設定",
+    "en": "Two-factor authentication is configured.",
+    "jp": "2段階認証を設定済みです。",
+    "th": "ตั้งค่าการยืนยันสองขั้นตอนแล้ว"
+  },
+  {
+    "key": "UI:member.personalTitle",
+    "zh_TW": "個人隊伍",
+    "en": "Personal Teams",
+    "jp": "マイチーム",
+    "th": "ทีมส่วนตัว"
+  },
+  {
+    "key": "UI:member.personalIntro",
+    "zh_TW": "檢視並分析你的遊戲隊伍",
+    "en": "View and analyze your game teams.",
+    "jp": "ゲームのチームを表示・分析",
+    "th": "ดูและวิเคราะห์ทีมในเกมของคุณ"
+  },
+  {
+    "key": "UI:member.teamSearchGuide",
+    "zh_TW": "尚未綁定，請搜尋你目前的遊戲內暱稱",
+    "en": "No game account linked. Search for your current in-game nickname.",
+    "jp": "未連携です。現在のゲーム内ニックネームを検索してください。",
+    "th": "ยังไม่ได้เชื่อมโยงบัญชีเกม โปรดค้นหาชื่อเล่นปัจจุบันในเกม"
+  },
+  {
+    "key": "UI:member.teamMedalGuide",
+    "zh_TW": "請輸入你目前持有的公會獎牌數量（步驟1/2）",
+    "en": "Enter your current guild medal count (step 1/2).",
+    "jp": "現在のギルドメダル数を入力してください（手順1/2）。",
+    "th": "กรอกจำนวนเหรียญกิลด์ที่มีอยู่ในปัจจุบัน (ขั้นตอน 1/2)"
+  },
+  {
+    "key": "UI:member.teamCandidates",
+    "zh_TW": "候選名單",
+    "en": "Matching Players",
+    "jp": "候補プレイヤー",
+    "th": "รายชื่อผู้เล่นที่พบ"
+  },
+  {
+    "key": "UI:member.teamChooseAgain",
+    "zh_TW": "重新選擇遊戲帳號",
+    "en": "Choose another game account",
+    "jp": "ゲームアカウントを選び直す",
+    "th": "เลือกบัญชีเกมอีกครั้ง"
+  },
+  {
+    "key": "UI:member.teamChallengeInstruction",
+    "zh_TW": "請將「第 %N1 隊／%N2 隊」的「第 %N3 隻 Ranger」跟「第 %N4 隻 Ranger」對調（步驟2/2）",
+    "en": "In team %N1, squad %N2, swap Rangers in positions %N3 and %N4 (step 2/2).",
+    "jp": "第%N1チームの%N2部隊で、%N3番目と%N4番目のRangerを入れ替えてください（手順2/2）。",
+    "th": "ในทีม %N1 ชุด %N2 ให้สลับ Ranger ตำแหน่ง %N3 กับ %N4 (ขั้นตอน 2/2)"
+  },
+  {
+    "key": "UI:member.search",
+    "zh_TW": "搜尋",
+    "en": "Search",
+    "jp": "検索",
+    "th": "ค้นหา"
+  },
+  {
+    "key": "UI:member.gameAccountSettings",
+    "zh_TW": "遊戲帳號資料設定",
+    "en": "Game account settings",
+    "jp": "ゲームアカウント設定",
+    "th": "การตั้งค่าบัญชีเกม"
+  },
+  {
+    "key": "UI:member.yourTeams",
+    "zh_TW": "你的隊伍",
+    "en": "Your teams",
+    "jp": "あなたのチーム",
+    "th": "ทีมของคุณ"
+  },
+  {
+    "key": "UI:member.cancelLogin",
+    "zh_TW": "取消並使用其他帳號",
+    "en": "Cancel and use another account",
+    "jp": "キャンセルして別のアカウントを使用",
+    "th": "ยกเลิกและใช้บัญชีอื่น"
+  },
+  {
+    "key": "UI:member.loginExpired",
+    "zh_TW": "登入驗證已逾時，請重新登入。",
+    "en": "The login verification expired. Please sign in again.",
+    "jp": "ログイン認証の有効期限が切れました。もう一度ログインしてください。",
+    "th": "การยืนยันเข้าสู่ระบบหมดอายุแล้ว กรุณาเข้าสู่ระบบอีกครั้ง"
+  },
+  {
+    "key": "UI:member.mailPaused",
+    "zh_TW": "測試寄信目前暫停，請聯絡站長確認寄信期限與額度。",
+    "en": "Test email delivery is paused. Contact the site owner to check the approved time window and budget.",
+    "jp": "テストメールの送信は現在停止中です。送信期間と上限についてサイト管理者にご確認ください。",
+    "th": "การส่งอีเมลทดสอบหยุดชั่วคราว โปรดติดต่อผู้ดูแลเว็บไซต์เพื่อตรวจสอบระยะเวลาและโควตาที่อนุมัติ"
   }
 ]

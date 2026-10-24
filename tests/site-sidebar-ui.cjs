@@ -20,7 +20,8 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
     for(const {role, page:pathname} of scenarios){
       const context=await browser.newContext({viewport:{width:1180,height:860}});
       const page=await context.newPage();
-      await require("./region-fixture.cjs").mockTaiwan(page);
+      await require("./local-static-fixture.cjs").install(page,base);
+    await require("./region-fixture.cjs").mockTaiwan(page);
       let sessionChecks=0;
       await page.route("https://rangerbook-auth.warmycat.com/**", async route => {
         const path=new URL(route.request().url()).pathname;
@@ -53,9 +54,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
       const admin=page.locator(".gt-sidebar-admin-entry");
       await admin.waitFor({state:"attached"});
       assert.equal(await admin.getAttribute("href"),"/admin/");
-      assert.equal(await page.locator(".gt-sidebar-nav > a:last-child").getAttribute("href"),"/admin/");
+      assert.equal(await page.locator('.gt-user-navigation a[href$="/admin/"]').getAttribute("href"),"/admin/");
       assert.equal(await page.locator(".gt-sidebar-bottom a").count(),0);
-      assert.equal(await page.locator(".gt-sidebar-nav > a, .gt-sidebar-nav > .gt-nav-group > .gt-nav-hub").nth(about+2).innerText(),"管理員頁面");
+      assert.equal(await page.locator(".gt-user-navigation > a").count(),4);
       if(["admin","super_admin"].includes(role)){
         await admin.waitFor({state:"visible",timeout:10000});
         assert.equal(await admin.isVisible(),true,pathname+" "+role);

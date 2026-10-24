@@ -1,0 +1,17 @@
+[Unit]
+Description=Rangerbook aggregate outbox health check
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=@ROOT@/release
+ExecStartPre=/usr/bin/test -f @ROOT@/review/CUTOVER_APPROVED
+ExecStartPre=/usr/bin/test ! -e @ROOT@/review/INTERFACE_PENDING
+ExecStart=@ROOT@/venv/bin/python -m membership.production.health --database /home/ubuntu/rangerbook-private/auth/rangerbook_auth.db
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+LimitCORE=0

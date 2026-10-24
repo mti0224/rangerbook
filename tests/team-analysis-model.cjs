@@ -135,7 +135,7 @@ const publishedV2 = JSON.parse(source('res/v2/locales/ui.json'));
 const authoredOverrides = JSON.parse(source('assets/locales/personal-analysis-overrides.json'));
 const publicV2 = [...new Map([...publishedV2,...authoredOverrides].map(row=>[row.key,row])).values()];
 const backendV2 = JSON.parse(source('deploy/aws/v2/locales/ui.json'));
-const adminHtml = source('admin/index.html');
+const adminHtml = source('personal-teams/index.html');
 const adminJs = source('assets/js/admin-personal-teams.js');
 const viewerJs = source('assets/js/pvp-player-search.js');
 const refs = new Set(['analysis.help.int','analysis.help.agi','analysis.help.elementBody']);
@@ -170,7 +170,7 @@ for (const [source, rows] of bySource) {
       'ambiguous '+language+' phrase for '+source+': '+rows.map(row=>row.key).join(', '));
   }
 }
-assert.ok(adminHtml.includes('data-i18n="admin.personal.heading"'));
+assert.ok(adminHtml.includes('data-i18n="member.personalTeams"'));
 assert.ok(adminHtml.includes('data-i18n-placeholder="admin.personal.search.placeholder"'));
 assert.match(viewerJs, /window\.RangerbookI18n\?\.readyGame/);
 assert.match(adminJs, /serverErrorKeys/);

@@ -105,7 +105,10 @@ test("admin workspace displays a single role-gated tab panel",()=>{
   const html=read("admin/index.html"),js=read("assets/js/admin-page.js");
   const password=read("assets/js/admin-password.js"),css=read("assets/css/admin.css");
   assert.match(html,/id="adminWorkspaceTabs"/);
-  for(const id of ["adminPasswordTab","adminResourcesTab","adminAccountsTab"])assert.match(html,new RegExp('id="'+id+'"'));
+  for(const id of ["adminResourcesTab","adminAccountsTab"])assert.match(html,new RegExp('id="'+id+'"'));
+  assert.doesNotMatch(html,/id="admin(?:Password|Personal)Tab"/);
+  assert.match(read("account/index.html"),/id="memberPasswordForm"/);
+  assert.match(read("personal-teams/index.html"),/id="adminPersonalPanel"/);
   assert.match(html,/id="adminAccountsTab"[^>]*hidden/);
   assert.match(html,/id="adminCurrentAccount"/);
   assert.match(html,/id="superAdminPanel"[^>]*role="tabpanel"/);
@@ -232,7 +235,7 @@ test("About and Sponsor copy, payment and contributor links match approved conte
   assert.doesNotMatch(about,/https:\/\/p\.ecpay\.com\.tw\/CF7F86A/);
 });
 
-test("shared navigation puts admin after Sponsor and gates it by AWS session",()=>{
+test("shared navigation groups personal pages and admin behind a complete AWS session",()=>{
   const shell=read("assets/js/site.js");
   const aboutPos=shell.indexOf('href="\${rootPrefix}about/"');
   const sponsorPos=shell.indexOf('href="\${rootPrefix}sponsor/"');
@@ -240,11 +243,16 @@ test("shared navigation puts admin after Sponsor and gates it by AWS session",()
   assert.match(shell,/gtAdminLink\.href = rootPrefix \+ "admin\/"/);
   assert.match(shell,/gtAdminLink\.hidden = true/);
   assert.match(shell,/user\?\.logged_in/);
-  assert.match(shell,/user\.role === "admin" \|\| user\.role === "super_admin"/);
+  assert.match(shell,/\["admin","super_admin"\]\.includes\(user\.role\)/);
+  assert.match(shell,/!user\.mfa_required && !user\.setup_required/);
   assert.match(shell,/credentials: "include"/);
   assert.match(shell,/rangerbook:auth-changed/);
   assert.match(shell,/gtFoot\.className = "gt-sidebar-bottom"/);
-  assert.match(shell,/gtNav\.append\(gtAdminLink\)/);
+  assert.match(shell,/gtUserGroup\.append\(gtAdminLink\)/);
+  assert.match(shell,/gtNav\.append\(gtUserGroup\)/);
+  assert.match(shell,/gtAdminLink\.hidden = !admin/);
+  assert.match(shell,/gtLoginLink/);
+  assert.match(shell,/gtMemberLinks\.forEach\(link=>link\.hidden=!complete\)/);
   assert.doesNotMatch(shell,/gtFoot\.append\(gtFootCaption, gtAdminLink\)/);
 });
 

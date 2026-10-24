@@ -52,10 +52,8 @@ test("admin workspace tabs scroll horizontally only", () => {
   assert.match(tabs, /touch-action:\s*pan-x\s*;/);
 });
 
-test("all admin tabs share a 980px maximum content width", () => {
-  // These specific selectors must override Game-Tech's later 1180px shell rule.
-  assert.match(admin, /body\.gt-app main\.admin-page\s*\{[^}]*width:\s*min\(980px,\s*calc\(100%\s*-\s*2rem\)\)/);
-  assert.match(admin, /body\.gt-app \.admin-page \.admin-shell\s*\{[^}]*width:\s*100%/);
-  assert.doesNotMatch(admin, /admin-page:has\(#adminPersonalPanel/);
-  assert.doesNotMatch(admin, /min\(1420px/);
+test("admin and member shells use the shared query page width", () => {
+  assert.match(read('admin/index.html'), /<main class="page admin-console-page">/);
+  assert.match(admin, /body\.gt-app \.page \.admin-shell\s*\{[^}]*width:\s*100%/);
+  assert.doesNotMatch(admin, /body\.gt-app main\.admin-page\s*\{/);
 });

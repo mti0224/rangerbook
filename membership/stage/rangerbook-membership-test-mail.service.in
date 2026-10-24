@@ -1,0 +1,25 @@
+[Unit]
+Description=Rangerbook acceptance mail (allowlisted recipient, approved bounded budget)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/rangerbook-member-stage-20261023/release
+EnvironmentFile=/home/ubuntu/rangerbook-member-stage-20261023/acceptance/runtime.env
+EnvironmentFile=/home/ubuntu/rangerbook-member-stage-20261023/acceptance/key.env
+Environment=AWS_REGION=ap-south-1
+ExecCondition=/home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.stage.mail_ready
+# SES uses the instance role. The local encryption key is supplied by key.env;
+# mail does not need Google or Turnstile credentials resolved at all.
+ExecStart=/home/ubuntu/rangerbook-member-stage-20261023/venv/bin/python -m membership.mail_worker
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/ubuntu/rangerbook-member-stage-20261023/acceptance
+InaccessiblePaths=/home/ubuntu/rangerbook-private /home/ubuntu/rangerbook-auth
+LimitCORE=0
+TimeoutStartSec=90

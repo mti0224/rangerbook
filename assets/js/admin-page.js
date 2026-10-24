@@ -12,13 +12,11 @@
   const workspaceTabs = $("adminWorkspaceTabs");
   const passwordCard = $("adminPasswordCard");
   const workspacePanels = {
-    personal: { button: $("adminPersonalTab"), panel: $("adminPersonalPanel") },
-    password: { button: $("adminPasswordTab"), panel: passwordCard },
     resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
     accounts: { button: $("adminAccountsTab"), panel: superAdminPanel },
     traffic: { button: $("adminTrafficTab"), panel: $("adminTrafficPanel") }
   };
-  let activeWorkspaceSection = "personal";
+  let activeWorkspaceSection = "resources";
   const loginPanel = $("adminLoginPanel");
   const registerPanel = $("adminRegisterPanel");
   const loginTab = $("adminLoginTab");
@@ -27,7 +25,6 @@
   const registerForm = $("adminRegisterForm");
   const authMessage = $("adminAuthMessage");
   const sessionMessage = $("adminSessionMessage");
-  const logoutBtn = $("adminLogoutBtn");
   const currentAccount = $("adminCurrentAccount");
   const currentRole = $("adminCurrentRole");
   const currentStatus = $("adminCurrentStatus");
@@ -84,8 +81,6 @@
   // Changing tabs affects visibility, not RangerbookAuth / AWS permissions.
   function allowedWorkspaceSections() {
     return {
-      personal: auth.isAdmin(),
-      password: Boolean(auth.getUser().logged_in),
       resources: auth.isAdmin(),
       accounts: auth.isSuperAdmin(),
       traffic: auth.isAdmin()
@@ -97,7 +92,7 @@
     const user = auth.getUser();
     const hasAccess = Boolean(user.logged_in);
     if (workspace) workspace.hidden = !hasAccess;
-    if (user.must_change_password || !allowed[activeWorkspaceSection]) activeWorkspaceSection = hasAccess ? "password" : "personal";
+    if (user.must_change_password || !allowed[activeWorkspaceSection]) activeWorkspaceSection = "resources";
 
     Object.entries(workspacePanels).forEach(([key, { button, panel }]) => {
       const accessible = Boolean(allowed[key]);
@@ -198,6 +193,7 @@
   $("trafficDays")?.addEventListener("change",loadTraffic);
 
   function renderUserState(user) {
+    if ($("memberLoginStep")) $("memberLoginStep").hidden = !(user.mfa_required || user.setup_required || user.must_change_password);
     authCard.hidden = Boolean(user.logged_in);
     sessionCard.hidden = !user.logged_in;
     superAdminPanel.hidden = !auth.isSuperAdmin();
@@ -224,7 +220,7 @@
     } else if (user.role === "user" && status === "pending") {
       setMessage(sessionMessage, "你的管理員申請正在等待最大管理者審核。", "success");
     } else if (user.role === "user" && status === "rejected") {
-      setMessage(sessionMessage, "你的管理員申請已被拒絕，目前維持非管理員權限。", "error");
+      setMessage(sessionMessage, ui("一般會員；可於隱私權與密碼頁面提出管理員申請。"), "error");
     } else {
       setMessage(sessionMessage);
     }
@@ -297,6 +293,8 @@
   }
 
   async function loadSuperAdminData() {
+    if (!auth.isSuperAdmin()) return;
+    await window.RangerbookI18n?.ready;
     if (!auth.isSuperAdmin()) return;
     applicationsList.innerHTML = '<div class="admin-empty">載入中…</div>';
     usersList.innerHTML = '<div class="admin-empty">載入中…</div>';
@@ -469,9 +467,9 @@
     try {
       const user = await auth.login(account, password);
       $("adminLoginPassword").value = "";
-      renderUserState(user);
-      if (auth.isAdmin()) await loadResourceUpdates();
-      if (auth.isSuperAdmin()) await loadSuperAdminData();
+      if(user.logged_in){location.assign(location.pathname.startsWith("/rangerbook/")?"/rangerbook/":"/");return;}
+      location.assign("../login/");
+
     } catch (error) {
       setMessage(authMessage, error.message, "error");
     }
@@ -490,25 +488,16 @@
 
     setMessage(authMessage, "建立帳號中…");
     try {
-      await auth.register(account, password);
+      await auth.register(account, password, $("adminRegisterEmail").value, window.RangerbookCaptcha?.token() || "");
       registerForm.reset();
       showAuthPanel("login");
-      setMessage(authMessage, "註冊成功，管理員申請已送出。請等待最大管理者審核後再登入查看權限。", "success");
+      setMessage(authMessage, ui("若資料符合條件，將寄出限時驗證信，請查看信箱。"), "success");
       $("adminLoginAccount").value = account;
     } catch (error) {
       setMessage(authMessage, error.message, "error");
-    }
+    } finally { window.RangerbookCaptcha?.reset(); }
   });
 
-  logoutBtn?.addEventListener("click", async () => {
-    try {
-      await auth.logout();
-      renderUserState(auth.getUser());
-      showAuthPanel("login");
-    } catch (_) {
-      setMessage(sessionMessage, "登出失敗，請確認網路後重試。", "error");
-    }
-  });
 
   refreshBtn?.addEventListener("click", loadSuperAdminData);
   resourceUpdatesRefreshBtn?.addEventListener("click", loadResourceUpdates);

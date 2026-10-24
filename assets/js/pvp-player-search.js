@@ -1,7 +1,7 @@
 (() => {
   const auth = window.RangerbookAuth;
   if (!auth) return;
-  // Only authenticated admins can load their own imported data in this mode.
+  // Authenticated members can load only their own imported data in this mode.
   const personalMode = new URLSearchParams(window.location.search).get("personal") === "1";
   const pt = (key, fallback) => window.RangerbookI18n?.t("admin.personal.viewer." + key, fallback) || fallback;
   const pf = (key, args, fallback) => window.RangerbookI18n?.format("admin.personal.viewer." + key, args, fallback) || fallback;
@@ -575,21 +575,19 @@
     window.RangerbookTeamAnalysis?.clear();
     try {
       const [payload] = await Promise.all([
-        auth.api("/admin/personal-teams"),
+        auth.api("/member/personal-teams"),
         loadSupportData(),
         window.RangerbookI18n?.ready,
         window.RangerbookI18n?.readyGame?.()
       ]);
-      if (sequence !== playerQuerySequence || !auth.isAdmin()) return;
+      if (sequence !== playerQuerySequence || !(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) return;
       playerPayload = payload?.bound ? { teams: payload.teams || {} } : null;
       if (!playerPayload) {
         result.hidden = true;
         return;
       }
-      selectedName.textContent = pt("mine","我的隊伍");
-      selectedMeta.textContent = pt("private","管理員私人匯入資料");
       teamSelect.value = TEAM_LABELS[teamSelect.value] ? teamSelect.value : "team1";
-      selection.hidden = false;
+      selection.hidden = true;
       result.hidden = false;
       renderTeam();
       setStatus("");
@@ -615,10 +613,21 @@
       document.body.classList.add("personal-embedded");
       page.querySelector(".page-title")?.setAttribute("hidden", "");
       page.querySelector(".pvp-search-card")?.setAttribute("hidden", "");
-      // Move the existing team picker out of the hidden name-search card.
-      // This retains the same 7-team navigation without exposing player search.
-      result.prepend(selection);
-      if (!auth.isAdmin()) { page.hidden = true; return; }
+      // Reuse the same seven-team picker inside the private viewer card.
+      const picker = teamSelect.closest("label");
+      picker.classList.add("personal-team-picker");
+      picker.querySelector("span").remove();
+      const heading = document.createElement("h3");
+      heading.id = "personalTeamHeading";
+      heading.dataset.i18n = "member.yourTeams";
+      heading.textContent = window.RangerbookI18n?.t("member.yourTeams", "你的隊伍") || "你的隊伍";
+      teamSelect.setAttribute("aria-labelledby", heading.id);
+      const toolbar = document.createElement("div");
+      toolbar.className = "personal-team-toolbar";
+      toolbar.append(heading, picker);
+      page.querySelector(".pvp-player-team-pane").prepend(toolbar);
+      teamTitle.hidden = true;
+      if (!(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) { page.hidden = true; return; }
       page.hidden = false;
       teamSelect.value = "team1";
       selection.hidden = true;
@@ -640,7 +649,7 @@
 
   window.addEventListener("message", (event) => {
     if (!personalMode || event.origin !== window.location.origin || event.source !== window.parent) return;
-    if (event.data?.type === "rangerbook-personal-refresh" && auth.isAdmin()) loadPersonalTeams();
+    if (event.data?.type === "rangerbook-personal-refresh" && auth.getUser().logged_in && !auth.getUser().must_change_password) loadPersonalTeams();
     if (event.data?.type === "rangerbook-personal-clear") {
       playerQuerySequence++;
       playerPayload = null;
@@ -652,7 +661,7 @@
 
   window.addEventListener("rangerbook:auth-changed", () => {
     if (personalMode) {
-      if (!auth.isAdmin()) {
+      if (!(personalMode ? auth.getUser().logged_in && !auth.getUser().must_change_password : auth.isAdmin())) {
         playerQuerySequence++;
         playerPayload = null;
         result.hidden = true;

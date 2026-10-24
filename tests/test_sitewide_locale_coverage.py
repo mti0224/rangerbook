@@ -15,7 +15,7 @@ class SitewideLocaleCoverage(unittest.TestCase):
         for row in rows:
             # The Ultra label overrides the periodically published UI catalog
             # so its canonical Traditional Chinese spelling stays authoritative.
-            self.assertTrue(row["key"].startswith("UI:site.") or row["key"] == "UI:dynamic.ultra")
+            self.assertTrue(row["key"].startswith(("UI:site.", "UI:member.")) or row["key"] == "UI:dynamic.ultra")
             args = sorted(re.findall(r"%N\d+", row["zh_TW"]))
             for locale in ("zh_TW", "en", "th", "jp"):
                 self.assertIsInstance(row[locale], str)
