@@ -1380,10 +1380,10 @@
   },
   {
     "key": "UI:member.passwordRequired",
-    "zh_TW": "請先更改臨時密碼。",
-    "en": "Change your temporary password first.",
-    "jp": "先に仮パスワードを変更してください。",
-    "th": "กรุณาเปลี่ยนรหัสผ่านชั่วคราวก่อน"
+    "zh_TW": "請先變更密碼以完成登入。",
+    "en": "Change your password to finish signing in.",
+    "jp": "ログインを完了するには、パスワードを変更してください。",
+    "th": "กรุณาเปลี่ยนรหัสผ่านเพื่อเข้าสู่ระบบให้เสร็จสิ้น"
   },
   {
     "key": "UI:member.mandatory2fa",

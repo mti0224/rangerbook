@@ -563,6 +563,38 @@ def test_password_change_preserves_google_factor_and_wrong_password(env):
     assert c.post('/auth/reauth',json={'password':'New-password-123'}).status_code==403
 
 
+@pytest.mark.parametrize('who,with_factor',[('a',False),('a',True),('admin',True),('super',True)])
+def test_required_password_change_follows_mfa_without_factor_loop(env,who,with_factor):
+    h,m,c=env
+    codes=[]
+    if with_factor:
+        _,codes=enroll(env,who)
+    with h.db() as con:
+        con.execute('UPDATE users SET must_change_password=1 WHERE id=?',(who,))
+        before=con.execute('SELECT totp_secret,role FROM users WHERE id=?',(who,)).fetchone()
+    c.post('/auth/logout')
+    state=login(c,who)
+    assert not state['logged_in']
+    assert state['must_change_password'] and state['mfa_required']==with_factor
+    if with_factor:
+        assert c.post('/auth/change-password',json={'current_password':PASS,'new_password':'New-password-123'}).status_code==403
+        assert c.post('/auth/2fa/verify',json={'code':codes[0]}).status_code==200
+    state=c.get('/auth/me').json()
+    assert not state['logged_in'] and state['role']=='user'
+    assert state['must_change_password'] and not state['mfa_required'] and not state['setup_required']
+    assert c.get('/member/game-binding/status').json()['detail']=='member.passwordRequired'
+    assert c.get('/admin/users').status_code==403
+    assert c.post('/auth/change-password',json={'current_password':'wrong','new_password':'New-password-123'}).status_code==401
+    assert c.post('/auth/change-password',json={'current_password':PASS,'new_password':'New-password-123'}).status_code==200
+    state=c.get('/auth/me').json()
+    assert state['logged_in'] and not state['must_change_password']
+    assert state['role']==before['role']
+    with h.db() as con:
+        after=con.execute('SELECT totp_secret,role FROM users WHERE id=?',(who,)).fetchone()
+        assert tuple(after)==tuple(before)
+    assert c.get('/member/game-binding/status').status_code==200
+
+
 def test_expired_email_link_and_resend_after_cooldown(env,monkeypatch):
     h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *args:None)
     body={'account':'new-outlook','password':PASS,'email':'new@outlook.test','captcha':'x'}

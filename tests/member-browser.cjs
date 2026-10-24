@@ -11,7 +11,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block'});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-user',role:'user'},factor=false,email=null,proof=0,reauthRate=false,offline=false,hold=false,release;
-  let loginMfa=false,invalidLink=false,failCancel=false,expireFactor=false;
+  let loginMfa=false,loginPasswordChange=false,invalidLink=false,failCancel=false,expireFactor=false;
   let gameChallenge=null,gameBound=false,swapAttempts=0,searchMode="results";
   const calls=[],errors=[],outbound=[];
   await context.route('**/*',async route=>{
@@ -30,14 +30,15 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(url.pathname==='/auth/logout'&&failCancel)return route.abort();
       if(url.pathname==='/auth/login'){
         if(body.password==='wrong')return route.fulfill({status:401,json:{detail:'member.badProof'},headers});
-        user={account:body.account,role:'user',logged_in:!loginMfa,mfa_required:loginMfa};
+        user={account:body.account,role:'user',logged_in:!loginMfa&&!loginPasswordChange,mfa_required:loginMfa,must_change_password:loginPasswordChange};
       }
       if(url.pathname==='/auth/2fa/verify'){
         if(expireFactor){user={logged_in:false,role:'user'};return route.fulfill({status:401,json:{detail:'member.loginRequired'},headers});}
         if(body.code==='999999')return route.fulfill({status:429,json:{detail:'member.rateLimited'},headers:{...headers,'Retry-After':'900'}});
         if(body.code==='000000')return route.fulfill({status:401,json:{detail:'member.badProof'},headers});
-        user.logged_in=true;user.mfa_required=false;
+        user.logged_in=!user.must_change_password;user.mfa_required=false;
       }
+      if(url.pathname==='/auth/change-password'){user.must_change_password=false;user.logged_in=true;}
       if(url.pathname==='/auth/2fa/disable'){factor=false;user={logged_in:false,role:'user'};proof=0;}
       if(url.pathname==='/auth/2fa/enable'){factor=true;user.logged_in=true;user.setup_required=false;proof=0;}
       if(url.pathname==='/auth/google/unlink')email=null;
@@ -212,6 +213,29 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   await go('/login/');assert.equal(await page.locator('#memberLoginCard').isVisible(),true);
   await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.locator('#memberLoginFactor').waitFor();
   await page.locator('#memberUseRecovery').click();await page.locator('#memberLoginFactorForm input').fill('FIXTURE-RECOVERY');await page.locator('#memberLoginFactorForm button[type=submit]').click();await page.waitForURL(base+'/');
+  // A required password replacement follows a successful factor; it is not a second MFA challenge.
+  for(const required of [false,true]){
+    user={logged_in:false,role:'user'};loginPasswordChange=required;loginMfa=true;await go('/login/');
+    await page.locator('#memberLoginForm input[name=account]').fill('fixture-user');await page.locator('#memberLoginForm input[name=password]').fill('fixture-password');await page.locator('#memberLoginForm button').click();await page.locator('#memberLoginFactor').waitFor();
+    const verifies=calls.filter(x=>x.path==='/auth/2fa/verify').length;
+    await page.locator('#memberLoginFactorForm input').fill('123456');await page.locator('#memberLoginFactorForm button[type=submit]').click();
+    if(required){
+      await page.waitForURL(base+'/account/');await page.locator('#memberPasswordForm').waitFor();
+      assert.equal(await page.locator('#memberState').innerText(),copy('passwordRequired',locale));
+      assert.equal(await page.locator('#memberProof').isVisible(),false);
+      assert.equal(await page.locator('#memberGoogle').isVisible(),false);
+      await page.reload();await page.locator('#memberPasswordForm').waitFor();
+      assert.equal(await page.locator('#memberProof').isVisible(),false);
+      await page.locator('#memberPasswordForm input[name=current_password]').fill('fixture-password');
+      await page.locator('#memberPasswordForm input[name=new_password]').fill('fixture-new-password');
+      await page.locator('#memberPasswordForm input[name=confirm]').fill('fixture-new-password');
+      await page.locator('#memberPasswordForm button').click();
+    }
+    await page.waitForURL(base+'/');assert.equal(user.logged_in,true);assert.equal(user.mfa_required,false);
+    assert.equal(calls.filter(x=>x.path==='/auth/2fa/verify').length,verifies+1,'Exactly one accepted factor, no MFA loop');
+    await menu();await page.locator('.gt-user-navigation a[href="/personal-teams/"]').waitFor();
+  }
+  loginPasswordChange=false;
   user={logged_in:false,role:'user'};await go('/register/');await page.locator('#adminRegisterForm input[name=account]').fill('fixture-new');await page.locator('#adminRegisterForm input[name=email]').fill('fixture@outlook.test');
   await page.locator('#adminRegisterForm input[name=password]').fill('fixture-password');await page.locator('#adminRegisterForm input[name=confirm]').fill('fixture-password');await page.locator('#adminRegisterForm button').click();await page.locator('#memberRegistrationSent').waitFor();
   assert.equal(await page.locator('#memberRegistrationResend').isDisabled(),true);await assertPage();

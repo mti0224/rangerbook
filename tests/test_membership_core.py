@@ -68,6 +68,24 @@ def test_feature_off_has_no_mutation(monkeypatch):
     assert install(object()) is None
 
 
+@pytest.mark.parametrize('detail,role,enrolled,expected',[
+    ('member.mfaRequired','user',True,(True,False)),
+    ('member.mfaRequired','super_admin',False,(False,True)),
+    ('member.setupRequired','super_admin',False,(False,True)),
+    ('member.passwordRequired','user',True,(False,False)),
+    ('member.passwordRequired','admin',True,(False,False)),
+    ('member.passwordRequired','super_admin',True,(False,False)),
+])
+def test_auth_state_reports_remaining_requirement_not_enrollment(detail,role,enrolled,expected):
+    member=object.__new__(Membership)
+    member.raw=lambda request:{'account':'synthetic','role':role,'totp_secret':'encrypted-fixture' if enrolled else None,'must_change_password':1}
+    def restricted(request):raise HTTPException(403,detail)
+    member.full=restricted
+    state=member.state(object())
+    assert (state['mfa_required'],state['setup_required'])==expected
+    assert not state['logged_in'] and state['role']=='user' and state['must_change_password']
+
+
 def test_stage_mail_without_allowlist_stops_before_aws(monkeypatch):
     from membership.mail_worker import main
     monkeypatch.setenv('RANGERBOOK_STAGE', '1')

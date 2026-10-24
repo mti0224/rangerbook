@@ -36,10 +36,18 @@
   }
   async function refresh(){
     user=await auth.refresh();
+    if(user.mfa_required){location.replace(root+'login/');return;}
     const permitted=user.logged_in||user.setup_required||user.must_change_password;
     $('memberLoginGate').hidden=Boolean(permitted);$('memberSecurityArea').hidden=!permitted;
     if(!permitted){clearSecrets();proofUntil=0;say('loginRequired',true);return;}
     if(user.setup_required&&!setupPage){location.replace(root+'two-factor/');return;}
+    if(!setupPage){
+      const passwordOnly=Boolean(user.must_change_password);
+      $('memberProof').hidden=passwordOnly;
+      $('memberGoogle').closest('.admin-card').hidden=passwordOnly;
+      $('memberPassword').hidden=false;
+      if(passwordOnly){clearSecrets();proofUntil=0;say('passwordRequired');return;}
+    }
     status=await auth.api('/auth/security');
     proofUntil=Date.now()+Number(status.reauth_valid_for||0)*1000;
     retryUntil=Date.now()+Number(status.reauth_retry_after||0)*1000;
@@ -116,7 +124,8 @@
   $('memberPasswordForm')?.addEventListener('submit',run(async e=>{
     const form=e.currentTarget;
     if(form.elements.new_password.value!==form.elements.confirm.value)throw new Error(t('passwordMismatch'));
-    try{await post('/auth/change-password',{current_password:form.elements.current_password.value,new_password:form.elements.new_password.value});proofUntil=0;await refresh();}
+    const completingLogin=Boolean(user.must_change_password);
+    try{await post('/auth/change-password',{current_password:form.elements.current_password.value,new_password:form.elements.new_password.value});proofUntil=0;await refresh();if(completingLogin&&user.logged_in&&!user.must_change_password)location.assign(root);}
     finally{form.reset();}
   },'passwordChanged'));
   $('memberCopyCodes')?.addEventListener('click',run(async()=>{await navigator.clipboard.writeText($('memberRecovery').textContent);},'copied'));

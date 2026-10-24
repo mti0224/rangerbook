@@ -150,10 +150,15 @@ class Membership:
             return {'logged_in': False, 'role': 'user'}
         try:
             self.full(request)
-        except HTTPException:
+        except HTTPException as error:
+            if error.status_code == 401:
+                return {'logged_in': False, 'role': 'user'}
+            # Factor enrollment is not the same as an outstanding MFA challenge.
+            # A verified session may be restricted only by a temporary password.
             return {'logged_in': False, 'role': 'user', 'account': user['account'],
-                    'mfa_required': bool(user['totp_secret']),
-                    'setup_required': user['role'] == 'super_admin' and not user['totp_secret'],
+                    'mfa_required': error.detail == 'member.mfaRequired' and bool(user['totp_secret']),
+                    'setup_required': error.detail in {'member.mfaRequired', 'member.setupRequired'} and
+                                      user['role'] == 'super_admin' and not user['totp_secret'],
                     'must_change_password': bool(user['must_change_password'])}
         return {'logged_in': True, **self.h.public_user(user)}
 
@@ -335,8 +340,9 @@ class Membership:
                                 (h.isoformat(h.utc_now() + timedelta(minutes=10)), digest(token)))
             with h.db() as con:
                 self.audit(con, user['id'], 'password_login')
-            response = JSONResponse({'logged_in': not (user['totp_secret'] or user['role'] == 'super_admin'),
-                'account': user['account'], 'role': 'user' if user['totp_secret'] or user['role'] == 'super_admin' else user['role'],
+            restricted = bool(user['totp_secret'] or user['role'] == 'super_admin' or user['must_change_password'])
+            response = JSONResponse({'logged_in': not restricted,
+                'account': user['account'], 'role': 'user' if restricted else user['role'],
                 'mfa_required': bool(user['totp_secret']),
                 'setup_required': user['role'] == 'super_admin' and not user['totp_secret'],
                 'must_change_password': bool(user['must_change_password'])})
