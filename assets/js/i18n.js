@@ -227,7 +227,7 @@
       const [baseResult,pwaResult,overridesResult] = await Promise.allSettled([
         json(root + "assets/locales/ui.json?v=20261018-team-overview2"),
         json(root + "assets/locales/pwa.json"),
-        json(root + "assets/locales/sitewide-overrides.json?v=20261025-accounts1")
+        json(root + "assets/locales/sitewide-overrides.json?v=20261025-accounts-table1")
       ]);
       const all = baseResult.status === "fulfilled" ? baseResult.value : {};
       const pwa = pwaResult.status === "fulfilled" ? pwaResult.value : {};

@@ -2420,5 +2420,61 @@
     "en": "Unable to check the account name. Please try again.",
     "jp": "アカウント名を確認できませんでした。もう一度お試しください。",
     "th": "ไม่สามารถตรวจสอบชื่อบัญชีได้ โปรดลองอีกครั้ง"
+  },
+  {
+    "key": "UI:site.admin.table0",
+    "zh_TW": "名稱",
+    "en": "Name",
+    "jp": "名前",
+    "th": "ชื่อ"
+  },
+  {
+    "key": "UI:site.admin.table1",
+    "zh_TW": "上次登入時間",
+    "en": "Last login",
+    "jp": "前回のログイン",
+    "th": "เข้าสู่ระบบล่าสุด"
+  },
+  {
+    "key": "UI:site.admin.table2",
+    "zh_TW": "Google 綁定",
+    "en": "Google linking",
+    "jp": "Google 連携",
+    "th": "การเชื่อมโยง Google"
+  },
+  {
+    "key": "UI:site.admin.table3",
+    "zh_TW": "操作",
+    "en": "Actions",
+    "jp": "操作",
+    "th": "การดำเนินการ"
+  },
+  {
+    "key": "UI:site.admin.table4",
+    "zh_TW": "已綁定",
+    "en": "Linked",
+    "jp": "連携済み",
+    "th": "เชื่อมโยงแล้ว"
+  },
+  {
+    "key": "UI:site.admin.table5",
+    "zh_TW": "未綁定",
+    "en": "Not linked",
+    "jp": "未連携",
+    "th": "ยังไม่เชื่อมโยง"
+  },
+  {
+    "key": "UI:site.admin.table6",
+    "zh_TW": "無紀錄",
+    "en": "No record",
+    "jp": "記録なし",
+    "th": "ไม่มีข้อมูล"
+  },
+  {
+    "key": "UI:site.admin.table7",
+    "zh_TW": "帳號管理表格，可左右捲動",
+    "en": "Account management, scroll horizontally",
+    "jp": "アカウント管理、横にスクロールできます",
+    "th": "จัดการบัญชี เลื่อนในแนวนอนได้"
   }
 ]

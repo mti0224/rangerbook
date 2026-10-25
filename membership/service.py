@@ -333,9 +333,14 @@ class Membership:
             from .stage.storage_compat import configure
             configure(game_binding)
         app.dependency_overrides[h.require_user] = self.full
-        old_paths = {'/auth/register', '/auth/login', '/auth/me'}
+        old_paths = {'/auth/register', '/auth/login', '/auth/me', '/admin/users'}
         app.router.routes[:] = [route for route in app.router.routes if getattr(route, 'path', '') not in old_paths]
         full, raw = self.full, self.raw
+
+        @app.get('/admin/users')
+        def users_directory(_=Depends(h.require_super_admin)):
+            from .admin_directory import account_directory
+            return account_directory(h)
 
         @app.get('/auth/features')
         def features():
@@ -368,6 +373,8 @@ class Membership:
                                 (h.isoformat(h.utc_now() + timedelta(minutes=10)), digest(token)))
             with h.db() as con:
                 self.audit(con, user['id'], 'password_login')
+                if not (user['totp_secret'] or user['role'] == 'super_admin' or user['must_change_password']):
+                    self.audit(con, user['id'], 'login_completed')
             restricted = bool(user['totp_secret'] or user['role'] == 'super_admin' or user['must_change_password'])
             response = JSONResponse({'logged_in': not restricted,
                 'account': user['account'], 'role': 'user' if restricted else user['role'],
@@ -699,6 +706,7 @@ class Membership:
             con.execute('INSERT INTO sessions(token_hash,user_id,created_at,expires_at,last_seen_at,mfa_verified) VALUES (?,?,?,?,?,1)',
                 (digest(token), user['id'], now, h.isoformat(h.utc_now() + timedelta(days=h.SESSION_DAYS)), now))
             con.execute('DELETE FROM sessions WHERE token_hash=?', (self.session_id(request),))
+            self.audit(con, user['id'], 'login_completed')
         response = JSONResponse({'ok': True, **(extra or {})})
         h.set_session_cookie(response, token)
         return response
