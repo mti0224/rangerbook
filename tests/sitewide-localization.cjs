@@ -203,6 +203,7 @@ async function assertTranslated(page,locale,selector) {
       await ready(page,'/admin/');
       await page.locator('#adminAccountsTab').click();
       const account = page.locator('[data-user-id="42"]').last();
+      await account.locator('.admin-overflow-trigger').click();
       await account.locator('[data-role-select]').selectOption('admin');
       const adminLabel=await page.evaluate(() => window.RangerbookI18n.uiText('管理員'));
       const dialog = page.waitForEvent('dialog');
