@@ -25,7 +25,7 @@ assert.match(runtime,/matchOfficial/);
 const gear = fs.readFileSync(path.join(root,"assets/js/gear.js"),"utf8");
 assert.match(gear,/id \+ "_nm"/);
 assert.match(runtime,/custom\(key, original\)/);
-const review = json("docs/custom-en-pending-review.json");
+const review = json("tests/fixtures/custom-en-pending-review.json");
 assert.equal(review._meta.count, 38);
 assert.equal(Object.keys(review.entries).length, 38);
 for (const [key, value] of Object.entries(review.entries)) {

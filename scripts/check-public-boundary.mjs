@@ -1,7 +1,7 @@
 import {readdir} from 'node:fs/promises';
 import path from 'node:path';
 
-const blockedRoots=['backend/','ops/','deploy/systemd/'];
+const blockedRoots=['backend/','ops/','deploy/systemd/','docs/','records/','runbooks/'];
 const blockedFiles=new Set(['res/resource_asset_manifest.json','tests/test_popular_pages.py','tests/test_game_binding.py','tests/test_player_equipment_values.py']);
 const root=process.cwd();
 const violations=[];

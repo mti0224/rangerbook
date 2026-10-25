@@ -15,7 +15,7 @@ def clean(text):
 class GameTermAlignmentTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.audit = json.loads((ROOT / "docs/v2-audit/game-term-alignment-20261013.json").read_text())
+        cls.audit = json.loads((ROOT / "tests/fixtures/game-term-alignment-20261013.json").read_text())
         cls.rows = {}
         for kind in ("ui", "custom"):
             inputs = json.loads((ROOT / f"deploy/aws/v2/locales/{kind}.json").read_text())
