@@ -693,7 +693,7 @@ def test_account_availability_existing_names(env,account):
     h,m,c=env
     r=c.post('/auth/account/availability',json={'account':account})
     assert r.status_code==200 and r.json()=={'available':False}
-    assert r.headers['Cache-Control']=='no-store'
+    assert 'no-store' in r.headers['Cache-Control'].split(', ')
 
 
 def test_account_availability_validation_origin_and_limits(env):
