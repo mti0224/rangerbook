@@ -1,8 +1,9 @@
 (() => {
   const auth=window.RangerbookAuth, mount=document.getElementById('memberCaptcha');
   if(!auth||!mount)return;
-  const form=document.getElementById('adminRegisterForm'), input=form.elements.account;
+  const form=document.getElementById('adminRegisterForm'), input=form?.elements.account;
   const status=document.getElementById('memberAccountStatus');
+  if(input&&status&&window.RangerbookMemberUI){
   const {t,notify}=window.RangerbookMemberUI;
   let revision=0, timer, checked='', pending=null, feedback='';
   const show=(key,type='')=>{feedback=key;notify(status,key?t(key):'',type);};
@@ -49,6 +50,7 @@
     if(feedback)show(feedback,input.validationMessage?'error':checked?'success':'');
     if(input.validity.customError)input.setCustomValidity(t('accountTaken'));
   });
+  }
   let widget=null, captcha='', features={};
   window.RangerbookCaptcha={token:()=>captcha,reset:()=>{captcha='';if(widget!==null)window.turnstile?.reset(widget);}};
   auth.api('/auth/features').then(data=>{

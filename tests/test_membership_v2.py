@@ -731,9 +731,9 @@ def test_concurrent_registration_same_name_creates_one_user(env,monkeypatch):
     h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *a:None)
     barrier=Barrier(2)
     original_hash=h.PASSWORD_HASHER.hash
-    def synchronized_hash(password):
+    def synchronized_hash(self,password):
         hashed=original_hash(password);barrier.wait(timeout=20);return hashed
-    monkeypatch.setattr(h.PASSWORD_HASHER,'hash',synchronized_hash)
+    monkeypatch.setattr(type(h.PASSWORD_HASHER),'hash',synchronized_hash)
     def submit(i):
         with TestClient(h.app,base_url='https://rangerbook-auth.warmycat.com',headers={'Origin':ORIGIN}) as client:
             return client.post('/auth/register',json={'account':['race-name','RACE-NAME'][i],
