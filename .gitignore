@@ -1,7 +1,30 @@
-# Local/private LINE Rangers authentication files
+# Local credentials, databases and operational records (public repository)
 latest_LF_AC.txt
 pvp_config.json
 *_session.log
+.env
+.env.*
+**/.env
+**/.env.*
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+*.pem
+*.p12
+*.pfx
+*.key
+*.bak
+*.backup
+*.sql
+*.log
+.aws/
+.ssh/
+docs/
+records/
+runbooks/
 
 # Python caches
 __pycache__/
