@@ -21,7 +21,11 @@
     if(!box.hidden) {
       const p=document.createElement('p');p.textContent=t(kind);box.append(p);
       const actions=document.createElement('div');actions.className='rb-pwa-actions';
-      actions.append(button(update && !activationBlocked?'updateNow':'retry',update && !activationBlocked?applyUpdate:()=>location.reload()),button('later',()=>{dismissed=kind;refresh();}));
+      // Only an installed application/data release offers an update/reload action.
+      // Connectivity and read failures are informational, not proof of a release.
+      if(update && !activationBlocked) actions.append(button('updateNow',applyUpdate));
+      else if(activationBlocked) actions.append(button('retry',()=>location.reload()));
+      actions.append(button('later',()=>{dismissed=kind;refresh();}));
       box.append(actions);
     }
     if(!panel) return;
@@ -35,9 +39,11 @@
     availability.textContent=t(key);
   }
   function report(kind) {
-    const map={'cached-data':'cached','cached-page':'offline','data-unavailable':'missing','update-required':'release','network-required':'offline'};
+    // A mismatched/missing response can also be a network or deployment error.
+    // Confirm a completely installed release before showing the update prompt.
+    if(kind==='update-required') {check();return;}
+    const map={'cached-data':'cached','cached-page':'offline','data-unavailable':'missing','network-required':'offline'};
     status=map[kind] || kind;refresh();
-    if(kind==='update-required') check();
   }
   function waiting() { update=Boolean(registration?.waiting && navigator.serviceWorker.controller);refresh(); }
   async function check() {
@@ -75,7 +81,7 @@
   window.addEventListener('rangerbook:pwa-status',event=>report(event.detail.kind));
   window.addEventListener('rangerbook:locale-ready',refresh);
   window.addEventListener('offline',()=>report('offline'));
-  window.addEventListener('online',()=>{dismissed='';report('restored');check();});
+  window.addEventListener('online',()=>{report('restored');check();});
   window.addEventListener('pageshow',check);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});
   async function start() {

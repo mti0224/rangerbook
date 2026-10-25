@@ -33,6 +33,10 @@ async function verifier() {
  await Promise.all([ctx.window.fetch('https://test/res/v2/abilities.json'),ctx.window.fetch('https://test/res/v2/abilities.json')]);
  assert.equal(calls.filter(name=>name==='res/v2/abilities.json').length,1,'Concurrent and repeated verified data reads share one transfer');
  assert.ok(calls.includes('pwa-data.json'));
+ const beforeMetadata=calls.length;
+ for(const name of ['resources','manifest','translation-audit'])assert.ok((await ctx.window.fetch('https://test/res/v2/'+name+'.json')).ok);
+ assert.equal(calls.length,beforeMetadata+3,'Live operational metadata bypasses the pinned game snapshot');
+ for(const name of ['resources','manifest','translation-audit'])assert.ok(!metadata.files['res/v2/'+name+'.json'],'Polling metadata must not create game-data releases');
  const bad={...metadata,files:{...metadata.files,'res/v2/rangers.json':{hash:'wrong'}}};
  const fetch=async input=>new Response(new URL(input).pathname==='/pwa-data.json'?JSON.stringify(bad):read(new URL(input).pathname.slice(1)));
  ctx.window.fetch=fetch;vm.runInNewContext(read('assets/js/pwa-data.js').toString(),ctx);

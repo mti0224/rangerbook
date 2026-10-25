@@ -12,6 +12,8 @@
     const url = new URL(typeof input==='string' || input instanceof URL ? input : input.url, location.href);
     if(String(options?.method || input?.method || 'GET').toUpperCase()!=='GET')return nativeFetch(input,options);
     if (url.origin!==root.origin || !url.pathname.startsWith(root.pathname+'res/v2/')) return nativeFetch(input,options);
+    // Operational metadata is live information, not a versioned game dataset.
+    if (/^res\/v2\/(?:resources|manifest|translation-audit)\.json$/.test(url.pathname.slice(root.pathname.length))) return nativeFetch(input,options);
     try {
       // If crypto is unavailable, leave the ordinary website functional; SW is
       // only registered on secure origins, where integrity verification exists.

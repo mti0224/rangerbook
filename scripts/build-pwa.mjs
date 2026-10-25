@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import {buildFastData} from './build-fast-data.mjs';
+import {isPublicFile} from './package-pages.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 try {
   await access(path.join(root,'.pwa-disabled'));
@@ -24,12 +25,17 @@ async function files(dir) {
 }
 execFileSync('python3',[path.join(root,'scripts/format-res-json.py'),path.join(root,'res')],{stdio:'inherit'});
 console.log('Fast data',await buildFastData(root));
-const all = await files('');
+// Hash the actual public website only: maintenance documents, tests and
+// unpublished files must not create application/data releases.
+const all = (await files('')).filter(isPublicFile);
 const record = async names => Object.fromEntries(await Promise.all(names.map(async name => {
   const bytes = await readFile(path.join(root,name));
   return [name,{hash:hash(bytes),size:bytes.length}];
 })));
-const data = await record(all.filter(x => x.startsWith('res/v2/') && x.endsWith('.json')));
+// Polling timestamps, compiler provenance and translation audits are not game
+// content. They remain published, but are outside the pinned game snapshot.
+const metadataFiles = new Set(['res/v2/resources.json','res/v2/manifest.json','res/v2/translation-audit.json']);
+const data = await record(all.filter(x => x.startsWith('res/v2/') && x.endsWith('.json') && !metadataFiles.has(x)));
 const dataVersion = hash(JSON.stringify(data));
 const metadata = JSON.stringify({schemaVersion:1,dataVersion,files:data})+'\n';
 await writeFile(path.join(root,'pwa-data.json'),metadata);
