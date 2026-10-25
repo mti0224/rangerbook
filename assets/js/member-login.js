@@ -47,13 +47,20 @@
   $('adminRegisterForm')?.addEventListener('submit',run(async e=>{
     const form=e.currentTarget;
     if(form.elements.password.value!==form.elements.confirm.value)throw new Error(t('passwordMismatch'));
+    const selected=await window.RangerbookAccountName?.ensure();
+    if(!selected)return false;
     const captcha=window.RangerbookCaptcha?.token();if(!captcha)throw new Error(t('captchaFailed'));
-    account=form.elements.account.value.trim();
+    account=selected;
     try{
       await auth.register(account,form.elements.password.value,form.elements.email.value.trim(),captcha);
       form.reset();form.hidden=true;$('memberRegistrationSent').hidden=false;
       notify($('memberState'),t('registrationSent'),'success');
       cooldown($('memberRegistrationResend'),60,$('memberResendStatus'));
+    }catch(error){
+      if(error.payload?.detail==='member.accountTaken'){
+        window.RangerbookAccountName?.taken(account);form.elements.account.focus();
+      }
+      throw error;
     }finally{form.elements.password.value='';form.elements.confirm.value='';window.RangerbookCaptcha?.reset();}
   },null,$('memberState')));
   $('memberRegistrationResend')?.addEventListener('click',run(async()=>{

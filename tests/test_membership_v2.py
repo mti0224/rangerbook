@@ -231,7 +231,8 @@ def test_registration_email_captcha_and_application_separate(env,monkeypatch):
     assert c.post('/auth/email/verify',json={'token':mail['token']}).status_code==400
     assert c.post('/auth/login',json={'account':'new-member','password':PASS}).status_code==200
     assert c.post('/member/admin-application').status_code==200
-    assert c.post('/auth/register',json=payload).json()=={'ok':True,'message_key':'member.checkEmail'}
+    duplicate=c.post('/auth/register',json=payload)
+    assert duplicate.status_code==409 and duplicate.json()['detail']=='member.accountTaken'
 
 
 @pytest.mark.parametrize('response',[{'success':False},{'success':True,'hostname':'evil.invalid','action':'register'},{'success':True,'hostname':'rangerbook.warmycat.com','action':'other'}])
@@ -685,3 +686,60 @@ def test_abandon_pending_mfa_revokes_only_current_session_and_can_switch_account
     state=login(c,'b')
     assert state['logged_in'] and not state['mfa_required']
     assert c.get('/member/game-binding/status').status_code==200
+
+
+@pytest.mark.parametrize('account',['test-a','TEST-A',' test-a '])
+def test_account_availability_existing_names(env,account):
+    h,m,c=env
+    r=c.post('/auth/account/availability',json={'account':account})
+    assert r.status_code==200 and r.json()=={'available':False}
+    assert 'no-store' in r.headers['Cache-Control'].split(', ')
+
+
+def test_account_availability_validation_origin_and_limits(env):
+    h,m,c=env
+    assert c.post('/auth/account/availability',json={'account':'new-name'}).json()=={'available':True}
+    assert c.post('/auth/account/availability',json={'account':'bad name'}).status_code==422
+    assert c.post('/auth/account/availability',json={'account':'new-name'},headers={'Origin':'https://evil.invalid'}).status_code==403
+    for _ in range(29):
+        assert c.post('/auth/account/availability',json={'account':'new-name'}).status_code==200
+    r=c.post('/auth/account/availability',json={'account':'another-name'})
+    assert r.status_code==429 and int(r.headers['Retry-After'])>0
+    with h.db() as con:
+        assert con.execute('SELECT count(*) FROM users').fetchone()[0]==4
+        assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==0
+
+
+def test_registration_rechecks_reserved_name_and_preserves_original(env,monkeypatch):
+    h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *a:None)
+    payload={'account':'reserved-name','password':PASS,'email':'first@example.test','captcha':'x'}
+    assert c.post('/auth/account/availability',json={'account':payload['account']}).json()['available']
+    assert c.post('/auth/register',json=payload).status_code==202
+    with h.db() as con:
+        original=tuple(con.execute("SELECT * FROM users WHERE account='reserved-name'").fetchone())
+    assert not c.post('/auth/account/availability',json={'account':'RESERVED-NAME'}).json()['available']
+    r=c.post('/auth/register',json={**payload,'account':'RESERVED-NAME','email':'second@example.test'})
+    assert r.status_code==409 and r.json()=={'detail':'member.accountTaken'}
+    with h.db() as con:
+        assert tuple(con.execute("SELECT * FROM users WHERE account='reserved-name'").fetchone())==original
+        assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==1
+
+
+def test_concurrent_registration_same_name_creates_one_user(env,monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    h,m,c=env;monkeypatch.setattr(m,'captcha',lambda *a:None)
+    barrier=Barrier(2)
+    original_hash=h.PASSWORD_HASHER.hash
+    def synchronized_hash(self,password):
+        hashed=original_hash(password);barrier.wait(timeout=20);return hashed
+    monkeypatch.setattr(type(h.PASSWORD_HASHER),'hash',synchronized_hash)
+    def submit(i):
+        with TestClient(h.app,base_url='https://rangerbook-auth.warmycat.com',headers={'Origin':ORIGIN}) as client:
+            return client.post('/auth/register',json={'account':['race-name','RACE-NAME'][i],
+              'password':PASS,'email':f'race{i}@example.test','captcha':'x'}).status_code
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        assert sorted(executor.map(submit,range(2)))==[202,409]
+    with h.db() as con:
+        assert con.execute("SELECT count(*) FROM users WHERE account='race-name' COLLATE NOCASE").fetchone()[0]==1
+        assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==1
