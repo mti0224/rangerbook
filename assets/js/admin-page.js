@@ -343,7 +343,7 @@
     const menu = details.querySelector(".admin-account-menu");
     if (details.open) {
       usersList.querySelectorAll(".admin-overflow[open]").forEach(other=>{ if(other!==details) other.open=false; });
-      menu.showPopover?.();
+      if (!menu.matches(":popover-open")) menu.showPopover?.();
       positionAccountMenu(details);
     } else {
       menu.hidePopover?.();
@@ -563,6 +563,22 @@
   resourceUpdatesRefreshBtn?.addEventListener("click", loadResourceUpdates);
 
   usersList?.addEventListener("click", (event) => {
+    const trigger = event.target.closest(".admin-overflow-trigger");
+    if (trigger) {
+      event.preventDefault();
+      if (accountsBusy) return;
+      const details = trigger.closest("details");
+      const menu = details.querySelector(".admin-account-menu");
+      details.open = !details.open;
+      // Position before the next paint; the native toggle event is asynchronous.
+      if (details.open) {
+        if (!menu.matches(":popover-open")) menu.showPopover?.();
+        positionAccountMenu(details);
+      } else {
+        menu.hidePopover?.();
+      }
+      return;
+    }
     const button = event.target.closest("button[data-action]");
     if (button) runUserAction(button.closest(".admin-user-row"), button.dataset.action);
   });

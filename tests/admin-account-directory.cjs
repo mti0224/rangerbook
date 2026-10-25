@@ -56,7 +56,7 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
   if(width===390)assert.equal(shape.scroll,true);
   await page.locator('[data-user-id=usr_0] summary').click();
   const menu=await page.locator('[data-user-id=usr_0] .admin-account-menu').boundingBox();
-  assert.ok(menu.x>=0&&menu.x+menu.width<=width&&menu.y>=0&&menu.y+menu.height<=1000,'menu stays inside viewport');
+  assert.ok(menu.x>=0&&menu.x+menu.width<=width&&menu.y>=0&&menu.y+menu.height<=1000,JSON.stringify({menu,width,locale,theme}));
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('#adminApplicationsList').count(),0);
   assert.ok(!calls.some(x=>x.includes('applications')));
