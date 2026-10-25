@@ -47,6 +47,16 @@ const waitControlled=p=>p.waitForFunction(()=>!!navigator.serviceWorker.controll
   await page.goto(base+'/settings/');await page.evaluate(()=>navigator.serviceWorker.ready);
   assert.ok(!requests.some(x=>/rangers.json|projectiles.json|official.json/.test(x)),'Settings/install is not a full database download');
   await page.reload();await waitControlled(page);await page.evaluate(()=>window.RangerbookI18n.ready);
+  // Opening/focusing a current release and transient failures are not updates.
+  const noUpdateAction=async()=>assert.ok(!(await page.locator('.rb-pwa-status button').allTextContents()).includes('Update and reload'));
+  await noUpdateAction();
+  await page.evaluate(()=>document.dispatchEvent(new Event('visibilitychange')));
+  await page.evaluate(()=>window.RangerbookPwa.checkUpdate());await noUpdateAction();
+  for(const kind of ['update-required','data-unavailable','network-required']) {
+   await page.evaluate(kind=>window.dispatchEvent(new CustomEvent('rangerbook:pwa-status',{detail:{kind}})),kind);
+   await page.evaluate(()=>window.RangerbookPwa.checkUpdate());await noUpdateAction();
+   assert.ok(!(await page.locator('.rb-pwa-status button').allTextContents()).includes('Reload'));
+  }
   assert.equal(await page.evaluate(async base=>(await fetch(base+'/auth/me').then(r=>r.json())).privateFixture,base),true);
   assert.equal(await page.locator('link[rel=manifest]').getAttribute('href'),base+'/manifest.webmanifest');
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
@@ -63,6 +73,8 @@ const waitControlled=p=>p.waitForFunction(()=>!!navigator.serviceWorker.controll
   await page.reload();await page.evaluate(()=>window.RangerbookI18n.ready);
   assert.equal(await page.locator('#pwaTitle').innerText(),'Install Rangerbook');
   assert.ok(await page.locator('.rb-pwa-status').isVisible());
+  await noUpdateAction();
+  assert.ok(!(await page.locator('.rb-pwa-status button').allTextContents()).includes('Reload'));
   assert.equal(await page.evaluate(async base=>fetch(base+'/auth/me').then(()=>false).catch(()=>true),base),true,'Private API has no offline fallback or stored response');
   const availability=await page.evaluate(async(base)=>({cached:(await fetch(base+'/res/v2/abilities.json')).status,missing:await fetch(base+'/res/v2/projectiles.json').then(r=>r.status).catch(()=>503)}),base);
   assert.equal(availability.cached,200);assert.equal(availability.missing,503);
@@ -70,10 +82,20 @@ const waitControlled=p=>p.waitForFunction(()=>!!navigator.serviceWorker.controll
   await page.goto(base+'/about/');assert.equal(await page.locator('h1').innerText(),'Unable to connect');
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
   networkDown=false;await ctx.setOffline(false);await page.goto(base+'/settings/');await page.evaluate(()=>window.RangerbookI18n.ready);
+  await page.evaluate(()=>window.dispatchEvent(new Event('online')));
+  await page.evaluate(()=>window.RangerbookPwa.checkUpdate());await noUpdateAction();
+  assert.ok(!(await page.locator('.rb-pwa-status button').allTextContents()).includes('Reload'));
   // An update must wait; a second window blocks user-triggered activation.
   const previous=await page.evaluate(()=>navigator.serviceWorker.controller.scriptURL);
   generation='app';await page.evaluate(()=>window.RangerbookPwa.checkUpdate());
   await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration()).waiting);
+  await page.waitForFunction(()=>document.querySelector('.rb-pwa-status button')?.textContent==='Update and reload');
+  // Choosing Later remains respected after reconnecting to the same release.
+  await page.locator('.rb-pwa-status button').last().click();
+  await page.evaluate(()=>window.dispatchEvent(new Event('online')));
+  await page.evaluate(()=>window.RangerbookPwa.checkUpdate());
+  assert.ok(await page.locator('.rb-pwa-status').isHidden());
+  await page.reload();await waitControlled(page);
   await page.waitForFunction(()=>document.querySelector('.rb-pwa-status button')?.textContent==='Update and reload');
   const second=await ctx.newPage();await second.goto(base+'/settings/');
   await page.locator('.rb-pwa-status button').first().click();

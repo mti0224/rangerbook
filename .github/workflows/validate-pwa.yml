@@ -29,6 +29,7 @@ jobs:
         run: |
           node tests/pwa-contract.cjs
           node tests/pwa-worker.cjs
+          node tests/pwa-release.cjs
           node --test tests/*.test.js
           node tests/v2-site-adapter.cjs
           node tests/team-analysis-model.cjs
