@@ -343,7 +343,7 @@
     const menu = details.querySelector(".admin-account-menu");
     if (details.open) {
       usersList.querySelectorAll(".admin-overflow[open]").forEach(other=>{ if(other!==details) other.open=false; });
-      if (!menu.matches(":popover-open")) menu.showPopover?.();
+      if (menu.showPopover && !menu.matches(":popover-open")) menu.showPopover();
       positionAccountMenu(details);
     } else {
       menu.hidePopover?.();
@@ -572,7 +572,7 @@
       details.open = !details.open;
       // Position before the next paint; the native toggle event is asynchronous.
       if (details.open) {
-        if (!menu.matches(":popover-open")) menu.showPopover?.();
+        if (menu.showPopover && !menu.matches(":popover-open")) menu.showPopover();
         positionAccountMenu(details);
       } else {
         menu.hidePopover?.();
