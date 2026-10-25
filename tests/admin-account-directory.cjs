@@ -12,7 +12,7 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
   const context=await browser.newContext({viewport:{width,height:1000},serviceWorkers:'block',...(credentials?{httpCredentials:{origin:base,username:credentials.entrance_user,password:credentials.entrance_password}}:{})});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let role='super_admin',fail=false,hold=false,release,gate,gets=0; const writes=[],calls=[],errors=[];
-  let users=[{id:'boss',account:'owner',role:'super_admin'},...Array.from({length:25},(_,i)=>({id:'usr_'+i,account:i===24?'evil<img src=x onerror=alert(1)>':'member_'+String(i).padStart(2,'0'),role:i<5?'admin':'user',must_change_password:i===5,created_at:new Date(Date.UTC(2026,0,i+1)).toISOString()}))];
+  let users=[{id:'boss',account:'owner',role:'super_admin'},...Array.from({length:25},(_,i)=>({id:'usr_'+i,account:i===24?'evil<img src=x onerror=alert(1)>':'member_'+String(i).padStart(2,'0'),role:i<5?'admin':'user',must_change_password:i===5,google_linked:i%2===0,last_login_at:i===2?null:'2026-10-25T00:01:02Z',created_at:new Date(Date.UTC(2026,0,i+1)).toISOString()}))];
   await context.route('**/*',async route=>{
    const req=route.request(),url=new URL(req.url());
    const api=url.hostname==='rangerbook-auth.warmycat.com'||(url.origin===base&&/^\/(auth|admin)\//.test(url.pathname)&&url.pathname!=='/admin/');
@@ -42,21 +42,38 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
   await page.waitForFunction(()=>Boolean(window.RangerbookI18n?.ready));
   await page.evaluate(()=>window.RangerbookI18n.ready);
   await page.locator('#adminAccountsTab').click();
-  await page.waitForFunction(()=>document.querySelectorAll('#adminUsersList article').length===12);
+  await page.waitForFunction(()=>document.querySelectorAll('#adminUsersList tbody .admin-user-row').length===12);
+  assert.equal(await page.locator('.admin-account-table thead th').count(),7);
+  assert.equal(await page.locator('[data-user-id=usr_0] .admin-account-date').last().innerText(),'2026-10-25 08:01:02');
+  assert.equal(await page.locator('[data-user-id=usr_2] .admin-account-date').last().innerText(),'—');
+  const shape=await page.locator('.admin-account-scroll').evaluate(el=>{
+    const cards=[...el.querySelectorAll('.admin-account-summary > div')].map(x=>x.getBoundingClientRect().top);
+    const filters=[...el.querySelectorAll('.admin-account-toolbar label')].map(x=>x.getBoundingClientRect().top);
+    const cells=[...el.querySelectorAll('th,td')];
+    return {scroll:el.scrollWidth>el.clientWidth,cards:new Set(cards).size,filters:new Set(filters).size,nowrap:cells.every(x=>getComputedStyle(x).whiteSpace==='nowrap')};
+  });
+  assert.equal(shape.cards,1);assert.equal(shape.filters,1);assert.equal(shape.nowrap,true);
+  if(width===390)assert.equal(shape.scroll,true);
+  await page.locator('[data-user-id=usr_0] summary').click();
+  const menu=await page.locator('[data-user-id=usr_0] .admin-account-menu').boundingBox();
+  assert.ok(menu.x>=0&&menu.x+menu.width<=width&&menu.y>=0&&menu.y+menu.height<=1000,JSON.stringify({menu,width,locale,theme}));
+  await page.keyboard.press('Escape');
   assert.equal(await page.locator('#adminApplicationsList').count(),0);
   assert.ok(!calls.some(x=>x.includes('applications')));
   assert.equal(await page.locator('[data-user-id=boss] button').count(),0);
-  await page.locator('#adminAccountNext').click();assert.equal(await page.locator('#adminUsersList article').count(),12);
-  await page.locator('#adminAccountNext').click();assert.equal(await page.locator('#adminUsersList article').count(),2);
+  await page.locator('#adminAccountNext').click();assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),12);
+  await page.locator('#adminAccountNext').click();assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),2);
   await page.locator('#adminAccountSearch').fill('MeMbEr_05');
-  assert.equal(await page.locator('#adminUsersList article').count(),1);
-  await page.locator('#adminAccountRole').selectOption('admin');assert.equal(await page.locator('#adminUsersList article').count(),0);
+  assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),1);
+  await page.locator('#adminAccountRole').selectOption('admin');assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),0);
   await page.locator('#adminAccountClear').click();
-  await page.locator('#adminAccountPassword').selectOption('required');assert.equal(await page.locator('#adminUsersList article').count(),1);
+  await page.locator('#adminAccountPassword').selectOption('required');assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),1);
+  await page.locator('.admin-overflow summary').click();
   assert.equal(await page.locator('[data-action=change-role]').isDisabled(),true);
   await page.locator('[data-role-select]').selectOption('admin');assert.equal(await page.locator('[data-action=change-role]').isEnabled(),true);
   page.once('dialog',dialog=>dialog.dismiss());await page.locator('[data-action=change-role]').click();assert.equal(writes.length,0);
   const dialogs=[];page.on('dialog',async d=>{dialogs.push(d.message());await d.accept();});
+  await page.locator('.admin-overflow summary').click();
   await page.locator('[data-action=change-role]').click();await page.waitForFunction(()=>document.querySelector('[data-user-id=usr_5]').dataset.userRole==='admin');
   assert.equal(writes[0].path,'/admin/users/usr_5/role');assert.equal(writes[0].body.role,'admin');
   assert.equal(await page.locator('[data-action=change-role]').isDisabled(),true);
@@ -68,7 +85,7 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
   assert.equal(writes[2].path,'/admin/users/usr_5/delete');actions+=3;
   await page.locator('#adminAccountClear').click();await page.locator('#adminAccountSearch').fill('evil');
   assert.equal(await page.locator('#adminUsersList img').count(),0);assert.ok((await page.locator('#adminUsersList').innerText()).includes('<img'));
-  await page.locator('#adminAccountClear').click();await page.locator('#adminAccountSort').selectOption('newest');assert.ok((await page.locator('#adminUsersList article').first().innerText()).includes('evil'));
+  await page.locator('#adminAccountClear').click();await page.locator('#adminAccountSort').selectOption('newest');assert.ok((await page.locator('#adminUsersList tbody .admin-user-row').first().innerText()).includes('evil'));
   assert.ok(!/[{}%]/.test(await page.locator('#adminAccountResults').innerText()),'resolved result counts');
   assert.ok(!/[{}%]/.test(await page.locator('#adminAccountPage').innerText()),'resolved pagination');
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);assert.equal(overflow,false,locale+' '+width+' page overflow');
@@ -77,10 +94,10 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
    assert.ok(!(await page.locator('#adminAccountResults').innerText()).includes('符合'));
   }
   if(process.env.QA_SCREENSHOTS){fs.mkdirSync(process.env.QA_SCREENSHOTS,{recursive:true});await page.locator('#superAdminPanel').screenshot({path:path.join(process.env.QA_SCREENSHOTS,`${locale}-${theme}-${width}.png`)});}
-  fail=true;await page.locator('#adminRefreshBtn').click();await page.locator('#adminUsersList [role=alert]').waitFor();assert.equal(await page.locator('#adminUsersList article').count(),0);assert.equal(await page.locator('#adminRefreshBtn').isEnabled(),true);
+  fail=true;await page.locator('#adminRefreshBtn').click();await page.locator('#adminUsersList [role=alert]').waitFor();assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),0);assert.equal(await page.locator('#adminRefreshBtn').isEnabled(),true);
   fail=false;hold=true;gate=new Promise(resolve=>{release=resolve;});await page.locator('#adminRefreshBtn').click();await page.waitForFunction(()=>document.querySelector('#adminUsersList').getAttribute('aria-busy')==='true');
   role='user';await page.evaluate(()=>window.RangerbookAuth.refresh());
-  release();await page.waitForTimeout(100);assert.equal(await page.locator('#adminUsersList article').count(),0);assert.equal(await page.locator('#adminAccountSummary').innerText(),'');
+  release();await page.waitForTimeout(100);assert.equal(await page.locator('#adminUsersList tbody .admin-user-row').count(),0);assert.equal(await page.locator('#adminAccountSummary').innerText(),'');
   await page.goto(base+'/ranger/ranger/?detail=u1626u-cony',{waitUntil:'domcontentloaded'});
   await page.waitForSelector('.ranger-evolution-character');
   assert.equal(await page.locator('.ranger-evolution-stage > :not(a)').count(),0);

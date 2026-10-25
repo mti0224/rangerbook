@@ -315,6 +315,44 @@
     }
   }
 
+  function formatAccountDate(value) {
+    if (!value) return "—";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+    // Fixed-width Gregorian dates, consistently displayed in Taiwan time.
+    const parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23"
+    }).formatToParts(date).map(part=>[part.type,part.value]));
+    return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+  }
+
+  function positionAccountMenu(details) {
+    const menu = details.querySelector(".admin-account-menu");
+    const trigger = details.querySelector("summary");
+    if (!menu || !details.open) return;
+    const anchor = trigger.getBoundingClientRect();
+    const bounds = menu.getBoundingClientRect();
+    menu.style.left = `${Math.max(8, Math.min(anchor.right-bounds.width, innerWidth-bounds.width-8))}px`;
+    const below = anchor.bottom+6;
+    menu.style.top = `${Math.max(8, below+bounds.height <= innerHeight-8 ? below : anchor.top-bounds.height-6)}px`;
+  }
+  usersList?.addEventListener("toggle", event => {
+    const details = event.target;
+    if (!details.matches(".admin-overflow")) return;
+    const menu = details.querySelector(".admin-account-menu");
+    if (details.open) {
+      usersList.querySelectorAll(".admin-overflow[open]").forEach(other=>{ if(other!==details) other.open=false; });
+      if (menu.showPopover && !menu.matches(":popover-open")) menu.showPopover();
+      positionAccountMenu(details);
+    } else {
+      menu.hidePopover?.();
+    }
+  }, true);
+  const repositionMenus = () => usersList?.querySelectorAll(".admin-overflow[open]").forEach(positionAccountMenu);
+  window.addEventListener("resize", repositionMenus);
+  document.addEventListener("scroll", repositionMenus, true);
+
   function renderUsers() {
     if (!auth.isSuperAdmin()) return;
     const total = accountItems.length;
@@ -340,33 +378,35 @@
     $("adminAccountPage").textContent = formatUi("site.admin.accountPage",[accountPage,pages],`第 ${accountPage} / ${pages} 頁`);
     $("adminAccountPrevious").disabled = accountsBusy || accountPage === 1;
     $("adminAccountNext").disabled = accountsBusy || accountPage === pages;
-    usersList.innerHTML = items.slice((accountPage-1)*accountPageSize,accountPage*accountPageSize).map(item => {
+    const headers = ["名稱", "帳號權限", "建立時間", "上次登入時間", "密碼狀態", "Google 綁定", "操作"];
+    const rows = items.slice((accountPage-1)*accountPageSize,accountPage*accountPageSize).map(item => {
       const isSuperAdmin = item.role === "super_admin";
-      const controls = isSuperAdmin ? `<div class="admin-locked-note">${escapeHtml(ui("此帳號只能由伺服器端管理"))}</div>` : `
-        <div class="admin-user-controls">
-          <label class="admin-role-control"><span>${escapeHtml(ui("帳號權限"))}</span>
-            <select data-role-select aria-label="${escapeHtml(item.account)} · ${escapeHtml(ui("帳號權限"))}">
-              <option value="user" ${item.role === "user" ? "selected" : ""}>${escapeHtml(ui("一般會員"))}</option>
-              <option value="admin" ${item.role === "admin" ? "selected" : ""}>${escapeHtml(ui("管理員"))}</option>
-            </select>
-          </label>
-          <div class="admin-user-actions admin-user-actions--management">
+      const controls = isSuperAdmin ? `<span class="admin-locked-note" title="${escapeHtml(ui("此帳號只能由伺服器端管理"))}" aria-label="${escapeHtml(ui("此帳號只能由伺服器端管理"))}">—</span>` : `
+        <details class="admin-overflow">
+          <summary class="admin-overflow-trigger" aria-label="${escapeHtml(item.account)} · ${escapeHtml(ui("更多帳號操作"))}" title="${escapeHtml(ui("更多帳號操作"))}">⋮</summary>
+          <div class="admin-overflow-menu admin-account-menu" popover="manual">
+            <label class="admin-role-control"><span>${escapeHtml(ui("帳號權限"))}</span>
+              <select data-role-select aria-label="${escapeHtml(item.account)} · ${escapeHtml(ui("帳號權限"))}">
+                <option value="user" ${item.role === "user" ? "selected" : ""}>${escapeHtml(ui("一般會員"))}</option>
+                <option value="admin" ${item.role === "admin" ? "selected" : ""}>${escapeHtml(ui("管理員"))}</option>
+              </select>
+            </label>
             <button class="approve" type="button" data-action="change-role" disabled>${escapeHtml(ui("套用權限"))}</button>
-            <details class="admin-overflow">
-              <summary class="admin-overflow-trigger" aria-label="${escapeHtml(item.account)} · ${escapeHtml(ui("更多帳號操作"))}" title="${escapeHtml(ui("更多帳號操作"))}">⋯</summary>
-              <div class="admin-overflow-menu" role="menu">
-                <button class="warning" type="button" role="menuitem" data-action="reset-password">${escapeHtml(ui("重置密碼"))}</button>
-                <button class="danger" type="button" role="menuitem" data-action="delete-user">${escapeHtml(ui("刪除帳號"))}</button>
-              </div>
-            </details>
+            <button class="warning" type="button" data-action="reset-password">${escapeHtml(ui("重置密碼"))}</button>
+            <button class="danger" type="button" data-action="delete-user">${escapeHtml(ui("刪除帳號"))}</button>
           </div>
-        </div>`;
-      return `<article class="admin-user-row admin-user-row--management" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}" data-user-role="${escapeHtml(item.role)}">
-          <div class="admin-user-meta"><strong data-i18n-ignore>${escapeHtml(item.account)}</strong>
-            <div class="admin-account-badges"><span class="admin-role-badge ${isSuperAdmin ? "super-admin" : item.role === "admin" ? "admin" : ""}">${escapeHtml(ui(ROLE_LABELS[item.role] || item.role))}</span>${item.must_change_password ? `<span class="admin-password-notice">${escapeHtml(ui("須更改密碼"))}</span>` : ""}</div>
-            <small>${escapeHtml(ui("建立時間"))}：${escapeHtml(formatDate(item.created_at))}</small>
-          </div>${controls}</article>`;
-    }).join("") || `<div class="admin-empty">${escapeHtml(ui(total ? "沒有符合條件的帳號。" : "目前沒有使用者。"))}</div>`;
+        </details>`;
+      return `<tr class="admin-user-row" data-user-id="${escapeHtml(item.id)}" data-user-account="${escapeHtml(item.account)}" data-user-role="${escapeHtml(item.role)}">
+        <th scope="row" data-i18n-ignore>${escapeHtml(item.account)}</th>
+        <td><span class="admin-role-badge ${isSuperAdmin ? "super-admin" : item.role === "admin" ? "admin" : ""}">${escapeHtml(ui(ROLE_LABELS[item.role] || item.role))}</span></td>
+        <td class="admin-account-date" data-i18n-ignore>${escapeHtml(formatAccountDate(item.created_at))}</td>
+        <td class="admin-account-date" data-i18n-ignore>${escapeHtml(formatAccountDate(item.last_login_at))}</td>
+        <td><span class="${item.must_change_password ? "admin-password-notice" : "admin-muted"}">${escapeHtml(ui(item.must_change_password ? "須更改密碼" : "無須更改"))}</span></td>
+        <td>${escapeHtml(ui(item.google_linked === true ? "已綁定" : item.google_linked === false ? "未綁定" : "無紀錄"))}</td>
+        <td class="admin-account-actions">${controls}</td>
+      </tr>`;
+    }).join("");
+    usersList.innerHTML = `<table class="admin-account-table"><thead><tr>${headers.map(title=>`<th scope="col">${escapeHtml(ui(title))}</th>`).join("")}</tr></thead><tbody>${rows || `<tr><td colspan="7" class="admin-empty">${escapeHtml(ui(total ? "沒有符合條件的帳號。" : "目前沒有使用者。"))}</td></tr>`}</tbody></table>`;
   }
 
   for (const id of ["adminAccountSearch", "adminAccountRole", "adminAccountPassword", "adminAccountSort"]) {
@@ -523,6 +563,22 @@
   resourceUpdatesRefreshBtn?.addEventListener("click", loadResourceUpdates);
 
   usersList?.addEventListener("click", (event) => {
+    const trigger = event.target.closest(".admin-overflow-trigger");
+    if (trigger) {
+      event.preventDefault();
+      if (accountsBusy) return;
+      const details = trigger.closest("details");
+      const menu = details.querySelector(".admin-account-menu");
+      details.open = !details.open;
+      // Position before the next paint; the native toggle event is asynchronous.
+      if (details.open) {
+        if (menu.showPopover && !menu.matches(":popover-open")) menu.showPopover();
+        positionAccountMenu(details);
+      } else {
+        menu.hidePopover?.();
+      }
+      return;
+    }
     const button = event.target.closest("button[data-action]");
     if (button) runUserAction(button.closest(".admin-user-row"), button.dataset.action);
   });

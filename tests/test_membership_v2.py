@@ -743,3 +743,23 @@ def test_concurrent_registration_same_name_creates_one_user(env,monkeypatch):
     with h.db() as con:
         assert con.execute("SELECT count(*) FROM users WHERE account='race-name' COLLATE NOCASE").fetchone()[0]==1
         assert con.execute('SELECT count(*) FROM member_outbox').fetchone()[0]==1
+
+
+def test_admin_directory_metadata_requires_full_super_admin(env):
+    h,m,c=env
+    assert c.get('/admin/users').status_code in {401,403}
+    login(c,'a')
+    assert c.get('/admin/users').status_code==403
+    c.post('/auth/logout')
+    with h.db() as con:
+        con.execute("UPDATE users SET google_sub='synthetic-sub',recovery_email='synthetic@example.test' WHERE id='a'")
+    enroll(env,'super')
+    response=c.get('/admin/users')
+    assert response.status_code==200
+    items={row['id']:row for row in response.json()['items']}
+    assert items['a']['google_linked'] is True
+    assert items['a']['last_login_at'] is not None  # Recorded before logout.
+    assert items['super']['last_login_at'] is not None
+    assert items['b']['last_login_at'] is None
+    assert items['b']['google_linked'] is False
+    assert all(not ({'google_sub','recovery_email','totp_secret','password_hash'} & set(row)) for row in items.values())
