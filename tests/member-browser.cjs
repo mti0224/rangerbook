@@ -11,6 +11,7 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
   const context=await browser.newContext({viewport:{width,height:950},serviceWorkers:'block'});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let user={logged_in:true,account:'fixture-user',role:'user'},factor=false,email=null,proof=0,reauthRate=false,offline=false,hold=false,release;
+  let accountRace=false,accountOffline=false;
   let loginMfa=false,loginPasswordChange=false,invalidLink=false,failCancel=false,expireFactor=false,mailPaused=false;
   let gameChallenge=null,gameBound=false,swapAttempts=0,searchMode="results";
   const calls=[],errors=[],outbound=[];
@@ -47,6 +48,11 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
       if(invalidLink&&['/auth/password/reset/check','/auth/email/verify'].includes(url.pathname))return route.fulfill({status:400,json:{detail:'member.invalidLink'},headers});
       let data={ok:true};
       if(url.pathname==='/auth/login'||url.pathname==='/auth/me')data=user;
+      if(url.pathname==='/auth/account/availability'){
+        if(accountOffline)return route.abort();
+        data={available:body.account!=='fixture-used'};
+      }
+      if(url.pathname==='/auth/register'&&accountRace)return route.fulfill({status:409,json:{detail:'member.accountTaken'},headers});
       if(url.pathname==='/auth/features')data={members_v2:true,google:true,registration:true,mail:!mailPaused,turnstile_site_key:'fixture-key',member_navigation:false};
       if(url.pathname==='/auth/security')data={totp_enabled:factor,totp_required:user.role==='super_admin',google_email:email,reauth_valid_for:proof};
       if(url.pathname==='/auth/2fa/setup')data={manual_key:'FIXTUREONLY',qr:'data:image/png;base64,'+png.toString('base64')};
@@ -236,8 +242,30 @@ const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42
     await menu();await page.locator('.gt-user-navigation a[href="/personal-teams/"]').waitFor();
   }
   loginPasswordChange=false;
-  user={logged_in:false,role:'user'};await go('/register/');await page.locator('#adminRegisterForm input[name=account]').fill('fixture-new');await page.locator('#adminRegisterForm input[name=email]').fill('fixture@outlook.test');
-  await page.locator('#adminRegisterForm input[name=password]').fill('fixture-password');await page.locator('#adminRegisterForm input[name=confirm]').fill('fixture-password');await page.locator('#adminRegisterForm button').click();await page.locator('#memberRegistrationSent').waitFor();
+  user={logged_in:false,role:'user'};await go('/register/');
+  const accountInput=page.locator('#adminRegisterForm input[name=account]');
+  await accountInput.fill('fixture-used');await accountInput.blur();
+  await page.waitForFunction(()=>document.querySelector('[name=account]').validity.customError);
+  assert.equal(await accountInput.getAttribute('aria-invalid'),'true');
+  assert.equal(await page.locator('#memberAccountStatus').innerText(),copy('accountTaken',locale));
+  await accountInput.fill('fixture-new');await accountInput.blur();
+  await page.waitForFunction(()=>document.querySelector('#memberAccountStatus').classList.contains('success'));
+  assert.equal(await accountInput.getAttribute('aria-invalid'),null);
+  assert.equal(await page.locator('#memberAccountStatus').innerText(),copy('accountAvailable',locale));await page.locator('#adminRegisterForm input[name=email]').fill('fixture@outlook.test');
+  await page.locator('#adminRegisterForm input[name=password]').fill('fixture-password');await page.locator('#adminRegisterForm input[name=confirm]').fill('fixture-password');
+  const registerCount=()=>calls.filter(x=>x.path==='/auth/register').length;
+  const beforeRegister=registerCount();accountOffline=true;
+  await page.locator('#adminRegisterForm button').click();await page.locator('#memberState.error').waitFor();
+  assert.equal(registerCount(),beforeRegister,'Network failure blocks registration');accountOffline=false;
+  accountRace=true;await page.locator('#adminRegisterForm button').click();
+  await page.waitForFunction(()=>document.querySelector('[name=account]').validity.customError);
+  assert.equal(await page.locator('#memberRegistrationSent').isVisible(),false,'409 never shows mail sent');
+  assert.equal(await page.locator('#memberAccountStatus').innerText(),copy('accountTaken',locale));
+  accountRace=false;await accountInput.fill('fixture-final');
+  await page.evaluate(()=>window.rbTurnstileReady());
+  await page.locator('#adminRegisterForm input[name=password]').fill('fixture-password');
+  await page.locator('#adminRegisterForm input[name=confirm]').fill('fixture-password');
+  await page.locator('#adminRegisterForm button').click();await page.locator('#memberRegistrationSent').waitFor();
   assert.equal(await page.locator('#memberRegistrationResend').isDisabled(),true);await assertPage();
   assert.equal(JSON.parse(calls.findLast(x=>x.path==='/auth/register').body).locale,locale);
   await go('/forgot-password/');await page.locator('#memberForgotForm input').fill('missing-account');

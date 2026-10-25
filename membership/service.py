@@ -68,8 +68,11 @@ class Code(Payload):
     code: str = Field(min_length=1, max_length=64)
 
 
-class Register(Payload):
+class AccountName(Payload):
     account: str = Field(min_length=3, max_length=32)
+
+
+class Register(AccountName):
     password: str = Field(min_length=10, max_length=128)
     email: str = Field(min_length=3, max_length=254)
     captcha: str = Field(min_length=1, max_length=2048)
@@ -471,6 +474,15 @@ class Membership:
                 con.execute('DELETE FROM member_totp_setup WHERE session_hash=?', (self.session_id(request),))
             return {'ok': True}
 
+        @app.post('/auth/account/availability')
+        def account_availability(payload: AccountName, request: Request):
+            h.require_trusted_origin(request)
+            account = h.normalize_account(payload.account)
+            self.rate(request, 'account-availability', account, ip_limit=30, subject_limit=30, window=60)
+            with h.db() as con:
+                exists = con.execute('SELECT 1 FROM users WHERE account=? COLLATE NOCASE', (account,)).fetchone()
+            return JSONResponse({'available': not bool(exists)}, headers={'Cache-Control': 'no-store'})
+
         @app.post('/auth/register')
         def register(payload: Register, request: Request):
             h.require_trusted_origin(request)
@@ -485,7 +497,11 @@ class Membership:
             with h.db() as con:
                 con.execute('BEGIN IMMEDIATE')
                 uid = 'usr_' + secrets.token_hex(12)
-                exists = con.execute('SELECT 1 FROM users WHERE account=? COLLATE NOCASE OR email=? COLLATE NOCASE OR recovery_email=? COLLATE NOCASE', (account, email, email)).fetchone()
+                # Check again under the writer lock: a name can be claimed after
+                # the availability request, including by an unverified account.
+                if con.execute('SELECT 1 FROM users WHERE account=? COLLATE NOCASE', (account,)).fetchone():
+                    raise HTTPException(409, 'member.accountTaken')
+                exists = con.execute('SELECT 1 FROM users WHERE email=? COLLATE NOCASE OR recovery_email=? COLLATE NOCASE', (email, email)).fetchone()
                 if not exists:
                     # Existing schema has no "none" application status: rejected means no active application.
                     con.execute("INSERT INTO users(id,account,password_hash,role,admin_application_status,created_at,email,account_active) VALUES (?,?,?,'user','rejected',?,?,0)", (uid, account, hashed, h.isoformat(), email))
