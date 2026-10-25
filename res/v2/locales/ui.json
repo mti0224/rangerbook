@@ -6900,33 +6900,5 @@
         "en": "GIF export failed. Reload the page and try again.",
         "th": "ส่งออก GIF ไม่สำเร็จ โปรดโหลดหน้าใหม่แล้วลองอีกครั้ง",
         "jp": "GIFの出力に失敗しました。ページを再読み込みして再試行してください。"
-    },
-    {
-        "key": "UI:member.accountChecking",
-        "zh_TW": "正在檢查帳號名稱…",
-        "en": "Checking account name…",
-        "jp": "アカウント名を確認中…",
-        "th": "กำลังตรวจสอบชื่อบัญชี…"
-    },
-    {
-        "key": "UI:member.accountAvailable",
-        "zh_TW": "此帳號名稱可以使用。",
-        "en": "This account name is available.",
-        "jp": "このアカウント名は使用できます。",
-        "th": "สามารถใช้ชื่อบัญชีนี้ได้"
-    },
-    {
-        "key": "UI:member.accountTaken",
-        "zh_TW": "此帳號名稱已被使用，請換一個名稱。",
-        "en": "This account name is already in use. Please choose another.",
-        "jp": "このアカウント名は既に使用されています。別の名前を選んでください。",
-        "th": "ชื่อบัญชีนี้ถูกใช้แล้ว โปรดเลือกชื่ออื่น"
-    },
-    {
-        "key": "UI:member.accountCheckFailed",
-        "zh_TW": "無法檢查帳號名稱，請稍後重試。",
-        "en": "Unable to check the account name. Please try again.",
-        "jp": "アカウント名を確認できませんでした。もう一度お試しください。",
-        "th": "ไม่สามารถตรวจสอบชื่อบัญชีได้ โปรดลองอีกครั้ง"
     }
 ]
