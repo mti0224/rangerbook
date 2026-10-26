@@ -298,6 +298,26 @@ body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card,.tool-card):hover {
 body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card) h2 { font-size: 1.15rem; color: var(--text); }
 body.gt-app :is(.ranger-hub-card,.labyrinth-entry-card) p { color: var(--muted); }
 
+/* Make category cards recognizable as links, including for keyboard users. */
+body.gt-app a:is(.ranger-hub-card,.labyrinth-entry-card) {
+  position: relative;
+  padding-right: 3rem;
+}
+body.gt-app a:is(.ranger-hub-card,.labyrinth-entry-card)::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  right: 1.2rem;
+  transform: translateY(-50%);
+  color: var(--primary-dark);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+body.gt-app a:is(.ranger-hub-card,.labyrinth-entry-card):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
 /* Dense data UIs: preserve semantic IDs, JS-managed subtrees, sorting and filters. */
 body.gt-app :is(.controls,.ranger-controls,.gear-controls,.pvp-data-controls,.pvp-history-controls,.compare-controls,.pvp-search-card,.guild-ranking-controls,.guild-usage-controls,.labyrinth-difficulty-controls,.stats-summary,.admin-card,.update-log-card,.labyrinth-tutorial-card) {
   border: 1px solid var(--line) !important;
