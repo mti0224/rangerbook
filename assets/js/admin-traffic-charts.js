@@ -198,5 +198,43 @@
     wrapper.append(legend);
     container.replaceChildren(wrapper);
   }
-  window.RangerbookTrafficCharts = { renderDaily, renderSources };
+  function renderCountries(container, rows) {
+    if (!container) return;
+    const items = (Array.isArray(rows) ? rows : []).map(item => ({
+      country: String(item?.country || ""), code: String(item?.countryCode || ""),
+      users: Math.max(0, Number(item?.users) || 0), views: Math.max(0, Number(item?.views) || 0)
+    })).filter(item => Number.isFinite(item.users) && Number.isFinite(item.views))
+      .sort((a,b) => b.views - a.views);
+    if (!items.length) {
+      container.replaceChildren();
+      const message = document.createElement("p");
+      message.className = "admin-muted";
+      message.textContent = f("traffic.countriesEmpty", [], "這個日期範圍尚無地區資料");
+      container.append(message);
+      return;
+    }
+    const total = items.reduce((sum,item) => sum + item.views, 0);
+    const table = document.createElement("table");
+    table.className = "traffic-country-table";
+    const head = table.createTHead().insertRow();
+    for (const [key, fallback] of [["country","國家／地區"],["users","使用者"],["views","瀏覽次數"],["viewShare","瀏覽占比"]]) {
+      const th = document.createElement("th"); th.scope = "col";
+      th.textContent = f("traffic." + key, [], fallback); head.append(th);
+    }
+    const body = table.createTBody();
+    let names;
+    try { names = new Intl.DisplayNames([document.documentElement.lang || "zh-Hant"], {type:"region"}); } catch (_) {}
+    for (const item of items) {
+      const row = body.insertRow();
+      const name = document.createElement("th"); name.scope = "row";
+      name.textContent = /^[A-Z]{2}$/.test(item.code) ? (names?.of(item.code) || item.country || item.code) :
+        (item.country && item.country !== "(not set)" ? item.country : f("traffic.unknownCountry", [], "未識別地區"));
+      row.append(name);
+      for (const value of [format(item.users), format(item.views), (total ? item.views / total * 100 : 0).toFixed(1) + "%"]) {
+        const cell = row.insertCell(); cell.textContent = value;
+      }
+    }
+    container.replaceChildren(table);
+  }
+  window.RangerbookTrafficCharts = { renderDaily, renderSources, renderCountries };
 })();

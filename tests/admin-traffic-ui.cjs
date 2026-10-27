@@ -36,7 +36,10 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
                 summary:{users:2654,views:30840,sessions:3456,engagedSessions:1234},
                 daily:dates,
                 pages:[{path:"/ranger/ranger/",views:2890},{path:"/pvp/usage/",views:1840}],
-                sources:labels.map((source,i)=>({source,sessions:9-i}))
+                sources:labels.map((source,i)=>({source,sessions:9-i})),
+                countries:[{country:"Japan",countryCode:"JP",users:20,views:100},
+                  {country:"Taiwan",countryCode:"TW",users:40,views:300},
+                  {country:"(not set)",countryCode:"",users:2,views:0}]
               };
             }
           } else if(pathname === "/admin/resource-updates") {
@@ -62,6 +65,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         assert.match(await page.locator("#trafficDaily svg").getAttribute("aria-label"),/30 天/);
         assert.match(await page.locator("#trafficSummary").innerText(),/30,840/);
         assert.equal(await page.locator("#trafficPages .traffic-row").count(),2);
+        assert.equal(await page.locator("#trafficCountries tbody tr").count(),3);
+        assert.match(await page.locator("#trafficCountries tbody tr").first().innerText(),/300.*75.0%/s);
+        assert.match(await page.locator("#trafficCountries").innerText(),/未識別地區/);
 
         assert.equal(await page.locator("#trafficStatus").innerText(),
           "最新更新：2026-10-11 [10:28:00]");
@@ -107,6 +113,9 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
           assert.match(await page.locator("#trafficDaily svg").getAttribute("aria-label"),
             new RegExp(days+" 天"));
           assert.equal(await page.locator("#trafficPages .traffic-row").count(),2);
+        assert.equal(await page.locator("#trafficCountries tbody tr").count(),3);
+        assert.match(await page.locator("#trafficCountries tbody tr").first().innerText(),/300.*75.0%/s);
+        assert.match(await page.locator("#trafficCountries").innerText(),/未識別地區/);
         }
         assert.deepEqual(ranges.slice(0,3),[30,7,90]);
         // API unconfigured status must clear earlier chart data rather than show stale values.
@@ -117,6 +126,7 @@ const base = process.env.AUDIT_BASE_URL || "http://127.0.0.1:4173";
         assert.equal(await page.locator("#trafficDaily svg").count(),0);
         assert.equal(await page.locator("#trafficSources svg").count(),0);
         assert.equal(await page.locator("#trafficPages .traffic-row").count(),0);
+        assert.equal(await page.locator("#trafficCountries table").count(),0);
         console.log("ADMIN_TRAFFIC_CHART_OK "+JSON.stringify({role,theme,width,ranges,scrollGap:dimensions.scrollGap}));
         await context.close();
       }

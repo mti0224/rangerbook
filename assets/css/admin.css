@@ -915,3 +915,11 @@ html[data-theme="dark"] .admin-account-menu .danger { color:#ff8e98; }
 .admin-account-pagination button:disabled { opacity:.45; cursor:default; }
 #superAdminPanel :is(input,select,button,summary,[tabindex]):focus-visible { outline:2px solid #5587dc; outline-offset:3px; }
 @media(max-width:640px) { .admin-account-pagination { gap:8px; font-size:.8rem; } .admin-account-pagination button { padding:9px; } }
+
+/* Country reports stay within the traffic panel on small screens. */
+.traffic-country-scroll { max-height: 28rem; overflow: auto; }
+.traffic-country-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.traffic-country-table :is(th,td) { padding: .7rem .6rem; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+.traffic-country-table th:first-child { text-align: left; overflow-wrap: anywhere; }
+.traffic-country-table thead th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
+.traffic-country-table tbody th { font-weight: 600; }
