@@ -36,7 +36,7 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       assert.equal(calls.length,0);
      }else{
       await page.locator('#adminLogsTab').click();
-      await page.locator('.backend-log-entry').waitFor();
+      await page.locator('.backend-log-entry').first().waitFor();
       assert.equal(await page.locator('#backendLogsList img').count(),0);
       assert.equal(await page.evaluate(()=>window.LOG_XSS),undefined);
       assert.match(await page.locator('#backendLogsList').innerText(),/08:00:00/);
@@ -67,10 +67,10 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       assert.equal(await page.locator('.backend-log-entry').count(),0);
       mode='empty';await page.click('#backendLogsRefresh');
       await page.waitForFunction(()=>document.querySelector('#backendLogsStatus').textContent.includes('沒有符合'));
-      mode='ready';await page.click('#backendLogsRefresh');await page.locator('.backend-log-entry').waitFor();
+      mode='ready';await page.click('#backendLogsRefresh');await page.locator('.backend-log-entry').first().waitFor();
       await page.click('#adminResourcesTab');
       await page.waitForFunction(()=>document.querySelector('#backendLogsList').children.length===0);
-      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').waitFor();
+      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').first().waitFor();
       mode='forbidden';await page.click('#backendLogsRefresh');
       await page.waitForFunction(()=>window.RangerbookAuth.getUser().role==='admin');
       assert.equal(await page.locator('#adminLogsTab').isVisible(),false);
@@ -80,7 +80,7 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
      if(process.env.QA_SCREENSHOTS && role==='super_admin') {
       // Re-open with a synthetic super-admin session for the review image.
       currentRole='super_admin';mode='ready';await page.evaluate(()=>window.RangerbookAuth.refresh());
-      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').waitFor();
+      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').first().waitFor();
       await page.screenshot({path:process.env.QA_SCREENSHOTS+`/backend-logs-${width}-${theme}.png`,fullPage:true});
      }
      await page.close();console.log(`BACKEND_LOGS_UI_OK ${role} ${width} ${theme}`);
