@@ -2478,49 +2478,49 @@
     "th": "จัดการบัญชี เลื่อนในแนวนอนได้"
   },
   {
-    "key": "UI:traffic.countries",
+    "key": "UI:site.traffic.countries",
     "zh_TW": "訪客國家／地區",
     "en": "Visitor countries / regions",
     "jp": "訪問者の国／地域",
     "th": "ประเทศ / ภูมิภาคของผู้เข้าชม"
   },
   {
-    "key": "UI:traffic.country",
+    "key": "UI:site.traffic.country",
     "zh_TW": "國家／地區",
     "en": "Country / region",
     "jp": "国／地域",
     "th": "ประเทศ / ภูมิภาค"
   },
   {
-    "key": "UI:traffic.users",
+    "key": "UI:site.traffic.users",
     "zh_TW": "使用者",
     "en": "Users",
     "jp": "ユーザー",
     "th": "ผู้ใช้"
   },
   {
-    "key": "UI:traffic.views",
+    "key": "UI:site.traffic.views",
     "zh_TW": "瀏覽次數",
     "en": "Views",
     "jp": "表示回数",
     "th": "ยอดดู"
   },
   {
-    "key": "UI:traffic.viewShare",
+    "key": "UI:site.traffic.viewShare",
     "zh_TW": "瀏覽占比",
     "en": "View share",
     "jp": "表示回数の割合",
     "th": "สัดส่วนยอดดู"
   },
   {
-    "key": "UI:traffic.countriesEmpty",
+    "key": "UI:site.traffic.countriesEmpty",
     "zh_TW": "這個日期範圍尚無地區資料",
     "en": "No country data for this date range.",
     "jp": "この期間の地域データはありません。",
     "th": "ไม่มีข้อมูลภูมิภาคในช่วงวันที่นี้"
   },
   {
-    "key": "UI:traffic.unknownCountry",
+    "key": "UI:site.traffic.unknownCountry",
     "zh_TW": "未識別地區",
     "en": "Unknown region",
     "jp": "地域不明",
