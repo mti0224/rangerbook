@@ -209,7 +209,7 @@
       container.replaceChildren();
       const message = document.createElement("p");
       message.className = "admin-muted";
-      message.textContent = f("traffic.countriesEmpty", [], "這個日期範圍尚無地區資料");
+      message.textContent = f("site.traffic.countriesEmpty", [], "這個日期範圍尚無地區資料");
       container.append(message);
       return;
     }
@@ -219,7 +219,7 @@
     const head = table.createTHead().insertRow();
     for (const [key, fallback] of [["country","國家／地區"],["users","使用者"],["views","瀏覽次數"],["viewShare","瀏覽占比"]]) {
       const th = document.createElement("th"); th.scope = "col";
-      th.textContent = f("traffic." + key, [], fallback); head.append(th);
+      th.textContent = f("site.traffic." + key, [], fallback); head.append(th);
     }
     const body = table.createTBody();
     let names;
@@ -228,7 +228,7 @@
       const row = body.insertRow();
       const name = document.createElement("th"); name.scope = "row";
       name.textContent = /^[A-Z]{2}$/.test(item.code) ? (names?.of(item.code) || item.country || item.code) :
-        (item.country && item.country !== "(not set)" ? item.country : f("traffic.unknownCountry", [], "未識別地區"));
+        (item.country && item.country !== "(not set)" ? item.country : f("site.traffic.unknownCountry", [], "未識別地區"));
       row.append(name);
       for (const value of [format(item.users), format(item.views), (total ? item.views / total * 100 : 0).toFixed(1) + "%"]) {
         const cell = row.insertCell(); cell.textContent = value;
