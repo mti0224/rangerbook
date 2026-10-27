@@ -18,6 +18,8 @@ from membership.service import Membership
     'https://example.test/verify?token=private', 'LF_AC=private',
     'payload\n-----BEGIN RSA PRIVATE KEY-----\nprivate',
     'eyJheader.payload.signature', 'access_key_id=private',
+    'https://example.test/callback?code=private', '__Host-rangerbook_session=private',
+    'to\x1b[31mken=private', 'otp=123456',
 ])
 def test_sensitive_events_are_redacted(text):
     assert logs.redact(text) == '[REDACTED: sensitive log entry]'

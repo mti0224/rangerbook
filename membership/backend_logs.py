@@ -25,8 +25,9 @@ MAX_BYTES = 1024 * 1024
 SENSITIVE = re.compile(
     r'(?i)(?:password|passwd|secret|token|api[_-]?key|access[_-]?key|'
     r'authorization|cookie|lf[_-]?ac|recovery[_-]?code|manual[_-]?key|'
-    r'client[_-]?secret|session[_-]?(?:id|key)|signature)'
+    r'client[_-]?secret|session|totp|otp|authorization[_-]?code|signature)'
     r'[\w-]*[\s\"\']*[:=]|\b(?:Bearer|Basic)\s+[A-Za-z0-9+/_.=-]+|'
+    r'[?&](?:code|state|key|sig|X-Amz-Credential|X-Amz-Signature)=|'
     r'-----BEGIN [\w ]*PRIVATE KEY-----|\b(?:AKIA|ASIA)[A-Z0-9]{16}\b|'
     r'\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+'
 )
@@ -39,11 +40,11 @@ def redact(message):
         except (ValueError, TypeError):
             return '[unreadable message]'
     text = str(message or '')
+    text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
+    text = re.sub(r'[\x00-\x08\x0b-\x1f\x7f]', '', text)
     # Redact the complete event, including multiline payloads and URL queries.
     if SENSITIVE.search(text):
         return '[REDACTED: sensitive log entry]'
-    text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
-    text = re.sub(r'[\x00-\x08\x0b-\x1f\x7f]', '', text)
     return text[:4000] + ('…' if len(text) > 4000 else '')
 
 
