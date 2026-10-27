@@ -2501,9 +2501,9 @@
   {
     "key": "UI:site.traffic.views",
     "zh_TW": "瀏覽次數",
-    "en": "Views",
-    "jp": "表示回数",
-    "th": "ยอดดู"
+    "en": "Page views",
+    "jp": "ページビュー",
+    "th": "จำนวนการดูหน้า"
   },
   {
     "key": "UI:site.traffic.viewShare",
