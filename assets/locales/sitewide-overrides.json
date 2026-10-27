@@ -2661,10 +2661,10 @@
   },
   {
     "key": "UI:site.backendLogs.limit",
-    "zh_TW": "筆數上限",
-    "en": "Entry Limit",
-    "th": "จำนวนรายการสูงสุด",
-    "jp": "最大件数"
+    "zh_TW": "讀取行數上限",
+    "en": "Log Line Limit",
+    "th": "จำนวนบรรทัดสูงสุด",
+    "jp": "読み込む最大行数"
   },
   {
     "key": "UI:site.backendLogs.keyword",
@@ -2682,10 +2682,10 @@
   },
   {
     "key": "UI:site.backendLogs.retention",
-    "zh_TW": "關鍵字只搜尋所選筆數內的最近紀錄；較舊紀錄依伺服器保留期限提供。",
-    "en": "Keyword search covers the selected number of recent entries. Older logs depend on server retention.",
-    "th": "ค้นหาคำเฉพาะบันทึกล่าสุดตามจำนวนที่เลือก บันทึกเก่าขึ้นอยู่กับระยะเวลาเก็บของเซิร์ฟเวอร์",
-    "jp": "キーワード検索は指定件数の最新ログが対象です。古いログはサーバーの保存期間に依存します。"
+    "zh_TW": "多行內容會合併顯示。關鍵字只搜尋所選行數內的日誌，較舊內容依伺服器保留期限提供。",
+    "en": "Multiline entries are grouped. Keyword search covers the selected number of log lines; older logs depend on server retention.",
+    "th": "บันทึกหลายบรรทัดจะแสดงรวมกัน ค้นหาภายในจำนวนบรรทัดที่เลือก บันทึกเก่าขึ้นอยู่กับระยะเวลาเก็บของเซิร์ฟเวอร์",
+    "jp": "複数行のログはまとめて表示します。検索対象は指定行数内のログです。古いログはサーバーの保存期間に依存します。"
   },
   {
     "key": "UI:site.backendLogs.loading",
@@ -2728,5 +2728,47 @@
     "en": "Unable to load logs. Try again later.",
     "th": "โหลดบันทึกไม่ได้ กรุณาลองใหม่ภายหลัง",
     "jp": "ログを読み込めません。後で再試行してください。"
+  },
+  {
+    "key": "UI:site.backendLogs.lines",
+    "zh_TW": "%N1 行",
+    "en": "%N1 lines",
+    "th": "%N1 บรรทัด",
+    "jp": "%N1 行"
+  },
+  {
+    "key": "UI:site.backendLogs.expand",
+    "zh_TW": "展開內容（%N1 行）",
+    "en": "Expand (%N1 lines)",
+    "th": "ขยาย (%N1 บรรทัด)",
+    "jp": "内容を展開（%N1 行）"
+  },
+  {
+    "key": "UI:site.backendLogs.collapse",
+    "zh_TW": "收合內容",
+    "en": "Collapse",
+    "th": "ย่อเนื้อหา",
+    "jp": "内容を折りたたむ"
+  },
+  {
+    "key": "UI:site.backendLogs.counts",
+    "zh_TW": "%N1 筆紀錄 · %N2 行日誌",
+    "en": "%N1 entries · %N2 log lines",
+    "th": "%N1 รายการ · %N2 บรรทัด",
+    "jp": "%N1 件 · ログ %N2 行"
+  },
+  {
+    "key": "UI:site.backendLogs.partial",
+    "zh_TW": "此段內容可能不完整，可增加讀取行數或調整時間範圍。",
+    "en": "This entry may be incomplete. Increase the line limit or adjust the time range.",
+    "th": "รายการนี้อาจไม่ครบถ้วน เพิ่มจำนวนบรรทัดหรือปรับช่วงเวลา",
+    "jp": "内容が一部欠けている可能性があります。行数の上限や期間を調整してください。"
+  },
+  {
+    "key": "UI:site.backendLogs.truncated",
+    "zh_TW": "內容超過顯示上限，已截斷。",
+    "en": "This entry exceeds the display limit and has been truncated.",
+    "th": "เนื้อหาเกินขีดจำกัดการแสดงผลและถูกตัดทอน",
+    "jp": "表示上限を超えたため内容を一部省略しています。"
   }
 ]

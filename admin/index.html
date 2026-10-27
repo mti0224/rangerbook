@@ -25,7 +25,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261028-backend-logs1">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261028-backend-logs2">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -167,11 +167,11 @@
           </select></label>
           <label><span>時間範圍</span><select id="backendLogsHours"><option value="1">最近 1 小時</option><option value="6">最近 6 小時</option><option value="24" selected>最近 24 小時</option><option value="168">最近 7 天</option></select></label>
           <label><span>日誌等級</span><select id="backendLogsLevel"><option value="all">所有等級</option><option value="error">錯誤以上</option><option value="warning">警告以上</option><option value="info">資訊以上</option></select></label>
-          <label><span>筆數上限</span><select id="backendLogsLimit"><option value="100">100</option><option value="200" selected>200</option><option value="500">500</option></select></label>
+          <label><span>讀取行數上限</span><select id="backendLogsLimit"><option value="100">100</option><option value="200" selected>200</option><option value="500">500</option></select></label>
           <label class="backend-logs-search"><span>關鍵字</span><input id="backendLogsKeyword" type="search" maxlength="100" placeholder="搜尋最近紀錄" autocomplete="off"></label>
           <button id="backendLogsRefresh" type="submit">重新整理</button>
         </form>
-        <p class="admin-muted">關鍵字只搜尋所選筆數內的最近紀錄；較舊紀錄依伺服器保留期限提供。</p>
+        <p class="admin-muted">多行內容會合併顯示。關鍵字只搜尋所選行數內的日誌，較舊內容依伺服器保留期限提供。</p>
         <p id="backendLogsStatus" role="status" aria-live="polite"></p>
         <div id="backendLogsList" class="backend-logs-list" aria-busy="false" data-i18n-ignore></div>
       </section>
@@ -212,8 +212,8 @@
   <script src="../assets/js/site.js?v=20261018-distbars2"></script>
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-traffic-charts.js?v=20261013-v2.5"></script>
-  <script src="../assets/js/admin-backend-logs.js?v=20261028-backend-logs1"></script>
-  <script src="../assets/js/admin-page.js?v=20261028-backend-logs1"></script>
+  <script src="../assets/js/admin-backend-logs.js?v=20261028-backend-logs2"></script>
+  <script src="../assets/js/admin-page.js?v=20261028-backend-logs2"></script>
 <script src="../assets/js/member-registration.js"></script>
 </body>
 </html>

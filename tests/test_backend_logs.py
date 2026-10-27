@@ -38,7 +38,7 @@ def test_report_bounded_allowlist_filters_and_metadata(monkeypatch):
     monkeypatch.setattr(logs, 'read_journal', read)
     result = logs.report('auth', 24, 'error', 200, '119801')
     assert len(result['items']) == 1
-    assert set(result['items'][0]) == {'time','service','priority','message'}
+    assert set(result['items'][0]) == {'time','service','priority','message','lineCount','partial','truncated'}
     assert seen[0][0] == '/usr/bin/journalctl'
     assert '--lines=200' in seen[0] and '--priority=3' in seen[0]
     assert seen[0][-2:] == ['rangerbook-auth.service', '--priority=3']
@@ -119,3 +119,86 @@ def test_reader_deadline_reaps_child(monkeypatch):
     with pytest.raises(HTTPException) as error:
         logs.read_journal([sys.executable, '-c', 'import time; time.sleep(60)'])
     assert error.value.status_code == 503
+
+
+def journal_records(messages):
+    """Same timestamp, as seen with buffered JSON output. Return newest first."""
+    return list(reversed([
+        {'__REALTIME_TIMESTAMP':'1793113116000000', '_SYSTEMD_UNIT':'rangerbook-auth.service',
+         '_PID':'42', '_STREAM_ID':'stdout-1', '_SYSTEMD_INVOCATION_ID':'run-1',
+         '_BOOT_ID':'boot-1', '_TRANSPORT':'stdout', 'PRIORITY':'6', 'MESSAGE':text}
+        for text in messages
+    ]))
+
+
+def grouped_report(monkeypatch, records, keyword=''):
+    monkeypatch.setattr(logs, 'read_journal', lambda command:'\n'.join(json.dumps(r) if r is not None else 'invalid json' for r in records))
+    return logs.report('auth',24,'all',200,keyword)
+
+
+def test_pretty_json_grouped_in_original_order_and_searched_as_event(monkeypatch):
+    messages=['before', '{', '  "counts": {', '    "zh_TW": 0,', '    "en": 0,',
+              '    "th": 0,', '    "jp": 0', '  },', '  "brackets": "} [ \\" quoted"', '}', 'after']
+    result=grouped_report(monkeypatch,journal_records(messages))
+    assert result['rawCount']==len(messages)
+    assert [r['message'] for r in result['items']] == ['after','\n'.join(messages[1:-1]),'before']
+    block=result['items'][1]
+    assert block['lineCount']==9 and block['partial'] is False
+    assert json.loads(block['message'])['counts']['jp']==0
+    found=grouped_report(monkeypatch,journal_records(messages),'jp')['items']
+    assert len(found)==1 and 'zh_TW' in found[0]['message']
+
+
+def test_same_second_normal_messages_are_separate(monkeypatch):
+    result=grouped_report(monkeypatch,journal_records(['[START] first','[END] second','INFO: third']))
+    assert len(result['items'])==3
+
+
+@pytest.mark.parametrize('key,value', [('_PID','43'),('_STREAM_ID','stdout-2'),('_SYSTEMD_INVOCATION_ID','run-2'),
+                                     ('_BOOT_ID','boot-2'),('_TRANSPORT','journal'),('PRIORITY','3'),
+                                     ('__REALTIME_TIMESTAMP','1793113119000000')])
+def test_identity_priority_and_time_gap_are_boundaries(monkeypatch,key,value):
+    records=journal_records(['{','  "x": 1','}'])
+    records[0][key]=value
+    result=grouped_report(monkeypatch,records)
+    assert len(result['items'])>=2
+
+
+def test_missing_identity_does_not_merge_by_time_alone(monkeypatch):
+    records=journal_records(['{','  "x": 1','}'])
+    for row in records:row.pop('_PID')
+    assert len(grouped_report(monkeypatch,records)['items'])==3
+
+
+def test_traceback_chain_groups_but_next_message_stays_separate(monkeypatch):
+    messages=['Traceback (most recent call last):','  File "test.py", line 1, in main','    run()',
+              'ValueError: invalid input','','During handling of the above exception, another exception occurred:',
+              'Traceback (most recent call last):','  File "test.py", line 2','RuntimeError: failed','[NEXT] normal log']
+    result=grouped_report(monkeypatch,journal_records(messages))
+    assert len(result['items'])==2
+    assert result['items'][0]['message']=='[NEXT] normal log'
+    assert result['items'][1]['message']=='\n'.join(messages[:-1])
+
+
+def test_group_redaction_hides_values_on_following_lines(monkeypatch):
+    records=journal_records(['{','  "token":','    "SYNTHETIC-PRIVATE-VALUE"','}'])
+    result=grouped_report(monkeypatch,records)
+    assert len(result['items'])==1
+    assert result['items'][0]['message']=='[REDACTED: sensitive log entry]'
+    assert grouped_report(monkeypatch,records,'SYNTHETIC-PRIVATE-VALUE')['items']==[]
+
+
+def test_query_starting_mid_block_marks_and_hides_unknown_context(monkeypatch):
+    result=grouped_report(monkeypatch,journal_records(['    "SYNTHETIC-PRIVATE-VALUE"','}']))
+    assert len(result['items'])==1
+    assert result['items'][0]['partial']
+    assert 'SYNTHETIC-PRIVATE-VALUE' not in result['items'][0]['message']
+
+
+def test_invalid_entries_break_group_and_native_multiline_is_preserved(monkeypatch):
+    records=journal_records(['{','  "x": 1','}'])
+    records.insert(1,None)
+    assert len(grouped_report(monkeypatch,records)['items'])>=2
+    native='first line\nsecond line'
+    row=grouped_report(monkeypatch,journal_records([native]))['items'][0]
+    assert row['message']==native and row['lineCount']==2

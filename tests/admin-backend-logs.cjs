@@ -21,7 +21,11 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
        calls.push(url.searchParams);
        if(mode==='forbidden'){status=403;currentRole='admin';body={detail:'member.superRequired'}}
        else if(mode==='error'){status=503;body={detail:'logs.unavailable'}}
-       else body={limit:200,items:mode==='empty'?[]:[{time:'2026-10-28T00:00:00Z',service:'rangerbook-auth.service',priority:3,message:'119801 <img src=x onerror="window.LOG_XSS=true">\n'+'x'.repeat(500)}]};
+       else body={limit:200,rawCount:41,items:mode==='empty'?[]:[
+        {time:'2026-10-28T00:00:00Z',service:'rangerbook-auth.service',priority:3,message:'119801 <img src=x onerror="window.LOG_XSS=true">\n'+'x'.repeat(500)},
+        {time:'2026-10-27T23:24:23Z',service:'rangerbook-v2-update.service',priority:6,lineCount:38,partial:false,message:JSON.stringify({locales:{zh_TW:0,en:0,th:0,jp:0},summary:Array.from({length:10},(_,i)=>({key:'field_'+i,count:i}))},null,2)},
+        {time:'2026-10-27T23:24:22Z',service:'rangerbook-v2-update.service',priority:6,lineCount:1,partial:true,message:'[REDACTED: incomplete multiline entry]'}
+       ]};
       }
       await route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':base,'access-control-allow-credentials':'true'},body:JSON.stringify(body)});
      });
@@ -32,11 +36,25 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       assert.equal(calls.length,0);
      }else{
       await page.locator('#adminLogsTab').click();
-      await page.locator('.backend-log-entry').waitFor();
+      await page.locator('.backend-log-entry').first().waitFor();
       assert.equal(await page.locator('#backendLogsList img').count(),0);
       assert.equal(await page.evaluate(()=>window.LOG_XSS),undefined);
       assert.match(await page.locator('#backendLogsList').innerText(),/08:00:00/);
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
+      assert.equal(await page.locator('.backend-log-entry').count(),3);
+      assert.equal(await page.locator('.backend-log-entry time').count(),3);
+      assert.equal(await page.locator('.backend-log-content').count(),2);
+      const jsonDetails=page.locator('.backend-log-content').nth(1);
+      assert.equal(await jsonDetails.getAttribute('open'),null);
+      assert.equal(await jsonDetails.locator('pre').isVisible(),false);
+      await jsonDetails.locator('summary').click();
+      assert.equal(await jsonDetails.locator('pre').isVisible(),true);
+      assert.equal(JSON.parse(await jsonDetails.locator('pre').innerText()).locales.jp,0);
+      await jsonDetails.locator('summary').click();
+      assert.equal(await jsonDetails.locator('pre').isVisible(),false);
+      assert.match(await page.locator('#backendLogsStatus').innerText(),/3.*41/);
+      assert.match(await page.locator('.backend-log-partial').innerText(),/可能不完整/);
+
       await page.selectOption('#backendLogsSource','pvp');
       await page.waitForFunction(()=>document.querySelector('#backendLogsRefresh').disabled===false);
       assert.equal(calls.at(-1).get('source'),'pvp');
@@ -49,10 +67,10 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       assert.equal(await page.locator('.backend-log-entry').count(),0);
       mode='empty';await page.click('#backendLogsRefresh');
       await page.waitForFunction(()=>document.querySelector('#backendLogsStatus').textContent.includes('沒有符合'));
-      mode='ready';await page.click('#backendLogsRefresh');await page.locator('.backend-log-entry').waitFor();
+      mode='ready';await page.click('#backendLogsRefresh');await page.locator('.backend-log-entry').first().waitFor();
       await page.click('#adminResourcesTab');
       await page.waitForFunction(()=>document.querySelector('#backendLogsList').children.length===0);
-      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').waitFor();
+      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').first().waitFor();
       mode='forbidden';await page.click('#backendLogsRefresh');
       await page.waitForFunction(()=>window.RangerbookAuth.getUser().role==='admin');
       assert.equal(await page.locator('#adminLogsTab').isVisible(),false);
@@ -62,7 +80,7 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
      if(process.env.QA_SCREENSHOTS && role==='super_admin') {
       // Re-open with a synthetic super-admin session for the review image.
       currentRole='super_admin';mode='ready';await page.evaluate(()=>window.RangerbookAuth.refresh());
-      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').waitFor();
+      await page.click('#adminLogsTab');await page.locator('.backend-log-entry').first().waitFor();
       await page.screenshot({path:process.env.QA_SCREENSHOTS+`/backend-logs-${width}-${theme}.png`,fullPage:true});
      }
      await page.close();console.log(`BACKEND_LOGS_UI_OK ${role} ${width} ${theme}`);
