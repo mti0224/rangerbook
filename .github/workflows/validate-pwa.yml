@@ -57,3 +57,12 @@ jobs:
           node tests/compare-search-locales.cjs
           AUDIT_BASE_URL=http://127.0.0.1:4173 node tests/v2-browser-interactions.cjs
           AUDIT_BASE_URL=http://127.0.0.1:4173 node tests/v2-pvp-guild-browser.cjs
+
+      - name: Focused visual checks for UI review
+        run: |
+          cp deploy/aws/v2/locales/ui.json res/v2/locales/ui.json
+          python3 -m http.server 4173 >/tmp/rangerbook-ui-qa.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          AUDIT_BASE_URL=http://127.0.0.1:4173 node tests/home-popular-ui.cjs
+          AUDIT_BASE_URL=http://127.0.0.1:4173 node tests/sitewide-visual-audit.cjs
