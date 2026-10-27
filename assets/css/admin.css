@@ -936,4 +936,12 @@ html[data-theme="dark"] .admin-account-menu .danger { color:#ff8e98; }
 .backend-log-entry.is-warning{border-left-color:#d89822}
 .backend-log-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
 .backend-log-entry pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--text);margin:8px 0 0}
+.backend-log-line-count{border:1px solid var(--line);border-radius:6px;padding:0 6px}
+.backend-log-preview{max-height:4.95em;overflow:hidden}
+.backend-log-preview[hidden]{display:none}
+.backend-log-content{margin-top:10px}
+.backend-log-content summary{cursor:pointer;color:var(--primary);font-size:.85rem;padding:6px 0;min-height:32px;box-sizing:border-box}
+.backend-log-content summary:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:4px}
+.backend-log-content pre{max-height:50vh;overflow:auto;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--soft)}
+.backend-log-partial{font-size:.82rem;line-height:1.6;color:var(--muted);margin:8px 0}
 @media(max-width:600px){.backend-logs-toolbar label{min-width:calc(50% - 12px)}.backend-logs-toolbar .backend-logs-search{min-width:100%}.backend-logs-toolbar button{width:100%}.backend-log-entry{padding:10px}}
