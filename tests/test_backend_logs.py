@@ -1,6 +1,7 @@
 """Journal limits/redaction and real membership session/role enforcement, synthetic only."""
 from contextlib import contextmanager
 import json
+import sys
 from types import SimpleNamespace
 
 from fastapi import FastAPI, HTTPException
@@ -101,3 +102,18 @@ def test_journal_failure_is_generic(client, monkeypatch):
         raise HTTPException(503, 'logs.unavailable')
     monkeypatch.setattr(logs, 'read_journal', fail)
     assert c.get('/admin/backend-logs').json() == {'detail':'logs.unavailable'}
+
+
+def test_reader_rejects_large_output_and_nonzero_exit():
+    for code in ['import sys; sys.stdout.write("x"*1100000)', 'raise SystemExit(1)']:
+        with pytest.raises(HTTPException) as error:
+            logs.read_journal([sys.executable, '-c', code])
+        assert error.value.status_code == 503
+
+
+def test_reader_deadline_reaps_child(monkeypatch):
+    clock = iter([0, 6])
+    monkeypatch.setattr(logs.time, 'monotonic', lambda:next(clock))
+    with pytest.raises(HTTPException) as error:
+        logs.read_journal([sys.executable, '-c', 'import time; time.sleep(60)'])
+    assert error.value.status_code == 503
