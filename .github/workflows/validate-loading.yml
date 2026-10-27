@@ -13,6 +13,9 @@ on:
       - 'tests/ranger-multiselect.cjs'
       - 'tests/filter-style-consistency.cjs'
       - 'assets/js/gear.js'
+      - 'assets/js/gear-detail.js'
+      - 'tests/gear-detail-loading.cjs'
+      - 'tests/gear-spec-upgrades.cjs'
       - 'assets/css/gear.css'
       - 'gear/index.html'
       - 'assets/css/ranger-advanced-filters.css'
@@ -27,6 +30,7 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/build-pwa.mjs
+      - run: node tests/gear-detail-loading.cjs && node tests/gear-spec-upgrades.cjs
       - run: node tests/fast-data.cjs && node tests/talent-adapter.cjs && node tests/pwa-contract.cjs && node tests/pwa-worker.cjs
       - run: npm install --no-save playwright && npx playwright install --with-deps chromium
       - run: node tests/loading-performance.cjs

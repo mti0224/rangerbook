@@ -310,8 +310,20 @@
         effect,
         value: isObject(data)
           ? transformValue(data["係數"] ?? data["數值"] ?? "-", level, "increment", data["每次升級增加"] ?? globalIncrement)
-          : transformValue(data, level, "increment", globalIncrement)
+          : transformValue(data, level, "increment", legacySpecIncrement(data, globalIncrement))
       }));
+  }
+
+  function legacySpecIncrement(baseValue, incrementValue) {
+    // Legacy scalar Spec+ options encode a flat +1 step as "100%".
+    // Percentage options already use percentage points; V2 object options
+    // carry a correctly typed step and bypass this compatibility conversion.
+    const base = scalarText(baseValue), increment = scalarText(incrementValue);
+    if (/^[+-]?\d+(?:\.\d+)?(?:\s*~\s*[+-]?\d+(?:\.\d+)?)?$/.test(base)
+      && /^[+-]?\d+(?:\.\d+)?%$/.test(increment)) {
+      return String(Number(increment.slice(0, -1)) / 100);
+    }
+    return incrementValue;
   }
 
   function triggerRows(special, level, fallbackProbability) {

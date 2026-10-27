@@ -14,7 +14,7 @@ async function main() {
   const data = [{ranger_id:"u1-brown", "Ranger名稱":"熊大", "技能1":{"技能組":[{"效果":"體力恢復 (持續)"}]}}];
   const window = {
     location: {pathname:"/gear/eq_2305_acc_08"},
-    RangerbookI18n: {t:(_key,fallback)=>fallback,uiText:x=>x,lookup:(_x,_k,fallback)=>fallback,
+    RangerbookI18n: {t:(_key,fallback)=>fallback,format:(_key,_args,fallback)=>fallback,uiText:x=>x,lookup:(_x,_k,fallback)=>fallback,
                      unitName:(_x,fallback)=>fallback}
   };
   const context = {
