@@ -2525,5 +2525,208 @@
     "en": "Unknown region",
     "jp": "地域不明",
     "th": "ไม่ทราบภูมิภาค"
+  },
+  {
+    "key": "UI:site.backendLogs.title",
+    "zh_TW": "後端日誌",
+    "en": "Backend Logs",
+    "th": "บันทึกระบบเบื้องหลัง",
+    "jp": "バックエンドログ"
+  },
+  {
+    "key": "UI:site.backendLogs.notice",
+    "zh_TW": "僅限最高管理員查看。敏感紀錄會遮蔽；時間以台灣時間顯示，最新紀錄在上方。",
+    "en": "Super administrators only. Sensitive entries are redacted. Times use Taiwan time; newest first.",
+    "th": "เฉพาะผู้ดูแลระบบสูงสุด ข้อมูลที่ละเอียดอ่อนจะถูกปกปิด เวลาไต้หวัน เรียงจากใหม่ไปเก่า",
+    "jp": "最高管理者のみ閲覧可能です。機密情報は非表示になり、台湾時間で新しい順に表示します。"
+  },
+  {
+    "key": "UI:site.backendLogs.service",
+    "zh_TW": "服務",
+    "en": "Service",
+    "th": "บริการ",
+    "jp": "サービス"
+  },
+  {
+    "key": "UI:site.backendLogs.all",
+    "zh_TW": "全部服務",
+    "en": "All Services",
+    "th": "บริการทั้งหมด",
+    "jp": "すべてのサービス"
+  },
+  {
+    "key": "UI:site.backendLogs.auth",
+    "zh_TW": "帳號 API",
+    "en": "Account API",
+    "th": "API บัญชี",
+    "jp": "アカウント API"
+  },
+  {
+    "key": "UI:site.backendLogs.updates",
+    "zh_TW": "遊戲資料更新",
+    "en": "Game Data Updates",
+    "th": "อัปเดตข้อมูลเกม",
+    "jp": "ゲームデータ更新"
+  },
+  {
+    "key": "UI:site.backendLogs.pvp",
+    "zh_TW": "PvP 收集",
+    "en": "PvP Collection",
+    "th": "รวบรวม PvP",
+    "jp": "PvP 収集"
+  },
+  {
+    "key": "UI:site.backendLogs.guildwar",
+    "zh_TW": "公會戰收集",
+    "en": "Guild War Collection",
+    "th": "รวบรวมกิลด์วอร์",
+    "jp": "ギルド戦収集"
+  },
+  {
+    "key": "UI:site.backendLogs.players",
+    "zh_TW": "玩家名單收集",
+    "en": "Player Index Collection",
+    "th": "รวบรวมรายชื่อผู้เล่น",
+    "jp": "プレイヤー一覧収集"
+  },
+  {
+    "key": "UI:site.backendLogs.mail",
+    "zh_TW": "郵件與健康檢查",
+    "en": "Mail and Health Checks",
+    "th": "อีเมลและตรวจสอบสถานะ",
+    "jp": "メールと稼働確認"
+  },
+  {
+    "key": "UI:site.backendLogs.traffic",
+    "zh_TW": "流量統計",
+    "en": "Traffic Statistics",
+    "th": "สถิติการเข้าชม",
+    "jp": "アクセス統計"
+  },
+  {
+    "key": "UI:site.backendLogs.hour",
+    "zh_TW": "最近 1 小時",
+    "en": "Last Hour",
+    "th": "1 ชั่วโมงล่าสุด",
+    "jp": "過去1時間"
+  },
+  {
+    "key": "UI:site.backendLogs.six",
+    "zh_TW": "最近 6 小時",
+    "en": "Last 6 Hours",
+    "th": "6 ชั่วโมงล่าสุด",
+    "jp": "過去6時間"
+  },
+  {
+    "key": "UI:site.backendLogs.day",
+    "zh_TW": "最近 24 小時",
+    "en": "Last 24 Hours",
+    "th": "24 ชั่วโมงล่าสุด",
+    "jp": "過去24時間"
+  },
+  {
+    "key": "UI:site.backendLogs.level",
+    "zh_TW": "日誌等級",
+    "en": "Log Level",
+    "th": "ระดับบันทึก",
+    "jp": "ログレベル"
+  },
+  {
+    "key": "UI:site.backendLogs.levels",
+    "zh_TW": "所有等級",
+    "en": "All Levels",
+    "th": "ทุกระดับ",
+    "jp": "すべてのレベル"
+  },
+  {
+    "key": "UI:site.backendLogs.error",
+    "zh_TW": "錯誤以上",
+    "en": "Error or Higher",
+    "th": "ข้อผิดพลาดขึ้นไป",
+    "jp": "エラー以上"
+  },
+  {
+    "key": "UI:site.backendLogs.warning",
+    "zh_TW": "警告以上",
+    "en": "Warning or Higher",
+    "th": "คำเตือนขึ้นไป",
+    "jp": "警告以上"
+  },
+  {
+    "key": "UI:site.backendLogs.info",
+    "zh_TW": "資訊以上",
+    "en": "Info or Higher",
+    "th": "ข้อมูลขึ้นไป",
+    "jp": "情報以上"
+  },
+  {
+    "key": "UI:site.backendLogs.limit",
+    "zh_TW": "筆數上限",
+    "en": "Entry Limit",
+    "th": "จำนวนรายการสูงสุด",
+    "jp": "最大件数"
+  },
+  {
+    "key": "UI:site.backendLogs.keyword",
+    "zh_TW": "關鍵字",
+    "en": "Keyword",
+    "th": "คำค้น",
+    "jp": "キーワード"
+  },
+  {
+    "key": "UI:site.backendLogs.search",
+    "zh_TW": "搜尋最近紀錄",
+    "en": "Search Recent Entries",
+    "th": "ค้นหาบันทึกล่าสุด",
+    "jp": "最近のログを検索"
+  },
+  {
+    "key": "UI:site.backendLogs.retention",
+    "zh_TW": "關鍵字只搜尋所選筆數內的最近紀錄；較舊紀錄依伺服器保留期限提供。",
+    "en": "Keyword search covers the selected number of recent entries. Older logs depend on server retention.",
+    "th": "ค้นหาคำเฉพาะบันทึกล่าสุดตามจำนวนที่เลือก บันทึกเก่าขึ้นอยู่กับระยะเวลาเก็บของเซิร์ฟเวอร์",
+    "jp": "キーワード検索は指定件数の最新ログが対象です。古いログはサーバーの保存期間に依存します。"
+  },
+  {
+    "key": "UI:site.backendLogs.loading",
+    "zh_TW": "正在讀取日誌…",
+    "en": "Loading logs…",
+    "th": "กำลังโหลดบันทึก…",
+    "jp": "ログを読み込み中…"
+  },
+  {
+    "key": "UI:site.backendLogs.newest",
+    "zh_TW": "最新紀錄在上方",
+    "en": "Newest First",
+    "th": "ใหม่สุดอยู่ด้านบน",
+    "jp": "新しい順"
+  },
+  {
+    "key": "UI:site.backendLogs.empty",
+    "zh_TW": "此範圍內沒有符合條件的日誌。",
+    "en": "No matching logs in this range.",
+    "th": "ไม่มีบันทึกที่ตรงกันในช่วงนี้",
+    "jp": "この範囲に該当するログはありません。"
+  },
+  {
+    "key": "UI:site.backendLogs.rate",
+    "zh_TW": "查詢過於頻繁，請稍後再試。",
+    "en": "Too many requests. Try again shortly.",
+    "th": "คำขอมากเกินไป กรุณาลองใหม่ภายหลัง",
+    "jp": "リクエストが多すぎます。しばらくしてから再試行してください。"
+  },
+  {
+    "key": "UI:site.backendLogs.forbidden",
+    "zh_TW": "無權查看日誌，請重新登入並確認權限。",
+    "en": "Log access denied. Sign in again and check your permissions.",
+    "th": "ไม่มีสิทธิ์ดูบันทึก กรุณาเข้าสู่ระบบใหม่และตรวจสอบสิทธิ์",
+    "jp": "ログを閲覧できません。再ログインして権限を確認してください。"
+  },
+  {
+    "key": "UI:site.backendLogs.failed",
+    "zh_TW": "無法讀取日誌，請稍後重試。",
+    "en": "Unable to load logs. Try again later.",
+    "th": "โหลดบันทึกไม่ได้ กรุณาลองใหม่ภายหลัง",
+    "jp": "ログを読み込めません。後で再試行してください。"
   }
 ]
