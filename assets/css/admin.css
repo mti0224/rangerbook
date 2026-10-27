@@ -923,3 +923,17 @@ html[data-theme="dark"] .admin-account-menu .danger { color:#ff8e98; }
 .traffic-country-table th:first-child { text-align: left; overflow-wrap: anywhere; }
 .traffic-country-table thead th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
 .traffic-country-table tbody th { font-weight: 600; }
+/* Backend logs follow the admin theme in both color modes. */
+.backend-logs-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:20px 0}
+.backend-logs-toolbar label{display:grid;gap:6px;min-width:130px;flex:1}
+.backend-logs-toolbar .backend-logs-search{flex:2;min-width:180px}
+.backend-logs-toolbar input,.backend-logs-toolbar select{width:100%;min-height:42px;box-sizing:border-box;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px}
+.backend-logs-list{max-height:70vh;overflow:auto;border:1px solid var(--line);border-radius:12px;overscroll-behavior:contain}
+.backend-logs-list:empty{border:0}
+.backend-log-entry{padding:14px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
+.backend-log-entry:last-child{border-bottom:0}
+.backend-log-entry.is-error{border-left-color:#db5263}
+.backend-log-entry.is-warning{border-left-color:#d89822}
+.backend-log-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
+.backend-log-entry pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--text);margin:8px 0 0}
+@media(max-width:600px){.backend-logs-toolbar label{min-width:calc(50% - 12px)}.backend-logs-toolbar .backend-logs-search{min-width:100%}.backend-logs-toolbar button{width:100%}.backend-log-entry{padding:10px}}

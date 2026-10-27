@@ -337,6 +337,9 @@ class Membership:
         app.router.routes[:] = [route for route in app.router.routes if getattr(route, 'path', '') not in old_paths]
         full, raw = self.full, self.raw
 
+        from .backend_logs import install as install_backend_logs
+        install_backend_logs(self)
+
         @app.get('/admin/users')
         def users_directory(_=Depends(h.require_super_admin)):
             from .admin_directory import account_directory

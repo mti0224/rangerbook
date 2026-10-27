@@ -14,7 +14,8 @@
   const workspacePanels = {
     resources: { button: $("adminResourcesTab"), panel: $("adminResourceUpdatesCard") },
     accounts: { button: $("adminAccountsTab"), panel: superAdminPanel },
-    traffic: { button: $("adminTrafficTab"), panel: $("adminTrafficPanel") }
+    traffic: { button: $("adminTrafficTab"), panel: $("adminTrafficPanel") },
+    logs: { button: $("adminLogsTab"), panel: $("adminLogsPanel") }
   };
   let activeWorkspaceSection = "resources";
   const loginPanel = $("adminLoginPanel");
@@ -76,7 +77,8 @@
     return {
       resources: auth.isAdmin(),
       accounts: auth.isSuperAdmin(),
-      traffic: auth.isAdmin()
+      traffic: auth.isAdmin(),
+      logs: auth.isSuperAdmin()
     };
   }
 
@@ -105,6 +107,7 @@
     activeWorkspaceSection = section;
     renderWorkspaceTabs();
     if (section === "traffic") loadTraffic();
+    if (section === "logs") window.dispatchEvent(new Event("rangerbook:backend-logs-open"));
     if (section === "personal") window.dispatchEvent(new Event("rangerbook:personal-teams-open"));
     if (section === "personal") window.RangerbookPersonalTeams?.refresh();
     if (focus) workspacePanels[section].button?.focus();
