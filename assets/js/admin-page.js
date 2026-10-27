@@ -126,7 +126,7 @@
   }
 
   let trafficRequestId = 0;
-  const trafficIds = ["trafficSummary", "trafficDaily", "trafficPages", "trafficSources"];
+  const trafficIds = ["trafficSummary", "trafficDaily", "trafficPages", "trafficSources", "trafficCountries"];
   function clearTraffic() {
     trafficIds.forEach(id => $(id)?.replaceChildren());
   }
@@ -175,6 +175,7 @@
         pages.append(row);
       });
       window.RangerbookTrafficCharts.renderDaily($("trafficDaily"), data.daily);
+      window.RangerbookTrafficCharts.renderCountries($("trafficCountries"), data.countries);
       window.RangerbookTrafficCharts.renderSources($("trafficSources"), data.sources);
     } catch (error) {
       if (requestId !== trafficRequestId || !auth.isAdmin()) return;
