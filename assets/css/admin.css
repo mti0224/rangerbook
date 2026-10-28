@@ -934,6 +934,9 @@ html[data-theme="dark"] .admin-account-menu .danger { color:#ff8e98; }
 .backend-log-entry:last-child{border-bottom:0}
 .backend-log-entry.is-error{border-left-color:#db5263}
 .backend-log-entry.is-warning{border-left-color:#d89822}
+.backend-log-entry.is-success{border-left-color:#239e80}
+.backend-log-run-timing{font-size:.85rem;line-height:1.7;color:var(--muted);margin:10px 0 0;overflow-wrap:anywhere}
+.backend-log-run pre{max-height:55vh}
 .backend-log-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}
 .backend-log-entry pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--text);margin:8px 0 0}
 .backend-log-line-count{border:1px solid var(--line);border-radius:6px;padding:0 6px}

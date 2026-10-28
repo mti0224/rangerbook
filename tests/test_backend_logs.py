@@ -64,7 +64,7 @@ def client(monkeypatch):
     rate = []
     member.rate = lambda *a, **kw: rate.append(kw)
     reads = []
-    monkeypatch.setattr(logs, 'read_journal', lambda command: reads.append(command) or '')
+    monkeypatch.setattr(logs, 'read_journal', lambda command, **kw: reads.append(command) or '')
     logs.install(member)
     return TestClient(member.app), state, reads, rate
 
@@ -73,19 +73,19 @@ def test_roles_mfa_revocation_and_no_store(client):
     c, state, reads, rate = client
     for role, code in [(None,401),('user',403),('admin',403),('super_admin',200)]:
         state['role'] = role
-        response = c.get('/admin/backend-logs')
+        response = c.get('/admin/backend-logs?source=auth')
         assert response.status_code == code
     assert len(reads) == len(rate) == 1
     assert response.headers['cache-control'] == 'no-store, private'
     for key in ['mfa', 'active', 'enrolled']:
         state[key] = False
-        assert c.get('/admin/backend-logs').status_code in (401,403)
+        assert c.get('/admin/backend-logs?source=auth').status_code in (401,403)
         state[key] = True
     state['password'] = True
-    assert c.get('/admin/backend-logs').status_code == 403
+    assert c.get('/admin/backend-logs?source=auth').status_code == 403
     state['password'] = False
     state['role'] = 'admin'  # Revocation applies to the very next request.
-    assert c.get('/admin/backend-logs').status_code == 403
+    assert c.get('/admin/backend-logs?source=auth').status_code == 403
     assert len(reads) == 1
 
 
@@ -100,10 +100,10 @@ def test_invalid_queries_never_read_journal(client, query):
 def test_journal_failure_is_generic(client, monkeypatch):
     c, state, _, _ = client
     state['role'] = 'super_admin'
-    def fail(command):
+    def fail(command, **kw):
         raise HTTPException(503, 'logs.unavailable')
     monkeypatch.setattr(logs, 'read_journal', fail)
-    assert c.get('/admin/backend-logs').json() == {'detail':'logs.unavailable'}
+    assert c.get('/admin/backend-logs?source=auth').json() == {'detail':'logs.unavailable'}
 
 
 def test_reader_rejects_large_output_and_nonzero_exit():
@@ -202,3 +202,25 @@ def test_invalid_entries_break_group_and_native_multiline_is_preserved(monkeypat
     native='first line\nsecond line'
     row=grouped_report(monkeypatch,journal_records([native]))['items'][0]
     assert row['message']==native and row['lineCount']==2
+
+
+def test_completed_run_detail_uses_same_full_session_guard(client):
+    c,state,reads,rate=client
+    url='/admin/backend-logs/runs/'+'a'*32+'?service=rangerbook-v2-update.service'
+    for role,code in [(None,401),('user',403),('admin',403),('super_admin',404)]:
+        state['role']=role
+        assert c.get(url).status_code==code
+    assert len(reads)==1
+    state['mfa']=False
+    assert c.get(url).status_code==403
+    assert len(reads)==1
+
+
+def test_run_detail_rejects_invalid_identity_and_service(client):
+    c,state,reads,rate=client
+    state['role']='super_admin'
+    for url in ['/admin/backend-logs/runs/not-a-run?service=rangerbook-v2-update.service',
+                '/admin/backend-logs/runs/'+'a'*32+'?service=nginx.service',
+                '/admin/backend-logs/runs/'+'a'*32+'?service=rangerbook-auth.service']:
+        assert c.get(url).status_code==422
+    assert not reads
