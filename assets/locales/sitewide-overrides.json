@@ -2661,10 +2661,10 @@
   },
   {
     "key": "UI:site.backendLogs.limit",
-    "zh_TW": "讀取行數上限",
-    "en": "Log Line Limit",
-    "th": "จำนวนบรรทัดสูงสุด",
-    "jp": "読み込む最大行数"
+    "zh_TW": "紀錄數量上限",
+    "en": "Entry Limit",
+    "th": "จำนวนรายการสูงสุด",
+    "jp": "最大表示件数"
   },
   {
     "key": "UI:site.backendLogs.keyword",
@@ -2682,10 +2682,10 @@
   },
   {
     "key": "UI:site.backendLogs.retention",
-    "zh_TW": "多行內容會合併顯示。關鍵字只搜尋所選行數內的日誌，較舊內容依伺服器保留期限提供。",
-    "en": "Multiline entries are grouped. Keyword search covers the selected number of log lines; older logs depend on server retention.",
-    "th": "บันทึกหลายบรรทัดจะแสดงรวมกัน ค้นหาภายในจำนวนบรรทัดที่เลือก บันทึกเก่าขึ้นอยู่กับระยะเวลาเก็บของเซิร์ฟเวอร์",
-    "jp": "複数行のログはまとめて表示します。検索対象は指定行数内のログです。古いログはサーバーの保存期間に依存します。"
+    "zh_TW": "排程完整結束後，每次執行顯示為一筆紀錄，可展開查看該次輸出；執行中的排程會在結束後出現。帳號 API 日誌即時顯示。",
+    "en": "Each scheduled run appears as one entry after it finishes. Expand it to view its output. Running jobs appear after completion; account API logs appear immediately.",
+    "th": "งานตามกำหนดเวลาจะแสดงหนึ่งรายการเมื่อเสร็จสิ้น ขยายเพื่อดูผลลัพธ์ งานที่กำลังทำงานจะแสดงหลังเสร็จสิ้น ส่วนบันทึก API บัญชีแสดงทันที",
+    "jp": "定期処理は完了後に実行ごとに1件表示します。展開するとその実行の出力を確認できます。実行中の処理は終了後に表示され、アカウント API のログは即時表示されます。"
   },
   {
     "key": "UI:site.backendLogs.loading",
@@ -2770,5 +2770,75 @@
     "en": "This entry exceeds the display limit and has been truncated.",
     "th": "เนื้อหาเกินขีดจำกัดการแสดงผลและถูกตัดทอน",
     "jp": "表示上限を超えたため内容を一部省略しています。"
+  },
+  {
+    "key": "UI:site.backendLogs.runTiming",
+    "zh_TW": "開始：%N1 · 耗時：%N2 秒",
+    "en": "Started: %N1 · Duration: %N2 s",
+    "th": "เริ่ม: %N1 · ระยะเวลา: %N2 วินาที",
+    "jp": "開始：%N1 · 所要時間：%N2 秒"
+  },
+  {
+    "key": "UI:site.backendLogs.ended",
+    "zh_TW": "結束：",
+    "en": "Ended: ",
+    "th": "สิ้นสุด: ",
+    "jp": "終了："
+  },
+  {
+    "key": "UI:site.backendLogs.runSuccess",
+    "zh_TW": "執行成功",
+    "en": "Succeeded",
+    "th": "สำเร็จ",
+    "jp": "実行成功"
+  },
+  {
+    "key": "UI:site.backendLogs.runFailed",
+    "zh_TW": "執行失敗",
+    "en": "Failed",
+    "th": "ล้มเหลว",
+    "jp": "実行失敗"
+  },
+  {
+    "key": "UI:site.backendLogs.viewRun",
+    "zh_TW": "查看本次執行紀錄",
+    "en": "View Run Output",
+    "th": "ดูผลลัพธ์ของงานนี้",
+    "jp": "この実行のログを見る"
+  },
+  {
+    "key": "UI:site.backendLogs.collapseRun",
+    "zh_TW": "收合本次紀錄",
+    "en": "Collapse Run Output",
+    "th": "ย่อผลลัพธ์ของงานนี้",
+    "jp": "この実行のログを折りたたむ"
+  },
+  {
+    "key": "UI:site.backendLogs.expandRun",
+    "zh_TW": "展開本次紀錄（%N1 行）",
+    "en": "Expand Run Output (%N1 lines)",
+    "th": "ขยายผลลัพธ์ (%N1 บรรทัด)",
+    "jp": "この実行のログを展開（%N1 行）"
+  },
+  {
+    "key": "UI:site.backendLogs.entryCount",
+    "zh_TW": "%N1 筆紀錄",
+    "en": "%N1 entries",
+    "th": "%N1 รายการ",
+    "jp": "%N1 件"
+  },
+  {
+    "key": "UI:site.backendLogs.oldOutput",
+    "zh_TW": "部分輸出已超過伺服器保留期限，僅能顯示仍保留的內容。",
+    "en": "Some output is no longer retained by the server. Only the remaining output is available.",
+    "th": "ผลลัพธ์บางส่วนพ้นระยะเวลาเก็บของเซิร์ฟเวอร์แล้ว จะแสดงเฉพาะส่วนที่ยังมีอยู่",
+    "jp": "一部の出力はサーバーの保存期間を過ぎています。残っている内容のみ表示します。"
+  },
+  {
+    "key": "UI:site.backendLogs.searchLimited",
+    "zh_TW": "搜尋結果較多，請縮小時間範圍以查看更多紀錄。",
+    "en": "There are many search results. Narrow the time range to view more entries.",
+    "th": "มีผลการค้นหาจำนวนมาก กรุณาลดช่วงเวลาเพื่อดูรายการเพิ่มเติม",
+    "jp": "検索結果が多いため、期間を絞り込んでください。"
   }
 ]

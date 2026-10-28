@@ -18,6 +18,60 @@
     $("backendLogsRefresh").disabled = false;
   }
 
+  function dateLabel(value) {
+    if (!value) return "—";
+    const locale = {jp:"ja-JP", th:"th-TH-u-ca-gregory", en:"en-GB"}[window.RangerbookI18n?.locale] || "zh-TW";
+    return new Date(value).toLocaleString(locale, {timeZone:"Asia/Taipei", hour12:false});
+  }
+
+  function addRun(row, entry) {
+    const timing = document.createElement("p");
+    timing.className = "backend-log-run-timing";
+    const duration = entry.durationSeconds == null ? "—" : Number(entry.durationSeconds).toFixed(1);
+    timing.textContent = format("site.backendLogs.runTiming", [dateLabel(entry.startedAt), duration], "開始：%N1 · 耗時：%N2 秒");
+    const details = document.createElement("details");
+    details.className = "backend-log-content backend-log-run";
+    const summary = document.createElement("summary");
+    const output = document.createElement("pre");
+    let pending = false, loaded = false, lineCount = 0;
+    const label = () => {
+      summary.textContent = details.open ? (pending ? ui("正在讀取日誌…") : ui("收合本次紀錄"))
+        : loaded ? format("site.backendLogs.expandRun", [lineCount], "展開本次紀錄（%N1 行）") : ui("查看本次執行紀錄");
+    };
+    label();
+    details.append(summary, output);
+    details.addEventListener("toggle", async () => {
+      label();
+      if (!details.open || loaded || pending || !auth.isSuperAdmin()) return;
+      const request = generation;
+      pending = true;
+      output.textContent = ui("正在讀取日誌…");
+      label();
+      try {
+        const params = new URLSearchParams({service:entry.service});
+        const data = await auth.api("/admin/backend-logs/runs/" + encodeURIComponent(entry.runId) + "?" + params, {signal:controller?.signal});
+        if (request !== generation || !auth.isSuperAdmin() || panel.hidden) return;
+        output.textContent = data.message || ui("此範圍內沒有符合條件的日誌。");
+        lineCount = Number(data.lineCount) || 0;
+        loaded = true;
+        if (data.truncated || data.partial) {
+          const note = document.createElement("p");
+          note.className = "backend-log-partial";
+          note.textContent = ui(data.truncated ? "內容超過顯示上限，已截斷。" : "部分輸出已超過伺服器保留期限，僅能顯示仍保留的內容。");
+          details.append(note);
+        }
+      } catch (error) {
+        if (request !== generation) return;
+        output.textContent = ui("無法讀取日誌，請稍後重試。");
+        if (error.status === 401 || error.status === 403) await auth.refresh();
+      } finally {
+        pending = false;
+        if (request === generation) label();
+      }
+    });
+    row.append(timing, details);
+  }
+
   async function load() {
     if (!auth.isSuperAdmin() || panel.hidden) return clear();
     clear();
@@ -33,21 +87,28 @@
     });
     try {
       const data = await auth.api("/admin/backend-logs?" + params, {signal: controller.signal});
+      await window.RangerbookI18n?.ready;
       if (request !== generation || !auth.isSuperAdmin() || panel.hidden) return;
       for (const entry of data.items || []) {
         const row = document.createElement("article");
-        row.className = "backend-log-entry " + (entry.priority <= 3 ? "is-error" : entry.priority === 4 ? "is-warning" : "");
+        row.className = "backend-log-entry " + (entry.priority <= 3 ? "is-error" : entry.kind === "run" ? "is-success" : entry.priority === 4 ? "is-warning" : "");
         const meta = document.createElement("div");
         meta.className = "backend-log-meta";
         const time = document.createElement("time");
         time.dateTime = entry.time;
-        const locale = {jp:"ja-JP", th:"th-TH-u-ca-gregory", en:"en-GB"}[window.RangerbookI18n?.locale] || "zh-TW";
-        time.textContent = new Date(entry.time).toLocaleString(locale, {timeZone:"Asia/Taipei", hour12:false});
+        time.textContent = (entry.kind === "run" ? ui("結束：") : "") + dateLabel(entry.time);
         const service = document.createElement("code");
         service.textContent = entry.service;
         const level = document.createElement("span");
-        level.textContent = ["EMERG", "ALERT", "CRIT", "ERROR", "WARN", "NOTICE", "INFO", "DEBUG"][entry.priority] || "INFO";
+        level.textContent = entry.kind === "run" ? ui(entry.status === "success" ? "執行成功" : "執行失敗")
+          : ["EMERG", "ALERT", "CRIT", "ERROR", "WARN", "NOTICE", "INFO", "DEBUG"][entry.priority] || "INFO";
         meta.append(time, level, service);
+        if (entry.kind === "run") {
+          row.append(meta);
+          addRun(row, entry);
+          list.append(row);
+          continue;
+        }
         const text = String(entry.message || "");
         const lines = Number(entry.lineCount) || text.split("\n").length;
         if (lines > 1) {
@@ -90,7 +151,10 @@
         list.append(row);
       }
       const rawCount = data.rawCount ?? (data.items || []).reduce((count, entry) => count + (Number(entry.lineCount) || 1), 0);
-      status.textContent = format("site.backendLogs.counts", [data.items?.length || 0, rawCount], "%N1 筆紀錄 · %N2 行日誌") + " · " + ui("最新紀錄在上方");
+      status.textContent = (data.mode && data.mode !== "events"
+        ? format("site.backendLogs.entryCount", [data.items?.length || 0], "%N1 筆紀錄")
+        : format("site.backendLogs.counts", [data.items?.length || 0, rawCount], "%N1 筆紀錄 · %N2 行日誌")) + " · " + ui("最新紀錄在上方");
+      if (data.searchLimited) status.textContent += " · " + ui("搜尋結果較多，請縮小時間範圍以查看更多紀錄。");
       if (!data.items?.length) status.textContent = ui("此範圍內沒有符合條件的日誌。");
     } catch (error) {
       if (request !== generation || error.name === "AbortError") return;

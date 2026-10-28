@@ -7,7 +7,7 @@ import subprocess
 import time
 from typing import Literal
 
-from fastapi import Depends, HTTPException, Query, Request
+from fastapi import Depends, HTTPException, Query, Request, Path
 from fastapi.responses import JSONResponse
 
 # Only Rangerbook application services. No system, secret-provider or other app logs.
@@ -45,12 +45,12 @@ def clean_message(message):
     return text
 
 
-def redact(message):
+def redact(message, max_chars=4000):
     text = clean_message(message)
     # Apply to the reconstructed event, including values printed on later lines.
     if SENSITIVE.search(text):
         return '[REDACTED: sensitive log entry]'
-    return text[:4000] + ('…' if len(text) > 4000 else '')
+    return text[:max_chars] + ('…' if len(text) > max_chars else '')
 
 
 class JsonBlock:
@@ -98,7 +98,7 @@ def traceback_continuation(text):
             or bool(re.match(r'^(?!INFO:|DEBUG:|WARNING:|ERROR:|NOTICE:)[\w.]+(?:Error|Exception|Warning):|^(?:Exception|KeyboardInterrupt|SystemExit|StopIteration):', text)))
 
 
-def group_entries(entries):
+def group_entries(entries, max_chars=4000):
     """Join only adjacent continuation lines from the same process and stream.
 
     Journal input is newest first. Reconstruct text in chronological order, then
@@ -111,11 +111,11 @@ def group_entries(entries):
         nonlocal current
         if current is not None:
             text = '\n'.join(current['parts'])
-            message = ('[REDACTED: incomplete multiline entry]' if current['orphan'] else redact(text))
+            message = ('[REDACTED: incomplete multiline entry]' if current['orphan'] else redact(text, max_chars))
             groups.append({'time': current['time'], 'service': current['service'],
                            'priority': current['priority'], 'message': message,
                            'lineCount': text.count('\n') + 1,
-                           'truncated': len(text) > 4000 and message.endswith('…'),
+                           'truncated': len(text) > max_chars and message.endswith('…'),
                            'partial': current['partial'] or current['kind'] == 'json'})
             current = None
 
@@ -158,14 +158,14 @@ def group_entries(entries):
     return list(reversed(groups))
 
 
-def read_journal(command):
+def read_journal(command, *, timeout=5, max_bytes=MAX_BYTES):
     """Hard time/output bounds, no shell, and always reap the child process."""
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
         with process, selectors.DefaultSelector() as selector:
             selector.register(process.stdout, selectors.EVENT_READ)
             output = bytearray()
-            deadline = time.monotonic() + 5
+            deadline = time.monotonic() + timeout
             try:
                 while True:
                     remaining = deadline - time.monotonic()
@@ -177,7 +177,7 @@ def read_journal(command):
                     if not chunk:
                         break
                     output.extend(chunk)
-                    if len(output) > MAX_BYTES:
+                    if len(output) > max_bytes:
                         raise OverflowError
                 if process.wait(timeout=max(0.01, deadline - time.monotonic())):
                     raise OSError
@@ -190,7 +190,7 @@ def read_journal(command):
         raise HTTPException(503, 'logs.unavailable') from None
 
 
-def report(source, hours, level, limit, keyword):
+def event_report(source, hours, level, limit, keyword):
     units = ALL_UNITS if source == 'all' else SOURCES[source]
     command = ['/usr/bin/journalctl', '--no-pager', '--quiet', '--output=json',
                '--output-fields=__REALTIME_TIMESTAMP,_SYSTEMD_UNIT,UNIT,PRIORITY,MESSAGE,_PID,_STREAM_ID,_SYSTEMD_INVOCATION_ID,_BOOT_ID,_TRANSPORT',
@@ -229,7 +229,27 @@ def report(source, hours, level, limit, keyword):
             'updatedAt': datetime.datetime.now(datetime.timezone.utc).isoformat()}
 
 
+def report(source, hours, level, limit, keyword):
+    if source == 'auth':
+        return {**event_report(source, hours, level, limit, keyword), 'mode': 'events'}
+    from .job_runs import completed_runs
+    data = completed_runs(read_journal, source, hours, level, limit, keyword)
+    if source == 'all':
+        events = event_report('auth', hours, level, limit, keyword)
+        data['items'] = sorted(data['items'] + events['items'], key=lambda x:x['time'], reverse=True)[:limit]
+        data['mode'] = 'mixed'
+    return data
+
+
 def install(membership):
+    @membership.app.get('/admin/backend-logs/runs/{run_id}')
+    def run_output(request: Request, run_id: str = Path(pattern=r'^[a-f0-9]{32}$'),
+                   service: str = Query(max_length=80), user=Depends(membership.super_admin)):
+        from .job_runs import run_detail
+        membership.rate(request, 'backend-log-run', user['id'], subject_limit=30, ip_limit=60, window=60)
+        return JSONResponse(run_detail(read_journal, service, run_id),
+                            headers={'Cache-Control':'no-store, private', 'Pragma':'no-cache'})
+
     @membership.app.get('/admin/backend-logs')
     def backend_logs(request: Request, user=Depends(membership.super_admin),
                      source: Literal['all', 'auth', 'updates', 'pvp', 'guildwar', 'players', 'mail', 'traffic'] = 'all',
