@@ -25,7 +25,7 @@
   <title>管理員｜LINE Rangers Database</title>
   <link rel="icon" type="image/png" href="../assets/main_icon/icon.png">
   <link rel="stylesheet" href="../assets/css/style.css">
-  <link rel="stylesheet" href="../assets/css/admin.css?v=20261028-backend-logs3">
+  <link rel="stylesheet" href="../assets/css/admin.css?v=20261029-admin-layout1">
   <link rel="stylesheet" href="../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../assets/css/theme-toggle.css?v=20260525a">
@@ -38,7 +38,10 @@
 
   <main class="page admin-console-page">
     <div class="admin-shell">
-      <section id="adminAuthCard" class="admin-card">
+      <section id="adminAuthLoading" class="admin-card" role="status" aria-live="polite" aria-busy="true">
+        <p class="admin-muted">載入中…</p>
+      </section>
+      <section id="adminAuthCard" class="admin-card" hidden>
         <h1>管理員登入</h1>
         <p class="admin-muted">此頁面不會出現在公開導覽列。帳號驗證與權限判定由 Rangerbook AWS 後端處理。</p>
 
@@ -137,8 +140,6 @@
           </div>
         </div>
 
-        <div class="admin-account-scroll" tabindex="0" role="region" aria-label="帳號管理表格，可左右捲動">
-        <div class="admin-account-content">
         <div id="adminAccountSummary" class="admin-account-summary"></div>
         <div class="admin-account-toolbar">
           <label class="admin-account-search"><span>搜尋帳號</span><input id="adminAccountSearch" type="search" maxlength="64" autocomplete="off" placeholder="輸入帳號名稱"></label>
@@ -148,8 +149,8 @@
         </div>
         <div class="admin-account-list-heading"><h3>帳號清單</h3><button id="adminAccountClear" class="admin-text-button" type="button">清除篩選</button></div>
         <p id="adminAccountResults" class="admin-muted" role="status" aria-live="polite"></p>
-        <div id="adminUsersList" class="admin-user-list" aria-busy="false"></div>
-        </div>
+        <div class="admin-account-scroll" tabindex="0" role="region" aria-label="帳號管理表格，可左右捲動">
+          <div id="adminUsersList" class="admin-user-list" aria-busy="false"></div>
         </div>
         <nav class="admin-account-pagination" aria-label="帳號清單分頁">
           <button id="adminAccountPrevious" class="secondary" type="button">上一頁</button>
@@ -213,7 +214,7 @@
   <script src="../assets/js/admin-auth.js"></script>
   <script src="../assets/js/admin-traffic-charts.js?v=20261013-v2.5"></script>
   <script src="../assets/js/admin-backend-logs.js?v=20261028-backend-logs3"></script>
-  <script src="../assets/js/admin-page.js?v=20261028-backend-logs3"></script>
+  <script src="../assets/js/admin-page.js?v=20261029-admin-layout1"></script>
 <script src="../assets/js/member-registration.js"></script>
 </body>
 </html>

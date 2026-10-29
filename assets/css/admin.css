@@ -874,21 +874,20 @@ html[data-theme="dark"] .admin-user-actions .admin-overflow-menu .danger {
 #memberManualKey { overflow-wrap: anywhere; }
 .gt-user-navigation { margin-top: .85rem; padding-top: .65rem; border-top: 1px solid var(--line); }
 
-/* Account directory: keep the same columns at every viewport width. */
+/* Only the account table scrolls; summary and filters use the panel width. */
 .admin-account-scroll { width:100%; max-width:100%; min-width:0; overflow-x:auto; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
-.admin-account-content { min-width:1100px; padding-bottom:12px; }
 #superAdminPanel .admin-account-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:20px 0; }
 .admin-account-summary > div { padding:16px; background:var(--soft); border:1px solid var(--line); border-radius:12px; display:grid; gap:8px; min-width:0; }
-.admin-account-summary span { color:var(--muted); font-size:.85rem; white-space:nowrap; }
+.admin-account-summary span { color:var(--muted); font-size:.85rem; overflow-wrap:anywhere; }
 .admin-account-summary strong { font-size:1.6rem; font-variant-numeric:tabular-nums; }
-.admin-account-toolbar { display:grid; grid-template-columns:minmax(240px,2fr) repeat(3,minmax(180px,1fr)); gap:12px; padding:16px; background:var(--soft); border:1px solid var(--line); border-radius:14px; }
-.admin-account-toolbar label { display:grid; gap:8px; min-width:0; font-size:.85rem; font-weight:700; white-space:nowrap; }
+.admin-account-toolbar { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr)); gap:12px; padding:16px; background:var(--soft); border:1px solid var(--line); border-radius:14px; }
+.admin-account-toolbar label { display:grid; gap:8px; min-width:0; font-size:.85rem; font-weight:700; overflow-wrap:anywhere; }
 .admin-account-toolbar input,.admin-account-toolbar select { width:100%; min-width:0; box-sizing:border-box; border:1px solid var(--line); border-radius:10px; padding:10px; background:var(--panel); color:var(--text); font:inherit; }
 .admin-account-list-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:nowrap; gap:12px; margin-top:24px; }
 .admin-account-list-heading h3 { margin:0; }
 .admin-text-button { border:0; background:transparent; color:var(--text); text-decoration:underline; text-underline-offset:3px; font:inherit; padding:8px; cursor:pointer; }
 #superAdminPanel .admin-user-list { display:block; }
-.admin-account-table { width:100%; border-collapse:collapse; text-align:left; font-size:.88rem; }
+.admin-account-table { width:100%; min-width:1100px; border-collapse:collapse; text-align:left; font-size:.88rem; }
 .admin-account-table th,.admin-account-table td { padding:14px 12px; border-bottom:1px solid var(--line); white-space:nowrap; overflow-wrap:normal; word-break:normal; }
 .admin-account-table thead th { color:var(--muted); font-weight:700; background:var(--soft); }
 #superAdminPanel .admin-account-table .admin-user-row { display:table-row; border:0; border-radius:0; background:transparent; }
@@ -914,7 +913,11 @@ html[data-theme="dark"] .admin-account-menu .danger { color:#ff8e98; }
 .admin-account-pagination button { padding:10px 16px; border:1px solid var(--line); border-radius:10px; background:var(--soft); color:var(--text); font:inherit; cursor:pointer; }
 .admin-account-pagination button:disabled { opacity:.45; cursor:default; }
 #superAdminPanel :is(input,select,button,summary,[tabindex]):focus-visible { outline:2px solid #5587dc; outline-offset:3px; }
-@media(max-width:640px) { .admin-account-pagination { gap:8px; font-size:.8rem; } .admin-account-pagination button { padding:9px; } }
+@media(max-width:640px) {
+  #superAdminPanel .admin-account-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .admin-account-pagination { gap:8px; font-size:.8rem; }
+  .admin-account-pagination button { padding:9px; }
+}
 
 /* Country reports stay within the traffic panel on small screens. */
 .traffic-country-scroll { max-height: 28rem; overflow: auto; }

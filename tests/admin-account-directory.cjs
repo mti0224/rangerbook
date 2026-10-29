@@ -8,7 +8,7 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
  let cases=0,actions=0,evolutionCases=0;
  try{
- for(const locale of ['zh-Hant','en','jp','th'])for(const theme of ['light','dark'])for(const width of [390,1280]){
+ for(const locale of ['zh-Hant','en','jp','th'])for(const theme of ['light','dark'])for(const width of [320,390,768,1280]){
   const context=await browser.newContext({viewport:{width,height:1000},serviceWorkers:'block',...(credentials?{httpCredentials:{origin:base,username:credentials.entrance_user,password:credentials.entrance_password}}:{})});
   await context.addInitScript(({locale,theme})=>{localStorage.setItem('rangerbook-language',locale);localStorage.setItem('rangerbook-theme',theme);},{locale,theme});
   let role='super_admin',fail=false,hold=false,release,gate,gets=0; const writes=[],calls=[],errors=[];
@@ -46,14 +46,27 @@ const credentials=hosted?JSON.parse(fs.readFileSync(process.env.RB_STAGE_CREDENT
   assert.equal(await page.locator('.admin-account-table thead th').count(),7);
   assert.equal(await page.locator('[data-user-id=usr_0] .admin-account-date').last().innerText(),'2026-10-25 08:01:02');
   assert.equal(await page.locator('[data-user-id=usr_2] .admin-account-date').last().innerText(),'—');
-  const shape=await page.locator('.admin-account-scroll').evaluate(el=>{
-    const cards=[...el.querySelectorAll('.admin-account-summary > div')].map(x=>x.getBoundingClientRect().top);
-    const filters=[...el.querySelectorAll('.admin-account-toolbar label')].map(x=>x.getBoundingClientRect().top);
-    const cells=[...el.querySelectorAll('th,td')];
-    return {scroll:el.scrollWidth>el.clientWidth,cards:new Set(cards).size,filters:new Set(filters).size,nowrap:cells.every(x=>getComputedStyle(x).whiteSpace==='nowrap')};
+  const shape=await page.locator('#superAdminPanel').evaluate(panel=>{
+    const scroller=panel.querySelector('.admin-account-scroll');
+    const cards=[...panel.querySelectorAll('.admin-account-summary > div')];
+    const filters=[...panel.querySelectorAll('.admin-account-toolbar label')];
+    const controls=[panel.querySelector('.admin-account-summary'),panel.querySelector('.admin-account-toolbar'),panel.querySelector('.admin-account-list-heading'),panel.querySelector('#adminAccountResults')];
+    const before=controls.map(x=>x.getBoundingClientRect().x);
+    const firstCell=scroller.querySelector('th');
+    const cellBefore=firstCell.getBoundingClientRect().x;
+    scroller.scrollLeft=scroller.scrollWidth;
+    return {scroll:scroller.scrollWidth>scroller.clientWidth,
+      cards:new Set(cards.map(x=>x.getBoundingClientRect().top)).size,
+      filters:new Set(filters.map(x=>x.getBoundingClientRect().top)).size,
+      nowrap:[...scroller.querySelectorAll('th,td')].every(x=>getComputedStyle(x).whiteSpace==='nowrap'),
+      fixed:controls.every((x,i)=>!scroller.contains(x)&&Math.abs(x.getBoundingClientRect().x-before[i])<1),
+      moved:firstCell.getBoundingClientRect().x<cellBefore,
+      fits:[...cards,...filters].every(x=>{const b=x.getBoundingClientRect();return b.x>=0&&b.right<=innerWidth;})};
   });
-  assert.equal(shape.cards,1);assert.equal(shape.filters,1);assert.equal(shape.nowrap,true);
-  if(width===390)assert.equal(shape.scroll,true);
+  assert.equal(shape.nowrap,true);assert.equal(shape.fixed,true);assert.equal(shape.fits,true);
+  if(width<=390){assert.equal(shape.scroll,true);assert.equal(shape.cards,2);assert.equal(shape.filters,4);}
+  if(width===1280){assert.equal(shape.cards,1);assert.equal(shape.filters,1);}
+  if(shape.scroll)assert.equal(shape.moved,true,'Only the table moves horizontally');
   await page.locator('[data-user-id=usr_0] summary').click();
   const menu=await page.locator('[data-user-id=usr_0] .admin-account-menu').boundingBox();
   assert.ok(menu.x>=0&&menu.x+menu.width<=width&&menu.y>=0&&menu.y+menu.height<=1000,JSON.stringify({menu,width,locale,theme}));
