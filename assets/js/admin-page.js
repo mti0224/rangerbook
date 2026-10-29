@@ -190,6 +190,8 @@
   $("trafficDays")?.addEventListener("change",loadTraffic);
 
   function renderUserState(user) {
+    // Keep the initial login form hidden until /auth/me has resolved.
+    if ($("adminAuthLoading")) $("adminAuthLoading").hidden = true;
     if ($("memberLoginStep")) $("memberLoginStep").hidden = !(user.mfa_required || user.setup_required || user.must_change_password);
     authCard.hidden = Boolean(user.logged_in);
     sessionCard.hidden = !user.logged_in;

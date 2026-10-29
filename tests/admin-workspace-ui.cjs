@@ -11,9 +11,12 @@ const roles = ["guest","user","admin","super_admin"];
     await require("./local-static-fixture.cjs").install(page,base);
     await require("./region-fixture.cjs").mockTaiwan(page);
     const protectedPaths=[];
+    let releaseAuth;
+    const authGate=new Promise(resolve=>{releaseAuth=resolve;});
     await page.route("https://rangerbook-auth.warmycat.com/**", async route => {
       const pathname=new URL(route.request().url()).pathname;
       if(pathname.startsWith("/admin/"))protectedPaths.push(pathname);
+      if(pathname==="/auth/me")await authGate;
       const body=pathname==="/auth/me"
         ? {logged_in:role!=="guest",role:role==="guest"?"user":role,
           account:role==="guest"?null:"test_"+role,admin_application_status:"approved"}
@@ -26,6 +29,12 @@ const roles = ["guest","user","admin","super_admin"];
         body:JSON.stringify(body)});
     });
     await page.goto(base+"/admin/",{waitUntil:"domcontentloaded"});
+    await page.locator('#adminAuthLoading').waitFor({state:'visible'});
+    assert.equal(await page.locator('#adminAuthCard').isVisible(),false,'No login form while session verification is pending');
+    assert.equal(await page.locator('#adminSessionCard').isVisible(),false);
+    assert.equal(await page.locator('#adminWorkspace').isVisible(),false);
+    releaseAuth();
+    await page.locator('#adminAuthLoading').waitFor({state:'hidden'});
     // Wait for mocked /auth/me to finish independently of load order.
     await page.waitForFunction(expected => {
       const a=window.RangerbookAuth;
