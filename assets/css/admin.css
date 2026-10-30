@@ -938,6 +938,7 @@ html[data-theme="dark"] .admin-account-menu .danger { color:#ff8e98; }
 .backend-log-entry.is-error{border-left-color:#db5263}
 .backend-log-entry.is-warning{border-left-color:#d89822}
 .backend-log-entry.is-success{border-left-color:#239e80}
+.backend-log-description{font-size:.94rem;line-height:1.7;margin:10px 0 0;overflow-wrap:anywhere;color:var(--text)}
 .backend-log-run-timing{font-size:.85rem;line-height:1.7;color:var(--muted);margin:10px 0 0;overflow-wrap:anywhere}
 .backend-log-run pre{max-height:55vh}
 .backend-log-meta{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.82rem;color:var(--muted);overflow-wrap:anywhere}

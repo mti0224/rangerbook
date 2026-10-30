@@ -111,10 +111,10 @@ def test_missing_start_time_is_explicit_and_old_details_do_not_use_list_line_lim
 def test_details_are_lazy_and_reject_invalid_services_or_ids():
     j=Journal([lifecycle(jobs.START),output('message'),lifecycle(jobs.SUCCESS)])
     jobs.completed_runs(j,'updates',24,'all',200,'')
-    assert len(j.calls)==2
+    assert len(j.calls)==3
     for service,run in [('nginx.service',RUN),(UNIT,'../../etc/passwd'),('rangerbook-auth.service',RUN)]:
         with pytest.raises(HTTPException):jobs.run_detail(j,service,run)
-    assert len(j.calls)==2
+    assert len(j.calls)==3
 
 
 def test_resource_limit_fallback_is_marked_truncated():
@@ -147,3 +147,58 @@ def test_completed_run_list_does_not_silently_include_raw_scheduler_events():
     result=jobs.completed_runs(j,'updates',24,'all',200,'')
     assert result['mode']=='runs' and len(result['items'])==1
     assert all(x['kind']=='run' for x in result['items'])
+
+
+def test_summary_classifies_maintenance_once_without_fetching_each_run():
+    j=Journal([lifecycle(jobs.START),output('HTTP 512: {"errorCode":512,"errorMessage":"GLOBAL_MAINTENANCE"}'),
+               lifecycle(jobs.FAILED,when=BASE+50_000_000)])
+    item=jobs.completed_runs(j,'updates',24,'all',200,'')['items'][0]
+    assert item['summary']=={'reason':'maintenance','httpCodes':['512'],'apiCodes':['512'],'warning':False}
+    assert item['message']=='' and len(j.calls)==3
+    assert not any('--lines=10000' in call for call in j.calls)
+
+
+def test_summary_cannot_use_other_boot_run_service_or_post_completion_output():
+    j=Journal([lifecycle(jobs.START),output('HTTP 512 GLOBAL_MAINTENANCE',_BOOT_ID='f'*32),
+               output('HTTP 512 GLOBAL_MAINTENANCE',run=OTHER),
+               output('HTTP 512 GLOBAL_MAINTENANCE',_SYSTEMD_UNIT='unrelated.service'),
+               lifecycle(jobs.FAILED,when=BASE+50_000_000),
+               output('HTTP 512 GLOBAL_MAINTENANCE',when=BASE+60_000_000)])
+    item=jobs.completed_runs(j,'updates',24,'all',200,'')['items'][0]
+    assert item['summary']['reason']=='unknown'
+
+
+def test_summary_read_failure_keeps_completed_list_usable():
+    j=Journal([lifecycle(jobs.START),lifecycle(jobs.SUCCESS,when=BASE+50_000_000)])
+    def read(cmd,**kwargs):
+        if any(arg.startswith('--grep=') for arg in cmd):raise HTTPException(503,'logs.unavailable')
+        return j(cmd,**kwargs)
+    assert jobs.completed_runs(read,'updates',24,'all',200,'')['items'][0]['summary']['reason']=='completed'
+
+
+def test_summary_full_output_reports_unchanged_and_zero_errors_are_not_failures():
+    j=Journal([lifecycle(jobs.START),output('DB 未變更：29'),output('JSON 轉換：0'),
+               output('JSON 無需轉換：29'),output('失敗：0'),lifecycle(jobs.SUCCESS,when=BASE+50_000_000)])
+    assert jobs.run_detail(j,UNIT,RUN)['summary']['reason']=='unchanged'
+
+
+@pytest.mark.parametrize('text,reason',[
+    ('HTTP 512: GLOBAL_MAINTENANCE','maintenance'),
+    ('[RETRY] API errorCode 429 (HTTP 400)','rateLimited'),
+    ('[UNAVAILABLE] errorCode=112004 after retry','unavailableData'),
+    ('HTTP 503','serviceUnavailable'),('errorCode=119801','apiRejected'),
+    ('TimeoutError: timed out','timeout'),('No space left on device','diskFull'),
+    ('PermissionError: denied','permission'),('Connection refused','connection'),
+    ('Invalid HTTP request received.','invalidRequest'),('unrecognized failure','unknown')])
+def test_short_summary_reasons(text,reason):
+    from membership.log_summary import describe
+    assert describe(text,'failed')['reason']==reason
+
+
+def test_summary_only_emits_fixed_reasons_and_codes_and_retains_success_with_warning():
+    from membership.log_summary import describe
+    value=describe('[RETRY] API errorCode 429 (HTTP 400) token=PRIVATE http://private.test/uid/PRIVATE')
+    assert value=={'reason':'rateLimited','httpCodes':['400'],'apiCodes':['429'],'warning':True}
+    assert 'PRIVATE' not in json.dumps(value)
+    assert describe('failed: 0 errors=0')['reason']=='completed'
+    assert describe('JSON 轉換：0\nDB 未變更：29',complete=False)['reason']=='completed'

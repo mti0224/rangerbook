@@ -2840,5 +2840,285 @@
     "en": "There are many search results. Narrow the time range to view more entries.",
     "th": "มีผลการค้นหาจำนวนมาก กรุณาลดช่วงเวลาเพื่อดูรายการเพิ่มเติม",
     "jp": "検索結果が多いため、期間を絞り込んでください。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.1",
+    "zh_TW": "帳號服務",
+    "en": "Account service",
+    "th": "บริการบัญชี",
+    "jp": "アカウントサービス"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.2",
+    "zh_TW": "遊戲資料更新（V1）",
+    "en": "Game data update (V1)",
+    "th": "อัปเดตข้อมูลเกม (V1)",
+    "jp": "ゲームデータ更新（V1）"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.3",
+    "zh_TW": "遊戲資料更新（V2）",
+    "en": "Game data update (V2)",
+    "th": "อัปเดตข้อมูลเกม (V2)",
+    "jp": "ゲームデータ更新（V2）"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.4",
+    "zh_TW": "遊戲圖片更新",
+    "en": "Game image update",
+    "th": "อัปเดตรูปภาพเกม",
+    "jp": "ゲーム画像更新"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.5",
+    "zh_TW": "PvP 排行榜",
+    "en": "PvP leaderboard",
+    "th": "อันดับ PvP",
+    "jp": "PvP ランキング"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.6",
+    "zh_TW": "PvP 角色使用率",
+    "en": "PvP Ranger usage",
+    "th": "อัตราการใช้เรนเจอร์ PvP",
+    "jp": "PvP レンジャー使用率"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.7",
+    "zh_TW": "PvP 歷史紀錄",
+    "en": "PvP history",
+    "th": "ประวัติ PvP",
+    "jp": "PvP 履歴"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.8",
+    "zh_TW": "公會戰詳細資料",
+    "en": "Guild War details",
+    "th": "ข้อมูลกิลด์วอร์",
+    "jp": "ギルド戦詳細"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.9",
+    "zh_TW": "公會戰排行榜",
+    "en": "Guild War rankings",
+    "th": "อันดับกิลด์วอร์",
+    "jp": "ギルド戦ランキング"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.10",
+    "zh_TW": "公會戰角色使用率",
+    "en": "Guild War Ranger usage",
+    "th": "อัตราการใช้เรนเจอร์กิลด์วอร์",
+    "jp": "ギルド戦レンジャー使用率"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.11",
+    "zh_TW": "玩家暱稱與 UID 名單",
+    "en": "Player names and UIDs",
+    "th": "รายชื่อผู้เล่นและ UID",
+    "jp": "プレイヤー名・UID 一覧"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.12",
+    "zh_TW": "會員郵件寄送",
+    "en": "Member email delivery",
+    "th": "การส่งอีเมลสมาชิก",
+    "jp": "会員メール送信"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.13",
+    "zh_TW": "會員服務健康檢查",
+    "en": "Member service health check",
+    "th": "ตรวจสอบบริการสมาชิก",
+    "jp": "会員サービス稼働確認"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.14",
+    "zh_TW": "網站流量統計",
+    "en": "Website traffic statistics",
+    "th": "สถิติผู้เข้าชมเว็บไซต์",
+    "jp": "サイトアクセス集計"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.15",
+    "zh_TW": "其他服務",
+    "en": "Other service",
+    "th": "บริการอื่น",
+    "jp": "その他のサービス"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.16",
+    "zh_TW": "遊戲維護中，本次執行未完成。",
+    "en": "Game maintenance prevented this run from completing.",
+    "th": "เกมกำลังปิดปรับปรุง จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "ゲームメンテナンスのため、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.17",
+    "zh_TW": "請求過於頻繁，本次執行未完成。",
+    "en": "Too many requests prevented this run from completing.",
+    "th": "คำขอถี่เกินไป จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "リクエスト制限により、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.18",
+    "zh_TW": "連線逾時，本次執行未完成。",
+    "en": "The connection timed out; this run did not complete.",
+    "th": "การเชื่อมต่อหมดเวลา จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "接続がタイムアウトし、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.19",
+    "zh_TW": "遊戲服務暫時無法使用，本次執行未完成。",
+    "en": "The game service is temporarily unavailable; this run did not complete.",
+    "th": "บริการเกมไม่พร้อมใช้งานชั่วคราว จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "ゲームサービスが一時的に利用できず、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.20",
+    "zh_TW": "部分遊戲資料無法取得。",
+    "en": "Some game data could not be retrieved.",
+    "th": "ไม่สามารถดึงข้อมูลเกมบางส่วนได้",
+    "jp": "一部のゲームデータを取得できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.21",
+    "zh_TW": "遊戲 API 拒絕請求，本次執行未完成。",
+    "en": "The game API rejected the request; this run did not complete.",
+    "th": "API เกมปฏิเสธคำขอ จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "ゲーム API がリクエストを拒否し、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.22",
+    "zh_TW": "主機空間不足，本次執行未完成。",
+    "en": "The server ran out of disk space; this run did not complete.",
+    "th": "พื้นที่เซิร์ฟเวอร์ไม่เพียงพอ จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "サーバーの空き容量不足により、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.23",
+    "zh_TW": "存取權限不足，本次執行未完成。",
+    "en": "Access was denied; this run did not complete.",
+    "th": "สิทธิ์เข้าถึงไม่เพียงพอ จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "アクセス権限不足により、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.24",
+    "zh_TW": "無法連線至服務，本次執行未完成。",
+    "en": "Could not connect to the service; this run did not complete.",
+    "th": "เชื่อมต่อบริการไม่ได้ จึงดำเนินการครั้งนี้ไม่สำเร็จ",
+    "jp": "サービスに接続できず、今回の処理は完了できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.25",
+    "zh_TW": "收到格式不正確的 HTTP 請求。",
+    "en": "Received a malformed HTTP request.",
+    "th": "ได้รับคำขอ HTTP ที่มีรูปแบบไม่ถูกต้อง",
+    "jp": "形式が不正な HTTP リクエストを受信しました。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.26",
+    "zh_TW": "執行失敗，原因請查看原始紀錄。",
+    "en": "The run failed. See the raw log for the cause.",
+    "th": "ดำเนินการไม่สำเร็จ ดูสาเหตุในบันทึกต้นฉบับ",
+    "jp": "処理に失敗しました。原因は元のログで確認できます。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.27",
+    "zh_TW": "執行完成。",
+    "en": "Run completed.",
+    "th": "ดำเนินการเสร็จแล้ว",
+    "jp": "処理が完了しました。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.28",
+    "zh_TW": "資料沒有變動，無需更新。",
+    "en": "Data is unchanged; no update was needed.",
+    "th": "ข้อมูลไม่เปลี่ยนแปลง ไม่จำเป็นต้องอัปเดต",
+    "jp": "データに変更がないため、更新は不要でした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.29",
+    "zh_TW": "執行完成，部分請求遇到遊戲維護。",
+    "en": "Run completed; some requests encountered game maintenance.",
+    "th": "ดำเนินการเสร็จแล้ว แต่บางคำขอพบการปิดปรับปรุงเกม",
+    "jp": "処理は完了しましたが、一部のリクエストでメンテナンス応答がありました。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.30",
+    "zh_TW": "執行完成，期間曾遇到請求頻率限制。",
+    "en": "Run completed; requests were rate limited during execution.",
+    "th": "ดำเนินการเสร็จแล้ว โดยมีการจำกัดความถี่คำขอระหว่างดำเนินการ",
+    "jp": "処理は完了しましたが、実行中にリクエスト制限がありました。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.31",
+    "zh_TW": "執行完成，部分遊戲資料無法取得。",
+    "en": "Run completed; some game data could not be retrieved.",
+    "th": "ดำเนินการเสร็จแล้ว แต่ดึงข้อมูลเกมบางส่วนไม่ได้",
+    "jp": "処理は完了しましたが、一部のゲームデータを取得できませんでした。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.32",
+    "zh_TW": "執行完成，期間曾發生異常，詳情請查看原始紀錄。",
+    "en": "Run completed with issues. See the raw log for details.",
+    "th": "ดำเนินการเสร็จแล้วแต่พบปัญหา ดูรายละเอียดในบันทึกต้นฉบับ",
+    "jp": "処理は完了しましたが、実行中に問題がありました。詳細は元のログで確認できます。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.33",
+    "zh_TW": "服務發生錯誤，詳情請查看原始紀錄。",
+    "en": "A service error occurred. See the raw log for details.",
+    "th": "บริการเกิดข้อผิดพลาด ดูรายละเอียดในบันทึกต้นฉบับ",
+    "jp": "サービスでエラーが発生しました。詳細は元のログで確認できます。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.34",
+    "zh_TW": "服務發出警告，詳情請查看原始紀錄。",
+    "en": "The service reported a warning. See the raw log for details.",
+    "th": "บริการแจ้งเตือน ดูรายละเอียดในบันทึกต้นฉบับ",
+    "jp": "サービスから警告がありました。詳細は元のログで確認できます。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.35",
+    "zh_TW": "已記錄服務事件。",
+    "en": "Service event recorded.",
+    "th": "บันทึกเหตุการณ์บริการแล้ว",
+    "jp": "サービスイベントを記録しました。"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.36",
+    "zh_TW": "收合原始紀錄",
+    "en": "Hide raw log",
+    "th": "ซ่อนบันทึกต้นฉบับ",
+    "jp": "元のログを閉じる"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.37",
+    "zh_TW": "查看原始紀錄",
+    "en": "View raw log",
+    "th": "ดูบันทึกต้นฉบับ",
+    "jp": "元のログを表示"
+  },
+  {
+    "key": "UI:site.backendLogs.plain.38",
+    "zh_TW": "完成（有警告）",
+    "en": "Completed with warnings",
+    "th": "เสร็จแล้ว (มีคำเตือน)",
+    "jp": "完了（警告あり）"
+  },
+  {
+    "key": "UI:site.backendLogs.apiCode",
+    "zh_TW": "錯誤碼 %N1",
+    "en": "Error code %N1",
+    "th": "รหัสข้อผิดพลาด %N1",
+    "jp": "エラーコード %N1"
+  },
+  {
+    "key": "UI:site.backendLogs.expandRaw",
+    "zh_TW": "查看原始紀錄（%N1 行）",
+    "en": "View raw log (%N1 lines)",
+    "th": "ดูบันทึกต้นฉบับ (%N1 บรรทัด)",
+    "jp": "元のログを表示（%N1 行）"
   }
 ]
