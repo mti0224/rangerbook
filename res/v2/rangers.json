@@ -304766,6 +304766,4061 @@
             "releaseDateSource": "v2_author_record"
         },
         {
+            "rangerCode": "u1641e-crush",
+            "nameKey": "UNIT:u1641e-crush_nm",
+            "descriptionKey": "UNIT:u1641e-crush_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1641u-crush",
+                    "kind": "ULTRA"
+                },
+                {
+                    "rangerCode": "u1641h-crush",
+                    "kind": "HYPER"
+                }
+            ],
+            "evolution": "NORMAL",
+            "roleType": "STR",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 132700,
+                "attack": {
+                    "physical": 15630,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 1100,
+                    "magical": 1300
+                },
+                "mineralCost": 1240,
+                "respawnSeconds": 18,
+                "attackRange": 40,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 99,
+                    "rating": "FAST"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.9333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 30.0,
+                "hitChancePercent": 10.0,
+                "skillHitChancePercent": 10.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1641_crush",
+                    "nameKey": "SKILL:sk1641_crush_nm",
+                    "descriptionKey": "SKILL:sk1641_crush_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-HP",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 300.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1641",
+                    "abilityCode": "ab_tlt_1641",
+                    "descriptionKey": "ABILITY:ab_tlt_1641_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_tree"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "tree"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            90.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1641_a",
+                            "descriptionKey": null,
+                            "effectCode": "DMG_SKILL",
+                            "effectType": "BUFF",
+                            "factor": 8,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_DMG_SKILL",
+                                "args": [
+                                    800
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_str_2",
+                        "effectCode": "SKLRE_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLRE_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_3",
+                        "effectCode": "GATK_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_4",
+                        "effectCode": "HP_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 16590,
+                "attackIncreaseAmount": 1960,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 140,
+                "specialDefenceDelta": 150
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 21570,
+                "attackIncreaseAmount": 2550,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 190,
+                "specialDefenceDelta": 200
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1641h-crush",
+            "nameKey": "UNIT:u1641h-crush_nm",
+            "descriptionKey": "UNIT:u1641h-crush_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1642e-crush",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "HYPER",
+            "roleType": "STR",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 316800,
+                "attack": {
+                    "physical": 32810,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 2200,
+                    "magical": 2600
+                },
+                "mineralCost": 1370,
+                "respawnSeconds": 13,
+                "attackRange": 40,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 99,
+                    "rating": "FAST"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.9333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 30.0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1641_crush",
+                    "nameKey": "SKILL:sk1641_crush_nm",
+                    "descriptionKey": "SKILL:sk1641_crush_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-HP",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 300.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1641_crush",
+                    "nameKey": "SKILL:hsk1641_crush_nm",
+                    "descriptionKey": "SKILL:hsk1641_crush_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_hsk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_KNOCKBACK",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 4000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_CHANGE_TREE_NONE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart",
+                "ab604_copyally"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1641",
+                    "abilityCode": "ab_tlt_1641",
+                    "descriptionKey": "ABILITY:ab_tlt_1641_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_tree"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "tree"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            90.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1641_a",
+                            "descriptionKey": null,
+                            "effectCode": "DMG_SKILL",
+                            "effectType": "BUFF",
+                            "factor": 8,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_DMG_SKILL",
+                                "args": [
+                                    800
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_str_2",
+                        "effectCode": "SKLRE_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLRE_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_3",
+                        "effectCode": "GATK_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_4",
+                        "effectCode": "HP_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 39600,
+                "attackIncreaseAmount": 4110,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 280,
+                "specialDefenceDelta": 290
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 51480,
+                "attackIncreaseAmount": 5350,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 370,
+                "specialDefenceDelta": 380
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1641u-crush",
+            "nameKey": "UNIT:u1641u-crush_nm",
+            "descriptionKey": "UNIT:u1641u-crush_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1642e-crush",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "ULTRA",
+            "roleType": "STR",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 317000,
+                "attack": {
+                    "physical": 32440,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 2200,
+                    "magical": 2600
+                },
+                "mineralCost": 1490,
+                "respawnSeconds": 9,
+                "attackRange": 40,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 99,
+                    "rating": "FAST"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.9333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 30.0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1641_crush",
+                    "nameKey": "SKILL:sk1641_crush_nm",
+                    "descriptionKey": "SKILL:sk1641_crush_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-HP",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 300.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "usk1641_crush",
+                    "nameKey": "SKILL:usk1641_crush_nm",
+                    "descriptionKey": "SKILL:usk1641_crush_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_hsk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_KNOCKBACK",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3500.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_CHANGE_TREE_NONE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1641",
+                    "abilityCode": "ab_tlt_1641",
+                    "descriptionKey": "ABILITY:ab_tlt_1641_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_tree"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "tree"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            90.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1641_a",
+                            "descriptionKey": null,
+                            "effectCode": "DMG_SKILL",
+                            "effectType": "BUFF",
+                            "factor": 8,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_DMG_SKILL",
+                                "args": [
+                                    800
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_str_2",
+                        "effectCode": "SKLRE_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLRE_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_3",
+                        "effectCode": "GATK_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_4",
+                        "effectCode": "HP_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 39630,
+                "attackIncreaseAmount": 4060,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 280,
+                "specialDefenceDelta": 290
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 51520,
+                "attackIncreaseAmount": 5280,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 370,
+                "specialDefenceDelta": 380
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1642e-crush",
+            "nameKey": "UNIT:u1642e-crush_nm",
+            "descriptionKey": "UNIT:u1642e-crush_desc",
+            "starGrade": 9,
+            "evolutionTargets": [],
+            "evolution": "NORMAL",
+            "roleType": "STR",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 593600,
+                "attack": {
+                    "physical": 55880,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 4400,
+                    "magical": 5200
+                },
+                "mineralCost": 1620,
+                "respawnSeconds": 7,
+                "attackRange": 40,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 99,
+                    "rating": "FAST"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.9333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 30.0,
+                "hitChancePercent": 30.0,
+                "skillHitChancePercent": 30.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1641_crush",
+                    "nameKey": "SKILL:sk1641_crush_nm",
+                    "descriptionKey": "SKILL:sk1641_crush_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-HP",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 300.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 310.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1641_crush",
+                    "nameKey": "SKILL:hsk1641_crush_nm",
+                    "descriptionKey": "SKILL:hsk1641_crush_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_hsk1641_crush.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_KNOCKBACK",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 4000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_CHANGE_TREE_NONE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 330.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart",
+                "ab604_copyally"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [
+                {
+                    "abilityCode": "aab220_waterghost2",
+                    "icon": "ab220_waterghost_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab226_inssmissile",
+                    "icon": "ab226_inssmissile_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab221_aTempt",
+                    "icon": "ab221_atempt_icon.png",
+                    "chancePercent": 10
+                }
+            ],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1641",
+                    "abilityCode": "ab_tlt_1641",
+                    "descriptionKey": "ABILITY:ab_tlt_1641_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_tree"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "tree"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            90.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1641_a",
+                            "descriptionKey": null,
+                            "effectCode": "DMG_SKILL",
+                            "effectType": "BUFF",
+                            "factor": 8,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_DMG_SKILL",
+                                "args": [
+                                    800
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_str_2",
+                        "effectCode": "SKLRE_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLRE_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_3",
+                        "effectCode": "GATK_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_str_4",
+                        "effectCode": "HP_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 74200,
+                "attackIncreaseAmount": 6990,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 550,
+                "specialDefenceDelta": 580
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 296800,
+                "attackIncreaseAmount": 27960,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 2200,
+                "specialDefenceDelta": 2320
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1643e-sally",
+            "nameKey": "UNIT:u1643e-sally_nm",
+            "descriptionKey": "UNIT:u1643e-sally_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1643u-sally",
+                    "kind": "ULTRA"
+                },
+                {
+                    "rangerCode": "u1643h-sally",
+                    "kind": "HYPER"
+                }
+            ],
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 46300,
+                "attack": {
+                    "physical": 3430,
+                    "magical": 30900
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 700
+                },
+                "mineralCost": 920,
+                "respawnSeconds": 18,
+                "attackRange": 280,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.3333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 10.0,
+                "skillHitChancePercent": 10.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1643_sally",
+                    "nameKey": "SKILL:sk1643_sally_nm",
+                    "descriptionKey": "SKILL:sk1643_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_SILENCE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3600.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1643",
+                    "abilityCode": "ab_tlt_1643",
+                    "descriptionKey": "ABILITY:ab_tlt_1643_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLHIT_ATKRANGE_FAR",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_water"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "water"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLHIT_ATKRANGE_FAR",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1643_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE",
+                                "args": []
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 5790,
+                "attackIncreaseAmount": 490,
+                "specialAttackDelta": 3090,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 80
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 7530,
+                "attackIncreaseAmount": 640,
+                "specialAttackDelta": 4020,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 110
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1643h-sally",
+            "nameKey": "UNIT:u1643h-sally_nm",
+            "descriptionKey": "UNIT:u1643h-sally_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1644e-sally",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "HYPER",
+            "roleType": "INT",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 111000,
+                "attack": {
+                    "physical": 7230,
+                    "magical": 65100
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 1400
+                },
+                "mineralCost": 1020,
+                "respawnSeconds": 13,
+                "attackRange": 280,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.3333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1643_sally",
+                    "nameKey": "SKILL:sk1643_sally_nm",
+                    "descriptionKey": "SKILL:sk1643_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_SILENCE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3600.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1643_sally",
+                    "nameKey": "SKILL:hsk1643_sally_nm",
+                    "descriptionKey": "SKILL:hsk1643_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_hsk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_POISON",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 60.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 60.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart",
+                "ab604_copyally"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1643",
+                    "abilityCode": "ab_tlt_1643",
+                    "descriptionKey": "ABILITY:ab_tlt_1643_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLHIT_ATKRANGE_FAR",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_water"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "water"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLHIT_ATKRANGE_FAR",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1643_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE",
+                                "args": []
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 13880,
+                "attackIncreaseAmount": 1040,
+                "specialAttackDelta": 6510,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 160
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 18050,
+                "attackIncreaseAmount": 1360,
+                "specialAttackDelta": 8470,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 210
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1643u-sally",
+            "nameKey": "UNIT:u1643u-sally_nm",
+            "descriptionKey": "UNIT:u1643u-sally_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1644e-sally",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "ULTRA",
+            "roleType": "INT",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 111100,
+                "attack": {
+                    "physical": 7160,
+                    "magical": 64400
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 1400
+                },
+                "mineralCost": 1110,
+                "respawnSeconds": 9,
+                "attackRange": 280,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.3333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1643_sally",
+                    "nameKey": "SKILL:sk1643_sally_nm",
+                    "descriptionKey": "SKILL:sk1643_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_SILENCE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3600.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "usk1643_sally",
+                    "nameKey": "SKILL:usk1643_sally_nm",
+                    "descriptionKey": "SKILL:usk1643_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_hsk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_POISON",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 40.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 9.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 40.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 9.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1643",
+                    "abilityCode": "ab_tlt_1643",
+                    "descriptionKey": "ABILITY:ab_tlt_1643_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLHIT_ATKRANGE_FAR",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_water"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "water"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLHIT_ATKRANGE_FAR",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1643_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE",
+                                "args": []
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 13890,
+                "attackIncreaseAmount": 1030,
+                "specialAttackDelta": 6440,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 160
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 18060,
+                "attackIncreaseAmount": 1340,
+                "specialAttackDelta": 8380,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 210
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1644e-sally",
+            "nameKey": "UNIT:u1644e-sally_nm",
+            "descriptionKey": "UNIT:u1644e-sally_desc",
+            "starGrade": 9,
+            "evolutionTargets": [],
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "FIRE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 188500,
+                "attack": {
+                    "physical": 13640,
+                    "magical": 122700
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 2800
+                },
+                "mineralCost": 1200,
+                "respawnSeconds": 7,
+                "attackRange": 280,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.3333,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 30.0,
+                "skillHitChancePercent": 30.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1643_sally",
+                    "nameKey": "SKILL:sk1643_sally_nm",
+                    "descriptionKey": "SKILL:sk1643_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_SILENCE",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3600.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1643_sally",
+                    "nameKey": "SKILL:hsk1643_sally_nm",
+                    "descriptionKey": "SKILL:hsk1643_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_hsk1643_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_POISON",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 60.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 60.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart",
+                "ab604_copyally"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [
+                {
+                    "abilityCode": "aab220_waterghost2",
+                    "icon": "ab220_waterghost_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab226_inssmissile",
+                    "icon": "ab226_inssmissile_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab221_aTempt",
+                    "icon": "ab221_atempt_icon.png",
+                    "chancePercent": 10
+                }
+            ],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1643",
+                    "abilityCode": "ab_tlt_1643",
+                    "descriptionKey": "ABILITY:ab_tlt_1643_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLHIT_ATKRANGE_FAR",
+                    "additionalConditions": [
+                        {
+                            "text": {
+                                "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                                "args": [
+                                    {
+                                        "key": "CUSTOM:ABILITY_CONDITION_TYPE_ELEMENT"
+                                    },
+                                    {
+                                        "key": "CUSTOM:ELEMENT_water"
+                                    }
+                                ]
+                            },
+                            "kind": "ELEMENT",
+                            "value": "water"
+                        }
+                    ],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLHIT_ATKRANGE_FAR",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1643_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 50.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE",
+                                "args": []
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 23570,
+                "attackIncreaseAmount": 1950,
+                "specialAttackDelta": 12270,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 320
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 94280,
+                "attackIncreaseAmount": 7800,
+                "specialAttackDelta": 49080,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 1280
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1645e-jessica",
+            "nameKey": "UNIT:u1645e-jessica_nm",
+            "descriptionKey": "UNIT:u1645e-jessica_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1645h-jessica",
+                    "kind": "HYPER"
+                }
+            ],
+            "evolution": "NORMAL",
+            "roleType": "AGI",
+            "elementType": "DARK",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 70700,
+                "attack": {
+                    "physical": 26780,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 700,
+                    "magical": 0
+                },
+                "mineralCost": 1250,
+                "respawnSeconds": 18,
+                "attackRange": 450,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.0,
+                    "rating": "FAST"
+                },
+                "criticalChancePercent": 20.0,
+                "criticalDamagePercent": 300,
+                "dodgeChancePercent": 20.0,
+                "skillDodgeChancePercent": 20.0,
+                "skillResistancePercent": 0,
+                "hitChancePercent": 10.0,
+                "skillHitChancePercent": 10.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1645_jessica",
+                    "nameKey": "SKILL:sk1645_jessica_nm",
+                    "descriptionKey": "SKILL:sk1645_jessica_desc",
+                    "trigger": {
+                        "type": "RSEARCH",
+                        "searchRatio": 1.1
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_sk1645_jessica.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_STUN",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 8.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 4400.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab233_antifreeze"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1645",
+                    "abilityCode": "ab_tlt_1645",
+                    "descriptionKey": "ABILITY:ab_tlt_1645_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1645_b",
+                            "descriptionKey": null,
+                            "effectCode": "STUN_TIME",
+                            "effectType": "BUFF",
+                            "factor": 4,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 100,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_STUN_TIME",
+                                "args": [
+                                    4
+                                ]
+                            }
+                        },
+                        {
+                            "abilityCode": "ab_tlt_1645_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 2,
+                            "activationChancePercent": 100,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE_S",
+                                "args": [
+                                    2
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_agi_2",
+                        "effectCode": "SKLAVD_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLAVD_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_agi_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_agi_4",
+                        "effectCode": "GATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 8840,
+                "attackIncreaseAmount": 3350,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 90,
+                "specialDefenceDelta": 0
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 11500,
+                "attackIncreaseAmount": 4360,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 120,
+                "specialDefenceDelta": 0
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1645h-jessica",
+            "nameKey": "UNIT:u1645h-jessica_nm",
+            "descriptionKey": "UNIT:u1645h-jessica_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1646e-jessica",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "HYPER",
+            "roleType": "AGI",
+            "elementType": "DARK",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 168700,
+                "attack": {
+                    "physical": 56180,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 1400,
+                    "magical": 0
+                },
+                "mineralCost": 1380,
+                "respawnSeconds": 13,
+                "attackRange": 450,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.0,
+                    "rating": "FAST"
+                },
+                "criticalChancePercent": 30.0,
+                "criticalDamagePercent": 300,
+                "dodgeChancePercent": 30.0,
+                "skillDodgeChancePercent": 30.0,
+                "skillResistancePercent": 0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1645_jessica",
+                    "nameKey": "SKILL:sk1645_jessica_nm",
+                    "descriptionKey": "SKILL:sk1645_jessica_desc",
+                    "trigger": {
+                        "type": "RSEARCH",
+                        "searchRatio": 1.1
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_sk1645_jessica.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_STUN",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 8.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 4400.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1645_jessica",
+                    "nameKey": "SKILL:hsk1645_jessica_nm",
+                    "descriptionKey": "SKILL:hsk1645_jessica_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 10.0,
+                    "icon": "skill_icon_hsk1645_jessica.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 50.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ATK",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 450.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_SKILL_RESET",
+                            "magnitude": null,
+                            "effectTrigger": {
+                                "kind": "chance",
+                                "percent": 80.0
+                            },
+                            "targetLimit": {
+                                "kind": "limited",
+                                "maxTargets": 5
+                            },
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab233_antifreeze",
+                "ab604_copyally2"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1645",
+                    "abilityCode": "ab_tlt_1645",
+                    "descriptionKey": "ABILITY:ab_tlt_1645_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1645_b",
+                            "descriptionKey": null,
+                            "effectCode": "STUN_TIME",
+                            "effectType": "BUFF",
+                            "factor": 4,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 100,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_STUN_TIME",
+                                "args": [
+                                    4
+                                ]
+                            }
+                        },
+                        {
+                            "abilityCode": "ab_tlt_1645_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 2,
+                            "activationChancePercent": 100,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE_S",
+                                "args": [
+                                    2
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_agi_2",
+                        "effectCode": "SKLAVD_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLAVD_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_agi_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_agi_4",
+                        "effectCode": "GATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 21090,
+                "attackIncreaseAmount": 7030,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 180,
+                "specialDefenceDelta": 0
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 27420,
+                "attackIncreaseAmount": 9140,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 240,
+                "specialDefenceDelta": 0
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1646e-jessica",
+            "nameKey": "UNIT:u1646e-jessica_nm",
+            "descriptionKey": "UNIT:u1646e-jessica_desc",
+            "starGrade": 9,
+            "evolutionTargets": [],
+            "evolution": "NORMAL",
+            "roleType": "AGI",
+            "elementType": "DARK",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 287800,
+                "attack": {
+                    "physical": 106200,
+                    "magical": 0
+                },
+                "defense": {
+                    "physical": 2800,
+                    "magical": 0
+                },
+                "mineralCost": 1630,
+                "respawnSeconds": 8,
+                "attackRange": 450,
+                "splashRange": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 88,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.0,
+                    "rating": "FAST"
+                },
+                "criticalChancePercent": 30.0,
+                "criticalDamagePercent": 300,
+                "dodgeChancePercent": 30.0,
+                "skillDodgeChancePercent": 30.0,
+                "skillResistancePercent": 0,
+                "hitChancePercent": 30.0,
+                "skillHitChancePercent": 30.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1645_jessica",
+                    "nameKey": "SKILL:sk1645_jessica_nm",
+                    "descriptionKey": "SKILL:sk1645_jessica_desc",
+                    "trigger": {
+                        "type": "RSEARCH",
+                        "searchRatio": 1.1
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_sk1645_jessica.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_STUN",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 8.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 4400.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1645_jessica",
+                    "nameKey": "SKILL:hsk1645_jessica_nm",
+                    "descriptionKey": "SKILL:hsk1645_jessica_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 10.0,
+                    "icon": "skill_icon_hsk1645_jessica.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 50.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ATK",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 450.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_SKILL_RESET",
+                            "magnitude": null,
+                            "effectTrigger": {
+                                "kind": "chance",
+                                "percent": 80.0
+                            },
+                            "targetLimit": {
+                                "kind": "limited",
+                                "maxTargets": 5
+                            },
+                            "duration": null,
+                            "rangePoints": 350.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab233_antifreeze",
+                "ab604_copyally2"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [
+                {
+                    "abilityCode": "aab213_lastatk",
+                    "icon": "ab213_lastatk_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab212_minplus",
+                    "icon": "ab212_minplus_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab221_aTempt",
+                    "icon": "ab221_atempt_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab220_waterghost2",
+                    "icon": "ab220_waterghost_icon.png",
+                    "chancePercent": 10
+                }
+            ],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1645",
+                    "abilityCode": "ab_tlt_1645",
+                    "descriptionKey": "ABILITY:ab_tlt_1645_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_HP_OVER",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                        "args": [
+                            50.0
+                        ]
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1645_b",
+                            "descriptionKey": null,
+                            "effectCode": "STUN_TIME",
+                            "effectType": "BUFF",
+                            "factor": 4,
+                            "durationSeconds": 0.1,
+                            "activationChancePercent": 100,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_STUN_TIME",
+                                "args": [
+                                    4
+                                ]
+                            }
+                        },
+                        {
+                            "abilityCode": "ab_tlt_1645_a",
+                            "descriptionKey": null,
+                            "effectCode": "SKILL_IGNORE",
+                            "effectType": "BUFF",
+                            "factor": 0,
+                            "durationSeconds": 2,
+                            "activationChancePercent": 100,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_SKILL_IGNORE_S",
+                                "args": [
+                                    2
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_agi_2",
+                        "effectCode": "SKLAVD_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKLAVD_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_agi_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_agi_4",
+                        "effectCode": "GATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_GATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 35980,
+                "attackIncreaseAmount": 13280,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 350,
+                "specialDefenceDelta": 0
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 143920,
+                "attackIncreaseAmount": 53120,
+                "specialAttackDelta": 0,
+                "generalDefenceDelta": 1400,
+                "specialDefenceDelta": 0
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1647e-sally",
+            "nameKey": "UNIT:u1647e-sally_nm",
+            "descriptionKey": "UNIT:u1647e-sally_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1647u-sally",
+                    "kind": "ULTRA"
+                },
+                {
+                    "rangerCode": "u1647h-sally",
+                    "kind": "HYPER"
+                }
+            ],
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "TREE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 45300,
+                "attack": {
+                    "physical": 3420,
+                    "magical": 30700
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 700
+                },
+                "mineralCost": 1000,
+                "respawnSeconds": 18,
+                "attackRange": 310,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 50,
+                    "rating": "SLOW"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.6667,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 10.0,
+                "skillHitChancePercent": 10.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1647_sally",
+                    "nameKey": "SKILL:sk1647_sally_nm",
+                    "descriptionKey": "SKILL:sk1647_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DOTHEAL",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "HP",
+                                "operator": "MULTIPLY",
+                                "percent": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1647",
+                    "abilityCode": "ab_tlt_1647",
+                    "descriptionKey": "ABILITY:ab_tlt_1647_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_KILL",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_KILL",
+                        "args": []
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1647_a",
+                            "descriptionKey": null,
+                            "effectCode": "HEAL",
+                            "effectType": "BUFF",
+                            "factor": 1,
+                            "durationSeconds": 0,
+                            "activationChancePercent": 30.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_HEAL",
+                                "args": [
+                                    100
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 5670,
+                "attackIncreaseAmount": 490,
+                "specialAttackDelta": 3070,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 80
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 7380,
+                "attackIncreaseAmount": 640,
+                "specialAttackDelta": 4000,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 110
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1647h-sally",
+            "nameKey": "UNIT:u1647h-sally_nm",
+            "descriptionKey": "UNIT:u1647h-sally_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1648e-sally",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "HYPER",
+            "roleType": "INT",
+            "elementType": "TREE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 107700,
+                "attack": {
+                    "physical": 7150,
+                    "magical": 64400
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 1400
+                },
+                "mineralCost": 1100,
+                "respawnSeconds": 13,
+                "attackRange": 310,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 50,
+                    "rating": "SLOW"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.6667,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1647_sally",
+                    "nameKey": "SKILL:sk1647_sally_nm",
+                    "descriptionKey": "SKILL:sk1647_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DOTHEAL",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "HP",
+                                "operator": "MULTIPLY",
+                                "percent": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1647_sally",
+                    "nameKey": "SKILL:hsk1647_sally_nm",
+                    "descriptionKey": "SKILL:hsk1647_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 6.0,
+                    "icon": "skill_icon_hsk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 50.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DOT",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 800.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart",
+                "ab601_clone"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1647",
+                    "abilityCode": "ab_tlt_1647",
+                    "descriptionKey": "ABILITY:ab_tlt_1647_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_KILL",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_KILL",
+                        "args": []
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1647_a",
+                            "descriptionKey": null,
+                            "effectCode": "HEAL",
+                            "effectType": "BUFF",
+                            "factor": 1,
+                            "durationSeconds": 0,
+                            "activationChancePercent": 30.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_HEAL",
+                                "args": [
+                                    100
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 13470,
+                "attackIncreaseAmount": 1030,
+                "specialAttackDelta": 6440,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 160
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 17520,
+                "attackIncreaseAmount": 1340,
+                "specialAttackDelta": 8380,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 210
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1647u-sally",
+            "nameKey": "UNIT:u1647u-sally_nm",
+            "descriptionKey": "UNIT:u1647u-sally_desc",
+            "starGrade": 8,
+            "evolutionTargets": [
+                {
+                    "rangerCode": "u1648e-sally",
+                    "kind": "NORMAL"
+                }
+            ],
+            "evolution": "ULTRA",
+            "roleType": "INT",
+            "elementType": "TREE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 108100,
+                "attack": {
+                    "physical": 7090,
+                    "magical": 63800
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 1400
+                },
+                "mineralCost": 1200,
+                "respawnSeconds": 9,
+                "attackRange": 310,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 50,
+                    "rating": "SLOW"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.6667,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 20.0,
+                "skillHitChancePercent": 20.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1647_sally",
+                    "nameKey": "SKILL:sk1647_sally_nm",
+                    "descriptionKey": "SKILL:sk1647_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DOTHEAL",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "HP",
+                                "operator": "MULTIPLY",
+                                "percent": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "usk1647_sally",
+                    "nameKey": "SKILL:usk1647_sally_nm",
+                    "descriptionKey": "SKILL:usk1647_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 8.0,
+                    "icon": "skill_icon_hsk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DOT",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 500.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 7.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 2500.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1647",
+                    "abilityCode": "ab_tlt_1647",
+                    "descriptionKey": "ABILITY:ab_tlt_1647_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_KILL",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_KILL",
+                        "args": []
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1647_a",
+                            "descriptionKey": null,
+                            "effectCode": "HEAL",
+                            "effectType": "BUFF",
+                            "factor": 1,
+                            "durationSeconds": 0,
+                            "activationChancePercent": 30.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_HEAL",
+                                "args": [
+                                    100
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 13520,
+                "attackIncreaseAmount": 1020,
+                "specialAttackDelta": 6380,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 160
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 17580,
+                "attackIncreaseAmount": 1330,
+                "specialAttackDelta": 8300,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 210
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
+            "rangerCode": "u1648e-sally",
+            "nameKey": "UNIT:u1648e-sally_nm",
+            "descriptionKey": "UNIT:u1648e-sally_desc",
+            "starGrade": 9,
+            "evolutionTargets": [],
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "TREE",
+            "releaseDate": "2026-10-30",
+            "stats": {
+                "hp": 201700,
+                "attack": {
+                    "physical": 12190,
+                    "magical": 109700
+                },
+                "defense": {
+                    "physical": 0,
+                    "magical": 2800
+                },
+                "mineralCost": 1300,
+                "respawnSeconds": 7,
+                "attackRange": 310,
+                "splashRange": 150,
+                "moveSpeed": {
+                    "pointsPerSecond": 50,
+                    "rating": "SLOW"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 2.6667,
+                    "rating": "NORMAL"
+                },
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 20.0,
+                "hitChancePercent": 30.0,
+                "skillHitChancePercent": 30.0
+            },
+            "skillSet": [
+                {
+                    "skillCode": "sk1647_sally",
+                    "nameKey": "SKILL:sk1647_sally_nm",
+                    "descriptionKey": "SKILL:sk1647_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DOTHEAL",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "HP",
+                                "operator": "MULTIPLY",
+                                "percent": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 10.0
+                            },
+                            "rangePoints": 250.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "hsk1647_sally",
+                    "nameKey": "SKILL:hsk1647_sally_nm",
+                    "descriptionKey": "SKILL:hsk1647_sally_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 6.0,
+                    "icon": "skill_icon_hsk1647_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 50.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DOT",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 800.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab105_frozenheart",
+                "ab601_clone"
+            ],
+            "tags": {
+                "nft": false,
+                "advent": false
+            },
+            "awakeningAbilities": [
+                {
+                    "abilityCode": "aab223_guts5",
+                    "icon": "ab223_guts_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab212_minplus",
+                    "icon": "ab212_minplus_icon.png",
+                    "chancePercent": 10
+                },
+                {
+                    "abilityCode": "aab222_aPolymorph",
+                    "icon": "ab222_apolymorph_icon.png",
+                    "chancePercent": 10
+                }
+            ],
+            "talents": {
+                "major": {
+                    "talentCode": "tlnt_mjr_1647",
+                    "abilityCode": "ab_tlt_1647",
+                    "descriptionKey": "ABILITY:ab_tlt_1647_desc",
+                    "activationChancePercent": 100,
+                    "activationConditionCode": "TLT_SKILLATTACK_KILL",
+                    "additionalConditions": [],
+                    "activationConditionKey": {
+                        "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_KILL",
+                        "args": []
+                    },
+                    "effects": [
+                        {
+                            "abilityCode": "ab_tlt_1647_a",
+                            "descriptionKey": null,
+                            "effectCode": "HEAL",
+                            "effectType": "BUFF",
+                            "factor": 1,
+                            "durationSeconds": 0,
+                            "activationChancePercent": 30.0,
+                            "localizedEffect": {
+                                "templateKey": "CUSTOM:TALENT_TEXT_HEAL",
+                                "args": [
+                                    100
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "enhancements": [
+                    {
+                        "talentCode": "tlnt_ehnc_int_2",
+                        "effectCode": "SKL_PROB_MUL",
+                        "value": 0.2,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SKL_PROB_MUL",
+                            "args": [
+                                20.0
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_3",
+                        "effectCode": "HP_MUL",
+                        "value": 3,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_HP_MUL",
+                            "args": [
+                                300
+                            ]
+                        }
+                    },
+                    {
+                        "talentCode": "tlnt_ehnc_int_4",
+                        "effectCode": "SATK_MUL",
+                        "value": 4,
+                        "unit": "PERCENT_FACTOR",
+                        "localizedEffect": {
+                            "templateKey": "CUSTOM:ENHANCE_TALENT_TEXT_SATK_MUL",
+                            "args": [
+                                400
+                            ]
+                        }
+                    }
+                ]
+            },
+            "rankUpStatIncrease": {
+                "hpIncreaseAmount": 25220,
+                "attackIncreaseAmount": 1750,
+                "specialAttackDelta": 10970,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 320
+            },
+            "rankUpStatIncreaseMax": {
+                "hpIncreaseAmount": 100880,
+                "attackIncreaseAmount": 7000,
+                "specialAttackDelta": 43880,
+                "generalDefenceDelta": 0,
+                "specialDefenceDelta": 1280
+            },
+            "releaseDateSource": "v2_author_record"
+        },
+        {
             "rangerCode": "u164e-alex",
             "nameKey": "UNIT:u164e-alex_nm",
             "descriptionKey": "UNIT:u164e-alex_desc",

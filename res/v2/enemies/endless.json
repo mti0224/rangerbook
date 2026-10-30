@@ -7691,6 +7691,210 @@
                 "nft": false,
                 "advent": false
             }
+        },
+        {
+            "enemyCode": "u81032-kaku",
+            "nameKey": "UNIT:u81032-kaku_nm",
+            "roleType": "AGI",
+            "elementType": "DARK",
+            "stats": {
+                "physicalAttack": 150,
+                "magicalAttack": 0,
+                "hp": 7370,
+                "physicalDefense": 15,
+                "magicalDefense": 33,
+                "attackRangePoints": 200,
+                "splashRangePoints": 400,
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 200,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 32.5,
+                "hitChancePercent": 0,
+                "skillHitChancePercent": 0,
+                "mineralCost": 1000,
+                "moveSpeed": {
+                    "pointsPerSecond": 100,
+                    "rating": "FAST"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 1.3333,
+                    "rating": "VERYFAST"
+                }
+            },
+            "skills": [
+                {
+                    "skillCode": "sk81032-kaku",
+                    "nameKey": null,
+                    "descriptionKey": "SKILL:sk81032-kaku_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 70.0,
+                    "cooldownSeconds": 6.0,
+                    "icon": "skill_icon_sk81032-kaku.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEANING_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 2000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 70.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_KNOCKBACK",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "usk81032-kaku",
+                    "nameKey": null,
+                    "descriptionKey": "SKILL:usk81032-kaku_desc",
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 80.0,
+                    "cooldownSeconds": 6.0,
+                    "icon": "skill_icon_usk81032-kaku.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEANING_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 2000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 70.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DOT",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 900.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 450.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab225_aMirror3",
+                "ab222_aPolymorph"
+            ],
+            "awakeningAbilities": [],
+            "talents": null,
+            "flags": {
+                "boss": true,
+                "nft": false,
+                "advent": false
+            }
         }
     ]
 }

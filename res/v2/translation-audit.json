@@ -710,6 +710,10 @@
             "zh_TW": ""
         },
         {
+            "key": "SKILL:sk81032-kaku_desc",
+            "zh_TW": ""
+        },
+        {
             "key": "SKILL:sk83001_william_desc",
             "zh_TW": ""
         },
@@ -1343,6 +1347,10 @@
         },
         {
             "key": "SKILL:usk81031-bacon_desc",
+            "zh_TW": ""
+        },
+        {
+            "key": "SKILL:usk81032-kaku_desc",
             "zh_TW": ""
         },
         {
@@ -2051,6 +2059,10 @@
         },
         {
             "key": "UNIT:u81031-bacon_nm",
+            "zh_TW": ""
+        },
+        {
+            "key": "UNIT:u81032-kaku_nm",
             "zh_TW": ""
         },
         {
@@ -3172,6 +3184,7 @@
             "SKILL:sk81029-drpaimon_desc",
             "SKILL:sk81030-wingwing_desc",
             "SKILL:sk81031-bacon_desc",
+            "SKILL:sk81032-kaku_desc",
             "SKILL:sk83001_william_desc",
             "SKILL:sk83001_william_nm",
             "SKILL:sk83002_pepe_desc",
@@ -3331,6 +3344,7 @@
             "SKILL:usk81029-drpaimon_desc",
             "SKILL:usk81030-wingwing_desc",
             "SKILL:usk81031-bacon_desc",
+            "SKILL:usk81032-kaku_desc",
             "UNIT:g998-labirinth2_nm",
             "UNIT:g998-labirinth3_nm",
             "UNIT:g998-labirinth4_nm",
@@ -3508,6 +3522,7 @@
             "UNIT:u81029-drpaimon_nm",
             "UNIT:u81030-wingwing_nm",
             "UNIT:u81031-bacon_nm",
+            "UNIT:u81032-kaku_nm",
             "UNIT:u82001-vetive_nm",
             "UNIT:u82002-yoyo_nm",
             "UNIT:u82003-pinky_nm",

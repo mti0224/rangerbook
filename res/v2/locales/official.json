@@ -5292,6 +5292,34 @@
         "jp": "戦闘中にスキルで敵を倒すたびに高確率で体力を30%回復します。"
     },
     {
+        "key": "ABILITY:ab_tlt_1641_desc",
+        "zh_TW": "戰鬥中技能命中體力尚有90%以上的木屬性敵人時，將獲得以下效果。\n*僅限該技能，以高機率額外提升範圍傷害800%",
+        "en": "In battle, the following effect is applied when Skills hit Wood enemies that have over 90% HP.\n- Has a high chance of Area Damage increasing by an additional +800% for the corresponding Skill only",
+        "th": "ระหว่างการต่อสู้จะเกิดผลลัพธ์ดังต่อไปนี้เมื่อทักษะโดนศัตรูธาตุไม้ที่มีพลังชีวิตมากกว่า 90%\n*มีโอกาสสูงที่จะเพิ่มความเสียหายในพื้นที่ให้เฉพาะทักษะที่เข้าข่ายอีก +800%",
+        "jp": "戦闘中、体力が90%以上の木属性の敵にスキル命中時、以下の効果が適用されます。\n*該当スキルに限り、高確率で範囲ダメージが追加で+800%増加"
+    },
+    {
+        "key": "ABILITY:ab_tlt_1643_desc",
+        "zh_TW": "戰鬥中受到自身攻擊範圍50%以外的水屬性敵人的技能攻擊時，將獲得以下效果。\n*以高機率使該技能攻擊只對自己無效",
+        "en": "In battle, the following effect is applied when hit by a Skill attack from a Water enemy farther than 50% of your Ranger's Attack Range.\n- Has a high chance of canceling corresponding Skill attacks only for the Ranger itself",
+        "th": "ระหว่างการต่อสู้จะเกิดผลลัพธ์ดังต่อไปนี้เมื่อรับการโจมตีด้วยทักษะจากศัตรูธาตุน้ำที่อยู่ไกลเกินกว่า 50% ของระยะโจมตีของตนเอง\n*มีโอกาสสูงที่การโจมตีด้วยทักษะที่เข้าข่ายจะไม่มีผลเฉพาะกับตนเองเท่านั้น",
+        "jp": "戦闘中、自身の射程距離の50%より遠くにいる水属性の敵からスキル攻撃を受けた際、以下の効果が適用されます。\n*高確率で自分自身に限り、該当スキル攻撃を無効化"
+    },
+    {
+        "key": "ABILITY:ab_tlt_1645_desc",
+        "zh_TW": "戰鬥中技能命中體力尚有50%以上的敵人時，將獲得以下效果。\n*使所有敵人的技能攻擊只對自己無效（2秒）\n*使該技能的電暈維持時間增加4秒",
+        "en": "In battle, the following effect is applied when Skills hit enemies that have over 50% HP.\n- Cancels all enemy Skill attacks only for the Ranger itself (2 sec)\n- The corresponding Skills' Stun duration increases by an additional +4 sec",
+        "th": "ระหว่างการต่อสู้จะเกิดผลลัพธ์ดังต่อไปนี้เมื่อทักษะโดนศัตรูที่มีพลังชีวิตมากกว่า 50%\n*การโจมตีด้วยทักษะของศัตรูทั้งหมดจะไม่มีผลเฉพาะกับตนเองเท่านั้น (2 วินาที)\n*จะเพิ่มระยะเวลาชะงักของทักษะที่เข้าข่าย +4 วินาที",
+        "jp": "戦闘中、体力が50%以上の敵にスキル命中時、以下の効果が適用されます。\n*自分自身に限り、すべての敵のスキル攻撃を無効化（2秒）\n*該当スキルのスタン持続時間+4秒増加"
+    },
+    {
+        "key": "ABILITY:ab_tlt_1647_desc",
+        "zh_TW": "戰鬥中每次使用技能打倒敵人時，將以低機率回復體力100%。",
+        "en": "In battle, has a low chance of restoring 100% of HP every time an enemy is defeated using a Skill.",
+        "th": "ระหว่างการต่อสู้มีโอกาสเล็กน้อยที่จะฟื้นฟูพลังชีวิต 100% ทุกครั้งที่เอาชนะศัตรูด้วยทักษะ",
+        "jp": "戦闘中、スキルで敵を倒すたびに低確率で体力を100%回復します。"
+    },
+    {
         "key": "EQUIP:ENHANCE_TITLE",
         "zh_TW": "強化",
         "en": "ENHANCE",
@@ -7427,6 +7455,27 @@
         "jp": "闘気高揚"
     },
     {
+        "key": "EQUIP:SPC_acc_0009_desc1",
+        "zh_TW": "技能閃避機率 <#78ff00>%s",
+        "en": "Skill Evade Rate <#78ff00>%s",
+        "th": "อัตราการหลบสกิล <#78ff00>%s",
+        "jp": "スキル回避率 <#78ff00>%s"
+    },
+    {
+        "key": "EQUIP:SPC_acc_0009_desc2",
+        "zh_TW": "出動10秒後，體力增加<#78ff00>{$3p}<->",
+        "en": "10 sec after deploying, boosts HP by <#78ff00>{$3p}<->",
+        "th": "หลังออกปฏิบัติการครบ 10 วินาทีจะเพิ่มพลังชีวิต <#78ff00>{$3p}<->",
+        "jp": "出撃から10秒後、体力が<#78ff00>{$3p}<->増加"
+    },
+    {
+        "key": "EQUIP:SPC_acc_0009_nm",
+        "zh_TW": "生命能量膨脹",
+        "en": "Life Force Expansion",
+        "th": "เพิ่มพูนพลังชีวิต",
+        "jp": "生命力の膨張"
+    },
+    {
         "key": "EQUIP:SPC_acc_9998_desc1",
         "zh_TW": "스킬 명중률 <#78ff00>%s 증가_ZH",
         "en": "스킬 명중률 <#78ff00>%s 증가_EN",
@@ -7908,6 +7957,27 @@
         "en": "Magic Drain",
         "th": "ดูดซับพลังเวทย์",
         "jp": "魔力吸収"
+    },
+    {
+        "key": "EQUIP:SPC_wpn_0012_desc1",
+        "zh_TW": "技能發動率 <#78ff00>%s",
+        "en": "Skill Use Rate <#78ff00>%s",
+        "th": "อัตราการใช้สกิล <#78ff00>%s",
+        "jp": "スキル発動率 <#78ff00>%s"
+    },
+    {
+        "key": "EQUIP:SPC_wpn_0012_desc2",
+        "zh_TW": "技能傷害命中水屬性力量型敵人時，將以高機率將水屬性力量型敵人的屬性在<#78ff00>{$4f}<->秒內變為無屬性",
+        "en": "When Skill Damage hits a Water Strength type enemy, has a high chance of changing the enemy's element to no element (<#78ff00>{$4f}s<->)",
+        "th": "เมื่อความเสียหายทักษะโดนศัตรูชนิดพลังธาตุน้ำ มีโอกาสสูงที่จะ เปลี่ยนธาตุของศัตรูชนิดพลังธาตุน้ำให้เป็นไร้ธาตุเป็นเวลา <#78ff00>{$4f}<->วินาที",
+        "jp": "水属性の力タイプの敵にスキルダメージが命中時、高確率で水属性の力タイプの敵の属性を<#78ff00>{$4f}<->秒間無属性に変更"
+    },
+    {
+        "key": "EQUIP:SPC_wpn_0012_nm",
+        "zh_TW": "水分蒸發",
+        "en": "Water Vaporization",
+        "th": "สูญสิ้นความชื้น",
+        "jp": "水分の蒸発"
     },
     {
         "key": "EQUIP:SPC_wpn_9998_desc1",
@@ -9574,6 +9644,20 @@
         "en": "[CG]Radiant \\nWave Gauntlet",
         "th": "[CG]ปลอกแขน\\nคลื่นรังสี",
         "jp": "[CG]輻射波動\\nガントレット"
+    },
+    {
+        "key": "EQUIP:eq_2611_acc_19_nm",
+        "zh_TW": "榮耀派對勳章",
+        "en": "Glorious \\nParty Medal",
+        "th": "ตราปาร์ตี้\\nแห่งเกียรติยศ",
+        "jp": "栄光の\\nパーティー勲章"
+    },
+    {
+        "key": "EQUIP:eq_2611_wpn_09_nm",
+        "zh_TW": "蛋糕鎚",
+        "en": "Cake Hammer",
+        "th": "ค้อนขนมเค้ก",
+        "jp": "ケーキハンマー"
     },
     {
         "key": "EQUIP:eq_7s_acc_06_nm",
@@ -24367,6 +24451,90 @@
         "jp": "我が心に、迷いなし!"
     },
     {
+        "key": "SKILL:hsk1641_crush_desc",
+        "zh_TW": "清洗拖把後丟出桶子來攻擊敵人，並產生負面效果。\\n\\n*產生擊退效果 \\n*攻擊力×4000%的範圍傷害 \\n*將木屬性敵人變為無屬性 （7秒）",
+        "en": "Washes the mop and throws a bucket to attack. Bad effects on enemies.\\n\\n*Enemy knockback \\n*ATK x 4000% Area Damage \\n*Changes Wood elemental enemies to None (7 sec)",
+        "th": "ซักไม้ถูพื้นแล้วทุ่มถังน้ำ\nเพื่อโจมตีศัตรูและสร้างผลลัพธ์ด้านลบ\\n\\n*โจมตีทำให้ศัตรูกระเด็นถอยหลัง \\n*สร้างความเสียหาย 4000% ของพลังโจมตีลงในพื้นที่ \\n*เปลี่ยนศัตรูธาตุไม้เป็นธาตุไร้ธาตุ (7 วินาที)",
+        "jp": "モップを洗ってバケツを投げ、敵を攻撃して悪い効果を与える\\n\\n*敵軍ノックバック効果 \\n*攻撃力×4000%の範囲ダメージ \\n*敵の木属性を無属性に変更 (7秒)"
+    },
+    {
+        "key": "SKILL:hsk1641_crush_na_desc",
+        "zh_TW": "（超進化、★9進化限定技能）\\n\\n清洗拖把後丟出桶子來攻擊敵人，並產生負面效果。\\n\\n*產生擊退效果 \\n*攻擊力×4000%的範圍傷害 \\n*將木屬性敵人變為無屬性 （7秒）",
+        "en": "(Limited Hyper Evolution and 9-Star Skills)\\n\\nWashes the mop and throws a bucket to attack. Bad effects on enemies.\\n\\n*Enemy knockback \\n*ATK x 4000% Area Damage \\n*Changes Wood elemental enemies to None (7 sec)",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นไฮเปอร์, อัพเกรด 9 ดาว)\\n\\nซักไม้ถูพื้นแล้วทุ่มถังน้ำ\nเพื่อโจมตีศัตรูและสร้างผลลัพธ์ด้านลบ\\n\\n*โจมตีทำให้ศัตรูกระเด็นถอยหลัง \\n*สร้างความเสียหาย 4000% ของพลังโจมตีลงในพื้นที่ \\n*เปลี่ยนศัตรูธาตุไม้เป็นธาตุไร้ธาตุ (7 วินาที)",
+        "jp": "(超進化、★9進化限定スキル)\\n\\nモップを洗ってバケツを投げ、敵を攻撃して悪い効果を与える\\n\\n*敵軍ノックバック効果 \\n*攻撃力×4000%の範囲ダメージ \\n*敵の木属性を無属性に変更 (7秒)"
+    },
+    {
+        "key": "SKILL:hsk1641_crush_nm",
+        "zh_TW": "濕拖清潔",
+        "en": "Wet Wipe",
+        "th": "ใช้น้ำถูพื้น",
+        "jp": "水拭き掃除"
+    },
+    {
+        "key": "SKILL:hsk1643_sally_desc",
+        "zh_TW": "踢倒自動販賣機來取出牛奶，並讓夥伴獲得正面效果。\\n\\n*解除持續傷害 \\n*提升技能發動率60% （7秒）\\n*提升技能閃避機率60% （7秒）",
+        "en": "Kicks a vending machine and gets milk. Good effects on allies.\\n\\n*Cancels continuous damage \\n*Skill Use Rate +60%  (7 sec)\\n*Skill Evade Rate +60% (7 sec)",
+        "th": "เตะตู้ขายสินค้าอัตโนมัติเพื่อเอานมออกมา\nสร้างผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*ยกเลิกความเสียหายต่อเนื่อง \\n*เพิ่มอัตราการใช้ทักษะ 60%  (7 วินาที)\\n*เพิ่มอัตราการหลบทักษะ 60% (7 วินาที)",
+        "jp": "自動販売機を蹴ってミルクを取り出し、味方に良い効果を与える\\n\\n*持続ダメージの解除 \\n*スキル発動率60%アップ (7秒)\\n*スキル回避率60%アップ (7秒)"
+    },
+    {
+        "key": "SKILL:hsk1643_sally_na_desc",
+        "zh_TW": "（超進化、★9進化限定技能）\\n\\n踢倒自動販賣機來取出牛奶，並讓夥伴獲得正面效果。\\n\\n*解除持續傷害 \\n*提升技能發動率60% （7秒）\\n*提升技能閃避機率60% （7秒）",
+        "en": "(Limited Hyper Evolution and 9-Star Skills)\\n\\nKicks a vending machine and gets milk. Good effects on allies.\\n\\n*Cancels continuous damage \\n*Skill Use Rate +60%  (7 sec)\\n*Skill Evade Rate +60% (7 sec)",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นไฮเปอร์, อัพเกรด 9 ดาว)\\n\\nเตะตู้ขายสินค้าอัตโนมัติเพื่อเอานมออกมา\nสร้างผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*ยกเลิกความเสียหายต่อเนื่อง \\n*เพิ่มอัตราการใช้ทักษะ 60%  (7 วินาที)\\n*เพิ่มอัตราการหลบทักษะ 60% (7 วินาที)",
+        "jp": "(超進化、★9進化限定スキル)\\n\\n自動販売機を蹴ってミルクを取り出し、味方に良い効果を与える\\n\\n*持続ダメージの解除 \\n*スキル発動率60%アップ (7秒)\\n*スキル回避率60%アップ (7秒)"
+    },
+    {
+        "key": "SKILL:hsk1643_sally_nm",
+        "zh_TW": "牛奶到手",
+        "en": "Got Milk?",
+        "th": "ได้รับนม",
+        "jp": "ミルクゲット"
+    },
+    {
+        "key": "SKILL:hsk1645_jessica_desc",
+        "zh_TW": "用算盤數錢，並讓夥伴獲得正面效果。\\n\\n*提升技能命中率50% （10秒）\\n*提升攻擊力350% （10秒）\\n*重置部分我方的技能冷卻時間",
+        "en": "Counts money on an abacus. Good effects on allies.\\n\\n*Skill Hit Rate +50% (10 sec)\\n*ATK +350% (10 sec)\\n*Resets the Skill cooldown of some allies.",
+        "th": "นับเงินด้วยลูกคิดพร้อมสร้าง\nผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*เพิ่มอัตราความแม่นยำของทักษะ 50% (10 วินาที)\\n*เพิ่มพลังโจมตี 350% (10 วินาที)\\n*รีเซ็ตเวลารอทักษะของเรนเจอร์พรรคพวกส่วนหนึ่ง",
+        "jp": "そろばんでお金を数えながら、味方に良い効果を与える\\n\\n*スキル命中率50%アップ (10秒)\\n*攻撃力350%アップ (10秒)\\n*一部自軍のスキルクールタイムの初期化"
+    },
+    {
+        "key": "SKILL:hsk1645_jessica_na_desc",
+        "zh_TW": "（超進化、★9進化限定技能）\\n\\n用算盤數錢，並讓夥伴獲得正面效果。\\n\\n*提升技能命中率50% （10秒）\\n*提升攻擊力350% （10秒）\\n*重置部分我方的技能冷卻時間",
+        "en": "(Limited Hyper Evolution and 9-Star Skills)\\n\\nCounts money on an abacus. Good effects on allies.\\n\\n*Skill Hit Rate +50% (10 sec)\\n*ATK +350% (10 sec)\\n*Resets the Skill cooldown of some allies.",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นไฮเปอร์, อัพเกรด 9 ดาว)\\n\\nนับเงินด้วยลูกคิดพร้อมสร้าง\nผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*เพิ่มอัตราความแม่นยำของทักษะ 50% (10 วินาที)\\n*เพิ่มพลังโจมตี 350% (10 วินาที)\\n*รีเซ็ตเวลารอทักษะของเรนเจอร์พรรคพวกส่วนหนึ่ง",
+        "jp": "(超進化、★9進化限定スキル)\\n\\nそろばんでお金を数えながら、味方に良い効果を与える\\n\\n*スキル命中率50%アップ (10秒)\\n*攻撃力350%アップ (10秒)\\n*一部自軍のスキルクールタイムの初期化"
+    },
+    {
+        "key": "SKILL:hsk1645_jessica_nm",
+        "zh_TW": "徵收",
+        "en": "Levy",
+        "th": "เรียกเก็บเงิน",
+        "jp": "徴収"
+    },
+    {
+        "key": "SKILL:hsk1647_sally_desc",
+        "zh_TW": "發射1億下載歡慶飛彈來攻擊敵人，並產生負面效果。\\n\\n*使敵人的攻擊力減少50% （5秒）\\n*每秒攻擊力×800%的範圍傷害 （5秒）\\n*攻擊力×3000%的範圍傷害 ",
+        "en": "Shoots a party missile in celebration of 100 million downloads to attack. Bad effects on enemies.\\n\\n*Enemy ATK -50% (5 sec)\\n*ATK per sec x 800% Area Damage (5 sec)\\n*ATK x 3000% Area Damage ",
+        "th": "ยิงขีปนาวุธเฉลิมฉลองยอดดาวน์โหลด\nครบ 100 ล้านเพื่อโจมตีศัตรู\nและสร้างผลลัพธ์ด้านลบ\\n\\n*ลดพลังโจมตีของศัตรู 50% (5 วินาที)\\n*สร้างความเสียหาย 800% ของพลังโจมตีลงในพื้นที่ทุกวินาที (5 วินาที)\\n*สร้างความเสียหาย 3000% ของพลังโจมตีลงในพื้นที่ ",
+        "jp": "1億ダウンロードのお祝いミサイルを撃って敵を攻撃し、悪い効果を与える\\n\\n*敵の攻撃力 50%ダウン (5秒)\\n*毎秒の攻撃力×800%の範囲ダメージ (5秒)\\n*攻撃力×3000%の範囲ダメージ "
+    },
+    {
+        "key": "SKILL:hsk1647_sally_na_desc",
+        "zh_TW": "（超進化、★9進化限定技能）\\n\\n發射1億下載歡慶飛彈來攻擊敵人，並產生負面效果。\\n\\n*使敵人的攻擊力減少50% （5秒）\\n*每秒攻擊力×800%的範圍傷害 （5秒）\\n*攻擊力×3000%的範圍傷害 ",
+        "en": "(Limited Hyper Evolution and 9-Star Skills)\\n\\nShoots a party missile in celebration of 100 million downloads to attack. Bad effects on enemies.\\n\\n*Enemy ATK -50% (5 sec)\\n*ATK per sec x 800% Area Damage (5 sec)\\n*ATK x 3000% Area Damage ",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นไฮเปอร์, อัพเกรด 9 ดาว)\\n\\nยิงขีปนาวุธเฉลิมฉลองยอดดาวน์โหลด\nครบ 100 ล้านเพื่อโจมตีศัตรู\nและสร้างผลลัพธ์ด้านลบ\\n\\n*ลดพลังโจมตีของศัตรู 50% (5 วินาที)\\n*สร้างความเสียหาย 800% ของพลังโจมตีลงในพื้นที่ทุกวินาที (5 วินาที)\\n*สร้างความเสียหาย 3000% ของพลังโจมตีลงในพื้นที่ ",
+        "jp": "(超進化、★9進化限定スキル)\\n\\n1億ダウンロードのお祝いミサイルを撃って敵を攻撃し、悪い効果を与える\\n\\n*敵の攻撃力 50%ダウン (5秒)\\n*毎秒の攻撃力×800%の範囲ダメージ (5秒)\\n*攻撃力×3000%の範囲ダメージ "
+    },
+    {
+        "key": "SKILL:hsk1647_sally_nm",
+        "zh_TW": "歡慶飛彈",
+        "en": "Party Missile",
+        "th": "ขีปนาวุธเฉลิมฉลอง",
+        "jp": "お祝いミサイル"
+    },
+    {
         "key": "SKILL:hsk2001_lia_desc",
         "zh_TW": "送出能把對方化為石頭般的恐怖目光，對敵人產生負面效果。\\n\\n*攻擊力×2000%的範圍傷害 \\n*降低敵人的爆擊機率50% （10秒）\\n*使敵人爆擊傷害減少50% （10秒）",
         "en": "Glares so menacingly as to turn an enemy to stone. Casts debilitating effects on enemies.\\n\\n* ATK x 2000% Area Damage \\n* Enemy Critical Hit Rate -50% (10 sec)\\n* Decreases enemy Critical Damage by 50% (10 sec)",
@@ -33584,6 +33752,62 @@
         "en": "Pact of Everlasting Harmony",
         "th": "ถวายสัตย์ภักดีไม่เปลี่ยนแปร",
         "jp": "永続調和の契り"
+    },
+    {
+        "key": "SKILL:sk1641_crush_desc",
+        "zh_TW": "在周圍迅速掃地與拖地，並讓夥伴獲得正面效果。\\n\\n*提升體力300% （7秒）\\n*提升閃避機率30% （7秒）\\n*提升命中率30% （7秒）",
+        "en": "Quickly sweeps and wipes the area. Good effects on allies.\\n\\n*HP +300% (7 sec)\\n*Evade Rate +30% (7 sec)\\n*Hit Rate +30%  (7 sec)",
+        "th": "กวาดและถูรอบๆ อย่างรวดเร็ว\nสร้างผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*เพิ่มพลังชีวิต 300% (7 วินาที)\\n*เพิ่มอัตราการหลบหลีก 30% (7 วินาที)\\n*เพิ่มอัตราความแม่นยำ 30%  (7 วินาที)",
+        "jp": "周囲を素早く掃いて拭き、味方に良い効果を与える\\n\\n*体力300%アップ (7秒)\\n*回避率30%アップ (7秒)\\n*命中率30%アップ (7秒)"
+    },
+    {
+        "key": "SKILL:sk1641_crush_nm",
+        "zh_TW": "掃地與拖地",
+        "en": "Sweep & Wipe",
+        "th": "กวาดและถู",
+        "jp": "掃き掃除と拭き掃除"
+    },
+    {
+        "key": "SKILL:sk1643_sally_desc",
+        "zh_TW": "丟出茶包來攻擊敵人，並產生負面效果。\\n\\n*使敵人無法使用技能 （5秒）\\n*使範圍內敵人的技能抗性減少30% （5秒）\\n*攻擊力×3600%的範圍傷害 ",
+        "en": "Tosses teabags to attack. Bad effects on enemies.\\n\\n*Makes enemy skills unusable (5 sec)\\n*Enemy Skill Resistance -30% (5 sec)\\n*ATK x 3600% Area Damage ",
+        "th": "ขว้างถุงชาเพื่อโจมตีศัตรู\nและสร้างผลลัพธ์ด้านลบ\\n\\n*ห้ามศัตรูใช้ทักษะ (5 วินาที)\\n*ลดการต้านทักษะของศัตรูในพื้นที่ 30% (5 วินาที)\\n*สร้างความเสียหาย 3600% ของพลังโจมตีลงในพื้นที่ ",
+        "jp": "ティーバッグを投げて敵を攻撃し、悪い効果を与える\\n\\n*敵軍スキル使用不可 (5秒)\\n*範囲内の敵のスキル抵抗 30%ダウン (5秒)\\n*攻撃力×3600%の範囲ダメージ "
+    },
+    {
+        "key": "SKILL:sk1643_sally_nm",
+        "zh_TW": "投擲茶包",
+        "en": "Teabag Toss",
+        "th": "ขว้างถุงชา",
+        "jp": "ティーバッグ投げ"
+    },
+    {
+        "key": "SKILL:sk1645_jessica_desc",
+        "zh_TW": "召喚出招財貓來攻擊敵人，並產生負面效果。\\n\\n*解除敵人的無敵技能 \\n*電暈敵人 （8秒）\\n*攻擊力×4400%的範圍傷害",
+        "en": "Summons a Manekineko to attack. Bad effects on enemies.\\n\\n*Cancels enemy invincibility skills \\n*Stuns enemies (8 sec)\\n*ATK x 4400% Area Damage",
+        "th": "เรียกแมวกวักออกมาเพื่อโจมตีศัตรู\nและสร้างผลลัพธ์ด้านลบ\\n\\n*ยกเลิกทักษะอมตะของศัตรู \\n*ทำให้ศัตรูชะงัก (8 วินาที)\\n*สร้างความเสียหาย 4400% ของพลังโจมตีลงในพื้นที่ ",
+        "jp": "招き猫を呼び出して敵を攻撃し、悪い効果を与える\\n\\n*敵の無敵スキル解除 \\n*敵軍スタン (8秒)\\n*攻撃力×4400%の範囲ダメージ"
+    },
+    {
+        "key": "SKILL:sk1645_jessica_nm",
+        "zh_TW": "招財貓",
+        "en": "Manekineko",
+        "th": "แมวกวัก",
+        "jp": "招き猫"
+    },
+    {
+        "key": "SKILL:sk1647_sally_desc",
+        "zh_TW": "發射1億下載紀念的禮炮，並讓夥伴獲得正面效果。\\n\\n*體力×30%的範圍體力回復（每秒） （10秒）\\n*提升技能命中率30% （10秒）\\n*提升技能抗性30% （10秒）",
+        "en": "Shoots a party cannon in celebration of 100 million downloads. Good effects on allies.\\n\\n*HP x 30% Area Recovery (per sec) (10 sec)\\n*Skill Hit Rate +30% (10 sec)\\n*Skill Resistance +30% (10 sec)",
+        "th": "ยิงสลุตฉลองยอดดาวน์โหลด\nครบ 100 ล้าน\nสร้างผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*ฟื้นฟูพลังชีวิตในพื้นที่ 30% ของพลังชีวิต (ต่อ 1 วินาที) (10 วินาที)\\n*เพิ่มอัตราความแม่นยำของทักษะ 30% (10 วินาที)\\n*เพิ่มการต้านทักษะ 30% (10 วินาที)",
+        "jp": "1億ダウンロード記念の祝砲を撃ち、味方に良い効果を与える\\n\\n*体力×30%範囲回復(1秒あたり) (10秒)\\n*スキル命中率30%アップ (10秒)\\n*スキル抵抗30%アップ (10秒)"
+    },
+    {
+        "key": "SKILL:sk1647_sally_nm",
+        "zh_TW": "禮炮",
+        "en": "Party Cannon",
+        "th": "ยิงสลุตฉลอง",
+        "jp": "祝砲"
     },
     {
         "key": "SKILL:sk16_desc",
@@ -49278,6 +49502,69 @@
         "en": "No Hesitation in My Heart!",
         "th": "ใจข้าไร้ซึ่งความลังเล!",
         "jp": "我が心に、迷いなし!"
+    },
+    {
+        "key": "SKILL:usk1641_crush_desc",
+        "zh_TW": "清洗拖把後丟出桶子來攻擊敵人，並產生負面效果。\\n\\n*產生擊退效果 \\n*攻擊力×3500%的範圍傷害 \\n*將木屬性敵人變為無屬性 （10秒）",
+        "en": "Washes the mop and throws a bucket to attack. Bad effects on enemies.\\n\\n*Enemy knockback \\n*ATK x 3500% Area Damage \\n*Changes Wood elemental enemies to None (10 sec)",
+        "th": "ซักไม้ถูพื้นแล้วทุ่มถังน้ำ\nเพื่อโจมตีศัตรูและสร้างผลลัพธ์ด้านลบ\\n\\n*โจมตีทำให้ศัตรูกระเด็นถอยหลัง \\n*สร้างความเสียหาย 3500% ของพลังโจมตีลงในพื้นที่ \\n*เปลี่ยนศัตรูธาตุไม้เป็นธาตุไร้ธาตุ (10 วินาที)",
+        "jp": "モップを洗ってバケツを投げ、敵を攻撃して悪い効果を与える\\n\\n*敵軍ノックバック効果 \\n*攻撃力×3500%の範囲ダメージ \\n*敵の木属性を無属性に変更 (10秒)"
+    },
+    {
+        "key": "SKILL:usk1641_crush_na_desc",
+        "zh_TW": "（終極進化限定技能）\\n\\n清洗拖把後丟出桶子來攻擊敵人，並產生負面效果。\\n\\n*產生擊退效果 \\n*攻擊力×3500%的範圍傷害 \\n*將木屬性敵人變為無屬性 （10秒）",
+        "en": "(Limited Ultimate Evolution Skills)\\n\\nWashes the mop and throws a bucket to attack. Bad effects on enemies.\\n\\n*Enemy knockback \\n*ATK x 3500% Area Damage \\n*Changes Wood elemental enemies to None (10 sec)",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นสูงสุด)\\n\\nซักไม้ถูพื้นแล้วทุ่มถังน้ำ\nเพื่อโจมตีศัตรูและสร้างผลลัพธ์ด้านลบ\\n\\n*โจมตีทำให้ศัตรูกระเด็นถอยหลัง \\n*สร้างความเสียหาย 3500% ของพลังโจมตีลงในพื้นที่ \\n*เปลี่ยนศัตรูธาตุไม้เป็นธาตุไร้ธาตุ (10 วินาที)",
+        "jp": "(究極進化限定スキル)\\n\\nモップを洗ってバケツを投げ、敵を攻撃して悪い効果を与える\\n\\n*敵軍ノックバック効果 \\n*攻撃力×3500%の範囲ダメージ \\n*敵の木属性を無属性に変更 (10秒)"
+    },
+    {
+        "key": "SKILL:usk1641_crush_nm",
+        "zh_TW": "清洗拖把",
+        "en": "Mop Cleaning",
+        "th": "ทำความสะอาดไม้ถูพื้น",
+        "jp": "モップ洗浄"
+    },
+    {
+        "key": "SKILL:usk1643_sally_desc",
+        "zh_TW": "踢倒自動販賣機來取出咖啡牛奶，並讓夥伴獲得正面效果。\\n\\n*解除持續傷害 \\n*提升技能發動率40% （9秒）\\n*提升技能閃避機率40% （9秒）",
+        "en": "Kicks a vending machine and gets coffee milk. Good effects on allies.\\n\\n*Cancels continuous damage \\n*Skill Use Rate +40% (9 sec)\\n*Skill Evade Rate +40% (9 sec)",
+        "th": "เตะตู้ขายสินค้าอัตโนมัติเพื่อเอานมกาแฟออกมา\nสร้างผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*ยกเลิกความเสียหายต่อเนื่อง \\n*เพิ่มอัตราการใช้ทักษะ 40% (9 วินาที)\\n*เพิ่มอัตราการหลบทักษะ 40% (9 วินาที)",
+        "jp": "自動販売機を蹴ってコーヒー牛乳を取り出し、味方に良い効果を与える\\n\\n*持続ダメージの解除 \\n*スキル発動率40%アップ (9秒)\\n*スキル回避率40%アップ (9秒)"
+    },
+    {
+        "key": "SKILL:usk1643_sally_na_desc",
+        "zh_TW": "（終極進化限定技能）\\n\\n踢倒自動販賣機來取出咖啡牛奶，並讓夥伴獲得正面效果。\\n\\n*解除持續傷害 \\n*提升技能發動率40% （9秒）\\n*提升技能閃避機率40% （9秒）",
+        "en": "(Limited Ultimate Evolution Skills)\\n\\nKicks a vending machine and gets coffee milk. Good effects on allies.\\n\\n*Cancels continuous damage \\n*Skill Use Rate +40% (9 sec)\\n*Skill Evade Rate +40% (9 sec)",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นสูงสุด)\\n\\nเตะตู้ขายสินค้าอัตโนมัติเพื่อเอานมกาแฟออกมา\nสร้างผลลัพธ์ด้านบวกให้แก่พรรคพวก\\n\\n*ยกเลิกความเสียหายต่อเนื่อง \\n*เพิ่มอัตราการใช้ทักษะ 40% (9 วินาที)\\n*เพิ่มอัตราการหลบทักษะ 40% (9 วินาที)",
+        "jp": "(究極進化限定スキル)\\n\\n自動販売機を蹴ってコーヒー牛乳を取り出し、味方に良い効果を与える\\n\\n*持続ダメージの解除 \\n*スキル発動率40%アップ (9秒)\\n*スキル回避率40%アップ (9秒)"
+    },
+    {
+        "key": "SKILL:usk1643_sally_nm",
+        "zh_TW": "咖啡牛奶到手",
+        "en": "Got Coffee Milk?",
+        "th": "ได้รับนมกาแฟ",
+        "jp": "コーヒー牛乳ゲット"
+    },
+    {
+        "key": "SKILL:usk1647_sally_desc",
+        "zh_TW": "發射1億下載歡慶飛彈來攻擊敵人，並產生負面效果。\\n\\n*使敵人的攻擊力減少30% （7秒）\\n*每秒攻擊力×500%的範圍傷害 （7秒）\\n*攻擊力×2500%的範圍傷害 ",
+        "en": "Shoots a party missile in celebration of 100 million downloads to attack. Bad effects on enemies.\\n\\n*Enemy ATK -30% (7 sec)\\n*ATK per sec x 500% Area Damage (7 sec)\\n*ATK x 2500% Area Damage ",
+        "th": "ยิงขีปนาวุธเฉลิมฉลองยอดดาวน์โหลด\nครบ 100 ล้านเพื่อโจมตีศัตรู\nและสร้างผลลัพธ์ด้านลบ\\n\\n*ลดพลังโจมตีของศัตรู 30% (7 วินาที)\\n*สร้างความเสียหาย 500% ของพลังโจมตีลงในพื้นที่ทุกวินาที (7 วินาที)\\n*สร้างความเสียหาย 2500% ของพลังโจมตีลงในพื้นที่ ",
+        "jp": "1億ダウンロードのお祝いミサイルを撃って敵を攻撃し、悪い効果を与える\\n\\n*敵の攻撃力 30%ダウン (7秒)\\n*毎秒の攻撃力×500%の範囲ダメージ (7秒)\\n*攻撃力×2500%の範囲ダメージ "
+    },
+    {
+        "key": "SKILL:usk1647_sally_na_desc",
+        "zh_TW": "（終極進化限定技能）\\n\\n發射1億下載歡慶飛彈來攻擊敵人，並產生負面效果。\\n\\n*使敵人的攻擊力減少30% （7秒）\\n*每秒攻擊力×500%的範圍傷害 （7秒）\\n*攻擊力×2500%的範圍傷害 ",
+        "en": "(Limited Ultimate Evolution Skills)\\n\\nShoots a party missile in celebration of 100 million downloads to attack. Bad effects on enemies.\\n\\n*Enemy ATK -30% (7 sec)\\n*ATK per sec x 500% Area Damage (7 sec)\\n*ATK x 2500% Area Damage ",
+        "th": "(ทักษะเฉพาะอัพเกรดขั้นสูงสุด)\\n\\nยิงขีปนาวุธเฉลิมฉลองยอดดาวน์โหลด\nครบ 100 ล้านเพื่อโจมตีศัตรู\nและสร้างผลลัพธ์ด้านลบ\\n\\n*ลดพลังโจมตีของศัตรู 30% (7 วินาที)\\n*สร้างความเสียหาย 500% ของพลังโจมตีลงในพื้นที่ทุกวินาที (7 วินาที)\\n*สร้างความเสียหาย 2500% ของพลังโจมตีลงในพื้นที่ ",
+        "jp": "(究極進化限定スキル)\\n\\n1億ダウンロードのお祝いミサイルを撃って敵を攻撃し、悪い効果を与える\\n\\n*敵の攻撃力 30%ダウン (7秒)\\n*毎秒の攻撃力×500%の範囲ダメージ (7秒)\\n*攻撃力×2500%の範囲ダメージ "
+    },
+    {
+        "key": "SKILL:usk1647_sally_nm",
+        "zh_TW": "歡慶火箭",
+        "en": "Party Rocket",
+        "th": "จรวดเฉลิมฉลอง",
+        "jp": "お祝いロケット"
     },
     {
         "key": "SKILL:usk2013_ben_desc",
@@ -89789,6 +90076,321 @@
         "jp": "黎 星刻"
     },
     {
+        "key": "UNIT:u1641e-crush_desc",
+        "zh_TW": "打掃旅店的克勞許",
+        "en": "Crush cleaning the inn",
+        "th": "ครัชทำความสะอาดที่พักแรม",
+        "jp": "宿屋を掃除するクラッシュ"
+    },
+    {
+        "key": "UNIT:u1641e-crush_nm",
+        "zh_TW": "清潔員克勞許",
+        "en": "Cleaner Crush",
+        "th": "ครัช\nคนทำความสะอาด",
+        "jp": "清掃員 クラッシュ"
+    },
+    {
+        "key": "UNIT:u1641e-crush_snm",
+        "zh_TW": "克勞許",
+        "en": "CRUSH",
+        "th": "ครัช",
+        "jp": "クラッシュ"
+    },
+    {
+        "key": "UNIT:u1641h-crush_desc",
+        "zh_TW": "成為資深清潔員的克勞許",
+        "en": "Crush became a veteran cleaner",
+        "th": "ครัชที่กลายเป็น\nคนทำความสะอาดรุ่นเก๋า",
+        "jp": "ベテラン清掃員になったクラッシュ"
+    },
+    {
+        "key": "UNIT:u1641h-crush_nm",
+        "zh_TW": "資深清潔員克勞許",
+        "en": "Veteran Cleaner Crush",
+        "th": "ครัช\nคนทำความสะอาดรุ่นเก๋า",
+        "jp": "ベテラン清掃員 クラッシュ"
+    },
+    {
+        "key": "UNIT:u1641h-crush_snm",
+        "zh_TW": "克勞許",
+        "en": "CRUSH",
+        "th": "ครัช",
+        "jp": "クラッシュ"
+    },
+    {
+        "key": "UNIT:u1641u-crush_desc",
+        "zh_TW": "成為清潔達人的克勞許",
+        "en": "Crush became a master cleaner",
+        "th": "ครัชที่กลายเป็น\nยอดนักทำความสะอาด",
+        "jp": "清掃の達人になったクラッシュ"
+    },
+    {
+        "key": "UNIT:u1641u-crush_nm",
+        "zh_TW": "清潔達人克勞許",
+        "en": "Master Cleaner Crush",
+        "th": "ครัช\nยอดนักทำความสะอาด",
+        "jp": "清掃の達人 クラッシュ"
+    },
+    {
+        "key": "UNIT:u1641u-crush_snm",
+        "zh_TW": "克勞許",
+        "en": "CRUSH",
+        "th": "ครัช",
+        "jp": "クラッシュ"
+    },
+    {
+        "key": "UNIT:u1642e-crush_desc",
+        "zh_TW": "成為清潔之神的克勞許",
+        "en": "Crush became a cleaning god",
+        "th": "ครัชที่กลายเป็น\nเทพการทำความสะอาด",
+        "jp": "清掃の神になったクラッシュ"
+    },
+    {
+        "key": "UNIT:u1642e-crush_nm",
+        "zh_TW": "清潔之神克勞許",
+        "en": "Cleaning God Crush",
+        "th": "ครัช\nเทพการทำความสะอาด",
+        "jp": "清掃の神 クラッシュ"
+    },
+    {
+        "key": "UNIT:u1642e-crush_snm",
+        "zh_TW": "克勞許",
+        "en": "CRUSH",
+        "th": "ครัช",
+        "jp": "クラッシュ"
+    },
+    {
+        "key": "UNIT:u1643e-sally_desc",
+        "zh_TW": "泡在茶杯裡的莎莉",
+        "en": "Sally floating in a teacup",
+        "th": "Sally ลอยอยู่ในถ้วยชา",
+        "jp": "湯呑に浮かぶサリー"
+    },
+    {
+        "key": "UNIT:u1643e-sally_nm",
+        "zh_TW": "茶杯莎莉",
+        "en": "Teacup Sally",
+        "th": "Sally ถ้วยชา",
+        "jp": "湯呑 サリー"
+    },
+    {
+        "key": "UNIT:u1643e-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1643h-sally_desc",
+        "zh_TW": "泡在紅色茶杯裡的莎莉",
+        "en": "Sally floating in a red teacup",
+        "th": "Sally ลอยอยู่ในถ้วยชาสีแดง",
+        "jp": "赤い湯呑に浮かぶサリー"
+    },
+    {
+        "key": "UNIT:u1643h-sally_nm",
+        "zh_TW": "紅色茶杯莎莉",
+        "en": "Red Teacup Sally",
+        "th": "Sally ถ้วยชาสีแดง",
+        "jp": "赤い湯呑 サリー"
+    },
+    {
+        "key": "UNIT:u1643h-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1643u-sally_desc",
+        "zh_TW": "泡在藍色茶杯裡的莎莉",
+        "en": "Sally floating in a blue teacup",
+        "th": "Sally ลอยอยู่ในถ้วยชาสีฟ้า",
+        "jp": "青い湯呑に浮かぶサリー"
+    },
+    {
+        "key": "UNIT:u1643u-sally_nm",
+        "zh_TW": "藍色茶杯莎莉",
+        "en": "Blue Teacup Sally",
+        "th": "Sally ถ้วยชาสีฟ้า",
+        "jp": "青い湯呑 サリー"
+    },
+    {
+        "key": "UNIT:u1643u-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1644e-sally_desc",
+        "zh_TW": "泡在高級茶杯裡的莎莉",
+        "en": "Sally floating in a fancy teacup",
+        "th": "Sally ลอยอยู่ในถ้วยชาหรูหรา",
+        "jp": "高級湯呑に浮かぶサリー"
+    },
+    {
+        "key": "UNIT:u1644e-sally_nm",
+        "zh_TW": "高級茶杯莎莉",
+        "en": "Fancy Teacup Sally",
+        "th": "Sally ถ้วยชาหรูหรา",
+        "jp": "高級湯呑　サリー"
+    },
+    {
+        "key": "UNIT:u1644e-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1645e-jessica_desc",
+        "zh_TW": "成為旅館員工的潔西卡",
+        "en": "Jessica became an inn staff member",
+        "th": "Jessica ที่กลายเป็นพนักงาน\nเรียวกัง",
+        "jp": "旅館の従業員になったジェシカ"
+    },
+    {
+        "key": "UNIT:u1645e-jessica_nm",
+        "zh_TW": "旅館員工潔西卡",
+        "en": "Inn Staff Jessica",
+        "th": "Jessica\nพนักงานเรียวกัง",
+        "jp": "旅館の従業員 ジェシカ"
+    },
+    {
+        "key": "UNIT:u1645e-jessica_snm",
+        "zh_TW": "潔西卡",
+        "en": "JESSICA",
+        "th": "JESSICA",
+        "jp": "ジェシカ"
+    },
+    {
+        "key": "UNIT:u1645h-jessica_desc",
+        "zh_TW": "成為旅館老闆娘的潔西卡",
+        "en": "Jessica became the mistress of an inn",
+        "th": "Jessica ที่กลายเป็นนายหญิง\nเรียวกัง",
+        "jp": "旅館の女将になったジェシカ"
+    },
+    {
+        "key": "UNIT:u1645h-jessica_nm",
+        "zh_TW": "旅館老闆娘潔西卡",
+        "en": "Inn Mistress Jessica",
+        "th": "Jessica\nนายหญิงเรียวกัง",
+        "jp": "旅館の女将 ジェシカ"
+    },
+    {
+        "key": "UNIT:u1645h-jessica_snm",
+        "zh_TW": "潔西卡",
+        "en": "JESSICA",
+        "th": "JESSICA",
+        "jp": "ジェシカ"
+    },
+    {
+        "key": "UNIT:u1646e-jessica_desc",
+        "zh_TW": "成為高級旅館老闆娘的潔西卡",
+        "en": "Jessica became the mistress of a luxury inn",
+        "th": "Jessica ที่กลายเป็นนายหญิง\nเรียวกังหรู",
+        "jp": "高級旅館の女将になったジェシカ"
+    },
+    {
+        "key": "UNIT:u1646e-jessica_nm",
+        "zh_TW": "高級旅館老闆娘潔西卡",
+        "en": "Luxury Inn Mistress Jessica",
+        "th": "Jessica\nนายหญิงเรียวกังหรู",
+        "jp": "高級旅館の女将 ジェシカ"
+    },
+    {
+        "key": "UNIT:u1646e-jessica_snm",
+        "zh_TW": "潔西卡",
+        "en": "JESSICA",
+        "th": "JESSICA",
+        "jp": "ジェシカ"
+    },
+    {
+        "key": "UNIT:u1647e-sally_desc",
+        "zh_TW": "1億下載紀念的莎莉",
+        "en": "Sally celebrating 100 million downloads",
+        "th": "Sally ฉลองยอดดาวน์โหลด\nครบ 100 ล้าน",
+        "jp": "1億ダウンロードを記念したサリー"
+    },
+    {
+        "key": "UNIT:u1647e-sally_nm",
+        "zh_TW": "1億紀念莎莉",
+        "en": "100M Celebration Sally",
+        "th": "Sally\nฉลอง 100 ล้าน",
+        "jp": "1億記念 サリー"
+    },
+    {
+        "key": "UNIT:u1647e-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1647h-sally_desc",
+        "zh_TW": "1億下載紀念的莎莉",
+        "en": "Sally celebrating 100 million downloads",
+        "th": "Sally ฉลองยอดดาวน์โหลด\nครบ 100 ล้าน",
+        "jp": "1億ダウンロードを記念したサリー"
+    },
+    {
+        "key": "UNIT:u1647h-sally_nm",
+        "zh_TW": "1億歡慶莎莉",
+        "en": "100M Party Sally",
+        "th": "Sally\nร่วมยินดี 100 ล้าน",
+        "jp": "1億のお祝い サリー"
+    },
+    {
+        "key": "UNIT:u1647h-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1647u-sally_desc",
+        "zh_TW": "1億下載紀念的莎莉",
+        "en": "Sally celebrating 100 million downloads",
+        "th": "Sally ฉลองยอดดาวน์โหลด\nครบ 100 ล้าน",
+        "jp": "1億ダウンロードを記念したサリー"
+    },
+    {
+        "key": "UNIT:u1647u-sally_nm",
+        "zh_TW": "1億慶典莎莉",
+        "en": "100M Festival Sally",
+        "th": "Sally\nเทศกาล 100 ล้าน",
+        "jp": "1億のお祭り サリー"
+    },
+    {
+        "key": "UNIT:u1647u-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
+        "key": "UNIT:u1648e-sally_desc",
+        "zh_TW": "1億下載紀念的莎莉",
+        "en": "Sally celebrating 100 million downloads",
+        "th": "Sally ฉลองยอดดาวน์โหลด\nครบ 100 ล้าน",
+        "jp": "1億ダウンロードを記念したサリー"
+    },
+    {
+        "key": "UNIT:u1648e-sally_nm",
+        "zh_TW": "1億感恩莎莉",
+        "en": "100M Thank You Sally",
+        "th": "Sally\nขอบคุณ 100 ล้าน",
+        "jp": "1億ありがとう サリー"
+    },
+    {
+        "key": "UNIT:u1648e-sally_snm",
+        "zh_TW": "莎莉",
+        "en": "Sally",
+        "th": "Sally",
+        "jp": "サリー"
+    },
+    {
         "key": "UNIT:u164e-alex_desc",
         "zh_TW": "力大無窮無可匹敵的傳奇棒球明星",
         "en": "This legendary baseball star remains unbeatable",
@@ -109501,6 +110103,13 @@
         "jp": ""
     },
     {
+        "key": "SKILL:sk81032-kaku_desc",
+        "zh_TW": "",
+        "en": "",
+        "th": "",
+        "jp": ""
+    },
+    {
         "key": "SKILL:sk83001_william_desc",
         "zh_TW": "",
         "en": "",
@@ -110608,6 +111217,13 @@
     },
     {
         "key": "SKILL:usk81031-bacon_desc",
+        "zh_TW": "",
+        "en": "",
+        "th": "",
+        "jp": ""
+    },
+    {
+        "key": "SKILL:usk81032-kaku_desc",
         "zh_TW": "",
         "en": "",
         "th": "",
@@ -111847,6 +112463,13 @@
     },
     {
         "key": "UNIT:u81031-bacon_nm",
+        "zh_TW": "",
+        "en": "",
+        "th": "",
+        "jp": ""
+    },
+    {
+        "key": "UNIT:u81032-kaku_nm",
         "zh_TW": "",
         "en": "",
         "th": "",

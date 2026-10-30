@@ -272925,6 +272925,2136 @@
                 "color2": "violet"
             }
         },
+        "u1641e-crush": {
+            "unitCode": "u1641e-crush",
+            "nameKey": "UNIT:u1641e-crush_nm",
+            "visual": {
+                "resourceCode": "u1641e-crush",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.65,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.65,
+                    "y": 0.55
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 99,
+                "attackDelayFrames": 88,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 40,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1641_crush",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1642crush",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "violet"
+            }
+        },
+        "u1641h-crush": {
+            "unitCode": "u1641h-crush",
+            "nameKey": "UNIT:u1641h-crush_nm",
+            "visual": {
+                "resourceCode": "u1641h-crush",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.65,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.65,
+                    "y": 0.55
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 99,
+                "attackDelayFrames": 88,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 40,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1641_crush",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1642crush",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "violet"
+            }
+        },
+        "u1641u-crush": {
+            "unitCode": "u1641u-crush",
+            "nameKey": "UNIT:u1641u-crush_nm",
+            "visual": {
+                "resourceCode": "u1641u-crush",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.65,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.65,
+                    "y": 0.55
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 99,
+                "attackDelayFrames": 88,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 40,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1641_crush",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1642crush",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "usk1641_crush",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "violet"
+            }
+        },
+        "u1642e-crush": {
+            "unitCode": "u1642e-crush",
+            "nameKey": "UNIT:u1642e-crush_nm",
+            "visual": {
+                "resourceCode": "u1642e-crush",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.65,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.65,
+                    "y": 0.55
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 99,
+                "attackDelayFrames": 88,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 40,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1641_crush",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1642crush",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1642crush",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "violet"
+            }
+        },
+        "u1643e-sally": {
+            "unitCode": "u1643e-sally",
+            "nameKey": "UNIT:u1643e-sally_nm",
+            "visual": {
+                "resourceCode": "u1643e-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.64,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.62,
+                    "y": 0.56
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 70,
+                "hitTimingPercent": {
+                    "normal": 0.5,
+                    "skill1": 0.5,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": 280,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 12,
+                        "startPosition": {
+                            "x": 90,
+                            "y": 170
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_377eedward"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1643_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 60,
+                            "y": 142
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1644sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1643h-sally": {
+            "unitCode": "u1643h-sally",
+            "nameKey": "UNIT:u1643h-sally_nm",
+            "visual": {
+                "resourceCode": "u1643h-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.66,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.64,
+                    "y": 0.56
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 70,
+                "hitTimingPercent": {
+                    "normal": 0.5,
+                    "skill1": 0.5,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": 280,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 12,
+                        "startPosition": {
+                            "x": 90,
+                            "y": 170
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_377eedward"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1643_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 60,
+                            "y": 142
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1644sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1643u-sally": {
+            "unitCode": "u1643u-sally",
+            "nameKey": "UNIT:u1643u-sally_nm",
+            "visual": {
+                "resourceCode": "u1643u-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.66,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.64,
+                    "y": 0.56
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 70,
+                "hitTimingPercent": {
+                    "normal": 0.5,
+                    "skill1": 0.5,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": 280,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 12,
+                        "startPosition": {
+                            "x": 90,
+                            "y": 170
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_377eedward"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1643_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 60,
+                            "y": 142
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "usk1643_sally",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1644sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1644e-sally": {
+            "unitCode": "u1644e-sally",
+            "nameKey": "UNIT:u1644e-sally_nm",
+            "visual": {
+                "resourceCode": "u1644e-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.66,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.64,
+                    "y": 0.56
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 70,
+                "hitTimingPercent": {
+                    "normal": 0.5,
+                    "skill1": 0.5,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": 280,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 12,
+                        "startPosition": {
+                            "x": 90,
+                            "y": 170
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_377eedward"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1643_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPONC",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "CURVE",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 60,
+                            "y": 142
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": -75,
+                            "end": 0
+                        },
+                        "rotation": "ANGLE_LERP",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1644sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1644sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1645e-jessica": {
+            "unitCode": "u1645e-jessica",
+            "nameKey": "UNIT:u1645e-jessica_nm",
+            "visual": {
+                "resourceCode": "u1645e-jessica",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.7
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 60,
+                "hitTimingPercent": {
+                    "normal": 0.0,
+                    "skill1": 0.0,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": 450,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 33,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1645jessica",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1645_jessica",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1645jessica",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1645jessica",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1645h-jessica": {
+            "unitCode": "u1645h-jessica",
+            "nameKey": "UNIT:u1645h-jessica_nm",
+            "visual": {
+                "resourceCode": "u1645h-jessica",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.64
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 60,
+                "hitTimingPercent": {
+                    "normal": 0.0,
+                    "skill1": 0.0,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": 450,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 33,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1645jessica",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1645_jessica",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1645jessica",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1645jessica",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1646e-jessica": {
+            "unitCode": "u1646e-jessica",
+            "nameKey": "UNIT:u1646e-jessica_nm",
+            "visual": {
+                "resourceCode": "u1646e-jessica",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.63
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 88,
+                "attackDelayFrames": 60,
+                "hitTimingPercent": {
+                    "normal": 0.0,
+                    "skill1": 0.0,
+                    "skill2": 0.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": 450,
+                    "scopePoints": 0,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": true,
+                        "speed": 15,
+                        "startPosition": {
+                            "x": 33,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1645jessica",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1645_jessica",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1645jessica",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1645jessica",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "violet",
+                "color2": "blue"
+            }
+        },
+        "u1647e-sally": {
+            "unitCode": "u1647e-sally",
+            "nameKey": "UNIT:u1647e-sally_nm",
+            "visual": {
+                "resourceCode": "u1647e-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": true,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.46
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 50,
+                "attackDelayFrames": 80,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 310,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1647_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1648sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "skyblue"
+            }
+        },
+        "u1647h-sally": {
+            "unitCode": "u1647h-sally",
+            "nameKey": "UNIT:u1647h-sally_nm",
+            "visual": {
+                "resourceCode": "u1647h-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": true,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.46
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 50,
+                "attackDelayFrames": 80,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 310,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1647_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1648sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": true,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 110,
+                            "y": 72
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "skyblue"
+            }
+        },
+        "u1647u-sally": {
+            "unitCode": "u1647u-sally",
+            "nameKey": "UNIT:u1647u-sally_nm",
+            "visual": {
+                "resourceCode": "u1647u-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": true,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.46
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 50,
+                "attackDelayFrames": 80,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 310,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1647_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1648sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "usk1647_sally",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": true,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 110,
+                            "y": 72
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "skyblue"
+            }
+        },
+        "u1648e-sally": {
+            "unitCode": "u1648e-sally",
+            "nameKey": "UNIT:u1648e-sally_nm",
+            "visual": {
+                "resourceCode": "u1648e-sally",
+                "guardianResourceCode": "",
+                "useEnemySprite": true,
+                "flying": false,
+                "scale": 1,
+                "shadowCenter": {
+                    "x": 0.51,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.51,
+                    "y": 0.46
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 50,
+                "attackDelayFrames": 80,
+                "hitTimingPercent": {
+                    "normal": 100.0,
+                    "skill1": 100.0,
+                    "skill2": 100.0
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 310,
+                    "scopePoints": 150,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk1647_sally",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "NONE",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "NONE",
+                        "enabled": false,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "NONE",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u1648sally",
+                        "firing": "",
+                        "impact": "skhit_buff"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": true,
+                        "speed": 20,
+                        "startPosition": {
+                            "x": 110,
+                            "y": 72
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": true
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u1648sally",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "blue",
+                "color2": "skyblue"
+            }
+        },
         "u164e-alex": {
             "unitCode": "u164e-alex",
             "nameKey": "UNIT:u164e-alex_nm",
@@ -379425,6 +381555,148 @@
                 "color2": "black"
             }
         },
+        "u81032-kaku": {
+            "unitCode": "u81032-kaku",
+            "nameKey": "UNIT:u81032-kaku_nm",
+            "visual": {
+                "resourceCode": "u81032-kaku",
+                "guardianResourceCode": "",
+                "useEnemySprite": false,
+                "flying": false,
+                "scale": 1.3,
+                "shadowCenter": {
+                    "x": 0.63,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.58,
+                    "y": 0.62
+                }
+            },
+            "movement": {
+                "speedPointsPerSecond": 100,
+                "attackDelayFrames": 40,
+                "hitTimingPercent": {
+                    "normal": 0.5,
+                    "skill1": 0.5,
+                    "skill2": 0.5
+                }
+            },
+            "projectile": {
+                "length": null,
+                "duration": null
+            },
+            "attackChannels": {
+                "normal": {
+                    "skillCode": null,
+                    "animationPart": "bul",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": 200,
+                    "scopePoints": 400,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "attrd_u81032kaku",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill1": {
+                    "skillCode": "sk81032-kaku",
+                    "animationPart": "bul2",
+                    "target": "UNIT",
+                    "attackStyle": "WEAPON",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "LINEAR",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "FIXED",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "skattrd_u81032kaku",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                },
+                "skill2": {
+                    "skillCode": "usk81032-kaku",
+                    "animationPart": "bul3",
+                    "target": "UNIT",
+                    "attackStyle": "PUNCH",
+                    "rangePoints": null,
+                    "scopePoints": null,
+                    "trajectory": {
+                        "style": "DIRECT",
+                        "enabled": false,
+                        "speed": 0,
+                        "startPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "alternateStartPosition": null,
+                        "endPosition": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angles": {
+                            "start": 0,
+                            "end": 0
+                        },
+                        "rotation": "BODY_ANIMATION",
+                        "repeat": false
+                    },
+                    "soundAssets": {
+                        "preparation": "sk2attrd_u81032kaku",
+                        "firing": "",
+                        "impact": "hit_body_punch"
+                    }
+                }
+            },
+            "effects": {
+                "normal": "",
+                "special": "",
+                "color1": "black",
+                "color2": "black"
+            }
+        },
         "u82-moon": {
             "unitCode": "u82-moon",
             "nameKey": "UNIT:u82-moon_nm",
@@ -445883,7 +448155,7 @@
         }
     },
     "validation": {
-        "unitCount": 3140,
+        "unitCount": 3156,
         "unknownMotionTypes": null
     }
 }

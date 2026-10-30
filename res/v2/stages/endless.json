@@ -78042,6 +78042,2571 @@
                     ]
                 }
             ]
+        },
+        {
+            "stageId": "endless-321",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 980,
+                "featherCost": 10,
+                "rescueTarget": 10
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_OFFENCE",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 548242200,
+                                "magicalAttack": 60915600,
+                                "hp": 5543217900,
+                                "physicalDefense": 527000,
+                                "magicalDefense": 537000,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 236946600,
+                                "magicalAttack": 26326800,
+                                "hp": 3710397240,
+                                "physicalDefense": 56700,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 400.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 523920600,
+                                "magicalAttack": 58212000,
+                                "hp": 4268339460,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80016-adi",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 271654020,
+                                "magicalAttack": 271654020,
+                                "hp": 6633451440,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 87,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80030-mika",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 534202020,
+                                "magicalAttack": 534202020,
+                                "hp": 10182528774,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 87,
+                                "splashRangePoints": 150,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 400.0,
+                                "skillHitChancePercent": 1400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80032-kirara",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 655528500,
+                                "magicalAttack": 655528500,
+                                "hp": 2270861406,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 271,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 400.0,
+                                "skillHitChancePercent": 1700.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 20,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1966585500,
+                                "magicalAttack": 1966585500,
+                                "hp": 19900354518,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80024-pookie",
+                            "initialDelaySeconds": 16,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 3561347160,
+                                "magicalAttack": 3561347160,
+                                "hp": 1223861562,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 161,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 0.0,
+                                "skillDodgeChancePercent": 0.0,
+                                "skillResistancePercent": 0.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_BUFF",
+                    "percent": 300,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_BUFF",
+                    "icon": "endless_gimmick_icon_elementup_fire.png",
+                    "elementType": "FIRE",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_fire"
+                        },
+                        300
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-322",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1000,
+                "featherCost": 10,
+                "rescueTarget": 10
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_OFFENCE",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 550168200,
+                                "magicalAttack": 61129800,
+                                "hp": 5731741080,
+                                "physicalDefense": 528800,
+                                "magicalDefense": 538800,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 237780000,
+                                "magicalAttack": 26418600,
+                                "hp": 3836587200,
+                                "physicalDefense": 56880,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 401.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 525760200,
+                                "magicalAttack": 58417200,
+                                "hp": 4413503280,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80015-jane",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 932926140,
+                                "magicalAttack": 0,
+                                "hp": 6859052832,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 79,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 90.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80014-dorby",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2680392240,
+                                "magicalAttack": 0,
+                                "hp": 13161041232,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 64,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 60.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80038-dice",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1743252480,
+                                "magicalAttack": 0,
+                                "hp": 3032952864,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 309,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 70.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 20,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1973493360,
+                                "magicalAttack": 1973493360,
+                                "hp": 20577158496,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80024-pookie",
+                            "initialDelaySeconds": 18,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 3573856440,
+                                "magicalAttack": 3573856440,
+                                "hp": 1265484828,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 161,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 0.0,
+                                "skillDodgeChancePercent": 0.0,
+                                "skillResistancePercent": 0.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_BUFF",
+                    "percent": 300,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_BUFF",
+                    "icon": "endless_gimmick_icon_elementup_water.png",
+                    "elementType": "WATER",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_water"
+                        },
+                        300
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-323",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1100,
+                "featherCost": 10,
+                "timeLimitSeconds": 90,
+                "rescueTarget": 10,
+                "cageHp": 500000000
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_TIMEATTACK",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 613438000,
+                                "magicalAttack": 68158000,
+                                "hp": 6908382600,
+                                "physicalDefense": 530600,
+                                "magicalDefense": 540600,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 265124000,
+                                "magicalAttack": 29458000,
+                                "hp": 4624181450,
+                                "physicalDefense": 57060,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 402.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 586222000,
+                                "magicalAttack": 65136000,
+                                "hp": 5319533100,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 30.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80013-nikita",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 1486018400,
+                                "hp": 8267117320,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 27000,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80020-obed",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 3486744400,
+                                "hp": 15862812875,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 124,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 35.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80025-shuky",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 2493838000,
+                                "hp": 5188556835,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 366,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 40.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 20,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2200445400,
+                                "magicalAttack": 2200445400,
+                                "hp": 24801351715,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80018-dounus",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 10,
+                            "combatStats": {
+                                "physicalAttack": 9962200,
+                                "magicalAttack": 9962200,
+                                "hp": 27454868560,
+                                "physicalDefense": 9000,
+                                "magicalDefense": 9000,
+                                "attackRangePoints": 85,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "UNIT_STAT_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION",
+                    "icon": "endless_gimmick_icon_unitdebuff.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_BUFF",
+                    "percent": 300,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_BUFF",
+                    "icon": "endless_gimmick_icon_elementup_tree.png",
+                    "elementType": "TREE",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_tree"
+                        },
+                        300
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-324",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 980,
+                "featherCost": 10,
+                "timeLimitSeconds": 90,
+                "rescueTarget": 10,
+                "cageHp": 500000000
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_TIMEATTACK",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 615576000,
+                                "magicalAttack": 68396000,
+                                "hp": 7131146400,
+                                "physicalDefense": 532400,
+                                "magicalDefense": 542400,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 266050000,
+                                "magicalAttack": 29560000,
+                                "hp": 4773290760,
+                                "physicalDefense": 57240,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 404.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 588268000,
+                                "magicalAttack": 65362000,
+                                "hp": 5491062360,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80013-nikita",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 1491201400,
+                                "hp": 8533693728,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 27000,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80030-mika",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 599812400,
+                                "magicalAttack": 599812400,
+                                "hp": 13099452408,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 87,
+                                "splashRangePoints": 150,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 400.0,
+                                "skillHitChancePercent": 1400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80032-kirara",
+                            "initialDelaySeconds": 6,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 736040200,
+                                "magicalAttack": 736040200,
+                                "hp": 2921380308,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 271,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 400.0,
+                                "skillHitChancePercent": 1700.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 20,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2208120600,
+                                "magicalAttack": 2208120600,
+                                "hp": 25601080932,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80024-pookie",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 10,
+                            "combatStats": {
+                                "physicalAttack": 3998750000,
+                                "magicalAttack": 3998750000,
+                                "hp": 1574453412,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 161,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 0.0,
+                                "skillDodgeChancePercent": 0.0,
+                                "skillResistancePercent": 0.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_DEBUFF",
+                    "percent": 90,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_DEBUFF",
+                    "icon": "endless_gimmick_icon_elementdown_fire.png",
+                    "elementType": "FIRE",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_fire"
+                        },
+                        90
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-325",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1000,
+                "featherCost": 10,
+                "rescueTarget": 10
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_OFFENCE",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 617716000,
+                                "magicalAttack": 68634000,
+                                "hp": 7156527840,
+                                "physicalDefense": 534200,
+                                "magicalDefense": 544200,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 266974000,
+                                "magicalAttack": 29662000,
+                                "hp": 4790280600,
+                                "physicalDefense": 57420,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 405.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 590312000,
+                                "magicalAttack": 65590000,
+                                "hp": 5510604960,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80016-adi",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 306078600,
+                                "magicalAttack": 306078600,
+                                "hp": 8564066784,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 87,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80014-dorby",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 3009486800,
+                                "magicalAttack": 0,
+                                "hp": 16432594668,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 64,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 60.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80038-dice",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1957286400,
+                                "magicalAttack": 0,
+                                "hp": 3786880104,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 309,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 70.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 20,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2215795800,
+                                "magicalAttack": 2215795800,
+                                "hp": 25692200100,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80024-pookie",
+                            "initialDelaySeconds": 25,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 4012649200,
+                                "magicalAttack": 4012649200,
+                                "hp": 1580057136,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 161,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 0.0,
+                                "skillDodgeChancePercent": 0.0,
+                                "skillResistancePercent": 0.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_DEBUFF",
+                    "percent": 90,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_DEBUFF",
+                    "icon": "endless_gimmick_icon_elementdown_water.png",
+                    "elementType": "WATER",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_water"
+                        },
+                        90
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-326",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1100,
+                "featherCost": 10,
+                "rescueTarget": 10
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_OFFENCE",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 619856000,
+                                "magicalAttack": 68872000,
+                                "hp": 8207896320,
+                                "physicalDefense": 536000,
+                                "magicalDefense": 546000,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 267898000,
+                                "magicalAttack": 29766000,
+                                "hp": 5494020480,
+                                "physicalDefense": 57600,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 407.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 592358000,
+                                "magicalAttack": 65816000,
+                                "hp": 6320171520,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 40.0,
+                                "skillDodgeChancePercent": 40.0,
+                                "skillResistancePercent": 40.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80015-jane",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1051097600,
+                                "magicalAttack": 0,
+                                "hp": 9822216672,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 79,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 90.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80020-obed",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 3523229800,
+                                "hp": 18846713088,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 124,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 35.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80025-shuky",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 2519933800,
+                                "hp": 6164558784,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 366,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 40.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 15,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2223471000,
+                                "magicalAttack": 2223471000,
+                                "hp": 29466650304,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80018-dounus",
+                            "initialDelaySeconds": 24,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 10066400,
+                                "magicalAttack": 10066400,
+                                "hp": 32619311136,
+                                "physicalDefense": 9000,
+                                "magicalDefense": 9000,
+                                "attackRangePoints": 85,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "UNIT_STAT_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION",
+                    "icon": "endless_gimmick_icon_unitdebuff.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_DEBUFF",
+                    "percent": 90,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_DEBUFF",
+                    "icon": "endless_gimmick_icon_elementdown_tree.png",
+                    "elementType": "TREE",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_tree"
+                        },
+                        90
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-327",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 980,
+                "featherCost": 10,
+                "timeLimitSeconds": 180,
+                "towerHp": 1990000000
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_SIEGE",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 621996000,
+                                "magicalAttack": 69110000,
+                                "hp": 7407493240,
+                                "physicalDefense": 537800,
+                                "magicalDefense": 547800,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 268824000,
+                                "magicalAttack": 29868000,
+                                "hp": 4958264920,
+                                "physicalDefense": 57780,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 408.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 594402000,
+                                "magicalAttack": 66044000,
+                                "hp": 5703850810,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80016-adi",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 308199200,
+                                "magicalAttack": 308199200,
+                                "hp": 8864390773,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 87,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80020-obed",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 3535391600,
+                                "hp": 17008851937,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 124,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 35.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80025-shuky",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 2528632400,
+                                "hp": 5563414017,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 366,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 40.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 15,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2231146200,
+                                "magicalAttack": 2231146200,
+                                "hp": 26593172578,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80018-dounus",
+                            "initialDelaySeconds": 26,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 10101200,
+                                "magicalAttack": 10101200,
+                                "hp": 29438397394,
+                                "physicalDefense": 9000,
+                                "magicalDefense": 9000,
+                                "attackRangePoints": 85,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "UNIT_STAT_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION",
+                    "icon": "endless_gimmick_icon_unitdebuff.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_BUFF",
+                    "percent": 300,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_BUFF",
+                    "icon": "endless_gimmick_icon_elementup_light.png",
+                    "elementType": "LIGHT",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_light"
+                        },
+                        300
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-328",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1000,
+                "featherCost": 10,
+                "timeLimitSeconds": 90,
+                "rescueTarget": 10,
+                "cageHp": 900000000
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_TIMEATTACK",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 748963200,
+                                "magicalAttack": 83217600,
+                                "hp": 8725128320,
+                                "physicalDefense": 539600,
+                                "magicalDefense": 549600,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 0,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 323697600,
+                                "magicalAttack": 35966400,
+                                "hp": 5840235200,
+                                "physicalDefense": 57960,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 409.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 715735200,
+                                "magicalAttack": 79526400,
+                                "hp": 6718445600,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80015-jane",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1270024800,
+                                "magicalAttack": 0,
+                                "hp": 10441176400,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 79,
+                                "splashRangePoints": 10,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 90.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80030-mika",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 729782400,
+                                "magicalAttack": 729782400,
+                                "hp": 16027490432,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 87,
+                                "splashRangePoints": 150,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 400.0,
+                                "skillHitChancePercent": 1400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80032-kirara",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 895528560,
+                                "magicalAttack": 895528560,
+                                "hp": 3574378192,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 271,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 400.0,
+                                "skillHitChancePercent": 1700.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 15,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2686585440,
+                                "magicalAttack": 2686585440,
+                                "hp": 31323529200,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 200,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80024-pookie",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 15,
+                            "combatStats": {
+                                "physicalAttack": 4865215920,
+                                "magicalAttack": 4865215920,
+                                "hp": 1926381120,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 161,
+                                "splashRangePoints": 100,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 0.0,
+                                "skillDodgeChancePercent": 0.0,
+                                "skillResistancePercent": 0.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "UNIT_STAT_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION",
+                    "icon": "endless_gimmick_icon_unitdebuff.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_BUFF",
+                    "percent": 300,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_BUFF",
+                    "icon": "endless_gimmick_icon_elementup_dark.png",
+                    "elementType": "DARK",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_dark"
+                        },
+                        300
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-329",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1100,
+                "featherCost": 10,
+                "timeLimitSeconds": 90,
+                "rescueTarget": 10,
+                "cageHp": 900000000
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_TIMEATTACK",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u90046-creamy",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 751531200,
+                                "magicalAttack": 83503200,
+                                "hp": 8986161600,
+                                "physicalDefense": 541400,
+                                "magicalDefense": 551400,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 3,
+                            "combatStats": {
+                                "physicalAttack": 324806400,
+                                "magicalAttack": 36088800,
+                                "hp": 6014957520,
+                                "physicalDefense": 58140,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 411.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 718190400,
+                                "magicalAttack": 79797600,
+                                "hp": 6919442400,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 320,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80013-nikita",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 1820541360,
+                                "hp": 10753548936,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 27000,
+                                "attackRangePoints": 57,
+                                "splashRangePoints": 180,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80014-dorby",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 2,
+                                "maxSeconds": 3
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 3661421280,
+                                "magicalAttack": 0,
+                                "hp": 20633738424,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 64,
+                                "splashRangePoints": 50,
+                                "criticalChancePercent": 60.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80038-dice",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 4
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2381286240,
+                                "magicalAttack": 0,
+                                "hp": 4755030696,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 309,
+                                "splashRangePoints": 70,
+                                "criticalChancePercent": 70.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 10,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 2695795680,
+                                "magicalAttack": 2695795680,
+                                "hp": 32260646808,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 70,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80024-pookie",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 3,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 15,
+                            "combatStats": {
+                                "physicalAttack": 4881894960,
+                                "magicalAttack": 4881894960,
+                                "hp": 1984013304,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 161,
+                                "splashRangePoints": 70,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 0.0,
+                                "skillDodgeChancePercent": 0.0,
+                                "skillResistancePercent": 0.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "UNIT_STAT_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION",
+                    "icon": "endless_gimmick_icon_unitdebuff.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_DEBUFF",
+                    "percent": 90,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_DEBUFF",
+                    "icon": "endless_gimmick_icon_elementdown_light.png",
+                    "elementType": "LIGHT",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_light"
+                        },
+                        90
+                    ]
+                }
+            ]
+        },
+        {
+            "stageId": "endless-330",
+            "mode": "endless",
+            "environment": {
+                "mapLengthPoints": 1150,
+                "featherCost": 10,
+                "timeLimitSeconds": 300
+            },
+            "battleTypeKey": "CUSTOM:ENDLESS_BATTLE_TYPE_BOSS",
+            "spawnWaves": [
+                {
+                    "when": {
+                        "kind": "STAGE_START"
+                    },
+                    "units": [
+                        {
+                            "unitCode": "u81032-kaku",
+                            "initialDelaySeconds": 7,
+                            "repeatInterval": {
+                                "minSeconds": 5,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 1,
+                            "combatStats": {
+                                "physicalAttack": 1408000000,
+                                "magicalAttack": 480000000,
+                                "hp": 8096000000,
+                                "physicalDefense": 120000,
+                                "magicalDefense": 120000,
+                                "attackRangePoints": 280,
+                                "splashRangePoints": 300,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 85.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 1900.0,
+                                "skillHitChancePercent": 1900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50054-flavor",
+                            "initialDelaySeconds": 2,
+                            "repeatInterval": {
+                                "minSeconds": 5,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 162958800,
+                                "magicalAttack": 18105600,
+                                "hp": 2940611760,
+                                "physicalDefense": 58320,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 205,
+                                "splashRangePoints": 102,
+                                "criticalChancePercent": 412.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        },
+                        {
+                            "unitCode": "u50036-enemy01",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 5,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 360321600,
+                                "magicalAttack": 40035600,
+                                "hp": 3382799520,
+                                "physicalDefense": 0,
+                                "magicalDefense": 0,
+                                "attackRangePoints": 119,
+                                "splashRangePoints": 320,
+                                "criticalChancePercent": 0.0,
+                                "criticalDamagePercent": 100.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 50.0,
+                                "hitChancePercent": 0.0,
+                                "skillHitChancePercent": 0.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80015-jane",
+                            "initialDelaySeconds": 3,
+                            "repeatInterval": {
+                                "minSeconds": 5,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 639366480,
+                                "magicalAttack": 0,
+                                "hp": 5257228712,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 100000,
+                                "attackRangePoints": 79,
+                                "splashRangePoints": 180,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 90.0,
+                                "hitChancePercent": 100.0,
+                                "skillHitChancePercent": 100.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80020-obed",
+                            "initialDelaySeconds": 4,
+                            "repeatInterval": {
+                                "minSeconds": 5,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 0,
+                                "magicalAttack": 2143126200,
+                                "hp": 10087486688,
+                                "physicalDefense": 100000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 124,
+                                "splashRangePoints": 50,
+                                "criticalChancePercent": 35.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 75.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 25.0,
+                                "hitChancePercent": 1400.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80038-dice",
+                            "initialDelaySeconds": 5,
+                            "repeatInterval": {
+                                "minSeconds": 5,
+                                "maxSeconds": 5
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1194710880,
+                                "magicalAttack": 0,
+                                "hp": 2324654256,
+                                "physicalDefense": 1000,
+                                "magicalDefense": 1000,
+                                "attackRangePoints": 309,
+                                "splashRangePoints": 70,
+                                "criticalChancePercent": 70.0,
+                                "criticalDamagePercent": 1000.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 90.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 1700.0,
+                                "skillHitChancePercent": 400.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80019-isabel",
+                            "initialDelaySeconds": 10,
+                            "repeatInterval": {
+                                "minSeconds": 25,
+                                "maxSeconds": 25
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 1352502960,
+                                "magicalAttack": 1352502960,
+                                "hp": 15771686136,
+                                "physicalDefense": 27000,
+                                "magicalDefense": 3000,
+                                "attackRangePoints": 66,
+                                "splashRangePoints": 70,
+                                "criticalChancePercent": 50.0,
+                                "criticalDamagePercent": 700.0,
+                                "dodgeChancePercent": 30.0,
+                                "skillDodgeChancePercent": 200.0,
+                                "skillResistancePercent": 95.0,
+                                "hitChancePercent": 900.0,
+                                "skillHitChancePercent": 900.0
+                            }
+                        },
+                        {
+                            "unitCode": "u80018-dounus",
+                            "initialDelaySeconds": 26,
+                            "repeatInterval": {
+                                "minSeconds": 25,
+                                "maxSeconds": 25
+                            },
+                            "maxUnits": 100,
+                            "combatStats": {
+                                "physicalAttack": 6123240,
+                                "magicalAttack": 6123240,
+                                "hp": 17459111552,
+                                "physicalDefense": 9000,
+                                "magicalDefense": 9000,
+                                "attackRangePoints": 85,
+                                "splashRangePoints": 70,
+                                "criticalChancePercent": 10.0,
+                                "criticalDamagePercent": 300.0,
+                                "dodgeChancePercent": 50.0,
+                                "skillDodgeChancePercent": 50.0,
+                                "skillResistancePercent": 30.0,
+                                "hitChancePercent": 50.0,
+                                "skillHitChancePercent": 50.0
+                            }
+                        }
+                    ]
+                }
+            ],
+            "gimmicks": [
+                {
+                    "kind": "MINERAL_CAP_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_CAP_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralmax.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "MINERAL_REGEN_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_MINERAL_REGEN_REDUCTION",
+                    "icon": "endless_gimmick_icon_mineralregen.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "UNIT_STAT_REDUCTION",
+                    "percent": 40.0,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_UNIT_STAT_REDUCTION",
+                    "icon": "endless_gimmick_icon_unitdebuff.png",
+                    "descriptionArgs": [
+                        40.0
+                    ]
+                },
+                {
+                    "kind": "ELEMENT_DEBUFF",
+                    "percent": 90,
+                    "descriptionKey": "CUSTOM:V2_ENDLESS_ELEMENT_DEBUFF",
+                    "icon": "endless_gimmick_icon_elementdown_dark.png",
+                    "elementType": "DARK",
+                    "descriptionArgs": [
+                        {
+                            "key": "CUSTOM:ENDLESS_ELEMENT_dark"
+                        },
+                        90
+                    ]
+                }
+            ]
         }
     ]
 }

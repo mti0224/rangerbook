@@ -1,7 +1,7 @@
 {
     "schemaVersion": 2,
-    "updatedAt": "2026-10-30T02:54:01Z",
-    "resourceTimestamp": "1790738789000",
+    "updatedAt": "2026-10-30T11:15:55Z",
+    "resourceTimestamp": "1793352760000",
     "assetTypes": [
         "ability",
         "awake_ability_group",
@@ -37,7 +37,7 @@
         {
             "assetGroup": "ability",
             "format": "db",
-            "bytes": 148480,
+            "bytes": 152576,
             "removed": false
         },
         {
@@ -49,13 +49,13 @@
         {
             "assetGroup": "endless_floor_renewal",
             "format": "db",
-            "bytes": 53248,
+            "bytes": 55296,
             "removed": false
         },
         {
             "assetGroup": "endless_product_line",
             "format": "db",
-            "bytes": 333824,
+            "bytes": 344064,
             "removed": false
         },
         {
@@ -85,7 +85,7 @@
         {
             "assetGroup": "eqip_tlnt_attr",
             "format": "db",
-            "bytes": 12288,
+            "bytes": 13312,
             "removed": false
         },
         {
@@ -139,19 +139,19 @@
         {
             "assetGroup": "lang_equip",
             "format": "ndb",
-            "bytes": 712704,
+            "bytes": 716800,
             "removed": false
         },
         {
             "assetGroup": "lang_unit",
             "format": "ndb",
-            "bytes": 11599872,
+            "bytes": 11673600,
             "removed": false
         },
         {
             "assetGroup": "skill",
             "format": "db",
-            "bytes": 1349632,
+            "bytes": 1327104,
             "removed": false
         },
         {
@@ -187,7 +187,7 @@
         {
             "assetGroup": "unit",
             "format": "db",
-            "bytes": 2848768,
+            "bytes": 2865152,
             "removed": false
         },
         {

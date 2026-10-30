@@ -32757,6 +32757,476 @@
             "specPlus": null
         },
         {
+            "equipCode": "eq_2611_acc_19",
+            "nameKey": "EQUIP:eq_2611_acc_19_nm",
+            "starGrade": 9,
+            "equipType": "ACC",
+            "normalOptions": [
+                {
+                    "optionKey": "EQUIP:GEAR_FILTER_SUMMON_ENGY_MUL_nm",
+                    "range": {
+                        "min": -5.0,
+                        "max": -5.0,
+                        "unit": "PERCENT"
+                    }
+                },
+                {
+                    "optionKey": "EQUIP:GEAR_FILTER_SKLRE_PROB_MUL_nm",
+                    "range": {
+                        "min": 8.4,
+                        "max": 8.4,
+                        "unit": "PERCENT"
+                    }
+                },
+                {
+                    "optionKey": "EQUIP:GEAR_FILTER_SKLPNT_PROB_MUL_nm",
+                    "range": {
+                        "min": 3.4,
+                        "max": 3.4,
+                        "unit": "PERCENT"
+                    }
+                }
+            ],
+            "highLevelOptions": {
+                "targetCondition": {
+                    "kind": "rangerType",
+                    "value": "AGI"
+                },
+                "defaultOption": {
+                    "optionKey": "EQUIP:GEAR_FILTER_ANTI_STUN_MUL_nm",
+                    "range": {
+                        "min": 22.0,
+                        "max": 40.0,
+                        "unit": "PERCENT"
+                    }
+                },
+                "switchOptions": [
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_GATK_MUL_nm",
+                        "range": {
+                            "min": 105.0,
+                            "max": 150.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 50
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_CRI_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_CRI_DMG_MUL_nm",
+                        "range": {
+                            "min": 164.0,
+                            "max": 200.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 32
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SKL_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_AVD_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SKLAVD_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_KNOCKBACK_MUL_nm",
+                        "range": {
+                            "min": 22.0,
+                            "max": 40.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 10
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_STUN_MUL_nm",
+                        "range": {
+                            "min": 22.0,
+                            "max": 40.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 10
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_SILENCE_MUL_nm",
+                        "range": {
+                            "min": 22.0,
+                            "max": 40.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 10
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SPE_ADD_nm",
+                        "range": {
+                            "min": 6.0,
+                            "max": 15.0,
+                            "unit": "FLAT"
+                        },
+                        "upgradeStep": 3
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ATK_RNGE_MUL_nm",
+                        "range": {
+                            "min": 6.2,
+                            "max": 8.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 2
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SUMMON_ENGY_MUL_nm",
+                        "range": {
+                            "min": -6.2,
+                            "max": -8.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": -2
+                    }
+                ]
+            },
+            "skillPlus": [
+                {
+                    "effectCode": "SKILLEFF_CLEANING_ENEMY",
+                    "dimension": "DURATION",
+                    "range": {
+                        "min": 1.0,
+                        "max": 1.5,
+                        "unit": "SECOND"
+                    },
+                    "upgradeStep": 0.3
+                }
+            ],
+            "specPlus": {
+                "nameKey": "EQUIP:SPC_acc_0009_nm",
+                "basicOptions": [
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SKLAVD_PROB_MUL_nm",
+                        "valueRange": {
+                            "min": 8.0,
+                            "max": 12.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 1.6
+                    }
+                ],
+                "specialOptions": [
+                    {
+                        "descriptionKey": "EQUIP:SPC_acc_0009_desc2",
+                        "descriptionBindings": {
+                            "$3p": {
+                                "min": 200,
+                                "max": 250,
+                                "unit": "PERCENT"
+                            }
+                        },
+                        "triggerChance": {
+                            "min": 100,
+                            "max": 100,
+                            "unit": "PERCENT"
+                        },
+                        "conditionKeys": [
+                            {
+                                "templateKey": "CUSTOM:TALENT_TEXT_TLT_TIME_GONE",
+                                "args": [
+                                    10
+                                ]
+                            }
+                        ],
+                        "conditions": [],
+                        "triggerAbilityCode": "eq_tlt_acc_0009",
+                        "effect": {
+                            "nameKey": "CUSTOM:SKILLEFF_BUFF-HP",
+                            "effectCode": "SKILLEFF_BUFF-HP",
+                            "effectAction": "BUFF",
+                            "abilityCode": "eq_tlt_acc_0009_a",
+                            "chance": {
+                                "min": 100,
+                                "max": 100,
+                                "unit": "PERCENT"
+                            },
+                            "chanceUpgrade": 0,
+                            "magnitudeRange": {
+                                "min": 200,
+                                "max": 250,
+                                "unit": "PERCENT"
+                            },
+                            "magnitudeUpgrade": 20,
+                            "durationRange": null,
+                            "durationUpgradeSeconds": 0
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "equipCode": "eq_2611_wpn_09",
+            "nameKey": "EQUIP:eq_2611_wpn_09_nm",
+            "starGrade": 9,
+            "equipType": "WEAPON",
+            "normalOptions": [
+                {
+                    "optionKey": "EQUIP:GEAR_FILTER_ALL_ATK_MUL_nm",
+                    "range": {
+                        "min": 74.0,
+                        "max": 74.0,
+                        "unit": "PERCENT"
+                    }
+                },
+                {
+                    "optionKey": "EQUIP:GEAR_FILTER_PRD_SPE_MUL_nm",
+                    "range": {
+                        "min": -5.0,
+                        "max": -5.0,
+                        "unit": "PERCENT"
+                    }
+                },
+                {
+                    "optionKey": "EQUIP:GEAR_FILTER_CLN_SKLAVD_PROB_MUL_nm",
+                    "range": {
+                        "min": 4.0,
+                        "max": 4.0,
+                        "unit": "PERCENT"
+                    }
+                }
+            ],
+            "highLevelOptions": {
+                "targetCondition": {
+                    "kind": "rangerType",
+                    "value": "INT"
+                },
+                "defaultOption": {
+                    "optionKey": "EQUIP:GEAR_FILTER_ANTI_STUN_MUL_nm",
+                    "range": {
+                        "min": 22.0,
+                        "max": 40.0,
+                        "unit": "PERCENT"
+                    }
+                },
+                "switchOptions": [
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SATK_MUL_nm",
+                        "range": {
+                            "min": 105.0,
+                            "max": 150.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 50
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_AVD_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SKL_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_SKLAVD_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ATK_SPE_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_HP_MUL_nm",
+                        "range": {
+                            "min": 105.0,
+                            "max": 150.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 50
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SKLRE_PROB_MUL_nm",
+                        "range": {
+                            "min": 11.0,
+                            "max": 20.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 4
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_KNOCKBACK_MUL_nm",
+                        "range": {
+                            "min": 22.0,
+                            "max": 40.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 10
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_STUN_MUL_nm",
+                        "range": {
+                            "min": 22.0,
+                            "max": 40.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 10
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ANTI_SILENCE_MUL_nm",
+                        "range": {
+                            "min": 22.0,
+                            "max": 40.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 10
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_ATK_RNGE_MUL_nm",
+                        "range": {
+                            "min": 6.2,
+                            "max": 8.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 2
+                    },
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_PRD_SPE_MUL_nm",
+                        "range": {
+                            "min": -6.2,
+                            "max": -8.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": -2
+                    }
+                ]
+            },
+            "skillPlus": [
+                {
+                    "effectCode": "SKILLEFF_BUFF-ANTI_SK_AVOID_PROB",
+                    "dimension": "MAGNITUDE",
+                    "range": {
+                        "min": 7.0,
+                        "max": 10.0,
+                        "unit": "PERCENT"
+                    },
+                    "upgradeStep": 1.6
+                }
+            ],
+            "specPlus": {
+                "nameKey": "EQUIP:SPC_wpn_0012_nm",
+                "basicOptions": [
+                    {
+                        "optionKey": "EQUIP:GEAR_FILTER_SKL_PROB_MUL_nm",
+                        "valueRange": {
+                            "min": 8.0,
+                            "max": 12.0,
+                            "unit": "PERCENT"
+                        },
+                        "upgradeStep": 1.6
+                    }
+                ],
+                "specialOptions": [
+                    {
+                        "descriptionKey": "EQUIP:SPC_wpn_0012_desc2",
+                        "descriptionBindings": {
+                            "$4f": {
+                                "min": 1.5,
+                                "max": 2,
+                                "unit": "SECOND"
+                            }
+                        },
+                        "triggerChance": {
+                            "min": 50,
+                            "max": 50,
+                            "unit": "PERCENT"
+                        },
+                        "conditionKeys": [
+                            {
+                                "templateKey": "CUSTOM:TALENT_TEXT_TLT_SKILLATTACK_HP_OVER",
+                                "args": [
+                                    0
+                                ]
+                            }
+                        ],
+                        "conditions": [
+                            {
+                                "kind": "ELEMENT",
+                                "value": "water",
+                                "join": "AND",
+                                "secondaryKind": "CATEGORY",
+                                "secondaryValue": "STR"
+                            }
+                        ],
+                        "triggerAbilityCode": "eq_tlt_wpn_0012",
+                        "effect": {
+                            "nameKey": "CUSTOM:SKILLEFF_ELEMENT_TO_NONE",
+                            "effectCode": "SKILLEFF_ELEMENT_TO_NONE",
+                            "effectAction": "BUFF",
+                            "abilityCode": "eq_tlt_wpn_0012_a",
+                            "chance": {
+                                "min": 100,
+                                "max": 100,
+                                "unit": "PERCENT"
+                            },
+                            "chanceUpgrade": 0,
+                            "magnitudeRange": {
+                                "min": 1,
+                                "max": 1,
+                                "unit": "FLAT"
+                            },
+                            "magnitudeUpgrade": 0,
+                            "durationRange": {
+                                "min": 1.5,
+                                "max": 2,
+                                "unit": "SECOND"
+                            },
+                            "durationUpgradeSeconds": 0.2
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "equipCode": "eq_7s_acc_06",
             "nameKey": "EQUIP:eq_7s_acc_06_nm",
             "starGrade": 6,

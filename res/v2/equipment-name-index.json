@@ -878,6 +878,14 @@
             "nameKey": "EQUIP:eq_2610_wpn_18_nm"
         },
         {
+            "equipCode": "eq_2611_acc_19",
+            "nameKey": "EQUIP:eq_2611_acc_19_nm"
+        },
+        {
+            "equipCode": "eq_2611_wpn_09",
+            "nameKey": "EQUIP:eq_2611_wpn_09_nm"
+        },
+        {
             "equipCode": "eq_7s_acc_06",
             "nameKey": "EQUIP:eq_7s_acc_06_nm"
         },

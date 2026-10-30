@@ -13810,6 +13810,126 @@
             "elementType": "FIRE"
         },
         {
+            "rangerCode": "u1641e-crush",
+            "nameKey": "UNIT:u1641e-crush_nm",
+            "starGrade": 8,
+            "evolution": "NORMAL",
+            "roleType": "STR",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1641h-crush",
+            "nameKey": "UNIT:u1641h-crush_nm",
+            "starGrade": 8,
+            "evolution": "HYPER",
+            "roleType": "STR",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1641u-crush",
+            "nameKey": "UNIT:u1641u-crush_nm",
+            "starGrade": 8,
+            "evolution": "ULTRA",
+            "roleType": "STR",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1642e-crush",
+            "nameKey": "UNIT:u1642e-crush_nm",
+            "starGrade": 9,
+            "evolution": "NORMAL",
+            "roleType": "STR",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1643e-sally",
+            "nameKey": "UNIT:u1643e-sally_nm",
+            "starGrade": 8,
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1643h-sally",
+            "nameKey": "UNIT:u1643h-sally_nm",
+            "starGrade": 8,
+            "evolution": "HYPER",
+            "roleType": "INT",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1643u-sally",
+            "nameKey": "UNIT:u1643u-sally_nm",
+            "starGrade": 8,
+            "evolution": "ULTRA",
+            "roleType": "INT",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1644e-sally",
+            "nameKey": "UNIT:u1644e-sally_nm",
+            "starGrade": 9,
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "FIRE"
+        },
+        {
+            "rangerCode": "u1645e-jessica",
+            "nameKey": "UNIT:u1645e-jessica_nm",
+            "starGrade": 8,
+            "evolution": "NORMAL",
+            "roleType": "AGI",
+            "elementType": "DARK"
+        },
+        {
+            "rangerCode": "u1645h-jessica",
+            "nameKey": "UNIT:u1645h-jessica_nm",
+            "starGrade": 8,
+            "evolution": "HYPER",
+            "roleType": "AGI",
+            "elementType": "DARK"
+        },
+        {
+            "rangerCode": "u1646e-jessica",
+            "nameKey": "UNIT:u1646e-jessica_nm",
+            "starGrade": 9,
+            "evolution": "NORMAL",
+            "roleType": "AGI",
+            "elementType": "DARK"
+        },
+        {
+            "rangerCode": "u1647e-sally",
+            "nameKey": "UNIT:u1647e-sally_nm",
+            "starGrade": 8,
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "TREE"
+        },
+        {
+            "rangerCode": "u1647h-sally",
+            "nameKey": "UNIT:u1647h-sally_nm",
+            "starGrade": 8,
+            "evolution": "HYPER",
+            "roleType": "INT",
+            "elementType": "TREE"
+        },
+        {
+            "rangerCode": "u1647u-sally",
+            "nameKey": "UNIT:u1647u-sally_nm",
+            "starGrade": 8,
+            "evolution": "ULTRA",
+            "roleType": "INT",
+            "elementType": "TREE"
+        },
+        {
+            "rangerCode": "u1648e-sally",
+            "nameKey": "UNIT:u1648e-sally_nm",
+            "starGrade": 9,
+            "evolution": "NORMAL",
+            "roleType": "INT",
+            "elementType": "TREE"
+        },
+        {
             "rangerCode": "u164e-alex",
             "nameKey": "UNIT:u164e-alex_nm",
             "starGrade": 6,
