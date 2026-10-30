@@ -14,7 +14,7 @@
         "stages/labyrinth": "raw/labyrinth_map, labyrinth_battle_stage, labyrinth_ai, labyrinth_prdn_line, unit and reinforcement; native 6-level stage compiler",
         "others": "V2-owned private compatibility processors; raw API inputs"
     },
-    "sourceFingerprint": "949b8a7ef1b52dfe5b9208bb59d8bf74c740ffe8c1a3a4f847bc627335c25cdf",
+    "sourceFingerprint": "010609ca4308dbcf0db54a1e5636bfe0e6d7e9cee85343012f2973d3d3e28f3b",
     "status": "standalone_v2",
     "datasets": {
         "rangers": 2321,
