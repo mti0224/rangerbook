@@ -14,14 +14,15 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
      await page.addInitScript(t=>{localStorage.setItem('rangerbook-theme',t);localStorage.setItem('rangerbook-language','zh-Hant')},theme);
      let currentRole=role, mode='ready', calls=[],detailCalls=0;
      const run={kind:'run',runId:'a'.repeat(32),service:'rangerbook-v2-update.service',status:'success',priority:6,
-       startedAt:'2026-10-27T23:44:00Z',endedAt:'2026-10-27T23:44:42Z',time:'2026-10-27T23:44:42Z',durationSeconds:42,message:''};
+       startedAt:'2026-10-27T23:44:00Z',endedAt:'2026-10-27T23:44:42Z',time:'2026-10-27T23:44:42Z',durationSeconds:42,message:'',
+       summary:{reason:'completed',httpCodes:[],apiCodes:[],warning:false}};
      const runText='[V2] Begin\n採用既有 DB：0\nDB 未變更：29\nJSON 轉換：0\nJSON 無需轉換：29\n[V2] Complete';
      const errors=[];page.on('pageerror',e=>errors.push(e.message));
      await page.route('https://rangerbook-auth.warmycat.com/**',async route=>{
       const url=new URL(route.request().url());let body={items:[]},status=200;
       if(url.pathname==='/auth/me')body={logged_in:currentRole!=='guest',role:currentRole,account:'synthetic',admin_application_status:'approved'};
       if(url.pathname.startsWith('/admin/backend-logs/runs/')) {
-       detailCalls++;body={...run,message:runText,lineCount:6,truncated:false,partial:false};
+       detailCalls++;body={...run,message:runText,lineCount:6,truncated:false,partial:false,summary:{reason:'unchanged',httpCodes:[],apiCodes:[],warning:false}};
       }
       if(url.pathname==='/admin/backend-logs'){
        calls.push(url.searchParams);
@@ -33,6 +34,11 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
         {time:'2026-10-27T23:24:22Z',service:'rangerbook-auth.service',priority:6,lineCount:1,partial:true,message:'[REDACTED: incomplete multiline entry]'},run
        ]};
        if(status===200&&mode!=='empty'&&url.searchParams.get('source')==='updates')body={limit:200,mode:'runs',items:[run]};
+       if(mode==='maintenance')body={mode:'runs',items:[{...run,status:'failed',priority:3,
+        summary:{reason:'maintenance',httpCodes:['512'],apiCodes:['512'],warning:false}}]};
+       if(mode==='partial')body={mode:'runs',items:[{...run,
+        summary:{reason:'unavailableData',httpCodes:[],apiCodes:['112004'],warning:true}}]};
+       if(mode==='unknown')body={mode:'runs',items:[{...run,status:'failed',priority:3,summary:undefined}]};
       }
       await route.fulfill({status,contentType:'application/json',headers:{'access-control-allow-origin':base,'access-control-allow-credentials':'true'},body:JSON.stringify(body)});
      });
@@ -50,7 +56,11 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),true);
       assert.equal(await page.locator('.backend-log-entry').count(),4);
       assert.equal(await page.locator('.backend-log-entry time').count(),4);
-      assert.equal(await page.locator('.backend-log-content').count(),3);
+      assert.equal(await page.locator('.backend-log-content').count(),4);
+      assert.equal(await page.locator('.backend-log-description').count(),4);
+      assert.equal(await page.locator('.backend-log-entry pre:visible').count(),0,'raw text is initially collapsed');
+      assert.match(await page.locator('.backend-log-meta code').last().innerText(),/遊戲資料更新（V2）/);
+      assert.match(await page.locator('.backend-log-description').last().innerText(),/執行完成/);
       const jsonDetails=page.locator('.backend-log-content').nth(1);
       assert.equal(await jsonDetails.getAttribute('open'),null);
       assert.equal(await jsonDetails.locator('pre').isVisible(),false);
@@ -68,6 +78,7 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       await page.waitForFunction(()=>document.querySelector('.backend-log-run pre')?.textContent.includes('[V2] Complete'));
       assert.equal(detailCalls,1);
       assert.equal(await runDetails.locator('pre').innerText(),runText);
+      assert.match(await page.locator('.backend-log-description').last().innerText(),/資料沒有變動/);
       assert.match(await page.locator('.backend-log-run-timing').innerText(),/07:44:00.*42.0/);
       await runDetails.locator('summary').click();
       await runDetails.locator('summary').click();
@@ -82,6 +93,21 @@ const base=process.env.AUDIT_BASE_URL||'http://127.0.0.1:4173';
       await page.click('#backendLogsRefresh');
       await page.waitForFunction(()=>document.querySelector('#backendLogsRefresh').disabled===false);
       assert.equal(calls.at(-1).get('keyword'),'JSON');
+      mode='maintenance';await page.click('#backendLogsRefresh');
+      await page.waitForFunction(()=>document.querySelector('.backend-log-description')?.textContent.includes('遊戲維護中'));
+      const maintenance=await page.locator('.backend-log-description').innerText();
+      assert.ok(maintenance.length<65,'summary stays concise');
+      assert.equal((maintenance.match(/512/g)||[]).length,1,'duplicate HTTP/API codes are merged');
+      assert.match(maintenance,/HTTP 512/);
+      assert.equal(await page.locator('.backend-log-entry.is-error').count(),1);
+      if(process.env.QA_SCREENSHOTS)await page.screenshot({path:process.env.QA_SCREENSHOTS+`/log-summary-${width}-${theme}.png`,fullPage:true});
+      mode='partial';await page.click('#backendLogsRefresh');
+      await page.waitForFunction(()=>document.querySelector('.backend-log-description')?.textContent.includes('112004'));
+      assert.match(await page.locator('.backend-log-description').innerText(),/執行完成，部分遊戲資料無法取得/);
+      assert.equal(await page.locator('.backend-log-entry.is-warning').count(),1);
+      assert.match(await page.locator('.backend-log-meta').innerText(),/完成（有警告）/);
+      mode='unknown';await page.click('#backendLogsRefresh');
+      await page.waitForFunction(()=>document.querySelector('.backend-log-description')?.textContent.includes('原因請查看'));
       mode='error';await page.click('#backendLogsRefresh');
       await page.waitForFunction(()=>document.querySelector('#backendLogsStatus').textContent.includes('無法讀取'));
       assert.equal(await page.locator('.backend-log-entry').count(),0);

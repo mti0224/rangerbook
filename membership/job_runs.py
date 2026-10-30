@@ -10,6 +10,7 @@ import time
 
 from fastapi import HTTPException
 from .backend_logs import ALL_UNITS, SOURCES, clean_message, group_entries
+from .log_summary import describe, EVIDENCE
 
 SCHEDULED = tuple(x for x in ALL_UNITS if x not in SOURCES['auth'])
 START = '7d4958e842da4a758f6c1cdc7b36dcc5'
@@ -60,7 +61,45 @@ def metadata(row, started=None):
             'status':'failed' if failed else 'success','priority':3 if failed else 6,
             'time':ended,'endedAt':ended,'startedAt':iso(started) if started else None,
             'durationSeconds':max(0,duration) if duration is not None else None,
-            'message':'','partial':False,'truncated':False}
+            'message':'','partial':False,'truncated':False,
+            'summary':describe('', 'failed' if failed else 'success')}
+
+
+def add_summaries(reader, entries, done, deadline):
+    """One bounded batch, not one full-output request per card.
+
+    Output remains lazy. Summary evidence produces fixed reason/code values only;
+    no fragment, URL, guild name, account or secret is copied to the response.
+    """
+    if not entries:return
+    selected={(entry['service'],entry['runId']):entry for entry in entries}
+    ends={(unit,run):row for (unit,run,boot),row in done.items()}
+    ids=list(dict.fromkeys(entry['runId'] for entry in entries))
+    window=[]
+    if all(entry['startedAt'] for entry in entries):
+        first=min(datetime.datetime.fromisoformat(entry['startedAt']).timestamp() for entry in entries)
+        window.append('--since=@'+str(int(first)))
+    last=max(datetime.datetime.fromisoformat(entry['time']).timestamp() for entry in entries)
+    window.append('--until=@'+str(int(last)+1))
+    try:
+        rows=bounded(reader,command(*['_SYSTEMD_INVOCATION_ID='+x for x in ids],
+                     *window,'--grep='+EVIDENCE,'--case-sensitive=no',lines=3000,reverse=True),
+                     min(deadline,time.monotonic()+5))
+    except HTTPException:
+        return  # Unavailable evidence must not turn a healthy list into an error.
+    evidence={}
+    for row in rows:
+        key=(row.get('_SYSTEMD_UNIT'),row.get('_SYSTEMD_INVOCATION_ID'))
+        entry=selected.get(key);end=ends.get(key)
+        if entry is None or end is None or row.get('_BOOT_ID')!=end['_BOOT_ID']:continue
+        try:
+            when=int(row['__REALTIME_TIMESTAMP'])
+            if when>int(end['__REALTIME_TIMESTAMP']):continue
+            if entry['startedAt'] and iso(when)<entry['startedAt']:continue
+        except (ValueError,TypeError,KeyError,OverflowError,OSError):continue
+        evidence.setdefault(key,[]).append(clean_message(row.get('MESSAGE','')))
+    for key,parts in evidence.items():
+        selected[key]['summary']=describe('\n'.join(parts),selected[key]['status'])
 
 
 def completed_runs(reader, source, hours, level, limit, keyword):
@@ -117,8 +156,12 @@ def completed_runs(reader, source, hours, level, limit, keyword):
                 search_limited=True
                 break
             detail=run_detail(reader,entry['service'],entry['runId'],deadline=deadline)
-            if keyword.casefold() in detail['message'].casefold():matches.append(entry)
+            if keyword.casefold() in detail['message'].casefold():
+                entry['summary']=detail['summary']
+                matches.append(entry)
         result=matches
+    elif result:
+        add_summaries(reader,result[:limit],done,deadline)
     return {'items':result[:limit],'limit':limit,'mode':'runs','searchLimited':search_limited,
             'updatedAt':datetime.datetime.now(datetime.timezone.utc).isoformat()}
 
@@ -158,4 +201,5 @@ def run_detail(reader, service, run_id, *, deadline=None):
     info.update(message=text[:524288],lineCount=sum(g['lineCount'] for g in groups),
                 truncated=truncated or len(rows)==10000 or len(text)>524288 or any(g['truncated'] for g in groups),
                 partial=truncated or any(g['partial'] for g in groups))
+    info['summary']=describe(info['message'],info['status'],complete=not info['truncated'] and not info['partial'])
     return info
