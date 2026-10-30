@@ -75,10 +75,16 @@ def add_summaries(reader, entries, done, deadline):
     selected={(entry['service'],entry['runId']):entry for entry in entries}
     ends={(unit,run):row for (unit,run,boot),row in done.items()}
     ids=list(dict.fromkeys(entry['runId'] for entry in entries))
+    window=[]
+    if all(entry['startedAt'] for entry in entries):
+        first=min(datetime.datetime.fromisoformat(entry['startedAt']).timestamp() for entry in entries)
+        window.append('--since=@'+str(int(first)))
+    last=max(datetime.datetime.fromisoformat(entry['time']).timestamp() for entry in entries)
+    window.append('--until=@'+str(int(last)+1))
     try:
         rows=bounded(reader,command(*['_SYSTEMD_INVOCATION_ID='+x for x in ids],
-                     '--grep='+EVIDENCE,'--case-sensitive=no',lines=3000,reverse=True),
-                     min(deadline,time.monotonic()+2))
+                     *window,'--grep='+EVIDENCE,'--case-sensitive=no',lines=3000,reverse=True),
+                     min(deadline,time.monotonic()+5))
     except HTTPException:
         return  # Unavailable evidence must not turn a healthy list into an error.
     evidence={}
