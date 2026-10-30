@@ -12082,6 +12082,111 @@
         "element": "火"
     },
     {
+        "id": "u1641e-crush",
+        "name": "清潔員克勞許",
+        "star": "8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1641h-crush",
+        "name": "資深清潔員克勞許",
+        "star": "超進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1641u-crush",
+        "name": "清潔達人克勞許",
+        "star": "終極進化8星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1642e-crush",
+        "name": "清潔之神克勞許",
+        "star": "9星",
+        "type": "力量型",
+        "element": "火"
+    },
+    {
+        "id": "u1643e-sally",
+        "name": "茶杯莎莉",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1643h-sally",
+        "name": "紅色茶杯莎莉",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1643u-sally",
+        "name": "藍色茶杯莎莉",
+        "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1644e-sally",
+        "name": "高級茶杯莎莉",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "火"
+    },
+    {
+        "id": "u1645e-jessica",
+        "name": "旅館員工潔西卡",
+        "star": "8星",
+        "type": "敏捷型",
+        "element": "暗"
+    },
+    {
+        "id": "u1645h-jessica",
+        "name": "旅館老闆娘潔西卡",
+        "star": "超進化8星",
+        "type": "敏捷型",
+        "element": "暗"
+    },
+    {
+        "id": "u1646e-jessica",
+        "name": "高級旅館老闆娘潔西卡",
+        "star": "9星",
+        "type": "敏捷型",
+        "element": "暗"
+    },
+    {
+        "id": "u1647e-sally",
+        "name": "1億紀念莎莉",
+        "star": "8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1647h-sally",
+        "name": "1億歡慶莎莉",
+        "star": "超進化8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1647u-sally",
+        "name": "1億慶典莎莉",
+        "star": "終極進化8星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
+        "id": "u1648e-sally",
+        "name": "1億感恩莎莉",
+        "star": "9星",
+        "type": "智慧型",
+        "element": "木"
+    },
+    {
         "id": "u164e-alex",
         "name": "傳奇打者艾力克斯",
         "star": "6星",
