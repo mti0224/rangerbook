@@ -74,10 +74,10 @@
     return token.includes(".") ? token.split(".")[1].length : 0;
   }
 
-  function formatNumber(value, token) {
+  function formatNumber(value, token, percentage) {
     const rounded = Math.abs(value) < 1e-10 ? 0 : value;
-    const output = rounded.toFixed(decimals(token));
-    return token.startsWith("+") && rounded >= 0 ? `+${output}` : output;
+    const output = rounded.toFixed(percentage ? 1 : decimals(token));
+    return rounded > 0 ? `+${output}` : output;
   }
 
   function transformValue(baseValue, level, mode, incrementValue = "") {
@@ -96,7 +96,7 @@
         result = base + level * increment;
       }
       index += 1;
-      return formatNumber(result, token);
+      return formatNumber(result, token, /[%％]/.test(source));
     });
   }
 
@@ -165,7 +165,7 @@
       effect,
       value: isObject(data)
         ? transformValue(data["係數"] ?? data["數值"] ?? "-", level, "increment", data["每次升級增加"] ?? "")
-        : scalarText(data) || "-"
+        : transformValue(data, level, "increment")
     }));
   }
 

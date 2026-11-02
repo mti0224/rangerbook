@@ -30,15 +30,15 @@ async function main() {
   // Exercise the real level-change handler with the legacy catalog that
   // previously rendered 107..110 at +1 and 507..510 at +Max.
   for (let level = 0; level <= 5; level++) {
-    assert.deepEqual(await render(zero, level), [`${7 + level}.0 ~ ${10 + level}.0`]);
+    assert.deepEqual(await render(zero, level), [`+${7 + level}.0 ~ +${10 + level}.0`]);
   }
-  for (const [id, expected] of [["eq_2607_acc_39", "15.0% ~ 20.0%"],
-    ["eq_2607_acc_29", "80.0% ~ 90.0%"]]) {
+  for (const [id, expected] of [["eq_2607_acc_39", "+15.0% ~ +20.0%"],
+    ["eq_2607_acc_29", "+80.0% ~ +90.0%"]]) {
     assert.deepEqual(await render(legacy.find(x => x.id === id), 5), [expected],
       "legacy percentage points must retain their units");
   }
   assert.deepEqual(await render({id: "numeric-strings", "Spec+": {"基本效果": {
-    "移動速度 (+)": {"係數": "5", "每次升級增加": "10"}}}}, 1), ["15"],
+    "移動速度 (+)": {"係數": "5", "每次升級增加": "10"}}}}, 1), ["+15"],
     "numeric strings must be added numerically");
 
   for (const locale of ["zh-Hant", "en", "th", "jp"]) {
@@ -55,7 +55,7 @@ async function main() {
     const renderV2 = renderer(window);
     for (let level = 0; level <= 5; level++) {
       assert.deepEqual(await renderV2(gears.find(x => x.id === zero.id), level),
-        [`${7 + level} ~ ${10 + level}`], "typed V2 steps must not be converted twice: " + locale);
+        [`+${7 + level} ~ +${10 + level}`], "typed V2 steps must not be converted twice: " + locale);
     }
     console.log("PASS V2 Zero Spec+ +0..+Max", locale);
   }
