@@ -2,6 +2,7 @@
 import {cp, mkdir, readFile, readdir, writeFile, access} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 import {packagePages} from '../../scripts/package-pages.mjs';
 
 const root=fileURLToPath(new URL('../../',import.meta.url));
@@ -40,6 +41,8 @@ for (const [source,destination] of [
   ['manifest.webmanifest','manifest.webmanifest'],
   ['stage-icon.svg','assets/pwa/stage-icon.svg']
 ]) await cp(path.join(stage,source),path.join(output,destination));
+// Make separate PNG icons for Android/Chromium and iOS; no external packages.
+execFileSync('python3',[path.join(stage,'generate-icons.py'),path.join(output,'assets/pwa')],{stdio:'inherit'});
 await writeFile(path.join(output,'robots.txt'),'User-agent: *\nDisallow: /\n');
 await writeFile(path.join(output,'CNAME'),'rangerbook-test.warmycat.com\n');
 console.log(JSON.stringify({pages,scripts,origin,analytics:false,pwa_installation:true,pwa_offline_cache:false}));
