@@ -24,13 +24,30 @@ def star_asset_name(ranger):
 
 
 def add_star_layer(portrait, star):
-    # The native mask leaves its final 22 rows transparent. Keep the face crop
-    # unchanged and put the original game badge in that reserved bottom strip.
+    # Overlay the original game badge on the body at the bottom of the frame.
     height = 20
     width = round(star.width * height / star.height)
     badge = star.resize((width, height), Image.Resampling.LANCZOS)
     result = portrait.copy()
     result.alpha_composite(badge, ((result.width - width) // 2, result.height - height - 2))
+    return result
+
+
+def frame_mask(mask):
+    # The game's mask reserves 22 transparent rows for its separate badge.
+    # Extend the middle of the mask so the original sprite continues behind
+    # the badge. Keep the rounded corners and the sprite's face anchor intact.
+    alpha = mask.getchannel('A')
+    bottom = alpha.getbbox()[3]
+    gap = mask.height - bottom
+    if not gap:
+        return mask
+    split = bottom // 2
+    result = Image.new('RGBA', mask.size)
+    result.paste(mask.crop((0, 0, mask.width, split)), (0, 0))
+    middle = mask.crop((0, split, mask.width, split + 1))
+    result.paste(middle.resize((mask.width, gap)), (0, split))
+    result.paste(mask.crop((0, split, mask.width, bottom)), (0, split + gap))
     return result
 
 
@@ -86,6 +103,7 @@ def build(root=ROOT, only=None, workers=16):
     cache.mkdir(parents=True, exist_ok=True)
     mask = Image.open(root / 'assets/main_icon/portrait-mask-native.png').convert('RGBA')
     assert mask.size == (114, 118)
+    mask = frame_mask(mask)
     by_code = {row['rangerCode']: row for row in rangers}
     star_images = {}
     for name in {star_asset_name(by_code[code]) for code in codes}:
