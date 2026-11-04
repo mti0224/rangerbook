@@ -10,8 +10,23 @@
   "theme_color": "#a44b09",
   "background_color": "#f2f6f6",
   "icons": [
-    {"src": "assets/pwa/stage-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"},
-    {"src": "assets/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "assets/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+    {
+      "src": "assets/pwa/stage-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/stage-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/pwa/stage-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
   ]
 }
