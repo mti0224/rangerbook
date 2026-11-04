@@ -184,6 +184,10 @@ html[data-theme="dark"] .pvp-usage-stable-table tbody tr:hover > td {
     gap: .15rem;
   }
 
+  .pvp-usage-stable-table .pvp-usage-bar {
+    display: none;
+  }
+
   .pvp-usage-stable-table .pvp-rank-delta {
     display: block;
     margin-left: 0;
