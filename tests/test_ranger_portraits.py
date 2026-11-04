@@ -25,7 +25,7 @@ class NativePortraitTests(unittest.TestCase):
                 badge.load()
                 self.assertTrue(badge.getbbox(), name)
 
-    def test_star_uses_bottom_gap_without_changing_face_pixels(self):
+    def test_star_overlays_bottom_without_changing_face_pixels(self):
         portrait = Image.new('RGBA', (114, 118), (5, 10, 15, 128))
         with Image.open(ROOT / 'assets/star_layer/com_level01_star09.png') as badge:
             result = portraits.add_star_layer(portrait, badge.convert('RGBA'))
@@ -40,6 +40,17 @@ class NativePortraitTests(unittest.TestCase):
             self.assertEqual(mask.size, (114, 118))
             self.assertEqual(mask.mode, 'RGBA')
             self.assertEqual(mask.getchannel('A').getextrema(), (0, 255))
+
+    def test_body_continues_behind_badge_to_frame_bottom(self):
+        with Image.open(ROOT / 'assets/main_icon/portrait-mask-native.png') as native:
+            mask = portraits.frame_mask(native.convert('RGBA'))
+        self.assertEqual(mask.size, (114, 118))
+        sprite = Image.new('RGBA', (200, 200), 'blue')
+        result = portraits.compose_portrait(sprite, {'scale': 1, 'faceCenter': {'x': .5, 'y': .5}}, mask)
+        for y in [95, 96, 110, 117]:
+            self.assertEqual(result.getpixel((57, y)), (0, 0, 255, 255))
+        self.assertEqual(result.getpixel((0, 117))[3], 0)
+        self.assertEqual(mask.crop((0, 0, 114, 48)).tobytes(), native.crop((0, 0, 114, 48)).tobytes())
 
     def test_native_anchor_and_scale_center_the_face(self):
         sprite = Image.new('RGBA', (400, 300))
