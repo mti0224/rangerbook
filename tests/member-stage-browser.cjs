@@ -13,6 +13,13 @@ async function main(){
   assert.equal(manifest.start_url,'./');
   assert.equal(manifest.scope,'./');
   assert(manifest.icons.some(icon=>icon.src==='assets/pwa/stage-icon.svg'));
+  for(const [name,size] of [['stage-icon-192.png',192],['stage-icon-512.png',512],['stage-apple-touch-icon.png',180]]) {
+    const png=await fs.readFile(path.join(root,'assets/pwa',name));
+    assert.equal(png.readUInt32BE(16),size);
+    assert.equal(png.readUInt32BE(20),size);
+  }
+  assert(manifest.icons.some(icon=>icon.src==='assets/pwa/stage-icon-192.png'));
+  assert(manifest.icons.some(icon=>icon.src==='assets/pwa/stage-icon-512.png'));
   const workerSource=await fs.readFile(path.join(root,'sw.js'),'utf8');
   assert(!workerSource.includes('addEventListener(\'fetch\''),'Stage worker must not intercept authenticated network requests');
   assert(!workerSource.includes('caches.open('),'Stage worker must not store private pages');
