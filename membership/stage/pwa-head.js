@@ -10,7 +10,7 @@
     document.head.append(element);
   };
   link('manifest', 'manifest.webmanifest', 'application/manifest+json');
-  link('apple-touch-icon', 'assets/pwa/apple-touch-icon.png', 'image/png');
+  link('apple-touch-icon', 'assets/pwa/stage-apple-touch-icon.png', 'image/png');
   link('stylesheet', 'assets/css/pwa.css');
   for (const [name, content] of [
     ['theme-color', '#a44b09'],
