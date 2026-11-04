@@ -1,3 +1,8 @@
+// One renderer covers existing and dynamically inserted Ranger thumbnails on
+// every page. Preserve the image elements, layout, badges and click handlers.
+window.RangerbookPortraitReady = import(new URL('ranger-portrait.js', document.currentScript.src).href);
+window.RangerbookPortraitReady.catch(error => console.warn('Ranger portraits unavailable', error));
+
 (() => {
   if (window.RB_PRIVATE_PAGE) return;
   const GA_MEASUREMENT_ID = "G-RPSQY1WHPP";

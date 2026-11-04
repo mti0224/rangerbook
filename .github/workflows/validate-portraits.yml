@@ -1,0 +1,23 @@
+name: Validate Ranger portraits
+on:
+  pull_request:
+    paths:
+      - 'assets/js/ranger-portrait.js'
+      - 'assets/js/site.js'
+      - 'assets/js/pvp-top20-image-export.js'
+      - 'assets/main_icon/portrait-mask-native.png'
+      - 'scripts/build-fast-data.mjs'
+      - 'tests/ranger-portrait.cjs'
+      - '.github/workflows/validate-portraits.yml'
+jobs:
+  portraits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check assets/js/site.js && node --check assets/js/ranger-portrait.js && node --check assets/js/pvp-top20-image-export.js
+      - run: node --input-type=module -e "import('./scripts/build-fast-data.mjs').then(m=>m.buildFastData(process.cwd()))"
+      - run: node --test tests/ranger-portrait.cjs tests/personal-viewer-layout.cjs
+      - run: node tests/fast-data.cjs

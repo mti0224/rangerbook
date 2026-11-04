@@ -74,7 +74,9 @@
     const imageEntries = await Promise.all(
       rangers.map(async (row) => {
         const id = String(row.rangerId || row.unitCode || "");
-        return [id, await loadImage(RANGER_IMAGE(id))];
+        const renderer = await window.RangerbookPortraitReady;
+        const portrait = await renderer?.portraitUrl(id);
+        return [id, await loadImage(portrait || RANGER_IMAGE(id))];
       })
     );
     const images = new Map(imageEntries);
