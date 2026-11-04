@@ -25,7 +25,7 @@ test('every released Ranger preserves its authoritative native geometry', async 
   assert.equal(projected.schemaVersion, 2);
   assert.equal(Object.keys(projected.units).length, rangers.length);
   for (const {rangerCode:code} of rangers) {
-    assert.ok((await portraitUrl(code))?.endsWith('/assets/portraits/' + code + '.png'), code);
+    assert.ok((await portraitUrl(code))?.endsWith('/assets/portraits/stars/' + code + '.png'), code);
     const visual = source[code].visual, meta = projected.units[code];
     assert.deepEqual(meta, {faceCenter:visual.faceCenter,sizeRatio:visual.scale}, code);
     const img = {naturalWidth:317,naturalHeight:283};

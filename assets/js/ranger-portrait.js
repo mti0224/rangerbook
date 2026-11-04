@@ -26,5 +26,5 @@ export function rangerCodeFromUrl(src) {
 // Canvas readback, cross-origin image loading, or asynchronous DOM replacement.
 export async function portraitUrl(code) {
   if (!/^u\d+[a-z]*(?:-[a-z0-9_-]+)?$/i.test(String(code))) return null;
-  return new URL('../portraits/' + encodeURIComponent(code) + '.png', import.meta.url).href;
+  return new URL('../portraits/stars/' + encodeURIComponent(code) + '.png', import.meta.url).href;
 }

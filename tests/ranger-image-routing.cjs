@@ -8,7 +8,7 @@ const start = source.indexOf('  const LEGACY_RES_BASE');
 const end = source.indexOf('\n(() => {\n  function normalizedPath', start);
 const routing = '(() => {\n' + source.slice(start, end);
 
-function fixture(base = 'https://test.invalid/') {
+function fixture(base = 'https://test.invalid/', hasStar = false) {
   class Element {
     constructor() { this.dataset = {}; this.attributes = {}; }
     setAttribute(key, value) { this.attributes[key] = String(value); }
@@ -20,6 +20,7 @@ function fixture(base = 'https://test.invalid/') {
     set src(value) { this.attributes.src = String(value); }
   }
   const img = new Image();
+  img.parentElement = {querySelector: () => hasStar ? {} : null};
   img.attributes.src = 'https://rangers.lerico.net/res/u003u-bella/u003u-bella-thum.png';
   let observer, onerror;
   const document = {currentScript:{src:base+'assets/js/site.js'},documentElement:{},
@@ -38,7 +39,7 @@ function fixture(base = 'https://test.invalid/') {
 test('HTML thumbnails immediately route to same-origin PNGs, including subpath hosting', () => {
   for (const root of ['https://test.invalid/', 'https://test.invalid/rangerbook/']) {
     const {img}=fixture(root);
-    assert.equal(img.src,root+'assets/portraits/u003u-bella.png');
+    assert.equal(img.src,root+'assets/portraits/stars/u003u-bella.png');
   }
 });
 
@@ -59,8 +60,13 @@ test('a reused team image resets failure state when switched to another Ranger',
   error(); error();
   img.src='https://res.warmycat.com/u99-susu/u99-susu-thum.png';
   change();
-  assert.equal(img.src,'https://test.invalid/assets/portraits/u99-susu.png');
+  assert.equal(img.src,'https://test.invalid/assets/portraits/stars/u99-susu.png');
   assert.equal(img.dataset.resourceFallbackTried,undefined);
   assert.equal(error(),true);
   assert.equal(img.src,'https://res.warmycat.com/u99-susu/u99-susu-thum.png');
+});
+
+test('team thumbnails retain their existing independent star overlay without doubling it', () => {
+  const {img}=fixture('https://test.invalid/',true);
+  assert.equal(img.src,'https://test.invalid/assets/portraits/u003u-bella.png');
 });

@@ -35,7 +35,7 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
 
   function localPortraitCode(value) {
     return String(value || '').startsWith(PORTRAIT_BASE)
-      ? String(value).slice(PORTRAIT_BASE.length).match(/^(u\d+[a-z]*(?:-[a-z0-9_-]+)?)\.png$/i)?.[1] || '' : '';
+      ? String(value).slice(PORTRAIT_BASE.length).replace(/^stars\//, '').match(/^(u\d+[a-z]*(?:-[a-z0-9_-]+)?)\.png$/i)?.[1] || '' : '';
   }
 
   function stripLegacyPrefix(absoluteUrl) {
@@ -49,14 +49,17 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
     return String(path || "").replace(/^\/+/, "").replace(/^res_from_emulator\//, "");
   }
 
-  function normalizeResourceUrl(value) {
+  function normalizeResourceUrl(value, img) {
     if (!value || typeof value !== "string") return value;
     try {
       const absoluteUrl = new URL(value, window.location.href).href;
       const resourcePath = stripLegacyPrefix(absoluteUrl);
       if (!resourcePath) return value;
       const code = portraitCode(absoluteUrl);
-      if (code) return PORTRAIT_BASE + encodeURIComponent(code) + '.png';
+      if (code) {
+        const hasStar = img?.parentElement?.querySelector('.pvp-player-unit-star');
+        return PORTRAIT_BASE + (hasStar ? '' : 'stars/') + encodeURIComponent(code) + '.png';
+      }
       return PRIMARY_RES_BASE + normalizeResourcePath(resourcePath);
     } catch {
       return value;
@@ -94,7 +97,7 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
     if (portraitCode(currentSrc) === img.dataset.portraitFallbackCode) return;
     const fallbackSrc = legacyResourceUrl(currentSrc || img.src);
     if (!fallbackSrc) return;
-    const primarySrc = normalizeResourceUrl(currentSrc || img.src);
+    const primarySrc = normalizeResourceUrl(currentSrc || img.src, img);
     if (!primarySrc || primarySrc === currentSrc) return;
     img.dataset.resourceFallbackSrc = fallbackSrc;
     img.dataset.resourcePrimarySrc = primarySrc;
@@ -118,7 +121,7 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
         const fallbackSrc = legacyResourceUrl(value);
         if (fallbackSrc) {
           this.dataset.resourceFallbackSrc = fallbackSrc;
-          this.dataset.resourcePrimarySrc = normalizeResourceUrl(value);
+          this.dataset.resourcePrimarySrc = normalizeResourceUrl(value, this);
           return srcDescriptor.set.call(this, this.dataset.resourcePrimarySrc);
         }
         return srcDescriptor.set.call(this, value);
@@ -137,7 +140,7 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
       const fallbackSrc = legacyResourceUrl(String(value));
       if (fallbackSrc) {
         this.dataset.resourceFallbackSrc = fallbackSrc;
-        this.dataset.resourcePrimarySrc = normalizeResourceUrl(String(value));
+        this.dataset.resourcePrimarySrc = normalizeResourceUrl(String(value), this);
         return nativeSetAttribute.call(this, name, this.dataset.resourcePrimarySrc);
       }
     }
