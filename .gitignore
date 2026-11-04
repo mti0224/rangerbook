@@ -33,3 +33,5 @@ __pycache__/
 # Generated Pages/PWA build output
 _site/
 res/v2/fast/
+assets/portraits/
+.portrait-source/

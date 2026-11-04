@@ -8,7 +8,7 @@ const renderer = import(pathToFileURL(path.join(root, 'assets/js/ranger-portrait
 const read = name => JSON.parse(fs.readFileSync(path.join(root, name), 'utf8'));
 
 test('native anchor maps the sprite face to the center, with bottom-up Y', async () => {
-  const {portraitGeometry} = await renderer;
+  const {portraitGeometry, portraitUrl} = await renderer;
   const image = {naturalWidth:200, naturalHeight:300};
   const g = portraitGeometry(image, {faceCenter:{x:.4,y:.7},sizeRatio:.9});
   assert.deepEqual(g, {x:-15,y:59-(1-.7)*270,width:180,height:270});
@@ -18,13 +18,14 @@ test('native anchor maps the sprite face to the center, with bottom-up Y', async
 });
 
 test('every released Ranger preserves its authoritative native geometry', async () => {
-  const {portraitGeometry} = await renderer;
+  const {portraitGeometry, portraitUrl} = await renderer;
   const source = read('res/v2/projectiles.json').units;
   const rangers = read('res/v2/rangers.json').rangers;
   const projected = read('res/v2/fast/ranger-portraits.json');
   assert.equal(projected.schemaVersion, 2);
   assert.equal(Object.keys(projected.units).length, rangers.length);
   for (const {rangerCode:code} of rangers) {
+    assert.ok((await portraitUrl(code))?.endsWith('/assets/portraits/' + code + '.png'), code);
     const visual = source[code].visual, meta = projected.units[code];
     assert.deepEqual(meta, {faceCenter:visual.faceCenter,sizeRatio:visual.scale}, code);
     const img = {naturalWidth:317,naturalHeight:283};
