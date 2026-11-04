@@ -15,6 +15,25 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = 'https://raw.githubusercontent.com/mti0224/rangerbook_res/main/'
 
 
+def star_asset_name(ranger):
+    grade = int(ranger['starGrade'])
+    evolution = ranger.get('evolution')
+    level = '04' if grade == 8 and evolution == 'HYPER' else (
+        '02' if 6 <= grade <= 8 and evolution == 'ULTRA' else '01')
+    return f'com_level{level}_star{grade:02}.png'
+
+
+def add_star_layer(portrait, star):
+    # The native mask leaves its final 22 rows transparent. Keep the face crop
+    # unchanged and put the original game badge in that reserved bottom strip.
+    height = 20
+    width = round(star.width * height / star.height)
+    badge = star.resize((width, height), Image.Resampling.LANCZOS)
+    result = portrait.copy()
+    result.alpha_composite(badge, ((result.width - width) // 2, result.height - height - 2))
+    return result
+
+
 def compose_portrait(sprite, visual, mask):
     sprite = sprite.convert('RGBA')
     scale = float(visual['scale'])
@@ -63,9 +82,15 @@ def build(root=ROOT, only=None, workers=16):
     output = root / 'assets/portraits'
     cache = root / '.portrait-source'
     output.mkdir(parents=True, exist_ok=True)
+    (output / 'stars').mkdir(parents=True, exist_ok=True)
     cache.mkdir(parents=True, exist_ok=True)
     mask = Image.open(root / 'assets/main_icon/portrait-mask-native.png').convert('RGBA')
     assert mask.size == (114, 118)
+    by_code = {row['rangerCode']: row for row in rangers}
+    star_images = {}
+    for name in {star_asset_name(by_code[code]) for code in codes}:
+        with Image.open(root / 'assets/star_layer' / name) as image:
+            star_images[name] = image.convert('RGBA')
 
     def render(code):
         if not re.fullmatch(r'u\d+[a-z]*(?:-[a-z0-9_-]+)?', code, re.I):
@@ -75,6 +100,7 @@ def build(root=ROOT, only=None, workers=16):
         if not result.getbbox():
             raise ValueError('Empty portrait: ' + code)
         result.save(output / (code + '.png'))
+        add_star_layer(result, star_images[star_asset_name(by_code[code])]).save(output / 'stars' / (code + '.png'))
         return code
 
     errors = []

@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 import unittest
 from PIL import Image, ImageDraw
@@ -10,6 +11,29 @@ spec.loader.exec_module(portraits)
 
 
 class NativePortraitTests(unittest.TestCase):
+    def test_original_star_asset_mapping(self):
+        for grade in range(1, 10):
+            self.assertEqual(portraits.star_asset_name({'starGrade':grade,'evolution':'NORMAL'}),
+                             f'com_level01_star{grade:02}.png')
+        self.assertEqual(portraits.star_asset_name({'starGrade':8,'evolution':'HYPER'}), 'com_level04_star08.png')
+        for grade in [6, 7, 8]:
+            self.assertEqual(portraits.star_asset_name({'starGrade':grade,'evolution':'ULTRA'}),
+                             f'com_level02_star{grade:02}.png')
+        rows = json.loads((ROOT / 'res/v2/rangers.json').read_text())['rangers']
+        for name in {portraits.star_asset_name(row) for row in rows}:
+            with Image.open(ROOT / 'assets/star_layer' / name) as badge:
+                badge.load()
+                self.assertTrue(badge.getbbox(), name)
+
+    def test_star_uses_bottom_gap_without_changing_face_pixels(self):
+        portrait = Image.new('RGBA', (114, 118), (5, 10, 15, 128))
+        with Image.open(ROOT / 'assets/star_layer/com_level01_star09.png') as badge:
+            result = portraits.add_star_layer(portrait, badge.convert('RGBA'))
+        self.assertEqual(result.size, portrait.size)
+        self.assertEqual(result.crop((0, 0, 114, 96)).tobytes(), portrait.crop((0, 0, 114, 96)).tobytes())
+        self.assertNotEqual(result.crop((0, 96, 114, 116)).tobytes(), portrait.crop((0, 96, 114, 116)).tobytes())
+        self.assertEqual(result.crop((0, 116, 114, 118)).tobytes(), portrait.crop((0, 116, 114, 118)).tobytes())
+
     def test_actual_mask_decodes_without_truncated_image_tolerance(self):
         with Image.open(ROOT / 'assets/main_icon/portrait-mask-native.png') as mask:
             mask.load()

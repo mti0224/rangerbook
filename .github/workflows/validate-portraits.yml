@@ -6,6 +6,7 @@ on:
       - 'assets/js/site.js'
       - 'assets/js/pvp-top20-image-export.js'
       - 'assets/main_icon/portrait-mask-native.png'
+      - 'assets/star_layer/**'
       - 'scripts/build-fast-data.mjs'
       - 'scripts/build-ranger-portraits.py'
       - 'tests/ranger-portrait.cjs'

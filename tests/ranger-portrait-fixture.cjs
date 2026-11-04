@@ -33,7 +33,7 @@ document.getElementById('fallback').onclick=()=>set('u003u-bella','-thum-140.png
 document.getElementById('race').onclick=()=>{set('u99-susu');set('u88-dwight');set('u003u-bella')};
 new MutationObserver(()=>{
  const same=['list','detail','usage','slot'].map(id=>document.getElementById(id));
- document.getElementById('result').textContent=same.every(img=>img?.src.endsWith('/assets/portraits/u003u-bella.png')) &&
+ document.getElementById('result').textContent=same.every(img=>img?.src.endsWith('/assets/portraits/stars/u003u-bella.png')) &&
  same.every(img=>img.src===same[0].src) ? '四種尺寸的裁切像素一致' : '圖片正在載入，或已切換角色';
 }).observe(document.body,{subtree:true,attributes:true,attributeFilter:['src']});
 </script>
