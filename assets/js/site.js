@@ -29,13 +29,13 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
     try {
       const absolute = new URL(value, location.href).href;
       const path = stripLegacyPrefix(absolute).split('?')[0];
-      return path.match(/^(u\d+[a-z]?(?:-[a-z0-9_]+)?)\/\1-thum(?:-140)?\.png$/i)?.[1] || '';
+      return path.match(/^(u\d+[a-z]*(?:-[a-z0-9_-]+)?)\/\1-thum(?:-140)?\.png$/i)?.[1] || '';
     } catch { return ''; }
   }
 
   function localPortraitCode(value) {
     return String(value || '').startsWith(PORTRAIT_BASE)
-      ? String(value).slice(PORTRAIT_BASE.length).match(/^(u\d+[a-z]?(?:-[a-z0-9_]+)?)\.png$/i)?.[1] || '' : '';
+      ? String(value).slice(PORTRAIT_BASE.length).match(/^(u\d+[a-z]*(?:-[a-z0-9_-]+)?)\.png$/i)?.[1] || '' : '';
   }
 
   function stripLegacyPrefix(absoluteUrl) {

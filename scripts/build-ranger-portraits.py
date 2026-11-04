@@ -68,7 +68,7 @@ def build(root=ROOT, only=None, workers=16):
     assert mask.size == (114, 118)
 
     def render(code):
-        if not re.fullmatch(r'u\d+[a-z]?(?:-[a-z0-9_]+)?', code, re.I):
+        if not re.fullmatch(r'u\d+[a-z]*(?:-[a-z0-9_-]+)?', code, re.I):
             raise ValueError('Invalid Ranger code')
         sprite = original_sprite(code, cache)
         result = compose_portrait(sprite, units[code]['visual'], mask)

@@ -25,6 +25,6 @@ export function rangerCodeFromUrl(src) {
 // Portrait PNGs are composed during publication. Page display performs no
 // Canvas readback, cross-origin image loading, or asynchronous DOM replacement.
 export async function portraitUrl(code) {
-  if (!/^u\d+[a-z]?(?:-[a-z0-9_]+)?$/i.test(String(code))) return null;
+  if (!/^u\d+[a-z]*(?:-[a-z0-9_-]+)?$/i.test(String(code))) return null;
   return new URL('../portraits/' + encodeURIComponent(code) + '.png', import.meta.url).href;
 }
