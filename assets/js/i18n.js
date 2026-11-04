@@ -225,7 +225,7 @@
   async function loadUi(selected) {
     try {
       const [baseResult,pwaResult,overridesResult] = await Promise.allSettled([
-        json(root + "assets/locales/ui.json?v=20261018-team-overview2"),
+        json(root + "assets/locales/ui.json?v=20261104-team-stars1"),
         json(root + "assets/locales/pwa.json"),
         json(root + "assets/locales/sitewide-overrides.json?v=20261030-log-summary1")
       ]);
