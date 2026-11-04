@@ -114,12 +114,13 @@
               </span>
             </button>
           </td>
-          <td>${escapeHtml(formatNumber(row.playerCount))}</td>
+          <td><span class="pvp-usage-stat-label" aria-hidden="true">使用玩家數</span>${escapeHtml(formatNumber(row.playerCount))}</td>
           <td class="pvp-usage-cell">
+            <span class="pvp-usage-stat-label" aria-hidden="true">使用率</span>
             <div class="pvp-usage-number"><strong>${escapeHtml(formatNumber(usageRate))}%</strong><span>${escapeHtml(formatNumber(row.playerCount))} 人</span></div>
             <div class="pvp-usage-bar" aria-hidden="true"><span style="--usage-rate:${usageRate}%"></span></div>
           </td>
-          <td>${escapeHtml(formatNumber(row.appearanceCount))}</td>
+          <td><span class="pvp-usage-stat-label" aria-hidden="true">出場次數</span>${escapeHtml(formatNumber(row.appearanceCount))}</td>
         </tr>`;
     }).join("");
   }

@@ -84,6 +84,117 @@ html[data-theme="dark"] .pvp-usage-stable-table tbody tr:hover > td {
   width: auto;
 }
 
+/* Respond to the panel's available space, including desktop sidebar layouts. */
+.pvp-usage-panel {
+  container-type: inline-size;
+  min-width: 0;
+}
+
+.pvp-usage-stable-table {
+  min-width: 0;
+}
+
+.pvp-usage-stable-table .pvp-ranger-main,
+.pvp-usage-stable-table .pvp-ranger-trigger > span,
+.pvp-usage-stable-table .pvp-usage-cell {
+  min-width: 0;
+}
+
+.pvp-usage-stable-table :is(th, td, .pvp-ranger-name, .pvp-ranger-sub) {
+  overflow-wrap: anywhere;
+}
+
+.pvp-usage-stable-table th {
+  white-space: normal;
+}
+
+.pvp-usage-stable-table .pvp-usage-number {
+  flex-wrap: wrap;
+}
+
+.pvp-usage-stat-label {
+  display: none;
+}
+
+@container (max-width: 52rem) {
+  .pvp-usage-stable-table,
+  .pvp-usage-stable-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  /* Keep column headers available to assistive technology. */
+  .pvp-usage-stable-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .pvp-usage-stable-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .75rem .65rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pvp-usage-stable-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  body.gt-app .pvp-usage-stable-table tr > td {
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .pvp-usage-stable-table .pvp-rank-cell {
+    grid-area: 1 / 1;
+    align-self: center;
+    justify-self: start;
+    z-index: 1;
+  }
+
+  body.gt-app .pvp-usage-stable-table td:nth-child(2) {
+    grid-area: 1 / 1 / 2 / -1;
+    padding-inline-start: 2.9rem;
+  }
+
+  .pvp-usage-stable-table .pvp-ranger-main {
+    gap: .6rem;
+  }
+
+  .pvp-usage-stat-label {
+    display: block;
+    margin-bottom: .3rem;
+    color: var(--muted);
+    font-size: .78rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .pvp-usage-stable-table .pvp-usage-number {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .15rem;
+  }
+
+  .pvp-usage-stable-table .pvp-rank-delta {
+    display: block;
+    margin-left: 0;
+  }
+
+  .pvp-usage-stable-table .pvp-empty-row td {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+}
+
 .pvp-modal-ranger-copy .eyebrow {
   display: none;
 }
