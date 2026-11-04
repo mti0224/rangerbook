@@ -7,9 +7,11 @@
     element.rel = rel;
     element.href = new URL(name, root).href;
     if (type) element.type = type;
+    // The stage manifest is behind same-origin HTTP Basic Auth.
+    if (rel === 'manifest') element.crossOrigin = 'use-credentials';
     document.head.append(element);
   };
-  link('manifest', 'manifest.webmanifest', 'application/manifest+json');
+  link('manifest', 'manifest.json', 'application/manifest+json');
   link('apple-touch-icon', 'assets/pwa/stage-apple-touch-icon.png', 'image/png');
   link('stylesheet', 'assets/css/pwa.css');
   for (const [name, content] of [
