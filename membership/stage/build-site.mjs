@@ -39,6 +39,7 @@ for (const [source,destination] of [
   ['pwa.js','assets/js/pwa.js'],
   ['sw.js','sw.js'],
   ['manifest.webmanifest','manifest.webmanifest'],
+  ['manifest.webmanifest','manifest.json'],
   ['stage-icon.svg','assets/pwa/stage-icon.svg']
 ]) await cp(path.join(stage,source),path.join(output,destination));
 // Make separate PNG icons for Android/Chromium and iOS; no external packages.
