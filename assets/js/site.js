@@ -1,5 +1,6 @@
-// Keep original resource images visible while native portraits are prepared.
-window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null});
+// PNG exports share the pre-rendered portraits used by ordinary image tags.
+window.RangerbookPortraitReady = import(new URL('ranger-portrait.js?v=static-20261104', document.currentScript.src).href);
+window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unavailable', error));
 
 (() => {
   if (window.RB_PRIVATE_PAGE) return;
@@ -22,6 +23,20 @@ window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null}
   const LEGACY_RES_BASE = "https://rangers.lerico.net/res/";
   const PRIMARY_RES_BASE = "https://res.warmycat.com/";
   const OLD_PRIMARY_RES_BASE = "https://rangerbook.warmycat.com/res_from_emulator/";
+  const PORTRAIT_BASE = new URL('../portraits/', document.currentScript.src).href;
+
+  function portraitCode(value) {
+    try {
+      const absolute = new URL(value, location.href).href;
+      const path = stripLegacyPrefix(absolute).split('?')[0];
+      return path.match(/^(u\d+[a-z]?(?:-[a-z0-9_]+)?)\/\1-thum(?:-140)?\.png$/i)?.[1] || '';
+    } catch { return ''; }
+  }
+
+  function localPortraitCode(value) {
+    return String(value || '').startsWith(PORTRAIT_BASE)
+      ? String(value).slice(PORTRAIT_BASE.length).match(/^(u\d+[a-z]?(?:-[a-z0-9_]+)?)\.png$/i)?.[1] || '' : '';
+  }
 
   function stripLegacyPrefix(absoluteUrl) {
     if (absoluteUrl.startsWith(LEGACY_RES_BASE)) return absoluteUrl.slice(LEGACY_RES_BASE.length);
@@ -40,6 +55,8 @@ window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null}
       const absoluteUrl = new URL(value, window.location.href).href;
       const resourcePath = stripLegacyPrefix(absoluteUrl);
       if (!resourcePath) return value;
+      const code = portraitCode(absoluteUrl);
+      if (code) return PORTRAIT_BASE + encodeURIComponent(code) + '.png';
       return PRIMARY_RES_BASE + normalizeResourcePath(resourcePath);
     } catch {
       return value;
@@ -74,6 +91,7 @@ window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null}
     if (!(img instanceof HTMLImageElement)) return;
     if (img.dataset.resourceFallbackTried === "true") return;
     const currentSrc = img.getAttribute("src");
+    if (portraitCode(currentSrc) === img.dataset.portraitFallbackCode) return;
     const fallbackSrc = legacyResourceUrl(currentSrc || img.src);
     if (!fallbackSrc) return;
     const primarySrc = normalizeResourceUrl(currentSrc || img.src);
@@ -95,6 +113,8 @@ window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null}
           delete this.dataset.resourceUseRawSrc;
           return srcDescriptor.set.call(this, value);
         }
+        delete this.dataset.portraitFallbackCode;
+        delete this.dataset.resourceFallbackTried;
         const fallbackSrc = legacyResourceUrl(value);
         if (fallbackSrc) {
           this.dataset.resourceFallbackSrc = fallbackSrc;
@@ -112,6 +132,8 @@ window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null}
         delete this.dataset.resourceUseRawSrc;
         return nativeSetAttribute.call(this, name, value);
       }
+      delete this.dataset.portraitFallbackCode;
+      delete this.dataset.resourceFallbackTried;
       const fallbackSrc = legacyResourceUrl(String(value));
       if (fallbackSrc) {
         this.dataset.resourceFallbackSrc = fallbackSrc;
@@ -125,10 +147,20 @@ window.RangerbookPortraitReady = Promise.resolve({portraitUrl: async () => null}
   document.addEventListener("error", (event) => {
     const img = event.target;
     if (!(img instanceof HTMLImageElement)) return;
+    // A missing pre-rendered asset must never remove the page's original IMG.
+    // Try the original primary image first, then the existing legacy fallback.
+    const code = localPortraitCode(img.src);
+    if (code) {
+      img.dataset.portraitFallbackCode = code;
+      delete img.dataset.resourceFallbackTried;
+      img.dataset.resourceFallbackSrc = LEGACY_RES_BASE + code + '/' + code + '-thum.png';
+      setImageSrcRaw(img, PRIMARY_RES_BASE + code + '/' + code + '-thum.png');
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+      return;
+    }
     const fallbackSrc = img.dataset.resourceFallbackSrc;
     if (!fallbackSrc || img.dataset.resourceFallbackTried === "true") return;
     img.dataset.resourceFallbackTried = "true";
-    img.dataset.resourceUseRawSrc = "true";
     setImageSrcRaw(img, fallbackSrc);
     event.preventDefault();
     event.stopPropagation();

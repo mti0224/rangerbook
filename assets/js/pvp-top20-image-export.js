@@ -76,7 +76,9 @@
         const id = String(row.rangerId || row.unitCode || "");
         const renderer = await window.RangerbookPortraitReady;
         const portrait = await renderer?.portraitUrl(id);
-        return [id, await loadImage(portrait || RANGER_IMAGE(id))];
+        const image = portrait && await loadImage(portrait);
+        const original = `https://raw.githubusercontent.com/mti0224/rangerbook_res/main/${encodeURIComponent(id)}/${encodeURIComponent(id)}-thum.png`;
+        return [id, image || await loadImage(original)];
       })
     );
     const images = new Map(imageEntries);
