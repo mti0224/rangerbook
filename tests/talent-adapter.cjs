@@ -34,7 +34,7 @@ const category=(ref,lang)=>normalize(custom.get(ref.templateKey)[lang]);
     if(raw.activationChancePercent!==effect.activationChancePercent)differentChance++;
    });
   }
-  assert.equal(checked,288);assert.equal(conditions.size,12);assert.equal(effects.size,16);
+  assert.equal(checked,source.filter(row=>row.talents?.major).length);assert.equal(conditions.size,12);assert.equal(effects.size,16);
   assert.ok(differentChance>0,'Per-effect chance must not be replaced by the main activation chance');
   // Scoped detail bundles must adapt to the same contract as the full list.
   const detailWindow={fetch:window.fetch};

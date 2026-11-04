@@ -14,6 +14,15 @@ export async function buildFastData(root) {
   for(const locale of ['zh_TW','en','th','jp']) await write('locales/'+locale,official.map(row=>
     Object.fromEntries(Object.entries(row).filter(([key])=>['key','zh_TW','en',locale].includes(key) || /^UNIT:.*_nm$/.test(row.key)))));
   const byId=new Map(rangers.rangers.map(row=>[row.rangerCode,row]));
+  // Portraits use the same native sprite anchor and scale as the game and
+  // LRpvprank's poster. Keep this projection tied to each published V2 release.
+  await write('ranger-portraits',{schemaVersion:2,units:Object.fromEntries(rangers.rangers.map(row=>{
+    const visual=projectiles.units[row.rangerCode]?.visual;
+    if(!visual?.faceCenter || !Number.isFinite(visual.faceCenter.x) ||
+       !Number.isFinite(visual.faceCenter.y) || !(visual.scale>0))
+      throw new Error('Missing native portrait geometry: '+row.rangerCode);
+    return [row.rangerCode,{faceCenter:visual.faceCenter,sizeRatio:visual.scale}];
+  }))});
   const byAbility=new Map(abilities.abilities.map(row=>[row.abilityCode,row]));
   const byKey=new Map(official.map(row=>[row.key,row]));
   const nameKeys=new Set(rangers.rangers.map(row=>row.nameKey));
