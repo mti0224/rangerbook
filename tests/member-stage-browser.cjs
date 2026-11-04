@@ -6,6 +6,23 @@ const path=require('node:path');
 const assert=require('node:assert/strict');
 async function main(){
   const root=path.resolve(process.argv[2]);
+  const manifest=JSON.parse(await fs.readFile(path.join(root,'manifest.json'),'utf8'));
+  assert.equal(manifest.name,'Rangerbook TEST');
+  assert.equal(manifest.id,'/rangerbook-test-pwa');
+  assert.equal(manifest.display,'standalone');
+  assert.equal(manifest.start_url,'./');
+  assert.equal(manifest.scope,'./');
+  assert(manifest.icons.some(icon=>icon.src==='assets/pwa/stage-icon.svg'));
+  for(const [name,size] of [['stage-icon-192.png',192],['stage-icon-512.png',512],['stage-apple-touch-icon.png',180]]) {
+    const png=await fs.readFile(path.join(root,'assets/pwa',name));
+    assert.equal(png.readUInt32BE(16),size);
+    assert.equal(png.readUInt32BE(20),size);
+  }
+  assert(manifest.icons.some(icon=>icon.src==='assets/pwa/stage-icon-192.png'));
+  assert(manifest.icons.some(icon=>icon.src==='assets/pwa/stage-icon-512.png'));
+  const workerSource=await fs.readFile(path.join(root,'sw.js'),'utf8');
+  assert(!workerSource.includes('addEventListener(\'fetch\''),'Stage worker must not intercept authenticated network requests');
+  assert(!workerSource.includes('caches.open('),'Stage worker must not store private pages');
   const snippet=await fs.readFile(path.join(__dirname,'../membership/stage/viewer-headers.conf.in'),'utf8');
   const nginx=await fs.readFile(path.join(__dirname,'../membership/stage/nginx.conf.in'),'utf8');
   assert(nginx.includes('add_header X-Frame-Options DENY always;'));
@@ -66,7 +83,16 @@ async function main(){
       assert.match(await page.title(),/^\[TEST\]/);
       assert.equal(await page.evaluate(()=>window.RANGERBOOK_AUTH_API_BASE),'https://rangerbook-test.warmycat.com');
       assert.equal(await page.evaluate(()=>window.RANGERBOOK_STAGE_BASIC_AUTH),true);
-      assert.equal(await page.evaluate(async()=> (await navigator.serviceWorker.getRegistrations()).length),0);
+      const state=await page.evaluate(async()=>{
+        const registration=await navigator.serviceWorker.ready;
+        return {count:(await navigator.serviceWorker.getRegistrations()).length,scope:registration.scope,cacheKeys:await caches.keys()};
+      });
+      assert.equal(state.count,1,'Independent test worker is registered');
+      assert.equal(state.scope,origin+'/','Test worker is scoped to this origin');
+      assert.deepEqual(state.cacheKeys,[],'Test site does not store offline caches');
+      assert.equal(await page.locator('link[rel=manifest]').getAttribute('href'),origin+'/manifest.json');
+      assert.equal(await page.locator('link[rel=manifest]').getAttribute('crossorigin'),'use-credentials');
+      assert.equal(await page.locator('meta[name=apple-mobile-web-app-title]').getAttribute('content'),'Rangerbook TEST');
       assert.equal(await page.locator('meta[name=robots]').getAttribute('content'),'noindex,nofollow,noarchive');
     }
     assert.deepEqual(blocked,[]);
@@ -114,7 +140,7 @@ async function main(){
     await page.goto(`http://127.0.0.1:${foreign.address().port}/`);await refusal;
     refusal=page.waitForEvent('console',{predicate:msg=>/X-Frame-Options/.test(msg.text())});
     await page.goto(origin+'/__frame_guard');await refusal;
-    console.log(JSON.stringify({pages:4,production_auth_requests:0,analytics_requests:0,service_worker_registrations:0,same_origin_viewer_matrices:boundMatrices,team_modes:7,foreign_frame_blocked:true,other_pages_frame_blocked:true}));
+    console.log(JSON.stringify({pages:4,production_auth_requests:0,analytics_requests:0,service_worker_registrations:1,same_origin_viewer_matrices:boundMatrices,team_modes:7,foreign_frame_blocked:true,other_pages_frame_blocked:true}));
   }finally{if(browser)await browser.close();await new Promise(r=>server.close(r));await new Promise(r=>foreign.close(r));}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

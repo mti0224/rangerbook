@@ -2,6 +2,7 @@
 import {cp, mkdir, readFile, readdir, writeFile, access} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 import {packagePages} from '../../scripts/package-pages.mjs';
 
 const root=fileURLToPath(new URL('../../',import.meta.url));
@@ -31,8 +32,18 @@ async function visit(dir) {
 }
 await visit(output);
 await writeFile(path.join(output,'assets/js/stage-bootstrap.js'),`window.RANGERBOOK_STAGE_BASIC_AUTH=true;\nwindow.RANGERBOOK_AUTH_API_BASE=${JSON.stringify(origin)};\nwindow.gtag=function(){};\ndocument.addEventListener('DOMContentLoaded',()=>{document.title='[TEST] '+document.title;});\n`);
-for(const filename of ['pwa-head.js','pwa.js'])await writeFile(path.join(output,'assets/js',filename),'/* Acceptance environment: PWA installation disabled. */\n');
-await cp(path.join(root,'assets/pwa/disabled-worker.js'),path.join(output,'sw.js'));
+// Install a test-origin-specific PWA, without inheriting production's data cache.
+const stage = fileURLToPath(new URL('./',import.meta.url));
+for (const [source,destination] of [
+  ['pwa-head.js','assets/js/pwa-head.js'],
+  ['pwa.js','assets/js/pwa.js'],
+  ['sw.js','sw.js'],
+  ['manifest.webmanifest','manifest.webmanifest'],
+  ['manifest.webmanifest','manifest.json'],
+  ['stage-icon.svg','assets/pwa/stage-icon.svg']
+]) await cp(path.join(stage,source),path.join(output,destination));
+// Make separate PNG icons for Android/Chromium and iOS; no external packages.
+execFileSync('python3',[path.join(stage,'generate-icons.py'),path.join(output,'assets/pwa')],{stdio:'inherit'});
 await writeFile(path.join(output,'robots.txt'),'User-agent: *\nDisallow: /\n');
 await writeFile(path.join(output,'CNAME'),'rangerbook-test.warmycat.com\n');
-console.log(JSON.stringify({pages,scripts,origin,analytics:false,pwa_installation:false}));
+console.log(JSON.stringify({pages,scripts,origin,analytics:false,pwa_installation:true,pwa_offline_cache:false}));
