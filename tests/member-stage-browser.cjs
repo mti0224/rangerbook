@@ -6,7 +6,7 @@ const path=require('node:path');
 const assert=require('node:assert/strict');
 async function main(){
   const root=path.resolve(process.argv[2]);
-  const manifest=JSON.parse(await fs.readFile(path.join(root,'manifest.webmanifest'),'utf8'));
+  const manifest=JSON.parse(await fs.readFile(path.join(root,'manifest.json'),'utf8'));
   assert.equal(manifest.name,'Rangerbook TEST');
   assert.equal(manifest.id,'/rangerbook-test-pwa');
   assert.equal(manifest.display,'standalone');
@@ -90,7 +90,8 @@ async function main(){
       assert.equal(state.count,1,'Independent test worker is registered');
       assert.equal(state.scope,origin+'/','Test worker is scoped to this origin');
       assert.deepEqual(state.cacheKeys,[],'Test site does not store offline caches');
-      assert.equal(await page.locator('link[rel=manifest]').getAttribute('href'),origin+'/manifest.webmanifest');
+      assert.equal(await page.locator('link[rel=manifest]').getAttribute('href'),origin+'/manifest.json');
+      assert.equal(await page.locator('link[rel=manifest]').getAttribute('crossorigin'),'use-credentials');
       assert.equal(await page.locator('meta[name=apple-mobile-web-app-title]').getAttribute('content'),'Rangerbook TEST');
       assert.equal(await page.locator('meta[name=robots]').getAttribute('content'),'noindex,nofollow,noarchive');
     }
