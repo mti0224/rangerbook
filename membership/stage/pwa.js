@@ -6,7 +6,7 @@
   const standalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const iosBrowser = ios && /Safari\\//.test(navigator.userAgent) && !/FBAN|FBAV|Instagram|Line\\//i.test(navigator.userAgent);
+  const iosBrowser = ios && navigator.userAgent.includes('Safari/') && !/(FBAN|FBAV|Instagram|Line)/i.test(navigator.userAgent);
   let prompt, registration;
   const text = key => {
     const full = 'pwa.' + key;
