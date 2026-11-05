@@ -34,6 +34,8 @@
     let data;try{data=await response.json();}catch{throw Error('無法讀取伺服器回應。');}
     if(!response.ok){const detail=typeof data.detail==='string'?data.detail:'資料格式不正確，請檢查內容。';const messages={'member.loginRequired':'登入已過期，請重新登入後再儲存。','member.adminRequired':'需要管理員權限。','member.mfaRequired':'請先完成兩步驟驗證。','member.passwordRequired':'請先完成密碼更新。'};const error=Error(messages[detail]||detail);error.status=response.status;throw error;}return data;
   }
+  function syncCodeTheme(){const dark=document.documentElement.dataset.theme==='dark';const lightCSS=document.getElementById('wikiHighlightLight'),darkCSS=document.getElementById('wikiHighlightDark');if(lightCSS)lightCSS.media=dark?'not all':'all';if(darkCSS)darkCSS.media=dark?'all':'not all';}
+  syncCodeTheme();new MutationObserver(syncCodeTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   const date=value=>value?new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(value)):'';
   window.RangerbookWiki={base,root,node,rich,render,formula,api,date};
 })();
