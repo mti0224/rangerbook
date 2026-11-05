@@ -30,4 +30,7 @@ class StageAuthTransport:
 def create_app():
     from .launch import validate
     validate(os.environ)
-    return StageAuthTransport(importlib.import_module('asgi').app)
+    application = importlib.import_module('asgi').app
+    from membership.wiki.service import install_stage
+    install_stage(application, importlib.import_module('app'))
+    return StageAuthTransport(application)

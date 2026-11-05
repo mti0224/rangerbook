@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="../../assets/js/pwa-head.js"></script>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('rangerbook-theme')==='dark'?'dark':'light';}catch(_){}</script>
+<title>文章管理｜LINE Rangers Database</title>
+<link rel="icon" href="../../assets/main_icon/icon.png">
+<link rel="stylesheet" href="../../assets/css/style.css">
+<link rel="stylesheet" href="../../assets/css/game-tech.css">
+<link rel="stylesheet" href="../../assets/css/wiki.css?v=20261105-wiki1">
+<link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="../../assets/vendor/highlight/styles/github.min.css" media="(prefers-color-scheme: light)">
+<link rel="stylesheet" href="../../assets/vendor/highlight/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+</head><body class="gt-app"><div id="site-header"></div>
+<main class="wiki-page">
+<p id="wikiAdminLoading" class="wiki-message" role="status">正在確認管理員權限…</p><p id="wikiAdminAuth" class="wiki-message" hidden></p>
+<section id="wikiAdminIndex" hidden><div class="wiki-top"><div><span class="wiki-eyebrow">KNOWLEDGE BASE</span><h1>文章管理</h1><p class="wiki-muted">撰寫、預覽與發布遊戲機制解說。</p></div><div class="wiki-actions"><a class="wiki-button" href="../../admin/">管理員首頁</a><a class="wiki-button" href="../">閱讀文章</a><button id="wikiNewArticle" class="wiki-primary" type="button">＋ 新增文章</button></div></div><div id="wikiAdminList"></div></section>
+<section id="wikiAdminEditor" hidden><div class="wiki-editor-top"><div><a href="./">← 文章管理</a><p id="wikiSaveStatus" class="wiki-save-status" role="status" aria-live="polite"></p></div><div class="wiki-actions"><button id="wikiPreviewButton" type="button">預覽</button><button id="wikiSave" type="button" data-wiki-action>儲存草稿</button><button id="wikiPublish" class="wiki-primary" type="button" data-wiki-action>發布文章</button></div></div>
+<p id="wikiConflict" class="wiki-message" hidden>此文章有更新，自動儲存已暫停。請先複製未儲存內容，再重新載入。<button id="wikiCopyRecovery" type="button">複製未儲存內容</button><button type="button" onclick="location.reload()">重新載入</button></p>
+<div class="wiki-editor-grid"><div><div class="wiki-fields"><label class="wide">文章標題<input id="wikiEditTitle" maxlength="160" required></label><label>網址代稱（建立後固定）<input id="wikiEditSlug" readonly></label><label>分類<input id="wikiEditCategory" maxlength="60" placeholder="例如：傷害計算"></label><label class="wide">文章摘要<textarea id="wikiEditSummary" rows="2" maxlength="600"></textarea></label></div><div class="wiki-editor-surface"><div id="wikiEditor" data-i18n-ignore></div></div></div>
+<aside class="wiki-editor-side"><section class="wiki-side-card"><h2>新增區塊</h2><div class="wiki-block-picker"><button type="button" data-wiki-block="header">H₂ 標題</button><button type="button" data-wiki-block="subheader">H₃ 副標題</button><button type="button" data-wiki-block="paragraph">¶ 文字內文</button><button type="button" data-wiki-block="latex">∑ LaTeX</button><button type="button" data-wiki-block="code">&lt;/&gt; 程式碼</button><button type="button" data-wiki-block="image">▧ 圖片</button></div><p class="wiki-editor-help">選取文字可設定粗體、斜體、刪除線、底線、標記及連結。點選區塊後可使用下方按鈕移動、複製或刪除。</p><div class="wiki-block-controls"><button id="wikiMoveUp" type="button">↑ 上移</button><button id="wikiMoveDown" type="button">↓ 下移</button><button id="wikiDuplicate" type="button">複製區塊</button><button id="wikiDeleteBlock" type="button">刪除區塊</button></div></section><section class="wiki-side-card"><h2>發布狀態</h2><p id="wikiPublishedState" class="wiki-editor-help"></p><div class="wiki-actions"><button id="wikiHistory" type="button">修訂紀錄</button><button id="wikiUnpublish" class="wiki-danger" type="button" data-wiki-action>下架文章</button><a id="wikiViewPublished" target="_blank" rel="noopener noreferrer" hidden>查看公開版本 ↗</a></div><p class="wiki-editor-help">系統自動儲存草稿。按下「發布文章」後，讀者才會看到更新。</p></section></aside></div></section>
+<dialog id="wikiCreate" class="wiki-dialog"><div class="wiki-dialog-head"><h2>新增文章</h2><button type="button" onclick="this.closest('dialog').close()" aria-label="關閉">×</button></div><form id="wikiCreateForm"><label>文章標題<input id="wikiNewTitle" maxlength="160" required></label><label>網址代稱<input id="wikiNewSlug" pattern="[a-z0-9][a-z0-9-]{0,79}" maxlength="80" placeholder="例如：damage-calculation" required></label><p class="wiki-muted">限小寫英數字與連字號，建立後固定不變。</p><p id="wikiCreateError" role="alert"></p><button id="wikiCreateSubmit" type="submit" class="wiki-primary">建立草稿</button></form></dialog>
+<dialog id="wikiPreview" class="wiki-dialog"><div class="wiki-dialog-head"><h2 id="wikiPreviewHeading">文章預覽</h2><button type="button" onclick="this.closest('dialog').close()" aria-label="關閉">×</button></div><h1 id="wikiPreviewTitle"></h1><p id="wikiPreviewSummary" class="wiki-muted"></p><div id="wikiPreviewBody" class="wiki-content" data-i18n-ignore></div></dialog>
+<dialog id="wikiRevisions" class="wiki-dialog"><div class="wiki-dialog-head"><h2>修訂紀錄（最近 100 筆）</h2><button type="button" onclick="this.closest('dialog').close()" aria-label="關閉">×</button></div><p class="wiki-muted">還原會建立新的草稿，之後仍須手動發布。</p><div id="wikiRevisionList"></div></dialog>
+</main><script src="../../assets/js/site.js?v=20261105-wiki1"></script>
+<script src="../../assets/js/admin-auth.js"></script>
+<script src="../../assets/vendor/katex/katex.min.js"></script>
+<script src="../../assets/vendor/highlight/highlight.min.js"></script>
+<script src="../../assets/js/wiki-common.js?v=20261105-wiki1"></script>
+<script src="../../assets/vendor/editorjs/editorjs.umd.js"></script><script src="../../assets/js/wiki-editor.js?v=20261105-wiki1"></script>
+</body></html>

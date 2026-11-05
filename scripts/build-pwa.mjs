@@ -40,7 +40,7 @@ const dataVersion = hash(JSON.stringify(data));
 const metadata = JSON.stringify({schemaVersion:1,dataVersion,files:data})+'\n';
 await writeFile(path.join(root,'pwa-data.json'),metadata);
 const core = await record([...all.filter(x => x.endsWith('.html') ||
-  /^(?:assets\/(?:js|css|locales|pwa|main_icon|setting_icon)\/|v2\/)/.test(x) || x==='manifest.webmanifest' || x==='assets/data/ranger-evolution.json'), 'pwa-data.json'].filter(x=>!x.endsWith('.cjs')));
+  /^(?:assets\/(?:js|css|locales|pwa|main_icon|setting_icon)\/|v2\/)/.test(x) || x==='manifest.webmanifest' || x==='assets/data/ranger-evolution.json'), 'pwa-data.json'].filter(x=>!x.endsWith('.cjs') && !x.startsWith('wiki/manage/')));
 const source = await readFile(path.join(root,'assets/pwa/service-worker.js'),'utf8');
 // Worker policy changes also produce a new application version.
 const appVersion = hash(JSON.stringify(Object.fromEntries(Object.entries(core).filter(([x])=>x!=='pwa-data.json')))+source);

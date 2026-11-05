@@ -355,6 +355,7 @@ window.RangerbookPortraitReady.catch(error => console.warn('Portrait export unav
           <a href="${rootPrefix}adventEnemy/" data-i18n="nav.advent">降臨關卡</a>
           <a href="${rootPrefix}labyrinth/" data-i18n="nav.labyrinth">迷宮</a>
           <a href="${rootPrefix}ability/" data-i18n="nav.ability">能力</a>
+          <a href="${rootPrefix}wiki/">遊戲機制</a>
           <a href="${rootPrefix}about/" data-i18n="nav.about">關於本站</a>
           <a href="${rootPrefix}sponsor/" data-i18n="nav.sponsor">贊助</a>
         </nav>
