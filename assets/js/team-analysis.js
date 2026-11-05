@@ -3,6 +3,7 @@
   'use strict';
   const host = document.getElementById('pvpPlayerTeamAnalysis');
   if (!host) return;
+  const starAssetRoot = new URL('../star_layer/', document.currentScript.src);
   const escape = value => String(value ?? '').replace(/[&<>"']/g,c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const t = id => window.RangerbookI18n?.t('analysis.'+id) || id;
   const percent = value => `${Number(value.toFixed(2))}%`;
@@ -93,6 +94,16 @@
     }
     return t('category.'+key)==='analysis.category.'+key?t('overview.unknown'):t('category.'+key);
   };
+  function distributionLabel(group,item,label){
+    if(group!=='star'&&group!=='gearStar')return escape(label);
+    const key=item.key;
+    const grade=key==='ultra8'||key==='hyper8'?8:Number(key);
+    if(!Number.isInteger(grade)||grade<1||grade>9)return escape(label);
+    // Match the native portrait assets: ULTRA = ultimate, HYPER = hyper.
+    const level=group==='star'&&key==='hyper8'?'04':group==='star'&&key==='ultra8'?'02':'01';
+    const src=new URL(`com_level${level}_star${String(grade).padStart(2,'0')}.png`,starAssetRoot).href;
+    return '<img class="ta-dist-stars" src="'+escape(src)+'" alt="'+escape(label)+'" title="'+escape(label)+'">';
+  }
   function distributionBar(name,items){
     const total=items.reduce((sum,x)=>sum+x.count,0);
     const rows=items.map(item=>{
@@ -101,7 +112,7 @@
       const percentage=formatValue(Number(pct.toFixed(1)),'%');
       const value=item.count+' / '+total+' · '+percentage;
       return '<div class="ta-dist-row">'+
-        '<div class="ta-dist-row-heading"><span class="ta-dist-label">'+escape(label)+'</span>'+
+        '<div class="ta-dist-row-heading"><span class="ta-dist-label">'+distributionLabel(name,item,label)+'</span>'+
         '<span class="ta-dist-value">'+escape(value)+'</span></div>'+
         '<div class="ta-dist-track" role="progressbar" aria-label="'+escape(t('overview.'+name)+' — '+label)+'"'+
         ' aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Number(pct.toFixed(1))+'">'+

@@ -34,6 +34,7 @@ jobs:
           node tests/v2-site-adapter.cjs
           node tests/team-analysis-model.cjs
           node tests/team-analysis-overview-model.cjs
+          node --test tests/team-analysis-stars.cjs
           node tests/personal-viewer-layout.cjs
           node tests/i18n-contract.cjs
       - name: Install browser test runtime
