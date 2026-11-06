@@ -6,7 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import Response
 from membership.wiki.service import Wiki
-ROOT=Path(os.environ.get('WIKI_QA_ROOT', str(Path(__file__).resolve().parents[1])))
+ROOT=Path(os.environ.get('WIKI_QA_ROOT', str(Path(__file__).resolve().parents[1]))).resolve()
 app=FastAPI()
 def authorize(request:Request):
     if request.cookies.get('fixture')!='admin':raise HTTPException(403)

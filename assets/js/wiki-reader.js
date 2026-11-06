@@ -11,5 +11,5 @@
     }
     message.hidden=true;
   }catch(error){message.textContent=error.status===404?'文章尚未發布或已下架。':`載入失敗：${error.message}`;const retry=W.node('button','','重新載入');retry.type='button';retry.onclick=()=>location.reload();message.append(retry);}
-  try{await RangerbookAuth.ready();if(RangerbookAuth.isAdmin())$('wikiManageLink').hidden=false;}catch{/* Public reading does not require a membership session. */}
+  try{await RangerbookAuth.ready();if(RangerbookAuth.isAdmin()){$('wikiManageLink').hidden=false;$('wikiPageActions').hidden=false;}}catch{/* Public reading does not require a membership session. */}
 })();
