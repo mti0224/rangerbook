@@ -1,0 +1,23 @@
+[Unit]
+Description=Rangerbook test-only PWA access gateway
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+ExecStart=/usr/bin/python3 /opt/rangerbook-stage-access/gate.py
+WorkingDirectory=/opt/rangerbook-stage-access
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateDevices=true
+RestrictAddressFamilies=AF_INET AF_UNIX
+LimitCORE=0
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
