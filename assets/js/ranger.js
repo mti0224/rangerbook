@@ -794,7 +794,7 @@
     ].map((key) => stat(key === "Ranger再生產時間" ? "再生產時間" : key, ranger[key])).join("");
 
     return `
-      <div class="ranger-detail-head">
+      <div class="ranger-detail-head" data-ranger-unit-id="${html(id)}">
         <div class="ranger-detail-image-wrap">
           <img class="ranger-detail-image" src="${RANGER_IMAGE(id)}" alt="" onerror="this.closest('.ranger-detail-image-wrap').classList.add('missing-icon'); this.remove();">
         </div>
