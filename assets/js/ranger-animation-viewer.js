@@ -249,10 +249,19 @@
   }
 
   function inferUnitIdFromModal(modalContent) {
+    // Identity belongs to the character data, not its replaceable portrait URL.
+    const unitId = modalContent.querySelector(".ranger-detail-head")?.dataset.rangerUnitId;
+    if (unitId) return unitId;
     const image = modalContent.querySelector(".ranger-detail-image");
-    const src = image?.getAttribute("src") || image?.src || "";
-    const match = src.match(/res(?:_from_emulator)?\/([^/]+)\//) || src.match(/\/([^/]+)\/[^/]+-thum/i);
-    return match ? decodeURIComponent(match[1]) : "";
+    // Older detail/ranking pages do not yet publish the explicit ID.
+    const sources = [image?.getAttribute("src"), image?.dataset.resourceFallbackSrc];
+    for (const src of sources) {
+      const match = String(src || "").match(/\/portraits\/(?:stars\/)?([^/?#]+)\.png(?:[?#]|$)/i)
+        || String(src || "").match(/res(?:_from_emulator)?\/([^/]+)\//)
+        || String(src || "").match(/\/([^/]+)\/[^/]+-thum/i);
+      if (match) return decodeURIComponent(match[1]);
+    }
+    return "";
   }
 
   function inferAttackRangeFromModal(modalContent) {
