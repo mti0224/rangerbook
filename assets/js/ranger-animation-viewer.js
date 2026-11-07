@@ -1687,11 +1687,18 @@ function publishPlaybackPlan(section, track) {
     window.setTimeout(patchModal, 0);
   });
 
-  window.addEventListener("load", () => {
+  function initializeAnimationViewer() {
     const modalContent = document.getElementById("rangerModalContent");
     if (modalContent) observer.observe(modalContent, { childList: true });
     patchModal();
-  });
+  }
+
+  // The viewer is loaded dynamically on detail pages and may arrive after load.
+  if (document.readyState === "complete") {
+    initializeAnimationViewer();
+  } else {
+    window.addEventListener("load", initializeAnimationViewer, { once: true });
+  }
 
   document.addEventListener("click", (event) => {
     if (event.target?.id === "rangerModalCloseBtn" || event.target?.id === "rangerModal") stopPlayback();
