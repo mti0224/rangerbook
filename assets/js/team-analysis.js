@@ -192,7 +192,7 @@
       <div class="ta-member-grid">${row.entries.map(entry => {
         const name = window.RangerbookV2.render(entry.ranger.nameKey,window.RangerbookV2.locale);
         return `<button type="button" class="pvp-player-unit-button ta-member ${entry.ok ? 'ta-pass' : 'ta-fail'}" data-analysis-unit="${entry.index}" title="${escape(name)}" aria-label="${escape(name+': '+t('reason.'+entry.reason))}">
-          <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${image(entry.unit.unitCode)}" alt="" loading="lazy" onerror="this.remove()"></span>
+          <span class="pvp-player-unit-image-wrap ranger-icon-portrait"><img class="pvp-player-unit-image" src="${image(entry.unit.unitCode)}" alt="" loading="lazy" onerror="this.remove()">${window.RangerbookUnitIcons.element(entry.ranger)}</span>
           <span class="pvp-player-unit-name">${escape(name)}</span><small>${escape(t('reason.'+entry.reason))}</small></button>`;
       }).join('')}</div>${row.entries.length ? '' : `<p class="ta-note">${escape(t('noEligible'))}</p>`}`;
     host.querySelectorAll('[data-category]').forEach(button => button.setAttribute('aria-pressed',String(button.dataset.category === category)));

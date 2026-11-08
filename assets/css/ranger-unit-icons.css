@@ -1,0 +1,51 @@
+/* Badges deliberately straddle the portrait's lower-left corner. */
+.ranger-thumb-wrap.ranger-icon-portrait,
+.ranger-detail-image-wrap.ranger-icon-portrait,
+.pvp-player-unit-image-wrap.ranger-icon-portrait,
+.ranger-icon-portrait {
+  position: relative;
+  overflow: visible;
+}
+.ranger-icon-portrait > :is(.ranger-thumb, .ranger-detail-image) { border-radius: inherit; }
+.ranger-icon-portrait > .ranger-element-icon {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+  width: var(--element-icon-size, 1.5rem);
+  height: var(--element-icon-size, 1.5rem);
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  object-fit: contain;
+  z-index: 3;
+  pointer-events: none;
+}
+.ranger-type-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  object-fit: contain;
+  vertical-align: -0.2em;
+  margin-right: 0.3em;
+}
+.ranger-detail-image-wrap { --element-icon-size: 2rem; }
+.pvp-ranger-portrait { display: block; flex: 0 0 3.25rem; width: 3.25rem; height: 3.25rem; }
+.pvp-modal-ranger-portrait { display: block; width: max-content; --element-icon-size: 1.75rem; }
+.pvp-player-detail-portrait { display: block; width: 5.5rem; height: 5.5rem; }
+.pvp-ranger-main .ranger-mini-stats, .pvp-modal-ranger-copy .ranger-mini-stats {
+  display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4rem;
+}
+.ranger-mini-stats > span {
+  display: inline-block; border-radius: 5px; background: var(--soft, #eef2ff);
+  color: var(--text, #3730a3); padding: 0.2rem 0.5rem; font-size: 0.76rem; font-weight: 750;
+}
+.ranger-mini-stats > span > span { padding: 0; background: none; color: inherit; font: inherit; }
+.pvp-ranger-main .ranger-mini-stats { white-space: normal; }
+
+.pvp-player-unit-detail-head > .pvp-player-detail-portrait { margin: 0; }
+.ranger-mini-stats { display: flex; flex-wrap: wrap; gap: 0.35rem; }

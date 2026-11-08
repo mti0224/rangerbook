@@ -43,6 +43,7 @@
   let gearNameByCode = {};
   let rangerNameByCode = {};
   let rangerStarByCode = {};
+  let rangerElementByCode = {};
   let gearStarByCode = {};
   let abilityMap = {};
   let effectMap = {};
@@ -310,7 +311,7 @@
     target.innerHTML = `
       <div class="pvp-player-unit-detail-card">
         <div class="pvp-player-unit-detail-head">
-          <img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
+          <span class="pvp-player-detail-portrait ranger-icon-portrait"><img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerElementByCode[code] || unit.unitElement)}</span>
           <div><strong>${escapeHtml(rangerName(code))}</strong><span>等級：Lv. ${escapeHtml(unitLevel(unit))}</span></div>
         </div>
         <div class="pvp-player-extra-list">
@@ -338,7 +339,7 @@
       const code = String(unit.unitCode || "");
       const rangerStar = rangerStarLayer(rangerStarByCode[code]);
       return `<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
-        <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${unitTalentCorner(unit)}${teamStarImage(rangerStar, "pvp-player-unit-star")}</span>
+        <span class="pvp-player-unit-image-wrap ranger-icon-portrait"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerElementByCode[code] || unit.unitElement)}${unitTalentCorner(unit)}${teamStarImage(rangerStar, "pvp-player-unit-star")}</span>
         <span class="pvp-player-unit-equipment-row">${teamEquipmentSlot(unit, "WEAPON")}${teamEquipmentSlot(unit, "ARMOR")}${teamEquipmentSlot(unit, "ACC")}</span>
         <span class="pvp-player-unit-name">${escapeHtml(rangerName(code))}</span>
       </button>`;
@@ -414,6 +415,8 @@
       rangerNameByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
         .map((row) => [String(row?.id || row?.ranger_id || ""), String(row?.name || row?.["Ranger名稱"] || row?.id || row?.ranger_id || "")])
         .filter(([code]) => code));
+      rangerElementByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
+        .map(row => [String(row?.id || row?.ranger_id || ""), row?.__v2?.elementType || row?.elementType || row?.["屬性"] || row?.element]));
       rangerStarByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
         .map((row) => [String(row?.id || row?.ranger_id || ""), String(row?.star || row?.["Ranger星數"] || "")])
         .filter(([code]) => code));

@@ -59,6 +59,7 @@
   let gearNameByCode = {};
   let rangerNameByCode = {};
   let rangerStarByCode = {};
+  let rangerElementByCode = {};
   let gearStarByCode = {};
   let abilityMap = {};
   let effectMap = {};
@@ -131,6 +132,8 @@
           .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger名稱"] || row?.ranger_id || "")])
           .filter(([code]) => code)
       );
+      rangerElementByCode = Object.fromEntries((Array.isArray(rangerRows) ? rangerRows : [])
+        .map(row => [String(row?.id || row?.ranger_id || ""), row?.__v2?.elementType || row?.elementType || row?.["屬性"] || row?.element]));
       rangerStarByCode = Object.fromEntries(
         (Array.isArray(rangerRows) ? rangerRows : [])
           .map((row) => [String(row?.ranger_id || ""), String(row?.["Ranger星數"] || "")])
@@ -274,7 +277,7 @@
     unitDetail.innerHTML = `
       <div class="pvp-player-unit-detail-card">
         <div class="pvp-player-unit-detail-head">
-          <img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
+          <span class="pvp-player-detail-portrait ranger-icon-portrait"><img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerElementByCode[code] || unit.unitElement)}</span>
           <div>
             <strong>${escapeHtml(rangerName(code))}</strong>
             <span>${escapeHtml(personalMode ? pf("level",[unitLevel(unit)],"等級：Lv. %N1") : "等級：Lv. " + unitLevel(unit))}</span>
@@ -327,8 +330,8 @@
         ? `<h4 class="pvp-personal-side-heading">${escapeHtml(pf("side",[index < aCount ? "A" : "B"], "%N1 隊"))}</h4>`
         : "";
       return `${sideHeading}<button class="pvp-player-unit-button" type="button" data-unit-index="${index}" title="${escapeHtml(rangerName(code))}">
-        <span class="pvp-player-unit-image-wrap">
-          <img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
+        <span class="pvp-player-unit-image-wrap ranger-icon-portrait">
+          <img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerElementByCode[code] || unit.unitElement)}
           ${unitTalentCorner(unit)}
           ${teamStarImage(rangerStar, "pvp-player-unit-star")}
         </span>

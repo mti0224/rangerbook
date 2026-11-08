@@ -160,7 +160,7 @@
   }
 
   function attackValue(ranger) {
-    return Math.max(num(ranger?.["物理攻擊力"]), num(ranger?.["魔法攻擊力"]));
+    return num(ranger?.["物理攻擊力"]) + num(ranger?.["魔法攻擊力"]);
   }
 
   function parseDate(value) {
@@ -550,18 +550,14 @@
     const pageRows = state.filtered.slice((state.page - 1) * state.pageSize, state.page * state.pageSize);
     els.list.innerHTML = pageRows.map(({ ranger }) => {
       const id = getId(ranger);
-      const tags = [ranger["Ranger星數"], ranger["類型"], ranger["屬性"]]
-        .filter(Boolean)
-        .map(coloredTag)
-        .join("");
       return `
         <button class="ranger-card${state.selectedId === id ? " active" : ""}" type="button" data-ranger-id="${html(id)}">
-          <div class="ranger-thumb-wrap">
+          <div class="ranger-thumb-wrap ranger-icon-portrait">
             <img class="ranger-thumb" src="${RANGER_IMAGE(id)}" alt="" loading="lazy" onerror="this.closest('.ranger-thumb-wrap').classList.add('missing-icon'); this.remove();">
+            ${window.RangerbookUnitIcons.element(ranger)}
           </div>
           <div class="ranger-card-main">
-            <div class="ranger-title-row"><h2>${html(getName(ranger))}</h2><span class="tag">${html(ranger["屬性"] || "-")}</span></div>
-            <div class="ranger-tags">${tags}</div>
+            <div class="ranger-title-row"><h2>${window.RangerbookUnitIcons.type(ranger)}${html(getName(ranger))}</h2></div>
             <div class="ranger-mini-stats">
               <span><span data-i18n="stats.attack">攻擊力</span> ${fmt(attackValue(ranger))}</span>
               <span><span data-i18n="stats.hp">體力</span> ${fmt(ranger["體力"])}</span>
@@ -782,11 +778,6 @@
 
   function renderDetail(ranger, animationMeta) {
     const id = getId(ranger);
-    const detailTags = [
-      ranger["Ranger星數"], ranger["類型"], ranger["屬性"],
-      isYes(ranger["nft角色"]) ? "NFT" : "",
-      isYes(ranger["降臨關卡角色"]) ? "降臨" : ""
-    ].filter(Boolean).map((value) => `<span>${html(value)}</span>`).join("");
     const stats = [
       "體力", "物理攻擊力", "魔法攻擊力", "物理防禦力", "魔法防禦力", "生產礦物費用",
       "Ranger再生產時間", "攻擊範圍", "濺射範圍", "移動速度", "攻擊速度", "技能抗性",
@@ -795,12 +786,13 @@
 
     return `
       <div class="ranger-detail-head" data-ranger-unit-id="${html(id)}">
-        <div class="ranger-detail-image-wrap">
+        <div class="ranger-detail-image-wrap ranger-icon-portrait">
           <img class="ranger-detail-image" src="${RANGER_IMAGE(id)}" alt="" onerror="this.closest('.ranger-detail-image-wrap').classList.add('missing-icon'); this.remove();">
+          ${window.RangerbookUnitIcons.element(ranger)}
         </div>
         <div>
-          <h2 id="rangerModalTitle">${html(getName(ranger))}</h2>
-          <div class="ranger-tags detail-tags">${detailTags}</div>
+          <h2 id="rangerModalTitle">${window.RangerbookUnitIcons.type(ranger)}${html(getName(ranger))}</h2>
+          ${window.RangerbookUnitIcons.stats(attackValue(ranger), num(ranger["體力"]), num(ranger["生產礦物費用"]), true)}
           <p class="ranger-date"><span data-i18n="detail.releaseDate">登場時間：</span>${html(ranger["登場時間"] || "-")}</p>
           ${description(window.RangerbookI18n?.unitDescription(id, ranger["角色敘述"]) || ranger["角色敘述"], "ranger-description")}
         </div>
