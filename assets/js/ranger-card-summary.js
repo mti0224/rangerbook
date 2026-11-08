@@ -26,7 +26,7 @@
   function getAttackValue(ranger) {
     const physical = toNumber(ranger["物理攻擊力"]);
     const magical = toNumber(ranger["魔法攻擊力"]);
-    return Math.max(physical, magical);
+    return physical + magical;
   }
 
   async function loadRangerMap() {

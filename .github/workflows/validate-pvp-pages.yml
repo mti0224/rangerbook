@@ -8,6 +8,11 @@ on:
       - "pvp/usage/**"
       - "guildwar/**"
       - "assets/js/pvp-*.js"
+      - "assets/js/ranger-unit-icons.js"
+      - "assets/css/ranger-unit-icons.css"
+      - "assets/element/**"
+      - "assets/type/**"
+      - "tests/ranger-unit-icons.cjs"
       - "assets/js/player-equipment-effects.js"
       - "assets/js/team-analysis*.js"
       - "assets/css/team-analysis.css"
@@ -25,7 +30,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -53,6 +58,7 @@ jobs:
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
           npx playwright install --with-deps chromium
+          node tests/ranger-unit-icons.cjs
           node tests/player-equipment-values.cjs
           node tests/team-analysis-browser.cjs
           QA_TOUCH=1 QA_LOCALE=en node tests/team-analysis-browser.cjs
@@ -66,3 +72,10 @@ jobs:
           grep -q 'assets/css/pvp-data.css' pvp/usage/index.html
           grep -q 'assets/css/pvp-data.css' guildwar/ranking/index.html
           grep -q 'assets/css/pvp-data.css' guildwar/usage/index.html
+      - name: Save unit icon screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ranger-unit-icons
+          path: artifacts/unit-icons/
+          retention-days: 7

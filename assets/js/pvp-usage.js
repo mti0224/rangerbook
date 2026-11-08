@@ -37,6 +37,12 @@
   let rows = [];
   let gearNameByCode = {};
   let abilityMap = {};
+  let rangerByCode = {};
+  let rangerCatalogPromise;
+  function combatStats(row) {
+    const stats = rangerByCode[row.rangerId]?.stats;
+    return window.RangerbookUnitIcons.stats(stats ? Number(stats.attack?.physical || 0) + Number(stats.attack?.magical || 0) : undefined, stats?.hp, stats?.mineralCost);
+  }
   const modalState = {
     rangerId: "",
     gearPages: { WEAPON: 0, ARMOR: 0, ACC: 0 },
@@ -107,10 +113,10 @@
           <td class="pvp-rank-cell"><span class="pvp-rank-medal">${rank}</span></td>
           <td>
             <button class="pvp-ranger-main pvp-ranger-trigger" type="button" data-ranger-id="${escapeHtml(row.rangerId)}" aria-label="${escapeHtml(window.RangerbookI18n.format("site.pvp.viewBuild",[row.name || row.rangerId],`查看 ${row.name || row.rangerId} 的配裝、覺醒能力與才能解放狀態`))}">
-              <img class="pvp-ranger-thumb" src="${RANGER_IMAGE(row.rangerId)}" alt="" loading="lazy" onerror="this.remove();">
+              <span class="pvp-ranger-portrait ranger-icon-portrait"><img class="pvp-ranger-thumb" src="${RANGER_IMAGE(row.rangerId)}" alt="" loading="lazy" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerByCode[row.rangerId] || row)}</span>
               <span>
-                <span class="pvp-ranger-name">${escapeHtml(row.name || row.rangerId)}</span>
-                <span class="pvp-ranger-sub">${escapeHtml([row.star, row.type, row.element].filter(Boolean).map(v=>window.RangerbookI18n?.uiText(String(v))||v).join(" · "))}</span>
+                <span class="pvp-ranger-name">${window.RangerbookUnitIcons.type(rangerByCode[row.rangerId] || row)}${escapeHtml(row.name || row.rangerId)}</span>
+                ${combatStats(row)}
               </span>
             </button>
           </td>
@@ -287,7 +293,6 @@
     if (!elements.modal || !elements.modalContent || !row) return;
     modalState.rangerId = String(row.rangerId || "");
     modalState.gearPages = { WEAPON: 0, ARMOR: 0, ACC: 0 };
-    const meta = [row.star, row.type, row.element].filter(Boolean).map(v=>window.RangerbookI18n?.uiText(String(v))||v).join(" · ");
     const awakening = Array.isArray(row.awakeningUsage)
       ? usageOptionList(row.awakeningUsage, "ability")
       : `<div class="pvp-modal-empty">覺醒能力統計尚未產生，需等待下一次完整 PvP 資料更新。</div>`;
@@ -297,11 +302,11 @@
 
     elements.modalContent.innerHTML = `
       <header class="pvp-modal-ranger-header">
-        <img class="pvp-modal-ranger-image" src="${RANGER_IMAGE(row.rangerId)}" alt="" onerror="this.remove();">
+        <span class="pvp-modal-ranger-portrait ranger-icon-portrait"><img class="pvp-modal-ranger-image" src="${RANGER_IMAGE(row.rangerId)}" alt="" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerByCode[row.rangerId] || row)}</span>
         <div class="pvp-modal-ranger-copy">
           <p class="eyebrow">PvP 角色分析</p>
-          <h2 id="pvpUsageModalTitle">${escapeHtml(row.name || row.rangerId)}</h2>
-          <p>${escapeHtml(meta)}</p>
+          <h2 id="pvpUsageModalTitle">${window.RangerbookUnitIcons.type(rangerByCode[row.rangerId] || row)}${escapeHtml(row.name || row.rangerId)}</h2>
+          ${combatStats(row)}
           <div class="pvp-modal-summary">
             <span><strong>${escapeHtml(formatNumber(row.usageRate))}%</strong> 使用率</span>
             <span><strong>${escapeHtml(formatNumber(row.playerCount))}</strong> 名玩家</span>
@@ -358,13 +363,15 @@
   async function load() {
     setStatus("角色使用率資料載入中…");
     try {
-      const [response, idDict, abilities] = await Promise.all([
+      const [response, idDict, abilities, rangerCatalog] = await Promise.all([
         fetch(`${DATA_URL}`),
         optionalJson(ID_DICT_URL),
         optionalJson(ABILITY_DATA_URL),
+        rangerCatalogPromise ||= window.RangerbookV2.data("fast/ranger-list").catch(error => { rangerCatalogPromise = null; console.warn("Ranger combat stats unavailable", error); return {}; }),
       ]);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       dataSet = await response.json();
+      rangerByCode = Object.fromEntries((rangerCatalog.rangers || []).map(row => [row.rangerCode, row]));
       gearNameByCode = Object.fromEntries(
         Object.entries(idDict || {}).map(([name, code]) => [String(code), String(name)])
       );

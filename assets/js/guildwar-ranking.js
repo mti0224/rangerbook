@@ -41,6 +41,7 @@
   let guilds = [];
   let rangerNames = {};
   let rangerStars = {};
+  let rangerElements = {};
   let gearNames = {};
   let gearStars = {};
   let abilityMap = {};
@@ -320,7 +321,7 @@
     target.innerHTML = `
       <div class="pvp-player-unit-detail-card">
         <div class="pvp-player-unit-detail-head">
-          <img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">
+          <span class="pvp-player-detail-portrait ranger-icon-portrait"><img src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerElements[code] || unit.unitElement)}</span>
           <div><strong>${esc(rangerName(code))}</strong><span>等級：Lv. ${esc(unitLevel(unit))}</span></div>
         </div>
         <div class="pvp-player-extra-list">
@@ -385,7 +386,7 @@
             const code = String(unit.unitCode || "");
             const rangerStar = rangerStarLayer(rangerStars[code]);
             return `<button class="pvp-player-unit-button" type="button" data-guildwar-unit-index="${unitIndex}" title="${esc(rangerName(code))}">
-              <span class="pvp-player-unit-image-wrap"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${unitTalentIcon(unit)}${teamStarImage(rangerStar, "pvp-player-unit-star")}</span>
+              <span class="pvp-player-unit-image-wrap ranger-icon-portrait"><img class="pvp-player-unit-image" src="${RANGER_IMAGE(code)}" alt="" decoding="async" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerElements[code] || unit.unitElement)}${unitTalentIcon(unit)}${teamStarImage(rangerStar, "pvp-player-unit-star")}</span>
               <span class="pvp-player-unit-equipment-row">${teamEquipmentSlot(unit, "WEAPON")}${teamEquipmentSlot(unit, "ARMOR")}${teamEquipmentSlot(unit, "ACC")}</span>
               <span class="pvp-player-unit-name">${esc(rangerName(code))}</span>
             </button>`;
@@ -471,10 +472,12 @@
       if (ADMIN_MODE) {
         rangerNames = {};
         rangerStars = {};
+        rangerElements = {};
         (Array.isArray(results[1]) ? results[1] : []).forEach((row) => {
           const code = String(row.id || row.ranger_id || "");
           if (code) {
             rangerNames[code] = String(row.name || row["Ranger名稱"] || code);
+            rangerElements[code] = row.__v2?.elementType || row.elementType || row["屬性"] || row.element;
             rangerStars[code] = String(row.star || row["Ranger星數"] || "");
           }
         });
