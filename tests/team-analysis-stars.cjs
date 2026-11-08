@@ -21,6 +21,8 @@ for(const prefix of ['/','/rangerbook/']) test('star distribution renders native
       abilities:{abilities:catalogs.abilities},'equipment-effects':{effects:catalogs.effects}
     })[key]},RangerbookTeamAnalysisModel:require('../assets/js/team-analysis-model.js'),
     RangerbookTeamOverviewModel:require('../assets/js/team-analysis-overview-model.js')};
+  const iconDocument={currentScript:{src:"https://example.test"+prefix+"assets/js/ranger-unit-icons.js"}};
+  vm.runInNewContext(fs.readFileSync(path.join(root,"assets/js/ranger-unit-icons.js"),"utf8"),{window,URL,document:iconDocument});
   vm.runInNewContext(source,{window,URL,requestAnimationFrame(){},
     console:{error:(...args)=>errors.push(args)},document:{getElementById:()=>host,
       currentScript:{src:'https://example.test'+prefix+'assets/js/team-analysis.js?v=stars1'}}});

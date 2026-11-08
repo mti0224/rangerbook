@@ -29,9 +29,11 @@ const expectNumber=v=>Number(v).toLocaleString('zh-Hant',{maximumFractionDigits:
    return route.abort();
   });
   const page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
-  async function go(url){await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>!!window.RangerbookI18n);await page.evaluate(()=>window.RangerbookI18n.ready);}
+  async function closeDrawer(){const toggle=page.locator('.site-menu-toggle[aria-expanded="true"]');if(await toggle.count() && await toggle.isVisible())await toggle.click();}
+  async function go(url){await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>!!window.RangerbookI18n);await page.evaluate(()=>window.RangerbookI18n.ready);await closeDrawer();}
   async function geometry(host) {
    await host.locator('.ranger-element-icon').first().waitFor();
+   await page.waitForFunction(()=>[...document.querySelectorAll('.ranger-element-icon')].every(image=>image.complete));
    const failures=await host.locator('.ranger-icon-portrait:has(> .ranger-element-icon)').evaluateAll(wraps=>wraps.flatMap(w=>{
     const icon=w.querySelector(':scope > .ranger-element-icon'),a=icon.getBoundingClientRect(),b=w.getBoundingClientRect(),style=getComputedStyle(w);
     return Math.abs(a.x+a.width/2-b.x)>1.1||Math.abs(a.y+a.height/2-b.bottom)>1.1||style.overflow==='hidden'||!icon.complete||icon.naturalWidth===0?[{class:w.className,icon:{x:a.x,y:a.y,width:a.width,height:a.height},portrait:{x:b.x,y:b.y,bottom:b.bottom},overflow:style.overflow}]:[];
@@ -47,15 +49,15 @@ const expectNumber=v=>Number(v).toLocaleString('zh-Hant',{maximumFractionDigits:
    if(r.elementType!=='NONE')await geometry(card);
   }
   await page.locator('#rangerSearchInput').fill(selected[0].rangerCode);
-  for(const width of [1280,390,320]){await page.setViewportSize({width,height:900});await geometry(page.locator('#rangerList'));assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+  for(const width of [1280,390,320]){await page.setViewportSize({width,height:900});await closeDrawer();await geometry(page.locator('#rangerList'));assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
   await page.locator('#rangerList').screenshot({path:path.join(root,`artifacts/unit-icons/rangers-${locale}.png`)});
   await go('/ranger/ranger/?detail='+selected[0].rangerCode);const detail=page.locator('.ranger-detail-head');await combat(detail,selected[0]);await geometry(detail);
   await detail.screenshot({path:path.join(root,`artifacts/unit-icons/detail-${locale}.png`)});
   await go('/ranger/ranking/');const ranking=page.locator('.ranking-card').first();await ranking.waitFor();assert.equal(await ranking.locator('.ranger-type-icon').count(),1);assert.equal(await ranking.locator('.ranking-card-meta').count(),0);
   await go('/pvp/usage/');await page.locator('.pvp-ranger-trigger').first().waitFor();
   for(const r of selected){const button=page.locator(`.pvp-ranger-trigger[data-ranger-id="${r.rangerCode}"]`);await combat(button,r);assert.equal(await button.locator('.ranger-element-icon').count(),r.elementType==='NONE'?0:1);}
-  for(const theme of ['light','dark'])for(const width of [1280,390,320]){await page.setViewportSize({width,height:900});await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);await geometry(page.locator('#pvpUsageBody'));assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));if(width===390)await page.locator('.pvp-usage-panel').screenshot({path:path.join(root,`artifacts/unit-icons/usage-${locale}-${theme}.png`)});}
-  await page.locator('.pvp-ranger-trigger').first().click();const header=page.locator('.pvp-modal-ranger-header');await combat(header,selected[0]);await geometry(header);
+  for(const theme of ['light','dark'])for(const width of [1280,390,320]){await page.setViewportSize({width,height:900});await closeDrawer();await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);await geometry(page.locator('#pvpUsageBody'));assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));if(width===390)await page.screenshot({fullPage:true,path:path.join(root,`artifacts/unit-icons/usage-${locale}-${theme}.png`)});}
+  await page.locator(`.pvp-ranger-trigger[data-ranger-id="${selected[0].rangerCode}"]`).click();const header=page.locator('.pvp-modal-ranger-header');await combat(header,selected[0]);await geometry(header);
   await page.setViewportSize({width:1280,height:1000});
   for(const route of ['search','leaderboard']) {
    await go('/pvp/'+route+'/');
@@ -63,7 +65,7 @@ const expectNumber=v=>Number(v).toLocaleString('zh-Hant',{maximumFractionDigits:
    else await page.locator('.pvp-player-row').first().click();
    const grid=page.locator(route==='search'?'#pvpPlayerSearchTeamGrid':'#pvpPlayerTeamGrid');await grid.locator('.ranger-element-icon').first().waitFor();await geometry(grid);assert.equal(await grid.locator('.ranger-element-icon').count(),5);assert.equal(await grid.locator('.ranger-type-icon,.ranger-mini-stats').count(),0);
    await grid.locator('.pvp-player-unit-button').first().click();await geometry(page.locator(route==='search'?'#pvpPlayerSearchUnitDetail':'#pvpPlayerUnitDetail'));
-   await page.setViewportSize({width:390,height:900});await geometry(grid);await grid.screenshot({path:path.join(root,`artifacts/unit-icons/team-${route}-${locale}.png`)});
+   await page.setViewportSize({width:390,height:900});await closeDrawer();await geometry(grid);await grid.screenshot({path:path.join(root,`artifacts/unit-icons/team-${route}-${locale}.png`)});
    await page.setViewportSize({width:1280,height:1000});
   }
   await go('/guildwar/ranking/');await page.locator('.guildwar-rank-row').first().click();await page.locator('.guildwar-member-team-button').first().click();await geometry(page.locator('#guildwarPlayerTeamGrid'));assert.equal(await page.locator('#guildwarPlayerTeamGrid .ranger-type-icon').count(),0);
