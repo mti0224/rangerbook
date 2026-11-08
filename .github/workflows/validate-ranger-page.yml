@@ -25,6 +25,7 @@ on:
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
       - "tests/ranger-animation-projectile-*.test.js"
+      - "tests/ranger-animation-native-playback.test.js"
       - "tests/ranger-animation-horizontal-projectile-rule.test.js"
       - "tests/ranger-animation-simulation-bridge.test.js"
       - "tests/ranger-animation-hit-effect-timing.test.js"
@@ -67,6 +68,7 @@ jobs:
           node --check assets/js/ranger-animation-hit-effect.js
       - name: Validate projectile engine regressions
         run: |
+          node --test tests/ranger-animation-native-playback.test.js
           node --test tests/ranger-animation-identity.test.js
           node --test tests/ranger-animation-projectile-*.test.js
           node --test tests/ranger-animation-horizontal-projectile-rule.test.js

@@ -71,13 +71,15 @@
     if (
       playbackPlan?.source === "viewer" &&
       playbackPlan?.selectedClip === "attack" &&
-      Number.isFinite(Number(playbackPlan?.impactTime))
+      typeof playbackPlan?.impactTime === "number" && Number.isFinite(playbackPlan.impactTime)
     ) {
       return {
         source: "viewer",
         startedAt: finiteNumber(playbackPlan.startedAt, 0),
         cycleDuration: Math.max(0, finiteNumber(playbackPlan.cycleDuration, 0)),
-        impacts: [{ time: Number(playbackPlan.impactTime), projectileIndex: 0 }],
+        impacts: Array.isArray(playbackPlan.impactEvents) && playbackPlan.impactEvents.length
+          ? playbackPlan.impactEvents.map(event => ({ ...event }))
+          : [{ time: Number(playbackPlan.impactTime), projectileIndex: 0 }],
       };
     }
     return null;

@@ -221,6 +221,7 @@
       loadProjectileData(),
     ]);
     attachProjectileDataFallback(meta, projectileData, unitId);
+    prepareNativeClips(meta);
     state.metaCache.set(unitId, meta);
     return meta;
   }
@@ -278,7 +279,29 @@
   }
 
   function attackRangeForMeta(meta) {
-    return positiveNumber(state.attackRangeByMeta.get(meta), DEFAULT_ATTACK_RANGE);
+    return positiveNumber(meta?.projectileData?.normal?.attackRange,
+      positiveNumber(state.attackRangeByMeta.get(meta), DEFAULT_ATTACK_RANGE));
+  }
+
+  function prepareNativeClips(meta) {
+    const body = meta?.parts?.body;
+    if (!body?.animations) return;
+    body.virtual_clips ||= {};
+    for (const prefix of ["attack", "s_attack", "s2_attack"]) {
+      const labels = body.animations[`${prefix}_a`]?.frames?.length
+        ? [`${prefix}_ready`, `${prefix}_a`, `${prefix}_b`]
+        : [`${prefix}_ready`, prefix];
+      combine(`${prefix}_all`, labels);
+    }
+    combine("s_action_attack_all", ["s_action_attack_1", "s_action_attack_2", "s_action_attack_3"]);
+    function combine(name, labels) {
+      if (body.animations[name]?.frames?.length) return;
+      const segments = labels.filter(label => body.animations[label]?.frames?.length);
+      if (segments.length < 2) return;
+      const frames = segments.flatMap(label => body.animations[label].frames);
+      body.animations[name] = { frame_count: frames.length, frames };
+      body.virtual_clips[name] = { segments };
+    }
   }
 
   function getAnim(part, names) {
@@ -294,123 +317,6 @@
     if (!animationResult) return 0;
     return animationResult.anim.frame_count / Math.max(1, part?.anim_rate || 24);
   }
-
-  function animationHasVisibleContent(animationResult) {
-    return Boolean(animationResult?.anim?.frames?.some((frame) => (frame || []).some((item) => {
-      const color = item?.[3];
-      return !Array.isArray(color) || Number(color[3] ?? 255) > 0;
-    })));
-  }
-
-  function frameVisibleBottom(part, frame) {
-    let bottom = -Infinity;
-    for (const item of frame || []) {
-      const [, resourceNumber, objectMatrix, color] = item || [];
-      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
-      const imageDefinition = part?.images?.[resourceNumber];
-      const sprite = part?.sprites?.[imageDefinition?.name];
-      const width = Number(sprite?.rect?.[2]);
-      const height = Number(sprite?.rect?.[3]);
-      if (alpha === 0 || !width || !height || !Array.isArray(objectMatrix) || !Array.isArray(imageDefinition?.m)) continue;
-      const [m00, m01, m10, m11, m02, m12] = objectMatrix;
-      const [i00, i01, i10, i11, i02, i12] = imageDefinition.m;
-      const f10 = m10 * i00 + m11 * i10;
-      const f11 = m10 * i01 + m11 * i11;
-      const ty = m10 * i02 + m11 * i12 + m12;
-      for (const [x, y] of [[0, 0], [width, 0], [0, height], [width, height]]) {
-        bottom = Math.max(bottom, f10 * x + f11 * y + ty);
-      }
-    }
-    return Number.isFinite(bottom) ? bottom : null;
-  }
-
-  function animationGroundOffset(part, animationResult) {
-    const bottoms = (animationResult?.anim?.frames || [])
-      .map((frame) => frameVisibleBottom(part, frame))
-      .filter(Number.isFinite)
-      .sort((a, b) => a - b);
-    if (!bottoms.length) return 0;
-    const middle = Math.floor(bottoms.length / 2);
-    return bottoms.length % 2
-      ? bottoms[middle]
-      : (bottoms[middle - 1] + bottoms[middle]) * 0.5;
-  }
-
-  function animationStableTerminalBottom(part, animationResult) {
-  const samples = (animationResult?.anim?.frames || [])
-    .map((frame, index) => ({
-      index,
-      bottom: frameVisibleBottom(part, frame),
-    }))
-    .filter((sample) => Number.isFinite(sample.bottom));
-
-  if (!samples.length) return NaN;
-
-  /*
-   * finish 動畫最後幾幀有時只有粒子、殘影或淡出物件，
-   * 不能直接把最後一個可見幀當成落地姿勢。
-   *
-   * 因此只檢查動畫終段，找出出現最密集的下緣群組，
-   * 並以該群組的中位數作為穩定落地基準。
-   */
-  const lastIndex = samples[samples.length - 1].index;
-  const terminalStart = lastIndex * 0.4;
-  const terminal = samples.filter(
-    (sample) => sample.index >= terminalStart
-  );
-
-  if (!terminal.length) return samples[samples.length - 1].bottom;
-
-  const values = terminal.map((sample) => sample.bottom);
-  const range = Math.max(...values) - Math.min(...values);
-
-  /*
-   * 容許同一落地姿勢因浮點數、縮放或細小動畫變化，
-   * 產生少量的下緣差距。
-   */
-  const tolerance = Math.max(
-    1,
-    Math.min(8, range * 0.03)
-  );
-
-  let bestCluster = [];
-  let bestLatestIndex = -Infinity;
-
-  for (const pivot of terminal) {
-    const cluster = terminal.filter(
-      (sample) =>
-        Math.abs(sample.bottom - pivot.bottom) <= tolerance
-    );
-
-    const latestIndex = Math.max(
-      ...cluster.map((sample) => sample.index)
-    );
-
-    if (
-      cluster.length > bestCluster.length ||
-      (
-        cluster.length === bestCluster.length &&
-        latestIndex > bestLatestIndex
-      )
-    ) {
-      bestCluster = cluster;
-      bestLatestIndex = latestIndex;
-    }
-  }
-
-  const clusterValues = (bestCluster.length ? bestCluster : terminal)
-    .map((sample) => sample.bottom)
-    .sort((a, b) => a - b);
-
-  const middle = Math.floor(clusterValues.length / 2);
-
-  return clusterValues.length % 2
-    ? clusterValues[middle]
-    : (
-      clusterValues[middle - 1] +
-      clusterValues[middle]
-    ) * 0.5;
-}
 
   function namedAnimationDuration(part, name) {
     const animation = part?.animations?.[name];
@@ -445,118 +351,7 @@
     return 0;
   }
 
-  function spriteDims(part, imageName) {
-    const sprite = part?.sprites?.[imageName];
-    if (!sprite) return null;
-    const [, , width, height] = sprite.rect || [];
-    if (!width || !height) return null;
-    return { w: width, h: height };
-  }
-
-  function worldPosition(part, item) {
-    const [, resourceNumber, objectMatrix, color] = item || [];
-    const imageDefinition = part?.images?.[resourceNumber];
-    if (!imageDefinition || !Array.isArray(objectMatrix) || !Array.isArray(imageDefinition.m)) return null;
-    const dimensions = spriteDims(part, imageDefinition.name);
-    if (!dimensions) return null;
-    const [m00, m01, m10, m11, m02, m12] = objectMatrix;
-    const [i00, i01, i10, i11, i02, i12] = imageDefinition.m;
-    const centerX = dimensions.w * 0.5;
-    const centerY = dimensions.h * 0.5;
-    const imageCenterX = i00 * centerX + i01 * centerY + i02;
-    const imageCenterY = i10 * centerX + i11 * centerY + i12;
-    return {
-      x: m00 * imageCenterX + m01 * imageCenterY + m02,
-      y: m10 * imageCenterX + m11 * imageCenterY + m12,
-      color,
-    };
-  }
-
-  function frontMostPoint(part, frame) {
-    let best = null;
-    for (const item of frame || []) {
-      const color = item?.[3];
-      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
-      if (alpha === 0) continue;
-      const point = worldPosition(part, item);
-      if (point && (!best || point.x > best.x)) best = point;
-    }
-    return best;
-  }
-
-  function isInjectedProjectileMarker(item) {
-    const markerId = Number(item?.[0]);
-    return Number.isFinite(markerId) && markerId >= 2147483000 && markerId < 2147484000;
-  }
-
-  function animationMarkerMuzzle(part, readyNames, triggerNames, includeInjected = true) {
-    const ready = getAnim(part, readyNames);
-    const trigger = getAnim(part, triggerNames);
-    if (!ready || !trigger) return null;
-    const readyFrames = ready.anim.frames || [];
-    const triggerFrames = trigger.anim.frames || [];
-    if (!readyFrames.length || !triggerFrames.length) return null;
-    const lastReady = readyFrames[readyFrames.length - 1] || [];
-    const firstTrigger = triggerFrames[0] || [];
-    const hidden = lastReady.filter((item) => {
-      const color = item?.[3];
-      const hiddenItem = Array.isArray(color) && Number(color[3] ?? 255) === 0;
-      return hiddenItem && (includeInjected || !isInjectedProjectileMarker(item));
-    });
-    const marker = hidden.find((candidate) => firstTrigger.some(
-      (item) => item?.[0] === candidate?.[0] && item?.[1] === candidate?.[1]
-    )) || hidden.find((candidate) => firstTrigger.some((item) => item?.[1] === candidate?.[1]));
-    return marker ? worldPosition(part, marker) : null;
-  }
-
-  function animationDerivedMuzzle(part, readyNames, triggerNames) {
-    const ready = getAnim(part, readyNames);
-    if (!ready) return null;
-    const readyFrames = ready.anim.frames || [];
-    if (!readyFrames.length) return null;
-    const marker = animationMarkerMuzzle(part, readyNames, triggerNames, true);
-    return marker || frontMostPoint(part, readyFrames[readyFrames.length - 1] || []);
-  }
-
-  function frameMetrics(part, frame) {
-    const points = [];
-    for (const item of frame || []) {
-      const color = item?.[3];
-      const alpha = Array.isArray(color) ? Number(color[3] ?? 255) : 255;
-      if (alpha === 0) continue;
-      const point = worldPosition(part, item);
-      if (point) points.push(point);
-    }
-    if (!points.length) return null;
-    const xs = points.map((point) => point.x);
-    const ys = points.map((point) => point.y);
-    return {
-      width: Math.max(...xs) - Math.min(...xs),
-      height: Math.max(...ys) - Math.min(...ys),
-    };
-  }
-
-  function isPlausibleBasicAttackStart(bodyPart, clip, databaseX, databaseY) {
-    if (!clip.isBasicAttack || (databaseX === 0 && databaseY === 0)) return true;
-    const reference = animationDerivedMuzzle(bodyPart, clip.ready, clip.trigger);
-    if (!reference) return true;
-    const ready = getAnim(bodyPart, clip.ready);
-    const readyFrame = ready?.anim?.frames?.[ready.anim.frames.length - 1] || [];
-    const metrics = frameMetrics(bodyPart, readyFrame);
-    const width = Math.max(1, metrics?.width || 0);
-    const height = Math.max(1, metrics?.height || 0);
-    const dx = Math.abs(databaseX - reference.x);
-    // UnitData uses positive-up Y, while SAM/body-local coordinates use positive-down Y.
-    const dy = Math.abs(-databaseY - reference.y);
-    const distance = Math.hypot(dx, dy);
-    const maxDistance = Math.max(80, Math.min(180, Math.hypot(width, height) * 0.30));
-    const maxVerticalDistance = Math.max(50, Math.min(110, height * 0.30));
-    return distance <= maxDistance && dy <= maxVerticalDistance;
-  }
-
   function normalizeMotionType(projectileConfig) {
-    const explicit = text(projectileConfig?.motion?.type).toUpperCase();
-    if (["LINEAR", "CURVE", "RETURN", "BEAM", "DIRECT", "NONE", "UNKNOWN"].includes(explicit)) return explicit;
     const attackType = text(projectileConfig?.attackType).toUpperCase();
     if (["ENERGY", "WEAPON", "DOUBLE"].includes(attackType)) return "LINEAR";
     if (["ENERGYC", "WEAPONC", "DOUBLEC"].includes(attackType)) return "CURVE";
@@ -564,6 +359,8 @@
     if (attackType === "BEAM") return "BEAM";
     if (["LASER", "ACTION"].includes(attackType)) return "SPECIAL";
     if (["PUNCH", "KICK", "SWING", "STAB"].includes(attackType)) return "DIRECT";
+    const explicit = text(projectileConfig?.motion?.type).toUpperCase();
+    if (!attackType && ["LINEAR", "CURVE", "RETURN", "BEAM", "DIRECT", "NONE", "UNKNOWN"].includes(explicit)) return explicit;
     if (!attackType || attackType === "NONE") return "NONE";
     return "UNKNOWN";
   }
@@ -619,139 +416,14 @@
         }
         : null;
 
-    /*
-     * SAM 中由 attack_ready → attack 切換時出現的隱藏物件，
-     * 優先視為動畫作者設定的發射錨點。
-     *
-     * 找不到明確標記時，才退回到 attack_ready 最前方的
-     * 可見物件位置。
-     */
-    const authored = animationMarkerMuzzle(
-      bodyPart,
-      clip.ready,
-      clip.trigger,
-      false
-    );
-
-    const fallback =
-      authored ||
-      animationDerivedMuzzle(
-        bodyPart,
-        clip.ready,
-        clip.trigger
-      );
-
-    /*
-     * UnitData 座標在合理範圍內時仍然優先使用。
-     *
-     * 但某些進化資源或技能動畫可能沿用其他 body layout
-     * 的舊座標。當資料庫座標與目前 SAM 發射位置偏差過大時，
-     * 改採目前動畫資源中的發射錨點。
-     *
-     * 此判斷同時套用：
-     * - 普通攻擊
-     * - 技能 1
-     * - 技能 2
-     */
-    if (databasePoint && fallback) {
-      /*
-       * UnitData 的 Y 軸是向上為正；
-       * SAM body-local 座標是向下為正。
-       */
-      const databaseSamX = databasePoint.x;
-      const databaseSamY = -databasePoint.y;
-
-      const dx = databaseSamX - fallback.x;
-      const dy = databaseSamY - fallback.y;
-
-      const readyAnimation = getAnim(
-        bodyPart,
-        clip.ready
-      );
-
-      const readyFrames =
-        readyAnimation?.anim?.frames || [];
-
-      const readyFrame =
-        readyFrames[readyFrames.length - 1] || [];
-
-      const metrics = frameMetrics(
-        bodyPart,
-        readyFrame
-      );
-
-      /*
-       * 優先依角色實際可見尺寸設定容許值；
-       * 無法取得時才使用 SAM canvas 尺寸。
-       */
-      const width = Math.max(
-        1,
-        metrics?.width ||
-          positiveNumber(bodyPart?.canvas?.w, 240)
-      );
-
-      const height = Math.max(
-        1,
-        metrics?.height ||
-          positiveNumber(bodyPart?.canvas?.h, 240)
-      );
-
-      const maxDistance = Math.max(
-        80,
-        Math.min(
-          180,
-          Math.hypot(width, height) * 0.30
-        )
-      );
-
-      const maxVerticalDistance = Math.max(
-        50,
-        Math.min(
-          110,
-          height * 0.30
-        )
-      );
-
-      const distance = Math.hypot(dx, dy);
-
-      if (
-        distance > maxDistance ||
-        Math.abs(dy) > maxVerticalDistance
-      ) {
-        return {
-          x: fallback.x,
-          y: fallback.y,
-          source: authored
-            ? "animation-anchor"
-            : "animation-fallback",
-        };
-      }
-    }
-
-    if (databasePoint) {
-      return databasePoint;
-    }
-
-    if (fallback) {
-      return {
-        x: fallback.x,
-        y: fallback.y,
-        source: authored
-          ? "animation-anchor"
-          : "animation-fallback",
-      };
-    }
-
-    return {
-      x: 0,
-      y: 0,
-      source: "database",
-    };
+    // UnitData owns the launch position. Invisible SAM objects and visible
+    // sprite bounds are artwork, not native projectile spawn markers.
+    return databasePoint || { x: 0, y: 0, source: "database" };
   }
 
   function movementDuration(distance, moveSpeed) {
     const speed = positiveNumber(moveSpeed, 0);
-    if (!speed) return 0;
+    if (!speed) return Infinity;
     return Math.max(0, finiteNumber(distance, 0)) / (speed * NATIVE_ACTION_FPS);
   }
 
@@ -811,17 +483,18 @@
   }
 
   function resolveReturnEnd(projectile, layout, sceneScale) {
+    // RETURN: MoveBy(EndOffset - outboundDelta), so the final position is
+    // the original spawn + EndOffset. SecondStart belongs to DOUBLE.
+    const start = resolveStartScreen(projectile, layout, sceneScale);
     return {
-      x: layout.bodyOriginX + layout.facing * projectile.secondStart.x * sceneScale,
-      y: layout.bodyOriginY - projectile.secondStart.y * sceneScale,
+      x: start.x + layout.facing * projectile.endOffset.x * sceneScale,
+      y: start.y - projectile.endOffset.y * sceneScale,
     };
   }
 
   function resolveOutboundBaseEnd(projectile, layout, sceneScale) {
-    return {
-      x: layout.targetX + layout.facing * projectile.endOffset.x * sceneScale,
-      y: layout.targetBaseY - projectile.endOffset.y * sceneScale,
-    };
+    const anchor = selectedTargetAnchor(layout);
+    return { x: anchor.x, y: anchor.baseY };
   }
 
   function resolveOutboundEnd(projectile, bodyPart, layout, sceneScale) {
@@ -834,77 +507,36 @@
     };
   }
 
-  function actorProjectileGroundFor(meta, clip, partName, motionType) {
-  const ground = meta?.actorProjectileGround?.attacks?.[clip.dataKey];
-  if (!ground || ground.partName !== partName || ground.motionType !== motionType) return null;
-  const travelBottom = finiteNumber(ground.travelBottom, NaN);
-  if (!Number.isFinite(travelBottom)) return null;
-  return {
-    motionType,
-    travelBottom,
-    finishBottom: finiteNumber(ground.finishBottom, NaN),
-    bodyGroundBottom: finiteNumber(ground.bodyGroundBottom, NaN),
-  };
-}
 
 function projectileImpactOffset(projectile, bodyPart) {
-  if (projectile.renderMode === "AUTHORED_FINISH") return 0;
-  if (projectile.renderMode === "BEAM") return projectile.beamDuration;
-  if (["AUTHORED", "DIRECT"].includes(projectile.renderMode)) {
-    return projectile.localNormalDuration;
+    if (projectile.renderMode === "BEAM") return 0;
+    const layout = referenceLayout(projectile.attackRange);
+    return resolveProjectileGeometry(projectile, bodyPart, layout, layout.sceneScale).flightDuration;
   }
 
-  const layout = referenceLayout(projectile.attackRange);
-  const geometry = resolveProjectileGeometry(projectile, bodyPart, layout, layout.sceneScale);
-  if (projectile.renderMode === "RETURN" && geometry.flightDuration > 0) {
-    return geometry.flightDuration;
+  function estimateProjectileLifetime(projectile, bodyPart) {
+    const impact = projectileImpactOffset(projectile, bodyPart);
+    if (projectile.renderMode === "RETURN") return impact * 2;
+    if (projectile.renderMode === "BEAM") return projectile.beamDuration;
+    return impact + projectile.finishDuration;
   }
-  if (["LINEAR", "CURVE"].includes(projectile.renderMode) && geometry.flightDuration > 0) {
-    return geometry.flightDuration;
-  }
-  return Math.max(
-    projectile.localNormalDuration,
-    15 / Math.max(1, bodyPart?.anim_rate || 24)
-  );
-}
-
-function estimateProjectileLifetime(projectile, bodyPart) {
-  const layout = referenceLayout(projectile.attackRange);
-  const geometry = resolveProjectileGeometry(projectile, bodyPart, layout, layout.sceneScale);
-
-  if (projectile.renderMode === "RETURN" && geometry.flightDuration > 0) {
-    return geometry.flightDuration + geometry.returnDuration;
-  }
-  if (projectile.renderMode === "BEAM") {
-    return projectile.beamDuration + projectile.finishDuration;
-  }
-  if (projectile.renderMode === "AUTHORED_FINISH") return projectile.finishDuration;
-  if (["AUTHORED", "DIRECT"].includes(projectile.renderMode)) {
-    return projectile.localNormalDuration + projectile.finishDuration;
-  }
-  if (["LINEAR", "CURVE"].includes(projectile.renderMode) && geometry.flightDuration > 0) {
-    return geometry.flightDuration + projectile.finishDuration;
-  }
-  return Math.max(
-    projectile.localNormalDuration,
-    15 / Math.max(1, bodyPart?.anim_rate || 24)
-  ) + projectile.finishDuration;
-}
   function buildProjectile(meta, clip, bodyPart, bodyAnimation, clipDuration) {
     if (!clip.bullet) return null;
     const projectileConfig = meta?.projectileData?.[clip.dataKey] || null;
     const motionType = normalizeMotionType(projectileConfig);
-    if (motionType === "NONE") return null;
+    // Native attack dispatch sends melee/LASER directly to damage resolution;
+    // ACTION uses body phases. Neither dispatches a travelling bul part.
+    if (["NONE", "DIRECT", "SPECIAL"].includes(motionType)) return null;
 
     const requestedPartName = text(projectileConfig?.animationPart) || clip.bullet;
     const bulletPart = meta?.parts?.[requestedPartName] || meta?.parts?.[clip.bullet];
     if (!bulletPart) return null;
 
-    const standardNormal = getAnim(bulletPart, ["normal", "idle", "wait", "shot", "fire", "attack", "_all"]);
+    const standardNormal = getAnim(bulletPart, ["normal"]);
     const outboundAnimation = motionType === "RETURN" ? (getAnim(bulletPart, ["normal_a"]) || standardNormal) : standardNormal;
     if (!outboundAnimation) return null;
     const returnAnimation = motionType === "RETURN" ? (getAnim(bulletPart, ["normal_b"]) || outboundAnimation) : null;
-    const finishAnimation = getAnim(bulletPart, ["finish", "hit", "end"]);
+    const finishAnimation = getAnim(bulletPart, ["finish"]);
 
     const spawnTime = nativeProjectileSpawnTime(bodyPart, bodyAnimation.name, clip, clipDuration);
     const localNormalDuration = Math.max(1, outboundAnimation.anim.frame_count || 0) / Math.max(1, bulletPart.anim_rate || 24);
@@ -920,20 +552,14 @@ function estimateProjectileLifetime(projectile, bodyPart) {
       y: finiteNumber(projectileConfig?.secondStart?.y, finiteNumber(projectileConfig?.start?.y, 0)) * coordinateScale,
     };
 
-    const configuredEnabled = projectileConfig?.motion?.enabled;
-    const normalHasVisibleContent = animationHasVisibleContent(outboundAnimation);
+    // Enabled/repeat were website-derived annotations. Native dispatch uses
+    // attackType and runs the normal section until its movement callback.
     let renderMode = motionType;
-    if (motionType === "SPECIAL" || motionType === "UNKNOWN") renderMode = "LEGACY";
-    if (configuredEnabled === false && !["DIRECT", "SPECIAL"].includes(motionType)) {
-      // Disabled native motion means the SAM part contains the authored action.
-      // An empty normal followed by finish must start finish immediately at the
-      // target instead of inventing a half-second flight from actor to target.
-      renderMode = !normalHasVisibleContent && finishAnimation ? "AUTHORED_FINISH" : "AUTHORED";
-    }
+    if (motionType === "UNKNOWN") return null;
 
     const beamLength = positiveNumber(meta?.projectileData?.bullet?.length, 0);
     const beamDuration = positiveNumber(meta?.projectileData?.bullet?.duration, 0);
-    if (renderMode === "BEAM" && (!beamLength || !beamDuration)) renderMode = "LEGACY";
+    if (renderMode === "BEAM" && (!beamLength || !beamDuration)) return null;
 
     const projectile = {
       partName: bulletPart === meta?.parts?.[requestedPartName] ? requestedPartName : clip.bullet,
@@ -952,21 +578,13 @@ function estimateProjectileLifetime(projectile, bodyPart) {
       hitPointRate: effectiveHitPointRate(meta, clip, motionType),
       localNormalDuration,
       finishDuration,
-      normalGroundOffset: animationGroundOffset(bulletPart, outboundAnimation),
-      finishGroundOffset: animationGroundOffset(bulletPart, finishAnimation),
-      finishFinalBottom: animationStableTerminalBottom(bulletPart, finishAnimation),
       beamLength,
       beamDuration,
-      loopNormal: renderMode === "LEGACY" ? true : projectileConfig?.motion?.loopNormal !== false,
+      loopNormal: true,
       rotationMode: text(projectileConfig?.motion?.rotation).toUpperCase() || "FIXED",
       attackRange: attackRangeForMeta(meta),
       isBasicAttack: clip.isBasicAttack === true,
-      actorGround: actorProjectileGroundFor(
-        meta,
-        clip,
-        bulletPart === meta?.parts?.[requestedPartName] ? requestedPartName : clip.bullet,
-        motionType,
-      ),
+
     };
     projectile.impactOffset = projectileImpactOffset(projectile, bodyPart);
     projectile.lifetime = estimateProjectileLifetime(projectile, bodyPart);
@@ -994,9 +612,19 @@ function estimateProjectileLifetime(projectile, bodyPart) {
   if (!bodyAnimation) return { key: clip.key, label: clip.label, segments: [], duration: 0 };
   const bodyDuration = animDuration(bodyPart, bodyAnimation) || 1;
   const projectile = buildProjectile(meta, clip, bodyPart, bodyAnimation, bodyDuration);
+  if (projectile && ["DOUBLE", "DOUBLEC"].includes(text(projectile.config?.attackType).toUpperCase())) {
+    const phase = clip.dataKey === "normal" ? "attack_a" : clip.dataKey === "skill1" ? "s_attack_a" : "s2_attack_a";
+    projectile.second = { ...projectile, second: null,
+      start: { ...projectile.secondStart, source: "database" },
+      spawnTime: projectile.spawnTime + namedAnimationDuration(bodyPart, phase) };
+    projectile.second.impactOffset = projectileImpactOffset(projectile.second, bodyPart);
+    projectile.second.lifetime = estimateProjectileLifetime(projectile.second, bodyPart);
+  }
   const duration = Math.max(
     bodyDuration,
-    projectile ? projectile.spawnTime + projectile.lifetime : 0,
+    projectile?.second && Number.isFinite(projectile.second.lifetime)
+      ? projectile.second.spawnTime + projectile.second.lifetime : 0,
+    projectile && Number.isFinite(projectile.lifetime) ? projectile.spawnTime + projectile.lifetime : 0,
     1
   );
   const spawnTime = projectile
@@ -1015,7 +643,7 @@ function estimateProjectileLifetime(projectile, bodyPart) {
       start: 0,
       duration,
       bodyDuration,
-      loop: clip.key === "idle",
+      loop: ["idle", "move"].includes(clip.key),
       projectile,
       impactTime,
     }],
@@ -1163,10 +791,14 @@ function estimateProjectileLifetime(projectile, bodyPart) {
   }
 
   function projectileRotation(projectile, progress) {
-    if (projectile.rotationMode !== "ANGLE_LERP") return 0;
+    if (projectile.motionType !== "CURVE") return 0;
     const start = finiteNumber(projectile.config?.angle?.start, 0);
     const end = finiteNumber(projectile.config?.angle?.end, start);
-    return lerp(start, end, progress);
+    const nativeStart = start % 360;
+    let delta = end - nativeStart;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    return nativeStart + delta * clamp(progress, 0, 1);
   }
 
   function resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale) {
@@ -1174,25 +806,6 @@ function estimateProjectileLifetime(projectile, bodyPart) {
   let baseEnd = resolveOutboundBaseEnd(projectile, layout, sceneScale);
   let end = resolveOutboundEnd(projectile, bodyPart, layout, sceneScale);
 
-  // Character-as-projectile LINEAR attacks use the SAM lower edge as a
-  // visual foot anchor. Keep UnitData start/end/hitTiming untouched and
-  // align only the screen-space origins to the two ground lines.
-  if (projectile.actorGround?.motionType === "LINEAR") {
-    const travelBottom = projectile.actorGround.travelBottom;
-    const targetGroundY = selectedTargetAnchor(layout).baseY;
-    start = {
-      x: start.x,
-      y: layout.actorY - travelBottom * sceneScale,
-    };
-    baseEnd = {
-      x: baseEnd.x,
-      y: targetGroundY - travelBottom * sceneScale,
-    };
-    end = {
-      x: end.x,
-      y: targetGroundY - travelBottom * sceneScale,
-    };
-  }
 
   const endX = end.x;
   const endY = end.y;
@@ -1206,7 +819,7 @@ function estimateProjectileLifetime(projectile, bodyPart) {
     returnEnd.x - endX,
     returnEnd.y - endY
   ) / Math.max(0.0001, sceneScale);
-  const returnDuration = movementDuration(returnNativeDistance, projectile.moveSpeed);
+  const returnDuration = flightDuration; // Native RETURN reuses the outbound action duration.
   return {
     startX: start.x,
     startY: start.y,
@@ -1224,14 +837,6 @@ function estimateProjectileLifetime(projectile, bodyPart) {
   };
 }
 
-function actorGroundOriginY(projectile, layout, sceneScale, finish = false) {
-  if (!projectile.actorGround) return NaN;
-  const bottom = finish && Number.isFinite(projectile.actorGround.finishBottom)
-    ? projectile.actorGround.finishBottom
-    : projectile.actorGround.travelBottom;
-  if (!Number.isFinite(bottom)) return NaN;
-  return selectedTargetAnchor(layout).baseY - bottom * sceneScale;
-}
   async function drawProjectileFrame(context, bulletPart, animationName, age, loop, x, y, scaleX, scaleY, rotation = 0) {
     const frame = frameIndex(bulletPart, animationName, age, loop);
     return drawSamFrame(context, bulletPart, animationName, frame, x, y, scaleX, scaleY, rotation);
@@ -1240,12 +845,12 @@ function actorGroundOriginY(projectile, layout, sceneScale, finish = false) {
   async function drawFinish(context, bulletPart, projectile, age, endX, endY, sceneScale) {
     if (!projectile.finishAnimName || age < 0 || age > projectile.finishDuration) return;
     const frame = frameIndex(bulletPart, projectile.finishAnimName, age, false);
-    await drawSamFrame(context, bulletPart, projectile.finishAnimName, frame, endX, endY, sceneScale);
+    await drawSamFrame(context, bulletPart, projectile.finishAnimName, frame, endX, endY,
+      sceneScale, sceneScale, projectileRotation(projectile, 1));
   }
 
   async function drawBeam(context, bulletPart, projectile, age, geometry, sceneScale) {
     if (age > projectile.beamDuration) {
-      await drawFinish(context, bulletPart, projectile, age - projectile.beamDuration, geometry.endX, geometry.endY, sceneScale);
       return;
     }
     const count = Math.max(1, Math.trunc(geometry.nativeDistance / projectile.beamLength));
@@ -1280,96 +885,11 @@ function actorGroundOriginY(projectile, layout, sceneScale, finish = false) {
     const bulletPart = meta?.parts?.[projectile.partName];
     if (!bulletPart) return;
     const geometry = resolveProjectileGeometry(projectile, bodyPart, layout, sceneScale);
-    const nativeMotionAvailable = geometry.flightDuration > 0;
-    const fixedPositionMode = ["AUTHORED", "AUTHORED_FINISH", "DIRECT", "BEAM"].includes(projectile.renderMode);
-    const renderMode = fixedPositionMode
-      ? projectile.renderMode
-      : (nativeMotionAvailable ? projectile.renderMode : "LEGACY");
-
+    const renderMode = projectile.renderMode;
     if (renderMode === "BEAM") {
       await drawBeam(context, bulletPart, projectile, age, geometry, sceneScale);
       return;
     }
-
-    if (renderMode === "AUTHORED_FINISH") {
-      const targetAnchor = selectedTargetAnchor(layout);
-      const finishBottom = Number.isFinite(projectile.finishFinalBottom)
-        ? projectile.finishFinalBottom
-        : projectile.finishGroundOffset;
-      await drawFinish(
-        context,
-        bulletPart,
-        projectile,
-        age,
-        geometry.endX,
-        targetAnchor.baseY - finishBottom * sceneScale,
-        sceneScale,
-      );
-      return;
-    }
-
-    if (renderMode === "AUTHORED") {
-      if (age <= projectile.localNormalDuration || !projectile.finishAnimName) {
-        await drawProjectileFrame(
-          context,
-          bulletPart,
-          projectile.normalAnimName,
-          age,
-          false,
-          geometry.endX,
-          geometry.endY - projectile.normalGroundOffset * sceneScale,
-          sceneScale,
-          sceneScale,
-        );
-      } else {
-        const targetAnchor = selectedTargetAnchor(layout);
-        const finishBottom = Number.isFinite(projectile.finishFinalBottom)
-          ? projectile.finishFinalBottom
-          : projectile.finishGroundOffset;
-        await drawFinish(
-          context,
-          bulletPart,
-          projectile,
-          age - projectile.localNormalDuration,
-          geometry.endX,
-          targetAnchor.baseY - finishBottom * sceneScale,
-          sceneScale,
-        );
-      }
-      return;
-    }
-
-    if (renderMode === "DIRECT") {
-      const groundedNormalY = actorGroundOriginY(projectile, layout, sceneScale, false);
-      const groundedFinishY = actorGroundOriginY(projectile, layout, sceneScale, true);
-      const normalY = Number.isFinite(groundedNormalY) ? groundedNormalY : geometry.endY;
-      const finishY = Number.isFinite(groundedFinishY) ? groundedFinishY : geometry.endY;
-      if (age <= projectile.localNormalDuration || !projectile.finishAnimName) {
-        await drawProjectileFrame(
-context,
-bulletPart,
-projectile.normalAnimName,
-age,
-projectile.loopNormal,
-geometry.endX,
-normalY,
-sceneScale,
-sceneScale,
-        );
-      } else {
-        await drawFinish(
-context,
-bulletPart,
-projectile,
-age - projectile.localNormalDuration,
-geometry.endX,
-finishY,
-sceneScale,
-        );
-      }
-      return;
-    }
-
     if (renderMode === "RETURN") {
       const totalDuration = geometry.flightDuration + geometry.returnDuration;
       if (age > totalDuration) return;
@@ -1385,7 +905,7 @@ sceneScale,
           lerp(geometry.startY, geometry.endY, progress),
           sceneScale,
           sceneScale,
-          projectileRotation(projectile, progress),
+          0,
         );
         return;
       }
@@ -1406,10 +926,8 @@ sceneScale,
       return;
     }
 
-    const duration = renderMode === "LEGACY"
-      ? Math.max(projectile.localNormalDuration, 15 / Math.max(1, bodyPart.anim_rate || 24))
-      : geometry.flightDuration;
-    if (age <= duration || !projectile.finishAnimName) {
+    const duration = geometry.flightDuration;
+    if (age < duration) {
       const progress = clamp(age / Math.max(0.001, duration), 0, 1);
       let position = {
         x: lerp(geometry.startX, geometry.endX, progress),
@@ -1449,30 +967,31 @@ sceneScale,
       return;
     }
 
-    const groundedFinishY = actorGroundOriginY(projectile, layout, sceneScale, true);
-    await drawFinish(
-      context,
-      bulletPart,
-      projectile,
-      age - duration,
-      geometry.endX,
-      Number.isFinite(groundedFinishY) ? groundedFinishY : geometry.endY,
-      sceneScale,
-    );
+    await drawFinish(context, bulletPart, projectile, age - duration,
+      geometry.endX, geometry.endY, sceneScale);
   }
 
   async function drawSegment(bodyContext, projectileContext, meta, segment, age, layout, sceneScale) {
     const bodyPart = meta?.parts?.body;
     if (!bodyPart) return;
-    const bodyAge = segment.loop ? age : Math.min(age, Math.max(0, segment.bodyDuration - 0.001));
-    const bodyFrame = frameIndex(bodyPart, segment.animName, bodyAge, segment.loop);
-    await drawSamFrame(bodyContext, bodyPart, segment.animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
+    const idle = getAnim(bodyPart, ["idle", "wait"]);
+    const recovered = !segment.loop && age >= segment.bodyDuration && idle;
+    const animName = recovered ? idle.name : segment.animName;
+    const bodyAge = recovered ? age - segment.bodyDuration : age;
+    const bodyFrame = frameIndex(bodyPart, animName, bodyAge, recovered || segment.loop);
+    await drawSamFrame(bodyContext, bodyPart, animName, bodyFrame, layout.bodyOriginX, layout.bodyOriginY, sceneScale);
 
     const projectile = segment.projectile;
     if (!projectile) return;
     const projectileAge = age - projectile.spawnTime;
-    if (projectileAge < 0) return;
-    await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
+    if (projectileAge >= 0 && projectileAge < projectile.lifetime) {
+      await drawProjectile(projectileContext, meta, projectile, projectileAge, bodyPart, layout, sceneScale);
+    }
+    const second = projectile.second;
+    const secondAge = age - (second?.spawnTime ?? Infinity);
+    if (second && secondAge >= 0 && secondAge < second.lifetime) {
+      await drawProjectile(projectileContext, meta, second, secondAge, bodyPart, layout, sceneScale);
+    }
   }
 
   async function drawTrack(canvas, meta, track, elapsed) {
@@ -1570,6 +1089,9 @@ sceneScale,
     impactTime: attackSegment
       ? (attackSegment.start || 0) + attackSegment.impactTime
       : null,
+    impactEvents: projectile ? [projectile, projectile.second].filter(Boolean).map((shot, index) => ({
+      time: (attackSegment.start || 0) + shot.spawnTime + shot.impactOffset, projectileIndex: index,
+    })).filter(event => Number.isFinite(event.time)) : [],
     hasProjectile: Boolean(projectile),
     motionType: projectile?.motionType || "NONE",
   };

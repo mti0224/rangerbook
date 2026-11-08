@@ -104,6 +104,9 @@
       return { supported: false, reason: `family-not-shadowed:${family}`, family };
     }
 
+    if (!(Number(attack.moveSpeed) > 0)) {
+      return { supported: false, reason: "projectile-speed-not-positive", family };
+    }
     if (meta?.actorProjectileGround?.attacks?.[dataKey]) {
       return { supported: false, reason: "actor-ground-heuristic-active", family };
     }
@@ -200,7 +203,9 @@
       returnEnd.x - end.x,
       returnEnd.y - end.y,
     ) / sceneScale;
-    const returnDuration = movementDuration(returnNativeDistance, attack?.moveSpeed);
+    const returnDuration = viewerMode
+      ? movementDuration(returnNativeDistance, attack?.moveSpeed)
+      : flightDuration;
 
     return {
       supported: true,

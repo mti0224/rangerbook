@@ -98,6 +98,9 @@
     if (!DOUBLE_FAMILIES.has(family)) {
       return { supported: false, reason: `family-not-double:${family}`, family };
     }
+    if (!(Number(attack.moveSpeed) > 0)) {
+      return { supported: false, reason: "projectile-speed-not-positive", family };
+    }
     if (meta?.actorProjectileGround?.attacks?.[dataKey]) {
       return { supported: false, reason: "actor-ground-heuristic-active", family };
     }

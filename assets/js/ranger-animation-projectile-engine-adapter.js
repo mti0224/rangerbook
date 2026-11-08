@@ -166,6 +166,7 @@
     if (family === "RETURN") {
       input.returnEnd = point(geometry.returnEndX, geometry.returnEndY);
       input.returnDistance = Math.max(0, finiteNumber(geometry.returnNativeDistance, 0));
+      input.returnDuration = Math.max(0, finiteNumber(geometry.returnDuration, geometry.flightDuration));
     }
 
     return { supported: MOVING_FAMILIES.has(family), reason: null, input };

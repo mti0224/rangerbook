@@ -35,6 +35,7 @@ COMBO_SEGMENTS = {
     "attack_all": ("attack_ready", "attack"),
     "s_attack_all": ("s_attack_ready", "s_attack"),
     "s2_attack_all": ("s2_attack_ready", "s2_attack"),
+    "s_action_attack_all": ("s_action_attack_1", "s_action_attack_2", "s_action_attack_3"),
 }
 
 
@@ -224,6 +225,10 @@ class SAMParser:
     def to_json(self) -> dict[str, Any]:
         animations = dict(self.animations)
         for combo_name, segment_names in COMBO_SEGMENTS.items():
+            if combo_name != "s_action_attack_all":
+                prefix = combo_name.removesuffix("_all")
+                if self.animations.get(f"{prefix}_a"):
+                    segment_names = (f"{prefix}_ready", f"{prefix}_a", f"{prefix}_b")
             combo_frames: list[list[list[Any]]] = []
             for segment_name in segment_names:
                 combo_frames.extend(self.animations.get(segment_name, []))
