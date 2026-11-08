@@ -90,7 +90,9 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
   await check('starFilter','終極進化8星');
   await expectRows(row=>row.evolution==='ULTRA' && row.starGrade===8);
   assert.equal(await page.locator('#rangerList .ranger-tags').count(),0,'Identity text tags are replaced by icons');
-  if(locale==='zh_TW')assert.ok((await page.locator('#starFilter').innerText()).includes('終極進化8星'),'Evolution wording remains available in the star filter');
+  if(locale==='zh_TW')assert.equal(await page.locator('#starFilter label:has(input[value="終極進化8星"])').getAttribute('title'),'終極進化8星','Evolution wording remains accessible in the icon tooltip');
+  assert.ok((await page.locator('#starFilter label:has(input[value="終極進化8星"]) img').getAttribute('src')).endsWith('com_level02_star08.png'));
+  assert.ok((await page.locator('#starFilter label:has(input[value="超進化8星"]) img').getAttribute('src')).endsWith('com_level04_star08.png'));
   await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
   await open();

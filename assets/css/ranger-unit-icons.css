@@ -49,3 +49,13 @@
 
 .pvp-player-unit-detail-head > .pvp-player-detail-portrait { margin: 0; }
 .ranger-mini-stats { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+/* Standalone identity choices never inherit the portrait overlay positioning. */
+.ranger-category-icon { display:inline-flex; align-items:center; justify-content:center; vertical-align:middle; flex:none; }
+.ranger-category-icon > :is(.ranger-element-icon,.ranger-type-icon,.ranger-category-symbol) {
+  position:static; display:block; width:1.5rem; height:1.5rem; margin:0; transform:none; object-fit:contain;
+}
+.ranger-star-icon { display:block; width:auto; height:1.25rem; max-width:100%; object-fit:contain; }
+.ranger-icon-filter-option > span { display:flex; align-items:center; flex:1; min-width:0; }
+.ranger-icon-filter-option .ranger-category-icon { max-width:100%; }
+.ranger-icon-filter-option:focus-within { outline:2px solid var(--primary); outline-offset:2px; }

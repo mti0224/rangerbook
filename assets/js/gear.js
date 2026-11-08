@@ -283,12 +283,12 @@
     return mode === "AND" ? matched === selectedSet.size : matched > 0;
   }
 
-  function renderCheckbox(container, values, formatter = (value) => value) {
+  function renderCheckbox(container, values, formatter = (value) => value, kind = "") {
     if (!container) return;
     container.innerHTML = uniqueSorted(values).map((value) => `
-      <label class="gear-checkbox ranger-filter-option" title="${escapeHtml(formatter(value))}">
-        <input type="checkbox" value="${escapeHtml(value)}">
-        <span>${escapeHtml(formatter(value))}</span>
+      <label class="gear-checkbox ranger-filter-option${kind ? " ranger-icon-filter-option" : ""}" title="${escapeHtml(window.RangerbookI18n.uiText(formatter(value)))}">
+        <input type="checkbox" value="${escapeHtml(value)}" aria-label="${escapeHtml(window.RangerbookI18n.uiText(formatter(value)))}">
+        <span>${kind ? window.RangerbookUnitIcons.category(kind,value,window.RangerbookI18n.uiText(formatter(value))) : escapeHtml(formatter(value))}</span>
       </label>
     `).join("");
   }
@@ -317,11 +317,11 @@
       ? state.rows
       : state.rows.filter(({ gear }) => isPubliclyVisible(gear));
 
-    renderCheckbox(starFilter, sourceRows.map(({ gear }) => gear?.["裝備星級"]), (value) => `${value}星`);
-    renderCheckbox(typeFilter, sourceRows.map(({ gear }) => getType(gear)));
+    renderCheckbox(starFilter, sourceRows.map(({ gear }) => gear?.["裝備星級"]), (value) => `${value}星`, "star");
+    renderCheckbox(typeFilter, sourceRows.map(({ gear }) => getType(gear)), value => value, "gear");
     renderCheckbox(basicEffectFilter, sourceRows.flatMap(({ gear }) => [...getFilterBasicKeys(gear)]));
-    renderCheckbox(triggerAttrFilter, ATTR_OPTIONS);
-    renderCheckbox(triggerTypeFilter, TYPECLASS_OPTIONS);
+    renderCheckbox(triggerAttrFilter, ATTR_OPTIONS, value => value, "element");
+    renderCheckbox(triggerTypeFilter, TYPECLASS_OPTIONS, value => value, "type");
     renderCheckbox(ensureSkillPlusPanel(), sourceRows.flatMap(({ gear }) => [...getSkillPlusKeys(gear)]));
   }
 

@@ -5,6 +5,7 @@ const {fixture}=require('./team-analysis-fixture.cjs');
 const root=path.join(__dirname,'..'),base='https://analysis-test.invalid';
 const {units,catalogs}=fixture();
 const expected={WEAPON:{FIRE:[1,2],WATER:[2,2],TREE:[1,1],LIGHT:[1,1],DARK:[0,0],INT:[1,2],AGI:[2,2],STR:[2,2]},ARMOR:{FIRE:[2,2],WATER:[2,2],TREE:[1,1],LIGHT:[1,1],DARK:[0,0],INT:[2,2],AGI:[2,2],STR:[2,2]},ACC:{FIRE:[1,2],WATER:[2,2],TREE:[1,1],LIGHT:[1,1],DARK:[0,0],INT:[2,2],AGI:[2,2],STR:[1,2]},surehit:{INT:[2,2],AGI:[2,2],STR:[1,2]},element:{FIRE:[1,1],WATER:[1,1],TREE:[0,1],LIGHT:[0,1],DARK:[0,0]}};
+fs.mkdirSync(path.join(root,'artifacts/filter-icons'),{recursive:true});
 const teamKeys=['pvpteam','team1','team2','team3','team4','team5','guildwar'];
 const teams=Object.fromEntries(teamKeys.map(k=>[k,units]));teams.team5=[];
 // Use official translated Ranger names for realistic wrapping in the synthetic data.
@@ -91,7 +92,7 @@ for(const g of catalogs.equipment) {
      assert.ok(contrast.bar>=3,`${locale} ${theme} ${width} ${tab} bar: ${contrast.bar}`);
      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     }
-    if(width===390) await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:`/tmp/team-analysis-touch-${theme}.png`});
+    if(width===390) await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:path.join(root,`artifacts/filter-icons/team-analysis-touch-${theme}.png`)});
    }
    assert.equal(errors.length,0,errors.join('\n'));
    await context.close();console.log('TEAM_ANALYSIS_TOUCH_CONTRAST_OK',locale);continue;
@@ -107,6 +108,11 @@ for(const g of catalogs.equipment) {
   assert.ok((await page.locator('.ta-dist-row').first().innerText()).includes('%'),
     'each category shows its count and percentage');
   assert.equal(await page.locator('.ta-role-stat').count(),10,'role averages contain ten requested metrics');
+  assert.equal(await page.locator('.ta-role-tabs .ranger-type-icon').count(),3,'Role tabs use icons');
+  for(const group of ['role','element'])assert.ok(await page.locator(`[data-distribution="${group}"] .ranger-category-icon`).count()>0,group+' distribution uses icons');
+  assert.equal(await page.locator('.ta-bars .ranger-category-icon').count(),await page.locator('.ta-bar').count(),'Equipment categories use icons');
+  assert.ok(await page.locator('[data-role]').evaluateAll(buttons=>buttons.every(b=>b.getAttribute('aria-label')&&b.title)), 'Icon tabs retain localized names');
+
   await page.locator('[data-role="AGI"]').click();
   assert.equal(await page.locator('[data-role="AGI"]').getAttribute('aria-selected'),'true');
   assert.equal(await page.locator('.ta-role-stat').count(),10);
@@ -185,7 +191,7 @@ for(const g of catalogs.equipment) {
    }
   }
   await page.setViewportSize({width:1280,height:1000});
-  if(locale==='zh-Hant') {await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:'/tmp/team-analysis-desktop.png'});await page.setViewportSize({width:390,height:844});await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:'/tmp/team-analysis-mobile.png'});}
+  if(locale==='zh-Hant') {await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:path.join(root,'artifacts/filter-icons/team-analysis-desktop.png')});await page.setViewportSize({width:390,height:844});await page.locator('#pvpPlayerTeamAnalysis').screenshot({path:path.join(root,'artifacts/filter-icons/team-analysis-mobile.png')});}
   // Query another player clears old analysis immediately and updates both charts.
   await page.locator('#pvpPlayerSearchInput').fill('QB');assert.equal(await page.locator('#pvpPlayerTeamAnalysis').isVisible(),false);
   await page.locator('.pvp-search-suggestion').nth(1).click();await page.locator('.ta-bar').first().waitFor();
