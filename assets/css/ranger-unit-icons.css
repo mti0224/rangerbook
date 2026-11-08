@@ -12,8 +12,8 @@
   left: 0;
   bottom: 0;
   transform: translate(-50%, 50%);
-  width: var(--element-icon-size, 1.5rem);
-  height: var(--element-icon-size, 1.5rem);
+  width: var(--element-icon-size, 1.125rem);
+  height: var(--element-icon-size, 1.125rem);
   max-width: none;
   max-height: none;
   margin: 0;
@@ -33,9 +33,9 @@
   vertical-align: -0.2em;
   margin-right: 0.3em;
 }
-.ranger-detail-image-wrap { --element-icon-size: 2rem; }
+.ranger-detail-image-wrap { --element-icon-size: 1.5rem; }
 .pvp-ranger-portrait { display: block; flex: 0 0 3.25rem; width: 3.25rem; height: 3.25rem; }
-.pvp-modal-ranger-portrait { display: block; width: max-content; --element-icon-size: 1.75rem; }
+.pvp-modal-ranger-portrait { display: block; width: max-content; --element-icon-size: 1.3125rem; }
 .pvp-player-detail-portrait { display: block; width: 5.5rem; height: 5.5rem; }
 .pvp-ranger-main .ranger-mini-stats, .pvp-modal-ranger-copy .ranger-mini-stats {
   display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4rem;
