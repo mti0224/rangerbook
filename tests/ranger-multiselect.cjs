@@ -93,6 +93,11 @@ const stars=row=>(row.evolution==='HYPER'?'超進化':row.evolution==='ULTRA'?'�
   if(locale==='zh_TW')assert.equal(await page.locator('#starFilter label:has(input[value="終極進化8星"])').getAttribute('title'),'終極進化8星','Evolution wording remains accessible in the icon tooltip');
   assert.ok((await page.locator('#starFilter label:has(input[value="終極進化8星"]) img').getAttribute('src')).endsWith('com_level02_star08.png'));
   assert.ok((await page.locator('#starFilter label:has(input[value="超進化8星"]) img').getAttribute('src')).endsWith('com_level04_star08.png'));
+  for(const grade of [4,5]) {
+   const choice=page.locator(`#starFilter label:has(input[value="終極進化${grade}星"])`);
+   assert.ok((await choice.locator('img').getAttribute('src')).endsWith(`com_level01_star0${grade}.png`),'Early evolution uses native gold stars');
+   assert.equal(await choice.locator('.ranger-evolution-marker').count(),1,'Early evolution is distinguished by an icon');
+  }
   await page.locator('body').press('Escape');
   await page.locator('#rangerResetBtn').click();
   await open();

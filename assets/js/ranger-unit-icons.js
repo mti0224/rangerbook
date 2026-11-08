@@ -31,9 +31,12 @@
     if (kind === "star") {
       const grade = Number(raw.match(/\d+/)?.[0]);
       if (Number.isInteger(grade) && grade >= 1 && grade <= 9) {
-        const level = /超進化|HYPER/i.test(raw) ? "04" : /終極進化|ULTRA|ULTIMATE/i.test(raw) ? "02" : "01";
+        const hyper = /超進化|HYPER/i.test(raw), ultra = /終極進化|ULTRA|ULTIMATE/i.test(raw);
+        // Native 4/5-star evolved Rangers still use the gold star assets.
+        const level = hyper && grade === 8 ? "04" : ultra && grade >= 6 && grade <= 8 ? "02" : "01";
         const description = label || raw;
         content = `<img class="ranger-star-icon" src="${new URL("star_layer/com_level"+level+"_star"+String(grade).padStart(2,"0")+".png",base).href}" alt="${escape(description)}" title="${escape(description)}" decoding="async">`;
+        if (ultra && grade < 6) content += `<svg class="ranger-evolution-marker" viewBox="0 0 16 16" role="img" aria-label="${escape(description)}" fill="none" stroke="currentColor" stroke-width="2"><title>${escape(description)}</title><path d="m3 9 5-5 5 5M3 13l5-5 5 5"/></svg>`;
       }
     } else if (kind === "element") {
       content = icon("element", value);
