@@ -403,7 +403,11 @@
     }
     // Keep the fieldset legend and any choices made while full data was loading.
     group.querySelectorAll('label').forEach(label=>label.remove());
-    group.insertAdjacentHTML('beforeend',unique.map(value=>`<label class="ranger-filter-option"><input type="checkbox" name="${group.id}" value="${html(value)}"${selected.has(value)?' checked':''}><span>${html(window.RangerbookI18n.uiText(value))}</span></label>`).join(''));
+    const kind = group === els.star ? "star" : group === els.type ? "type" : "element";
+    group.insertAdjacentHTML('beforeend',unique.map(value=>{
+      const label = window.RangerbookI18n.uiText(value);
+      return `<label class="ranger-filter-option ranger-icon-filter-option" title="${html(label)}"><input type="checkbox" name="${group.id}" value="${html(value)}" aria-label="${html(label)}"${selected.has(value)?' checked':''}><span>${window.RangerbookUnitIcons.category(kind,value,label)}</span></label>`;
+    }).join(''));
   }
 
   function tagClass(value) {

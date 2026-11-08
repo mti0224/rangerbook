@@ -79,3 +79,10 @@ jobs:
           name: ranger-unit-icons
           path: artifacts/unit-icons/
           retention-days: 7
+      - name: Save analysis icon screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-category-icons
+          path: artifacts/filter-icons/
+          retention-days: 7

@@ -94,7 +94,14 @@
     }
     return t('category.'+key)==='analysis.category.'+key?t('overview.unknown'):t('category.'+key);
   };
+  function categoryLabel(key) {
+    const kind = ['STR','AGI','INT'].includes(key) ? 'type' : 'element';
+    return window.RangerbookUnitIcons.category(kind,key,t('category.'+key));
+  }
   function distributionLabel(group,item,label){
+    if(group==='role')return window.RangerbookUnitIcons.category('type',item.key,label);
+    if(group==='element')return window.RangerbookUnitIcons.category('element',item.key,label);
+    if(group==='condition' && ['STR','AGI','INT','FIRE','WATER','TREE','LIGHT','DARK'].includes(item.key))return categoryLabel(item.key);
     if(group!=='star'&&group!=='gearStar')return escape(label);
     const key=item.key;
     const grade=key==='ultra8'||key==='hyper8'?8:Number(key);
@@ -118,7 +125,7 @@
         ' aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Number(pct.toFixed(1))+'">'+
         '<span class="ta-dist-fill" style="width:'+pct+'%"></span></div></div>';
     }).join('');
-    return '<div class="ta-distribution-item"><div class="ta-dist-heading">'+escape(t('overview.'+name))+
+    return '<div class="ta-distribution-item" data-distribution="'+name+'"><div class="ta-dist-heading">'+escape(t('overview.'+name))+
       '<small>'+total+'</small></div><div class="ta-dist-rows">'+rows+'</div></div>';
   }
   function overview(){
@@ -187,7 +194,7 @@
     const panel = host.querySelector('.ta-members');
     if (!row) { panel.innerHTML = ''; return; }
     panel.setAttribute('aria-label',t('category.'+category));
-    panel.innerHTML = `<h4>${escape(t('category.'+category))} · ${row.numerator}/${row.denominator}</h4>
+    panel.innerHTML = `<h4 aria-label="${escape(t('category.'+category))} ${row.numerator}/${row.denominator}">${categoryLabel(category)} · ${row.numerator}/${row.denominator}</h4>
       <p class="ta-legend"><span class="ta-pass-label">${escape(t('matched'))}</span><span class="ta-fail-label">${escape(t('unmatched'))}</span></p>
       <div class="ta-member-grid">${row.entries.map(entry => {
         const name = window.RangerbookV2.render(entry.ranger.nameKey,window.RangerbookV2.locale);
@@ -200,8 +207,8 @@
   function bars() {
     const rows = result.tabs[tab];
     category = rows.find(r => r.denominator)?.category || rows[0]?.category;
-    host.querySelector('.ta-bars').innerHTML = rows.map(row => `<button type="button" class="ta-bar" data-category="${row.category}" aria-pressed="false" aria-controls="taMembers">
-      <span class="ta-bar-heading"><strong>${escape(t('category.'+row.category))}</strong><span>${row.numerator}/${row.denominator} (${row.ratio === null ? '—' : percent(row.ratio*100)})</span></span>
+    host.querySelector('.ta-bars').innerHTML = rows.map(row => `<button type="button" class="ta-bar" data-category="${row.category}" aria-pressed="false" aria-controls="taMembers" aria-label="${escape(t('category.'+row.category))} ${row.numerator}/${row.denominator} (${row.ratio === null ? '—' : percent(row.ratio*100)})" title="${escape(t('category.'+row.category))}">
+      <span class="ta-bar-heading"><strong>${categoryLabel(row.category)}</strong><span>${row.numerator}/${row.denominator} (${row.ratio === null ? '—' : percent(row.ratio*100)})</span></span>
       <span class="ta-bar-track" aria-hidden="true"><span style="width:${(row.ratio || 0)*100}%"></span></span></button>`).join('');
     host.querySelectorAll('[data-analysis-tab]').forEach(b => {
       const active = b.dataset.analysisTab === tab;
@@ -220,7 +227,7 @@
       <section class="ta-panel ta-overview-panel"><h3>${escape(t('overview.title'))}</h3>${overview()}</section>
       <section class="ta-panel ta-role-panel"><div class="ta-panel-heading"><h3>${escape(t('role.title'))}</h3>
         <button type="button" class="ta-help-button" data-role-help aria-label="${escape(t('role.title'))}"><span aria-hidden="true">?</span></button></div>
-        <div class="ta-tabs ta-role-tabs" role="tablist" aria-label="${escape(t('role.title'))}">${['INT','AGI','STR'].map(k => `<button type="button" role="tab" data-role="${k}">${escape(t('category.'+k))}</button>`).join('')}</div>
+        <div class="ta-tabs ta-role-tabs" role="tablist" aria-label="${escape(t('role.title'))}">${['INT','AGI','STR'].map(k => `<button type="button" role="tab" data-role="${k}" aria-label="${escape(t('category.'+k))}" title="${escape(t('category.'+k))}">${categoryLabel(k)}</button>`).join('')}</div>
         <div class="ta-role-body" role="tabpanel"></div></section>
       <section class="ta-panel ta-equipment-panel"><div class="ta-panel-heading"><h3>${escape(t('equipment'))}</h3>
         <button type="button" class="ta-help-button" data-equipment-help aria-haspopup="dialog" aria-label="${escape(t('help.open'))}"><span aria-hidden="true">?</span></button></div>

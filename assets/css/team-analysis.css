@@ -143,3 +143,9 @@ html[data-theme=dark] #pvpPlayerTeamAnalysis .ta-member.ta-fail { background:#46
   .ta-panel { padding:.9rem; }
 }
 
+
+.ta-dist-row-heading:has(.ranger-category-icon) { align-items:center; }
+.ta-role-tabs .ranger-category-icon { min-width:2rem; }
+.ta-bar-heading { align-items:center; }
+.ta-bar-heading > strong { display:flex; align-items:center; }
+.ta-members h4 { display:flex; align-items:center; gap:.4rem; }

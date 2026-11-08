@@ -36,3 +36,10 @@ jobs:
       - run: node tests/loading-performance.cjs
       - run: node tests/ranger-multiselect.cjs
       - run: node tests/filter-style-consistency.cjs
+      - name: Save icon filter screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: filter-icons
+          path: artifacts/filter-icons/
+          retention-days: 7

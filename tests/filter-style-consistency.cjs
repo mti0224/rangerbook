@@ -10,15 +10,15 @@ async function style(page,selector,properties) {
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROMIUM_PATH||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
  try {for(const locale of ['zh-Hant','en','th','jp']) {
-  const context=await browser.newContext({serviceWorkers:'block',viewport:{width:1200,height:900}});
+  const context=await browser.newContext({serviceWorkers:'block',reducedMotion:'reduce',viewport:{width:1200,height:900}});
   await context.addInitScript(lang=>localStorage.setItem('rangerbook-language',lang),locale);
   await context.route('**/*',route=>{
    const url=new URL(route.request().url());
-   if(route.request().resourceType()==='image')return route.fulfill({contentType:'image/png',body:png});
+   if(url.origin!==base && route.request().resourceType()==='image')return route.fulfill({contentType:'image/png',body:png});
    if(url.origin!==base)return route.abort();
    let name=decodeURIComponent(url.pathname).slice(1);if(name.endsWith('/'))name+='index.html';
    if(!fs.existsSync(path.join(root,name)))return route.fulfill({status:404,body:''});
-   const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json'};
+   const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png'};
    return route.fulfill({contentType:types[path.extname(name)]||'application/octet-stream',body:read(name)});
   });
   const ranger=await context.newPage(),gear=await context.newPage(),errors=[];
@@ -33,6 +33,20 @@ async function style(page,selector,properties) {
   await toggle.click();await ranger.locator('#rangerAdvancedToggleBtn').click();
   assert.equal(await gear.locator('#gearAdvancedFilters fieldset.gear-filter-panel > legend').count(),6,'Every Gear group, including dynamic Skill+, has a visible legend');
   assert.equal(await gear.locator('#gearAdvancedFilters select, #gearAdvancedFilters details').count(),0);
+  for(const [page,ids] of [[ranger,['starFilter','typeFilter','elementFilter']],[gear,['gearStarFilter','gearTypeFilter','gearTriggerAttrFilter','gearTriggerTypeFilter']]]) {
+   for(const id of ids) {
+    const group=page.locator('#'+id),choices=group.locator('label');
+    assert.equal(await group.locator('.ranger-category-icon').count(),await choices.count(),id+' uses only icon values');
+    assert.ok(await choices.evaluateAll(labels=>labels.every(label=>{
+     const input=label.querySelector('input'),name=input.getAttribute('aria-label');
+     return name && label.title===name && ![...label.childNodes].some(node=>node.nodeType===3 && node.textContent.trim());
+    })),id+' keeps localized tooltips and accessible names');
+    for(const image of await group.locator('img').all())assert.ok(await image.evaluate(async img=>{if(!img.complete)await new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;});return img.naturalWidth>0;}),id+' loads native PNGs');
+   }
+  }
+  assert.equal(await ranger.locator('#elementFilter label:has(input[value="無"]) svg[role="img"]').count(),1,'Neutral remains a selectable icon');
+  assert.equal(await gear.locator('#gearTypeFilter svg[role="img"]').count(),3,'All equipment slots have icons');
+  fs.mkdirSync(path.join(root,'artifacts/filter-icons'),{recursive:true});
   const count=async()=>Number((await gear.locator('#gearResultCount').innerText()).replace(/,/g,''));
   const baseline=await count();assert.ok(baseline>0);
   const stars=gear.locator('#gearStarFilter input');
@@ -79,6 +93,13 @@ async function style(page,selector,properties) {
     assert.deepEqual(await style(gear,gearSelector,properties),await style(ranger,rangerSelector,properties),`${locale} ${theme} ${width}: ${gearSelector} matches Ranger styles`);
    }
    for(const page of [ranger,gear])assert.ok(await page.locator('.ranger-controls').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'Controls fit the viewport');
+   if(locale==='zh-Hant' && [1200,375].includes(width)) {
+    for(const [page,name] of [[ranger,'ranger'],[gear,'gear']]) {
+     const drawer=page.locator('#gt-site-drawer');if(width<1120)await drawer.waitFor({state:'hidden'});
+     await page.locator(name==='ranger'?'#rangerAdvancedFilters':'#gearAdvancedFilters').screenshot({path:path.join(root,`artifacts/filter-icons/${name}-${width}-${theme}.png`)});
+    }
+   }
+
    assert.ok(await panel.locator('.ranger-filter-option').evaluateAll(labels=>labels.every(el=>{
     const rect=el.getBoundingClientRect();return rect.left>=0 && rect.right<=innerWidth && el.scrollWidth<=el.clientWidth+1;
    })),'All translated Gear choices fit without clipping');
