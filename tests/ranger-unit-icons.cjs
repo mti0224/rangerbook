@@ -14,7 +14,7 @@ const expectNumber=v=>Number(v).toLocaleString('zh-Hant',{maximumFractionDigits:
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.QA_CHROME||undefined,args:['--no-sandbox','--disable-dev-shm-usage']});
  try { for(const locale of ['zh-Hant','en','th','jp']) {
-  const context=await browser.newContext({serviceWorkers:'block',viewport:{width:1280,height:1000}}),errors=[];
+  const context=await browser.newContext({serviceWorkers:'block',reducedMotion:'reduce',viewport:{width:1280,height:1000}}),errors=[];
   await context.addInitScript(lang=>{localStorage.setItem('rangerbook-language',lang);localStorage.setItem('rangerbook-admin-mode','true');},locale);
   await context.route('**/*',route=>{
    const url=new URL(route.request().url());
@@ -29,7 +29,7 @@ const expectNumber=v=>Number(v).toLocaleString('zh-Hant',{maximumFractionDigits:
    return route.abort();
   });
   const page=await context.newPage();page.setDefaultTimeout(20000);page.on('pageerror',e=>errors.push(e.message));
-  async function closeDrawer(){const toggle=page.locator('.site-menu-toggle[aria-expanded="true"]');if(await toggle.count() && await toggle.isVisible())await toggle.click();}
+  async function closeDrawer(){const toggle=page.locator('.site-menu-toggle[aria-expanded="true"]');if(await toggle.count() && await toggle.isVisible())await toggle.click();if(await page.evaluate(()=>matchMedia('(max-width:1120px)').matches))await page.locator('#gt-site-drawer').waitFor({state:'hidden'});}
   async function go(url){await page.goto(base+url,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>!!window.RangerbookI18n);await page.evaluate(()=>window.RangerbookI18n.ready);await closeDrawer();}
   async function geometry(host) {
    await host.locator('.ranger-element-icon').first().waitFor();
