@@ -188,7 +188,11 @@
       if (!hasRotation) return null;
       if (outboundDuration <= EPSILON) return resolvedEndAngle;
       const ratio = (finiteNumber(time, spawnTime) - spawnTime) / outboundDuration;
-      return lerp(resolvedStartAngle, resolvedEndAngle, ratio);
+      const nativeStart = resolvedStartAngle % 360;
+      let delta = resolvedEndAngle - nativeStart;
+      if (delta > 180) delta -= 360;
+      if (delta < -180) delta += 360;
+      return nativeStart + delta * clamp01(ratio);
     }
 
     return {
@@ -220,7 +224,7 @@
     const impactTime = spawnTime + outboundDuration;
     const returnDuration = explicitOrComputedDuration(config, end, returnEnd, "return");
     const cleanupTime = impactTime + returnDuration;
-    const finishDuration = nonNegativeNumber(config.finishDuration, 0);
+    const finishDuration = 0;
     const events = [event("projectile-spawn", spawnTime, projectileIndex, 0)];
     events.push(...impactEvents(kind, impactTime, projectileIndex, finishDuration));
     events.push(event("projectile-return-start", impactTime, projectileIndex, 20));

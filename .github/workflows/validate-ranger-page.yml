@@ -25,6 +25,7 @@ on:
       - "assets/js/ranger-animation-hit-effect.js"
       - "assets/hit_effect/**"
       - "tests/ranger-animation-projectile-*.test.js"
+      - "tests/ranger-animation-native-playback.test.js"
       - "tests/ranger-animation-horizontal-projectile-rule.test.js"
       - "tests/ranger-animation-simulation-bridge.test.js"
       - "tests/ranger-animation-hit-effect-timing.test.js"
@@ -40,7 +41,7 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,6 +68,7 @@ jobs:
           node --check assets/js/ranger-animation-hit-effect.js
       - name: Validate projectile engine regressions
         run: |
+          node --test tests/ranger-animation-native-playback.test.js
           node --test tests/ranger-animation-identity.test.js
           node --test tests/ranger-animation-projectile-*.test.js
           node --test tests/ranger-animation-horizontal-projectile-rule.test.js
@@ -103,7 +105,7 @@ jobs:
       - name: Validate Ranger script references
         run: |
           grep -q 'assets/js/site.js' ranger/ranger/index.html
-          grep -q 'assets/js/ranger-animation-horizontal-projectile-rule.js' ranger/ranger/index.html
+          ! grep -Eq 'assets/js/ranger-animation-(horizontal-projectile-rule|ground-endpoint-fix)\.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-data.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine.js' ranger/ranger/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine-adapter.js' ranger/ranger/index.html
@@ -120,7 +122,7 @@ jobs:
           ! grep -Eq 'ranger-(animation-gate|recovery|grouped-detail-items|level-slider|advanced-filters|animation-viewer-loader|page-mode)\.js|card-tag-colors\.js|bottom-pagination\.js' ranger/ranger/index.html
       - name: Validate Ranking script references
         run: |
-          grep -q 'assets/js/ranger-animation-horizontal-projectile-rule.js' ranger/ranking/index.html
+          ! grep -Eq 'assets/js/ranger-animation-(horizontal-projectile-rule|ground-endpoint-fix)\.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-engine-adapter.js' ranger/ranking/index.html
           grep -q 'assets/js/ranger-animation-projectile-shadow.js' ranger/ranking/index.html
