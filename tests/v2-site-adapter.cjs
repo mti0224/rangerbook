@@ -26,6 +26,28 @@ const load=n=>JSON.parse(fs.readFileSync(path.join(root,'res/v2',n+'.json'),'utf
     for(let i=0;i<source.length;i++)assert.equal(Object.values(result[i]).filter(v=>v && Array.isArray(v['技能組'])).reduce((n,v)=>n+v['技能組'].length,0),
       source[i].skillSet.reduce((n,s)=>n+s.effects.length,0),'all child effects '+source[i].rangerCode);
    }
+   // CLEAN_UNBEAT is instantaneous even when the upstream subFactor maps to a duration.
+   // CLEANING_UNBEAT is a distinct, timed effect and must retain its duration.
+   if(name==='Rangers_data.json') {
+    const source=load('rangers').rangers;
+    let instantCount=0;
+    for(let i=0;i<source.length;i++) {
+     for(const [skillIndex,skill] of source[i].skillSet.entries()) {
+      for(const [effectIndex,effect] of skill.effects.entries()) {
+       const shown=result[i]['技能'+(skillIndex+1)]['技能組'][effectIndex]['有效時間'];
+       if(['SKILLEFF_CLEAN_UNBEAT','CLEAN_UNBEAT'].includes(e.effectCode)) {
+        assert.equal(shown,'-','instant CLEAN_UNBEAT: '+source[i].rangerCode);
+        instantCount++;
+       }
+       if(['SKILLEFF_CLEANING_UNBEAT','CLEANING_UNBEAT'].includes(e.effectCode) &&
+          typeof e.duration?.seconds==='number') {
+        assert.equal(shown,e.duration.seconds+'秒','timed CLEANING_UNBEAT: '+source[i].rangerCode);
+       }
+      }
+     }
+    }
+    assert.ok(instantCount>0,'V2 ranger fixtures must exercise CLEAN_UNBEAT');
+   }
    if(name==='裝備資料庫.json') {
     assert.equal(result.length,load('equipment').equipment.length);assert.ok(result.find(x=>x['Spec+']['特殊效果']));
     const conditions={STR:'力量型Ranger',AGI:'敏捷型Ranger',INT:'智慧型Ranger',FIRE:'火屬性Ranger',WATER:'水屬性Ranger',TREE:'木屬性Ranger',LIGHT:'光屬性Ranger',DARK:'暗屬性Ranger'};
