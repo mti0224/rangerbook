@@ -8,107 +8,6 @@
             "elementType": "BOSS_1",
             "stats": {
                 "physicalAttack": 4000,
-                "magicalAttack": 20000,
-                "hp": 10000000,
-                "physicalDefense": 0,
-                "magicalDefense": 0,
-                "attackRangePoints": 220,
-                "splashRangePoints": 100,
-                "criticalChancePercent": 10,
-                "criticalDamagePercent": 300,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 50,
-                "hitChancePercent": 20,
-                "skillHitChancePercent": 20,
-                "mineralCost": 1000,
-                "moveSpeed": {
-                    "pointsPerSecond": 90,
-                    "rating": "NORMAL"
-                },
-                "attackSpeed": {
-                    "secondsPerAttack": 1.1333,
-                    "rating": "NORMAL"
-                }
-            },
-            "skills": [
-                {
-                    "skillCode": "sk998_la",
-                    "nameKey": null,
-                    "descriptionKey": null,
-                    "trigger": {
-                        "type": "SEARCH"
-                    },
-                    "activationRate": 70.0,
-                    "cooldownSeconds": 5.0,
-                    "icon": "",
-                    "effects": [
-                        {
-                            "effectCode": "SKILLEFF_CLEAN_UNBEAT",
-                            "magnitude": null,
-                            "effectTrigger": null,
-                            "targetLimit": null,
-                            "duration": null,
-                            "rangePoints": 300.0,
-                            "availableIn": {
-                                "events": true,
-                                "guardian": true
-                            }
-                        },
-                        {
-                            "effectCode": "SKILLEFF_DMG",
-                            "magnitude": {
-                                "kind": "statPercent",
-                                "stat": "ATK",
-                                "operator": "MULTIPLY",
-                                "percent": 3000.0
-                            },
-                            "effectTrigger": null,
-                            "targetLimit": null,
-                            "duration": null,
-                            "rangePoints": 300.0,
-                            "availableIn": {
-                                "events": true,
-                                "guardian": true
-                            }
-                        },
-                        {
-                            "effectCode": "SKILLEFF_STUN",
-                            "magnitude": null,
-                            "effectTrigger": null,
-                            "targetLimit": null,
-                            "duration": {
-                                "kind": "fixed",
-                                "seconds": 3.0
-                            },
-                            "rangePoints": 300.0,
-                            "availableIn": {
-                                "events": true,
-                                "guardian": true
-                            }
-                        }
-                    ]
-                }
-            ],
-            "abilityCodes": [
-                "ab225_aMirror",
-                "ab998_barrier_labi1"
-            ],
-            "awakeningAbilities": [],
-            "talents": null,
-            "flags": {
-                "boss": true,
-                "nft": false,
-                "advent": false
-            }
-        },
-        {
-            "enemyCode": "g998-labirinth2",
-            "nameKey": "UNIT:g998-labirinth2_nm",
-            "roleType": "STR",
-            "elementType": "BOSS_1",
-            "stats": {
-                "physicalAttack": 4000,
                 "magicalAttack": 70000,
                 "hp": 10000000,
                 "physicalDefense": 0,
@@ -117,14 +16,14 @@
                 "splashRangePoints": 100,
                 "criticalChancePercent": 20,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 60,
-                "skillResistancePercent": 60,
+                "dodgeChancePercent": 10,
+                "skillDodgeChancePercent": 70,
+                "skillResistancePercent": 70,
                 "hitChancePercent": 30,
                 "skillHitChancePercent": 30,
                 "mineralCost": 1000,
                 "moveSpeed": {
-                    "pointsPerSecond": 90,
+                    "pointsPerSecond": 100,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -204,28 +103,28 @@
             }
         },
         {
-            "enemyCode": "g998-labirinth3",
-            "nameKey": "UNIT:g998-labirinth3_nm",
+            "enemyCode": "g998-labirinth2",
+            "nameKey": "UNIT:g998-labirinth2_nm",
             "roleType": "STR",
             "elementType": "BOSS_1",
             "stats": {
                 "physicalAttack": 4000,
-                "magicalAttack": 120000,
+                "magicalAttack": 180000,
                 "hp": 30000000,
                 "physicalDefense": 0,
                 "magicalDefense": 0,
                 "attackRangePoints": 220,
                 "splashRangePoints": 100,
-                "criticalChancePercent": 30,
+                "criticalChancePercent": 40,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 70,
-                "skillResistancePercent": 70,
-                "hitChancePercent": 50,
-                "skillHitChancePercent": 50,
+                "dodgeChancePercent": 20,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
+                "hitChancePercent": 70,
+                "skillHitChancePercent": 70,
                 "mineralCost": 1000,
                 "moveSpeed": {
-                    "pointsPerSecond": 90,
+                    "pointsPerSecond": 100,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -333,7 +232,7 @@
                             }
                         },
                         {
-                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "effectCode": "SKILLEFF_DEBUFF-ATKSPD",
                             "magnitude": {
                                 "kind": "percent",
                                 "direction": "DECREASE",
@@ -375,7 +274,189 @@
             ],
             "abilityCodes": [
                 "ab225_aMirror2",
-                "ab998_barrier_labi3"
+                "ab998_barrier_labi4"
+            ],
+            "awakeningAbilities": [],
+            "talents": null,
+            "flags": {
+                "boss": true,
+                "nft": false,
+                "advent": false
+            }
+        },
+        {
+            "enemyCode": "g998-labirinth3",
+            "nameKey": "UNIT:g998-labirinth3_nm",
+            "roleType": "STR",
+            "elementType": "BOSS_1",
+            "stats": {
+                "physicalAttack": 4000,
+                "magicalAttack": 300000,
+                "hp": 30000000,
+                "physicalDefense": 0,
+                "magicalDefense": 0,
+                "attackRangePoints": 220,
+                "splashRangePoints": 100,
+                "criticalChancePercent": 50,
+                "criticalDamagePercent": 300,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 90,
+                "skillResistancePercent": 90,
+                "hitChancePercent": 90,
+                "skillHitChancePercent": 90,
+                "mineralCost": 1000,
+                "moveSpeed": {
+                    "pointsPerSecond": 100,
+                    "rating": "NORMAL"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 1.1333,
+                    "rating": "NORMAL"
+                }
+            },
+            "skills": [
+                {
+                    "skillCode": "sk998_la",
+                    "nameKey": null,
+                    "descriptionKey": null,
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 70.0,
+                    "cooldownSeconds": 5.0,
+                    "icon": "",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DMG",
+                            "magnitude": {
+                                "kind": "statPercent",
+                                "stat": "ATK",
+                                "operator": "MULTIPLY",
+                                "percent": 3000.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_STUN",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 3.0
+                            },
+                            "rangePoints": 300.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "sk998_la2",
+                    "nameKey": null,
+                    "descriptionKey": null,
+                    "trigger": {
+                        "type": "SEARCH"
+                    },
+                    "activationRate": 70.0,
+                    "cooldownSeconds": 7.0,
+                    "icon": "",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEANING_ENEMY",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 500.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_CURSE_DEBUFF",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 500.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-ATKSPD",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 50.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 500.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 50.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 5.0
+                            },
+                            "rangePoints": 500.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab225_aMirror3",
+                "ab998_barrier_labi6"
             ],
             "awakeningAbilities": [],
             "talents": null,
@@ -515,7 +596,7 @@
                             }
                         },
                         {
-                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "effectCode": "SKILLEFF_DEBUFF-ATKSPD",
                             "magnitude": {
                                 "kind": "percent",
                                 "direction": "DECREASE",
@@ -697,7 +778,7 @@
                             }
                         },
                         {
-                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "effectCode": "SKILLEFF_DEBUFF-ATKSPD",
                             "magnitude": {
                                 "kind": "percent",
                                 "direction": "DECREASE",
@@ -879,7 +960,7 @@
                             }
                         },
                         {
-                            "effectCode": "SKILLEFF_DEBUFF-ATK",
+                            "effectCode": "SKILLEFF_DEBUFF-ATKSPD",
                             "magnitude": {
                                 "kind": "percent",
                                 "direction": "DECREASE",
@@ -1404,21 +1485,21 @@
             "stats": {
                 "physicalAttack": 12000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 10000,
                 "magicalDefense": 10000,
                 "attackRangePoints": 70,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 70,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
                 "hitChancePercent": 70,
                 "skillHitChancePercent": 70,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 80,
+                    "pointsPerSecond": 110,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -1532,21 +1613,21 @@
             "stats": {
                 "physicalAttack": 12000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 10000,
                 "magicalDefense": 10000,
                 "attackRangePoints": 22,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 70,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
                 "hitChancePercent": 70,
                 "skillHitChancePercent": 70,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 61,
+                    "pointsPerSecond": 91,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -1660,21 +1741,21 @@
             "stats": {
                 "physicalAttack": 15000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 10000,
                 "magicalDefense": 1000,
                 "attackRangePoints": 282,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 30,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 70,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
                 "hitChancePercent": 70,
                 "skillHitChancePercent": 70,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 111,
+                    "pointsPerSecond": 141,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -1794,21 +1875,21 @@
             "stats": {
                 "physicalAttack": 15000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 10000,
                 "magicalDefense": 1000,
                 "attackRangePoints": 240,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 30,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 70,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
                 "hitChancePercent": 70,
                 "skillHitChancePercent": 70,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 99,
+                    "pointsPerSecond": 129,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -1922,21 +2003,21 @@
             "stats": {
                 "physicalAttack": 3000,
                 "magicalAttack": 12000,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 1000,
                 "magicalDefense": 10000,
                 "attackRangePoints": 273,
                 "splashRangePoints": 150,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 70,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
                 "hitChancePercent": 70,
                 "skillHitChancePercent": 70,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 85,
+                    "pointsPerSecond": 115,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -2050,21 +2131,21 @@
             "stats": {
                 "physicalAttack": 3000,
                 "magicalAttack": 12000,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 1000,
                 "magicalDefense": 10000,
                 "attackRangePoints": 141,
                 "splashRangePoints": 150,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 0,
-                "skillDodgeChancePercent": 50,
-                "skillResistancePercent": 70,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
+                "skillResistancePercent": 80,
                 "hitChancePercent": 70,
                 "skillHitChancePercent": 70,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 57,
+                    "pointsPerSecond": 87,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -2184,21 +2265,21 @@
             "stats": {
                 "physicalAttack": 10000,
                 "magicalAttack": 40000,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 2000,
                 "magicalDefense": 0,
                 "attackRangePoints": 360,
                 "splashRangePoints": 150,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 73,
+                    "pointsPerSecond": 103,
                     "rating": "SLOW"
                 },
                 "attackSpeed": {
@@ -2365,21 +2446,21 @@
             "stats": {
                 "physicalAttack": 30000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 60,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 110,
+                    "pointsPerSecond": 140,
                     "rating": "FAST"
                 },
                 "attackSpeed": {
@@ -2533,7 +2614,7 @@
             ],
             "abilityCodes": [
                 "ab221_aTempt",
-                "ab906_clone",
+                "ab904_revive",
                 "ab502_anti_ice"
             ],
             "awakeningAbilities": [],
@@ -2552,21 +2633,21 @@
             "stats": {
                 "physicalAttack": 50000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 350,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 30,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 98,
+                    "pointsPerSecond": 128,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -2742,21 +2823,21 @@
             "stats": {
                 "physicalAttack": 50000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 770,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 30,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 100,
+                    "pointsPerSecond": 130,
                     "rating": "NORMAL"
                 },
                 "attackSpeed": {
@@ -2926,21 +3007,21 @@
             "stats": {
                 "physicalAttack": 50000,
                 "magicalAttack": 0,
-                "hp": 1000000,
+                "hp": 2000000,
                 "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 250,
                 "splashRangePoints": 50,
                 "criticalChancePercent": 30,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 125,
+                    "pointsPerSecond": 155,
                     "rating": "FAST"
                 },
                 "attackSpeed": {
@@ -3051,7 +3132,7 @@
                             },
                             "targetLimit": {
                                 "kind": "limited",
-                                "maxTargets": 4
+                                "maxTargets": 6
                             },
                             "duration": null,
                             "rangePoints": 320.0,
@@ -3099,21 +3180,21 @@
             "stats": {
                 "physicalAttack": 10000,
                 "magicalAttack": 40000,
-                "hp": 1000000,
-                "physicalDefense": 0,
+                "hp": 2000000,
+                "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 330,
                 "splashRangePoints": 150,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 100,
+                    "pointsPerSecond": 130,
                     "rating": "FAST"
                 },
                 "attackSpeed": {
@@ -3128,7 +3209,7 @@
                     "descriptionKey": "SKILL:sk1418_moon_desc",
                     "trigger": {
                         "type": "RSEARCH",
-                        "searchRatio": 1.15
+                        "searchRatio": 1.3
                     },
                     "activationRate": 70.0,
                     "cooldownSeconds": 8.0,
@@ -3190,7 +3271,7 @@
                             },
                             "targetLimit": {
                                 "kind": "limited",
-                                "maxTargets": 12
+                                "maxTargets": 20
                             },
                             "duration": {
                                 "kind": "fixed",
@@ -3257,7 +3338,7 @@
             ],
             "abilityCodes": [
                 "ab221_aTempt",
-                "ab906_clone",
+                "ab905_st_kback_str",
                 "ab503_anti_met"
             ],
             "awakeningAbilities": [],
@@ -3276,21 +3357,21 @@
             "stats": {
                 "physicalAttack": 10000,
                 "magicalAttack": 40000,
-                "hp": 1000000,
-                "physicalDefense": 0,
+                "hp": 2000000,
+                "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 380,
                 "splashRangePoints": 150,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 63,
+                    "pointsPerSecond": 93,
                     "rating": "SLOW"
                 },
                 "attackSpeed": {
@@ -3428,7 +3509,7 @@
             ],
             "abilityCodes": [
                 "ab221_aTempt",
-                "ab906_clone",
+                "ab905_st_kback_int",
                 "ab502_anti_ice"
             ],
             "awakeningAbilities": [],
@@ -3447,21 +3528,21 @@
             "stats": {
                 "physicalAttack": 30000,
                 "magicalAttack": 0,
-                "hp": 1000000,
-                "physicalDefense": 0,
+                "hp": 2000000,
+                "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 90,
                 "splashRangePoints": 0,
                 "criticalChancePercent": 0,
                 "criticalDamagePercent": 100,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 99,
+                    "pointsPerSecond": 129,
                     "rating": "FAST"
                 },
                 "attackSpeed": {
@@ -3477,7 +3558,7 @@
                     "trigger": {
                         "type": "SELF"
                     },
-                    "activationRate": 10.0,
+                    "activationRate": 70.0,
                     "cooldownSeconds": 12.0,
                     "icon": "skill_icon_sk1269_brown.png",
                     "effects": [
@@ -3550,13 +3631,13 @@
                             "magnitude": {
                                 "kind": "percent",
                                 "direction": "INCREASE",
-                                "value": 200.0
+                                "value": 100.0
                             },
                             "effectTrigger": null,
                             "targetLimit": null,
                             "duration": {
                                 "kind": "fixed",
-                                "seconds": 10.0
+                                "seconds": 7.0
                             },
                             "rangePoints": 330.0,
                             "availableIn": {
@@ -3584,7 +3665,7 @@
                             }
                         },
                         {
-                            "effectCode": "SKILLEFF_BUFF-ANTI_AVOID_PROB",
+                            "effectCode": "SKILLEFF_BUFF-SPEED",
                             "magnitude": {
                                 "kind": "percent",
                                 "direction": "INCREASE",
@@ -3626,21 +3707,21 @@
             "stats": {
                 "physicalAttack": 50000,
                 "magicalAttack": 0,
-                "hp": 1000000,
-                "physicalDefense": 0,
+                "hp": 2000000,
+                "physicalDefense": 30000,
                 "magicalDefense": 0,
                 "attackRangePoints": 285,
                 "splashRangePoints": 0,
                 "criticalChancePercent": 30,
                 "criticalDamagePercent": 300,
-                "dodgeChancePercent": 20,
-                "skillDodgeChancePercent": 75,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 80,
                 "skillResistancePercent": 80,
                 "hitChancePercent": 90,
                 "skillHitChancePercent": 90,
                 "mineralCost": 10,
                 "moveSpeed": {
-                    "pointsPerSecond": 105,
+                    "pointsPerSecond": 135,
                     "rating": "FAST"
                 },
                 "attackSpeed": {
@@ -3657,7 +3738,7 @@
                         "type": "RSEARCH",
                         "searchRatio": 1.4
                     },
-                    "activationRate": 10.0,
+                    "activationRate": 70.0,
                     "cooldownSeconds": 7.0,
                     "icon": "skill_icon_sk1386_sally.png",
                     "effects": [
@@ -3668,7 +3749,7 @@
                             "targetLimit": null,
                             "duration": {
                                 "kind": "fixed",
-                                "seconds": 4.5
+                                "seconds": 5.0
                             },
                             "rangePoints": 360.0,
                             "availableIn": {
@@ -3683,7 +3764,7 @@
                             "targetLimit": null,
                             "duration": {
                                 "kind": "fixed",
-                                "seconds": 4.5
+                                "seconds": 5.0
                             },
                             "rangePoints": 360.0,
                             "availableIn": {
@@ -3728,7 +3809,7 @@
                             "targetLimit": null,
                             "duration": {
                                 "kind": "fixed",
-                                "seconds": 10.0
+                                "seconds": 2.0
                             },
                             "rangePoints": 330.0,
                             "availableIn": {
@@ -3782,6 +3863,220 @@
                 "ab902_mineraladd",
                 "ab502_anti_ice"
             ],
+            "awakeningAbilities": [],
+            "talents": null,
+            "flags": {
+                "boss": false,
+                "nft": false,
+                "advent": false
+            }
+        },
+        {
+            "enemyCode": "u40016-sally",
+            "nameKey": "UNIT:u40016-sally_nm",
+            "roleType": "STR",
+            "elementType": "BOSS_1",
+            "stats": {
+                "physicalAttack": 50000,
+                "magicalAttack": 0,
+                "hp": 2000000,
+                "physicalDefense": 30000,
+                "magicalDefense": 0,
+                "attackRangePoints": 200,
+                "splashRangePoints": 0,
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 100,
+                "dodgeChancePercent": 30,
+                "skillDodgeChancePercent": 75,
+                "skillResistancePercent": 80,
+                "hitChancePercent": 90,
+                "skillHitChancePercent": 90,
+                "mineralCost": 10,
+                "moveSpeed": {
+                    "pointsPerSecond": 70,
+                    "rating": "SLOW"
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 3.5,
+                    "rating": "SLOW"
+                }
+            },
+            "skills": [
+                {
+                    "skillCode": "sk40016_sally",
+                    "nameKey": "SKILL:sk1285_sally_nm",
+                    "descriptionKey": "SKILL:sk1285_sally_desc",
+                    "trigger": {
+                        "type": "RSEARCH",
+                        "searchRatio": 1.5
+                    },
+                    "activationRate": 70.0,
+                    "cooldownSeconds": 12.0,
+                    "icon": "skill_icon_sk1285_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_CLEAN_UNBEAT",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": null,
+                            "rangePoints": 320.0,
+                            "availableIn": {
+                                "events": false,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_DEBUFF-SKILL_RESIST",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "DECREASE",
+                                "value": 30.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 9.0
+                            },
+                            "rangePoints": 320.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": false
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_POLYMORPH",
+                            "magnitude": null,
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 9.0
+                            },
+                            "rangePoints": 320.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "skillCode": "sk40016_sally2",
+                    "nameKey": "SKILL:hsk1285_sally_nm",
+                    "descriptionKey": "SKILL:hsk1285_sally_desc",
+                    "trigger": {
+                        "type": "SELF"
+                    },
+                    "activationRate": 30.0,
+                    "cooldownSeconds": 9.0,
+                    "icon": "skill_icon_hsk1285_sally.png",
+                    "effects": [
+                        {
+                            "effectCode": "SKILLEFF_BUFF-AVOID_CHANCE",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 60.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 100.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-HP",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 400.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 100.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        },
+                        {
+                            "effectCode": "SKILLEFF_BUFF-SPEED",
+                            "magnitude": {
+                                "kind": "percent",
+                                "direction": "INCREASE",
+                                "value": 40.0
+                            },
+                            "effectTrigger": null,
+                            "targetLimit": null,
+                            "duration": {
+                                "kind": "fixed",
+                                "seconds": 6.0
+                            },
+                            "rangePoints": 100.0,
+                            "availableIn": {
+                                "events": true,
+                                "guardian": true
+                            }
+                        }
+                    ]
+                }
+            ],
+            "abilityCodes": [
+                "ab201_flight",
+                "ab905_st_kback_int"
+            ],
+            "awakeningAbilities": [],
+            "talents": null,
+            "flags": {
+                "boss": false,
+                "nft": false,
+                "advent": false
+            }
+        },
+        {
+            "enemyCode": "u40016sk-sally",
+            "nameKey": "UNIT:u40016sk-sally_nm",
+            "roleType": "STR",
+            "elementType": "BOSS_1",
+            "stats": {
+                "physicalAttack": 17,
+                "magicalAttack": 0,
+                "hp": 2000000,
+                "physicalDefense": 0,
+                "magicalDefense": 0,
+                "attackRangePoints": 0,
+                "splashRangePoints": 0,
+                "criticalChancePercent": 0,
+                "criticalDamagePercent": 0,
+                "dodgeChancePercent": 0,
+                "skillDodgeChancePercent": 0,
+                "skillResistancePercent": 0,
+                "hitChancePercent": 0,
+                "skillHitChancePercent": 0,
+                "mineralCost": 0,
+                "moveSpeed": {
+                    "pointsPerSecond": 0,
+                    "rating": ""
+                },
+                "attackSpeed": {
+                    "secondsPerAttack": 1.2667,
+                    "rating": ""
+                }
+            },
+            "skills": [],
+            "abilityCodes": [],
             "awakeningAbilities": [],
             "talents": null,
             "flags": {

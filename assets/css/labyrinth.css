@@ -315,3 +315,30 @@ html[data-theme="dark"] .tag-debuff {
     font-size: 0.88rem;
   }
 }
+
+.labyrinth-map-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin: 1rem 0;
+}
+
+.labyrinth-map-controls[hidden] {
+  display: none;
+}
+
+.labyrinth-map-controls select {
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.65rem;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+}
+
+.labyrinth-stage-card:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}

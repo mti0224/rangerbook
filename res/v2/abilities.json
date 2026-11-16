@@ -8964,7 +8964,7 @@
             },
             "triggerEffects": [
                 {
-                    "chancePercent": 30,
+                    "chancePercent": 100,
                     "triggerPhaseKey": "CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_DIE",
                     "battleModeKey": "CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL",
                     "conditionKey": "CUSTOM:TALENT_TEXT_TLT_NO_CONDITION",
@@ -9003,12 +9003,12 @@
                             {
                                 "key": "CUSTOM:ABILITY_ACTION_TYPE_MINERAL_ADD"
                             },
-                            500
+                            800
                         ]
                     },
                     "effectCode": "MINERAL_ADD",
                     "aptitudeCode": "NONE",
-                    "effectFactor": 500,
+                    "effectFactor": 800,
                     "effectSubFactor": 3
                 }
             ]
@@ -9093,7 +9093,7 @@
             },
             "triggerEffects": [
                 {
-                    "chancePercent": 33,
+                    "chancePercent": 50,
                     "triggerPhaseKey": "CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_INSTANT",
                     "battleModeKey": "CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL",
                     "conditionKey": {
@@ -9118,7 +9118,7 @@
                     "effectCode": "STRIKE_KBACK",
                     "aptitudeCode": "NONE",
                     "effectFactor": 0,
-                    "effectSubFactor": 3
+                    "effectSubFactor": 1
                 }
             ]
         },
@@ -9135,7 +9135,7 @@
             },
             "triggerEffects": [
                 {
-                    "chancePercent": 33,
+                    "chancePercent": 50,
                     "triggerPhaseKey": "CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_INSTANT",
                     "battleModeKey": "CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL",
                     "conditionKey": {
@@ -9160,7 +9160,7 @@
                     "effectCode": "STRIKE_KBACK",
                     "aptitudeCode": "NONE",
                     "effectFactor": 0,
-                    "effectSubFactor": 3
+                    "effectSubFactor": 1
                 }
             ]
         },
@@ -9177,7 +9177,7 @@
             },
             "triggerEffects": [
                 {
-                    "chancePercent": 33,
+                    "chancePercent": 50,
                     "triggerPhaseKey": "CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_INSTANT",
                     "battleModeKey": "CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL",
                     "conditionKey": {
@@ -9202,7 +9202,7 @@
                     "effectCode": "STRIKE_KBACK",
                     "aptitudeCode": "NONE",
                     "effectFactor": 0,
-                    "effectSubFactor": 3
+                    "effectSubFactor": 1
                 }
             ]
         },
@@ -9219,7 +9219,7 @@
             },
             "triggerEffects": [
                 {
-                    "chancePercent": 20,
+                    "chancePercent": 50,
                     "triggerPhaseKey": "CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_INSTANT",
                     "battleModeKey": "CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL",
                     "conditionKey": "CUSTOM:TALENT_TEXT_TLT_NO_CONDITION",
@@ -9281,6 +9281,48 @@
             ]
         },
         {
+            "abilityCode": "ab911_passres_int",
+            "nameKey": "ABILITY:ab211_passres_int_nm",
+            "descriptionKey": "ABILITY:ab211_passres_int_desc",
+            "icon": "ab211_passres_icon.png",
+            "tags": {
+                "awakening": false,
+                "enemy": false,
+                "labyrinthEnemy": true,
+                "team": false
+            },
+            "triggerEffects": [
+                {
+                    "chancePercent": 15,
+                    "triggerPhaseKey": "CUSTOM:ABILITY_ACTIVE_WHEN_TYPE_BATTLE",
+                    "battleModeKey": "CUSTOM:ABILITY_ACTIVE_ON_TYPE_ALL",
+                    "conditionKey": {
+                        "templateKey": "CUSTOM:V2_ABILITY_CONDITION_JOIN",
+                        "args": [
+                            {
+                                "key": "CUSTOM:ABILITY_CONDITION_TYPE_CATEGORY"
+                            },
+                            {
+                                "key": "CUSTOM:CATEGORY_INT"
+                            }
+                        ]
+                    },
+                    "additionalConditionKey": null,
+                    "conditions": [
+                        {
+                            "kind": "CATEGORY",
+                            "value": "INT"
+                        }
+                    ],
+                    "effectKey": "CUSTOM:ABILITY_TALENT_TYPE_PASS_SKILLRES",
+                    "effectCode": "NONE",
+                    "aptitudeCode": "PASS_SKILLRES",
+                    "effectFactor": 0,
+                    "effectSubFactor": 0
+                }
+            ]
+        },
+        {
             "abilityCode": "ab998_barrier_labi1",
             "nameKey": "ABILITY:ab229_st_shield2_nm",
             "descriptionKey": "ABILITY:ab230_barrier2_desc",
@@ -9317,14 +9359,14 @@
                     "effectKey": {
                         "templateKey": "CUSTOM:ABILITY_TALENT_TYPE_BARRIER",
                         "args": [
-                            50,
-                            0
+                            80,
+                            0.1
                         ]
                     },
                     "effectCode": "NONE",
                     "aptitudeCode": "BARRIER",
-                    "effectFactor": 0.5,
-                    "effectSubFactor": 0
+                    "effectFactor": 0.8,
+                    "effectSubFactor": 0.1
                 }
             ]
         },
@@ -9365,14 +9407,14 @@
                     "effectKey": {
                         "templateKey": "CUSTOM:ABILITY_TALENT_TYPE_BARRIER",
                         "args": [
-                            60,
-                            0
+                            90,
+                            0.1
                         ]
                     },
                     "effectCode": "NONE",
                     "aptitudeCode": "BARRIER",
-                    "effectFactor": 0.6,
-                    "effectSubFactor": 0
+                    "effectFactor": 0.9,
+                    "effectSubFactor": 0.1
                 }
             ]
         },
@@ -9413,14 +9455,14 @@
                     "effectKey": {
                         "templateKey": "CUSTOM:ABILITY_TALENT_TYPE_BARRIER",
                         "args": [
-                            70,
-                            0
+                            95,
+                            0.1
                         ]
                     },
                     "effectCode": "NONE",
                     "aptitudeCode": "BARRIER",
-                    "effectFactor": 0.7,
-                    "effectSubFactor": 0
+                    "effectFactor": 0.95,
+                    "effectSubFactor": 0.1
                 }
             ]
         },

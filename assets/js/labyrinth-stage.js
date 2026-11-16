@@ -12,6 +12,11 @@
 
   const $ = (id) => document.getElementById(id);
   const stageGrid = $("labyrinthStageGrid");
+  const mapControls = $("labyrinthMapControls");
+  const mapSelect = $("labyrinthMapSelect");
+  const stageNotice = $("labyrinthStageNotice");
+  const backLink = $("labyrinthStageBack");
+  let modalTrigger;
   const stageDetail = $("labyrinthStageDetail");
   const stageTitle = $("labyrinthStageTitle");
   const stageContent = $("labyrinthStageContent");
@@ -51,9 +56,10 @@
   }
 
   function parseStageKey(key) {
-    const match = text(key).match(/^(\d+)\s*-\s*(\d+)$/);
-    if (!match) return null;
-    return { row: Number(match[1]), col: Number(match[2]) };
+    const modern = text(key).match(/^(la\d+)_(\d{2})(\d{2})$/);
+    if (modern) return { mapId: modern[1], row: Number(modern[2]), col: Number(modern[3]) };
+    const legacy = text(key).match(/^(\d+)-(\d+)$/);
+    return legacy ? { mapId: "", row: Number(legacy[1]), col: Number(legacy[2]) } : null;
   }
 
   function difficultyNo(label) {
@@ -61,33 +67,44 @@
     return match ? Number(match[0]) : 999;
   }
 
-  function stageUrl(row, col) {
-    return `${ROOT}labyrinth/stage/?stage=laby_${row}_${col}`;
+  function stageUrl(key) {
+    const legacy = key.match(/^(\d+)-(\d+)$/);
+    const slug = legacy ? `laby_${legacy[1]}_${legacy[2]}` : key;
+    return `${ROOT}labyrinth/stage/?stage=${encodeURIComponent(slug)}`;
   }
 
-  function parseLabySlug(value) {
-    const match = text(value).match(/laby_(\d+)_(\d+)/);
-    return match ? `${Number(match[1])}-${Number(match[2])}` : "";
+  function mapLabel(mapId) {
+    const match = mapId.match(/^la(\d{2})(\d+)$/);
+    return match ? `地圖 ${Number(match[1])}-${Number(match[2])}` : `地圖 ${mapId}`;
   }
 
   function getRequestedStageKey() {
-    const pathMatch = window.location.pathname.match(/\/labyrinth\/stage\/laby_(\d+)_(\d+)\/?$/);
-    if (pathMatch) return `${Number(pathMatch[1])}-${Number(pathMatch[2])}`;
-    const queryStage = new URLSearchParams(window.location.search).get("stage");
-    const queryKey = parseLabySlug(queryStage);
-    if (queryKey) return queryKey;
-    return parseLabySlug(window.location.hash);
+    const path = window.location.pathname.match(/\/labyrinth\/stage\/(laby_\d+_\d+|la\d+_\d{4})\/?$/);
+    const query = new URLSearchParams(window.location.search).get("stage");
+    const slug = path?.[1] || query || window.location.hash.slice(1);
+    const legacy = text(slug).match(/^laby_(\d+)_(\d+)$/);
+    return legacy ? `${Number(legacy[1])}-${Number(legacy[2])}` : text(slug);
   }
 
   function parseStageData(raw) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return [];
     return Object.entries(raw).map(([key, value]) => {
       const parsed = parseStageKey(key);
-      if (!parsed) return null;
-      const difficulties = value && typeof value === "object" && !Array.isArray(value) ? value : {};
-      const difficultyNames = Object.keys(difficulties).sort((a, b) => difficultyNo(a) - difficultyNo(b));
-      return { key, row: parsed.row, col: parsed.col, difficulties, difficultyNames };
+      if (!parsed || !value || typeof value !== "object" || Array.isArray(value)) return null;
+      const difficultyNames = Object.keys(value).sort((a, b) => difficultyNo(a) - difficultyNo(b));
+      if (!difficultyNames.length) return null;
+      return { key, ...parsed, difficulties: value, difficultyNames };
     }).filter(Boolean).sort((a, b) => a.row - b.row || a.col - b.col);
+  }
+
+  function selectMap() {
+    if (!mapSelect || !mapControls) return;
+    const mapIds = [...new Set(state.stages.map((stage) => stage.mapId).filter(Boolean))].sort();
+    if (!mapIds.length) return;
+    const queryMap = new URLSearchParams(window.location.search).get("map");
+    mapSelect.replaceChildren(...mapIds.map((mapId) => new Option(mapLabel(mapId), mapId)));
+    mapSelect.value = mapIds.includes(queryMap) ? queryMap : mapIds[0];
+    mapControls.hidden = false;
   }
 
   function getEnemyId(row) {
@@ -112,7 +129,7 @@
     }
 
     const rowMap = new Map();
-    state.stages.forEach((stage) => {
+    state.stages.filter((stage) => !stage.mapId || stage.mapId === mapSelect?.value).forEach((stage) => {
       if (!rowMap.has(stage.row)) rowMap.set(stage.row, []);
       rowMap.get(stage.row).push(stage);
     });
@@ -121,7 +138,7 @@
       <section class="labyrinth-stage-row" aria-label="迷宮第 ${rowNo} 行">
         <div class="labyrinth-stage-row-grid">
           ${stages.sort((a, b) => a.col - b.col).map((stage) => `
-            <a class="labyrinth-stage-card" href="${stageUrl(stage.row, stage.col)}">
+            <a class="labyrinth-stage-card" href="${stageUrl(stage.key)}">
               <span>關卡 ${stage.row}-${stage.col}</span>
             </a>
           `).join("")}
@@ -226,7 +243,7 @@
       button.addEventListener("click", () => {
         const rows = lines[button.dataset.group] || [];
         const row = rows[Number(button.dataset.rowIndex) || 0];
-        if (row) openEnemyLineModal(row, difficultyName, button.dataset.group);
+        if (row) openEnemyLineModal(row, difficultyName, button.dataset.group, button);
       });
     });
   }
@@ -234,10 +251,16 @@
   function renderStageDetail(stage) {
     if (!stageDetail || !stageTitle || !difficultyControls || !difficultySelect) return;
     state.currentStage = stage;
-    state.currentDifficulty = stage.difficultyNames[0] || "";
+    const requestedDifficulty = Number(new URLSearchParams(window.location.search).get("difficulty"));
+    state.currentDifficulty = stage.difficultyNames.find((name) => difficultyNo(name) === requestedDifficulty)
+      || stage.difficultyNames[0] || "";
     if (stageGrid) stageGrid.hidden = true;
     stageDetail.hidden = false;
-    stageTitle.textContent = `迷宮關卡 ${stage.key}`;
+    stageTitle.textContent = stage.mapId
+      ? `${mapLabel(stage.mapId)} · 關卡 ${stage.row}-${stage.col}`
+      : `迷宮關卡 ${stage.key}`;
+    if (mapControls) mapControls.hidden = true;
+    if (backLink && stage.mapId) backLink.href = `${ROOT}labyrinth/stage/?map=${encodeURIComponent(stage.mapId)}`;
 
     difficultySelect.innerHTML = stage.difficultyNames.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
     difficultySelect.value = state.currentDifficulty;
@@ -362,16 +385,17 @@
         ${renderStat("難度", difficulty)}${renderStat("條件", groupName)}${renderStat("初登場時間", row["初登場時間"])}${renderStat("再生產間距", row["再生產間距"])}${renderStat("生產上限", row["生產上限"] || row["數量上限"])}
       </div></section>
       <section class="detail-section"><h3>敵人詳細資訊</h3><div class="ranger-stat-grid">
-        ${renderStat("體力", detail["體力"] || enemy["體力"])}${renderStat("物理攻擊力", detail["物理攻擊力"] || enemy["物理攻擊力"])}${renderStat("魔法攻擊力", detail["魔法攻擊力"] || enemy["魔法攻擊力"])}${renderStat("物理防禦力", detail["物理防禦力"] || enemy["物理防禦力"])}${renderStat("魔法防禦力", detail["魔法防禦力"] || enemy["魔法防禦力"])}${renderStat("攻擊範圍", detail["攻擊範圍"] || enemy["攻擊範圍"])}${renderStat("濺射範圍", detail["濺射範圍"] || enemy["濺射範圍"])}${renderStat("技能抗性", detail["技能抗性"] || enemy["技能抗性"])}${renderStat("爆擊機率", detail["爆擊機率"] || enemy["爆擊機率"])}${renderStat("爆擊傷害", detail["爆擊傷害"] || enemy["爆擊傷害"])}${renderStat("閃避機率", detail["閃避機率"] || enemy["閃避機率"])}${renderStat("技能閃避機率", detail["技能閃避機率"] || enemy["技能閃避機率"])}${renderStat("命中率", detail["命中率"] || enemy["命中率"])}${renderStat("技能命中率", detail["技能命中率"] || enemy["技能命中率"])}
+        ${renderStat("體力", detail["體力"] ?? enemy["體力"])}${renderStat("物理攻擊力", detail["物理攻擊力"] ?? enemy["物理攻擊力"])}${renderStat("魔法攻擊力", detail["魔法攻擊力"] ?? enemy["魔法攻擊力"])}${renderStat("物理防禦力", detail["物理防禦力"] ?? enemy["物理防禦力"])}${renderStat("魔法防禦力", detail["魔法防禦力"] ?? enemy["魔法防禦力"])}${renderStat("攻擊範圍", detail["攻擊範圍"] ?? enemy["攻擊範圍"])}${renderStat("濺射範圍", detail["濺射範圍"] ?? enemy["濺射範圍"])}${renderStat("技能抗性", detail["技能抗性"] ?? enemy["技能抗性"])}${renderStat("爆擊機率", detail["爆擊機率"] ?? enemy["爆擊機率"])}${renderStat("爆擊傷害", detail["爆擊傷害"] ?? enemy["爆擊傷害"])}${renderStat("閃避機率", detail["閃避機率"] ?? enemy["閃避機率"])}${renderStat("技能閃避機率", detail["技能閃避機率"] ?? enemy["技能閃避機率"])}${renderStat("命中率", detail["命中率"] ?? enemy["命中率"])}${renderStat("技能命中率", detail["技能命中率"] ?? enemy["技能命中率"])}
       </div></section>
       <section class="detail-section"><h3>技能</h3>${renderSkills(enemy)}</section>
       <section class="detail-section"><h3>能力</h3>${renderAbilities(enemy)}</section>
     `;
   }
 
-  function openEnemyLineModal(row, difficulty, groupName) {
+  function openEnemyLineModal(row, difficulty, groupName, trigger) {
     if (!modal || !modalContent) return;
     modalContent.innerHTML = renderEnemyLineDetail(row, difficulty, groupName);
+    modalTrigger = trigger;
     modal.hidden = false;
     document.body.classList.add("modal-open");
     modal.scrollTop = 0;
@@ -384,6 +408,8 @@
     modal.hidden = true;
     modalContent.innerHTML = "";
     document.body.classList.remove("modal-open");
+    modalTrigger?.focus();
+    modalTrigger = undefined;
   }
 
   async function init() {
@@ -406,15 +432,16 @@
       if (abilityRes && abilityRes.ok) state.abilityMap = await abilityRes.json();
 
       const requestedKey = getRequestedStageKey();
-      if (requestedKey) {
-        const stage = state.stages.find((item) => item.key === requestedKey);
-        if (stage) renderStageDetail(stage);
-        else {
-          renderStageGrid();
-          if (stageGrid) stageGrid.innerHTML = `<div class="empty-state">${escapeHtml(window.RangerbookI18n.format("site.stage.labyrinthMissing",[requestedKey],`找不到迷宮關卡 ${requestedKey} 的資料。`))}</div>`;
-        }
-      } else {
-        renderStageGrid();
+      const stage = state.stages.find((item) => item.key === requestedKey);
+      if (stage) {
+        renderStageDetail(stage);
+        return;
+      }
+      selectMap();
+      renderStageGrid();
+      if (requestedKey && stageNotice) {
+        stageNotice.hidden = false;
+        stageNotice.textContent = "此關卡連結目前無法使用，請從下方選擇地圖和關卡。";
       }
     } catch (error) {
       if (stageGrid) stageGrid.innerHTML = `<div class="empty-state">資料載入失敗，請確認「迷宮關卡生產線.json」是否已放在 /res 資料夾且內容不是空檔。</div>`;
@@ -422,6 +449,15 @@
     }
   }
 
+  mapSelect?.addEventListener("change", () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("stage");
+    url.hash = "";
+    url.searchParams.set("map", mapSelect.value);
+    window.history.replaceState(null, "", url);
+    if (stageNotice) stageNotice.hidden = true;
+    renderStageGrid();
+  });
   difficultySelect?.addEventListener("change", () => {
     state.currentDifficulty = difficultySelect.value;
     renderSelectedDifficulty();

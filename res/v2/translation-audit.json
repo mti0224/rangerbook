@@ -1690,6 +1690,14 @@
             "zh_TW": ""
         },
         {
+            "key": "UNIT:u40016-sally_nm",
+            "zh_TW": ""
+        },
+        {
+            "key": "UNIT:u40016sk-sally_nm",
+            "zh_TW": ""
+        },
+        {
             "key": "UNIT:u462e-sally_desc",
             "zh_TW": ""
         },
@@ -2972,6 +2980,10 @@
     ],
     "officialApiRowsMissingEnglish": [
         {
+            "key": "LABYRINTH:LABYRINTH_LOSE_POPUP_MSG_3",
+            "zh_TW": ""
+        },
+        {
             "key": "SKILL:sk504_tulu_b_nm",
             "zh_TW": ""
         },
@@ -3429,6 +3441,8 @@
             "UNIT:u40013-moon_nm",
             "UNIT:u40014-brown_nm",
             "UNIT:u40015-sally_nm",
+            "UNIT:u40016-sally_nm",
+            "UNIT:u40016sk-sally_nm",
             "UNIT:u462e-sally_desc",
             "UNIT:u462e-sally_nm",
             "UNIT:u471sk-cony_nm",
@@ -3751,6 +3765,7 @@
             "UNIT:u9999e-test_nm"
         ],
         "presentButEmptyInAllLanguages": [
+            "LABYRINTH:LABYRINTH_LOSE_POPUP_MSG_3",
             "SKILL:sk504_tulu_b_nm",
             "SKILL:sk504_tulu_nm",
             "SKILL:sk513_bigflower_desc",

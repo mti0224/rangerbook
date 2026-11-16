@@ -6,6 +6,9 @@ const assert=require("assert");
 
 (async()=>{
  const project=path.resolve(__dirname,"..");
+ const manifest=JSON.parse(fs.readFileSync(path.join(project,"res/v2/manifest.json"),"utf8"));
+ const assertCount=(dataset)=>assert.match(elements.status.textContent,
+   new RegExp(" / "+manifest.datasets[dataset]+"(?:\\D|$)"),dataset);
  const elements={};
  const handlers={};
  for (const name of ["locale","dataset","search","status","cards","title","subtitle","localeLabel","datasetLabel","searchLabel","notice","backLink","footer"]){
@@ -27,7 +30,7 @@ const assert=require("assert");
  assert(fetched.includes("../res/v2/locales/custom.json"));
  assert(fetched.includes("../res/v2/rangers.json"));
  assert(elements.cards.innerHTML.includes("card"));
- assert(elements.status.textContent.includes("2306"));
+ assertCount("rangers");
  assert.strictEqual(context.window.RangerbookV2LocalePreview.fill("%N1 → %N2",[20,40]),"20 → 40");
  assert.strictEqual(context.window.RangerbookV2LocalePreview.fill("%d2 / %d1 / %d2",[0,40]),"40 / 0 / 40");
  assert.strictEqual(context.window.RangerbookV2LocalePreview.fill("%N2 / %N1",[0,40]),"40 / 0");
@@ -59,22 +62,22 @@ const assert=require("assert");
  assert.strictEqual(en.text,"Mineral regeneration speed -60%");
  elements.dataset.value="equipment";
  await handlers["dataset:change"]({target:{value:"equipment"}});
- assert(elements.status.textContent.includes("951"));
+ assertCount("equipment");
  assert(elements.cards.innerHTML.includes("eq_"));
  elements.dataset.value="stages/extreme";
  await handlers["dataset:change"]({target:{value:"stages/extreme"}});
- assert(elements.status.textContent.includes("48"));
+ assertCount("stages/extreme");
  assert(elements.cards.innerHTML.includes("extreme-"));
- for (const [dataset,count] of Object.entries({
-   "ranger-index":2306,"equipment-name-index":951,"equipment-effects":149,
-   "labyrinth-artifacts":55,"projectiles":3140,"resources":29,
-   "enemies/hard":130,"enemies/extreme":24,"enemies/endless":57,
-   "enemies/event":12,"enemies/advent":46,"enemies/labyrinth":24,
-   "stages/hard":240,"stages/labyrinth":240,"stages/endless":320
- })){
+ for (const dataset of Object.keys(manifest.datasets).filter((key)=>!key.includes(":"))){
    await handlers["dataset:change"]({target:{value:dataset}});
-   assert(elements.status.textContent.includes(String(count)),dataset);
+   assertCount(dataset);
    assert(elements.cards.innerHTML.includes("card"),dataset);
+ }
+ await handlers["dataset:change"]({target:{value:"stages/labyrinth"}});
+ const stageRows=JSON.parse(fs.readFileSync(path.join(project,"res/v2/stages/labyrinth.json"),"utf8")).stages;
+ const firstStage=stageRows[0];
+ if(firstStage.tileCode) {
+   assert(elements.cards.innerHTML.includes("stage="+firstStage.tileCode+"&amp;difficulty="+firstStage.difficulty));
  }
  for (const locale of ["zh_TW","en","th","jp"]){
    handlers["locale:change"]({target:{value:locale}});

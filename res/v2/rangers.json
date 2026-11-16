@@ -115486,7 +115486,7 @@
                         "type": "SELF"
                     },
                     "activationRate": 0.0,
-                    "cooldownSeconds": 100000000.0,
+                    "cooldownSeconds": 1.08,
                     "icon": "skill_icon_usk060_ryu2.png",
                     "effects": [
                         {

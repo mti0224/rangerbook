@@ -152,6 +152,15 @@
       return valueLine(ui("v2.stats","數據"),escapeHtml(JSON.stringify(
         x.attackChannels || x.movement || x)));
     }
+    if (data==="stages/labyrinth") {
+      const map = x.mapId ? valueLine("",escapeHtml(x.mapId)) : "";
+      const environment = valueLine(ui("v2.stats","數據"),escapeHtml(JSON.stringify(x.environment)));
+      const battleType = valueLine("",showText(x.battleTypeKey));
+      const stageLink = x.tileCode
+        ? '<a href="../labyrinth/stage/?stage='+encodeURIComponent(x.tileCode)+'&amp;difficulty='+encodeURIComponent(x.difficulty)+'">'+
+          escapeHtml(ui("v2.effects","詳細資料"))+'</a>' : "";
+      return map+battleType+environment+stageLink;
+    }
     const gimmicks=x.gimmicks || [...(x.passiveGimmicks || []),...(x.activeGimmicks || [])];
     return gimmicks.map(g=>
       valueLine("",showText(g.nameKey)+showText(

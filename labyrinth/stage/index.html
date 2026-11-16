@@ -30,11 +30,11 @@
   <link rel="stylesheet" href="../../assets/css/card-tag-colors.css">
   <link rel="stylesheet" href="../../assets/css/endless.css">
   <link rel="stylesheet" href="../../assets/css/hs-stage.css">
-  <link rel="stylesheet" href="../../assets/css/labyrinth.css?v=20261013-v2.5">
+  <link rel="stylesheet" href="../../assets/css/labyrinth.css?v=20261117-map">
   <link rel="stylesheet" href="../../assets/css/header-responsive.css?v=20260429c">
   <link rel="stylesheet" href="../../assets/css/mobile-interaction-fix.css?v=20260430c">
   <link rel="stylesheet" href="../../assets/css/theme-toggle.css?v=20260525a">
-  <link rel="stylesheet" href="../../assets/css/game-tech.css?v=20261013-v2.5">
+  <link rel="stylesheet" href="../../assets/css/game-tech.css?v=20261117-map">
   <link rel="stylesheet" href="../../assets/css/game-tech-controls.css?v=20261010a">
   <link rel="stylesheet" href="../../assets/css/sidebar-drawer.css?v=20261014-toggle1">
 </head>
@@ -49,12 +49,17 @@
       <p class="labyrinth-stage-help-link-wrap"><a class="labyrinth-stage-help-link" href="./how_to_find_stage/">如何查詢關卡</a></p>
     </section>
 
+    <p id="labyrinthStageNotice" role="status" hidden></p>
+    <div id="labyrinthMapControls" class="labyrinth-map-controls" hidden>
+      <label for="labyrinthMapSelect">選擇地圖</label>
+      <select id="labyrinthMapSelect"></select>
+    </div>
     <section id="labyrinthStageGrid" class="labyrinth-stage-grid" aria-label="迷宮關卡選擇"></section>
 
     <section id="labyrinthStageDetail" hidden>
       <div class="endless-stage-head labyrinth-stage-head">
         <h1 id="labyrinthStageTitle" class="endless-stage-title"></h1>
-        <a class="endless-back-link" href="../stage/">返回關卡選擇</a>
+        <a id="labyrinthStageBack" class="endless-back-link" href="../stage/">返回關卡選擇</a>
       </div>
 
       <section id="labyrinthDifficultyControls" class="labyrinth-difficulty-controls" hidden>
@@ -77,7 +82,7 @@
 
   <script src="../../assets/js/v2-data.js?v=20261013-thai1"></script>
   <script src="../../assets/js/site.js?v=20261014-toggle1"></script>
-  <script src="../../assets/js/labyrinth-stage.js"></script>
+  <script src="../../assets/js/labyrinth-stage.js?v=20261117-map"></script>
   <script src="../../assets/js/card-tag-colors.js"></script>
 </body>
 </html>

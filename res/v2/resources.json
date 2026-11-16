@@ -1,7 +1,7 @@
 {
     "schemaVersion": 2,
-    "updatedAt": "2026-10-30T12:37:01Z",
-    "resourceTimestamp": "1793352760000",
+    "updatedAt": "2026-11-16T21:10:43Z",
+    "resourceTimestamp": "1794822831000",
     "assetTypes": [
         "ability",
         "awake_ability_group",
@@ -16,10 +16,14 @@
         "game_item_equip",
         "labyrinth_ai",
         "labyrinth_artifact",
+        "labyrinth_artifact_exchange",
+        "labyrinth_artifact_group",
         "labyrinth_battle_stage",
         "labyrinth_level_debuff",
         "labyrinth_map",
         "labyrinth_prdn_line",
+        "labyrinth_reward",
+        "lang_area",
         "lang_equip",
         "lang_unit",
         "skill",
@@ -37,7 +41,7 @@
         {
             "assetGroup": "ability",
             "format": "db",
-            "bytes": 152576,
+            "bytes": 155648,
             "removed": false
         },
         {
@@ -103,37 +107,61 @@
         {
             "assetGroup": "labyrinth_ai",
             "format": "db",
-            "bytes": 12288,
+            "bytes": 9216,
             "removed": false
         },
         {
             "assetGroup": "labyrinth_artifact",
             "format": "db",
-            "bytes": 71680,
+            "bytes": 38912,
+            "removed": false
+        },
+        {
+            "assetGroup": "labyrinth_artifact_exchange",
+            "format": "db",
+            "bytes": 3072,
+            "removed": false
+        },
+        {
+            "assetGroup": "labyrinth_artifact_group",
+            "format": "db",
+            "bytes": 27648,
             "removed": false
         },
         {
             "assetGroup": "labyrinth_battle_stage",
             "format": "db",
-            "bytes": 32768,
+            "bytes": 20480,
             "removed": false
         },
         {
             "assetGroup": "labyrinth_level_debuff",
             "format": "db",
-            "bytes": 2048,
+            "bytes": 5120,
             "removed": false
         },
         {
             "assetGroup": "labyrinth_map",
             "format": "db",
-            "bytes": 13312,
+            "bytes": 88064,
             "removed": false
         },
         {
             "assetGroup": "labyrinth_prdn_line",
             "format": "db",
-            "bytes": 63488,
+            "bytes": 41984,
+            "removed": false
+        },
+        {
+            "assetGroup": "labyrinth_reward",
+            "format": "db",
+            "bytes": 5120,
+            "removed": false
+        },
+        {
+            "assetGroup": "lang_area",
+            "format": "ndb",
+            "bytes": 2134016,
             "removed": false
         },
         {
@@ -151,7 +179,7 @@
         {
             "assetGroup": "skill",
             "format": "db",
-            "bytes": 1327104,
+            "bytes": 1339392,
             "removed": false
         },
         {
@@ -187,7 +215,7 @@
         {
             "assetGroup": "unit",
             "format": "db",
-            "bytes": 2865152,
+            "bytes": 2866176,
             "removed": false
         },
         {
@@ -205,7 +233,7 @@
         {
             "assetGroup": "unit_reinforce_rate",
             "format": "db",
-            "bytes": 247808,
+            "bytes": 248832,
             "removed": false
         }
     ]

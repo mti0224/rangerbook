@@ -11,35 +11,35 @@
         "stages/hard": "raw/stage, stage_ai, stage_productline, unit, unit_reinforce_rate; exact integer V2 compiler",
         "stages/extreme": "raw/stage, stage_ai, stage_productline, unit, unit_reinforce_rate, ability; V2 bilingual gimmick compiler",
         "stages/endless": "raw/endless_floor_renewal, endless_product_line; V2 exact stats and bilingual gimmick compiler",
-        "stages/labyrinth": "raw/labyrinth_map, labyrinth_battle_stage, labyrinth_ai, labyrinth_prdn_line, unit and reinforcement; native 6-level stage compiler",
+        "stages/labyrinth": "raw/labyrinth_map, labyrinth_battle_stage, labyrinth_ai, labyrinth_prdn_line, unit and reinforcement; map-aware stage compiler",
         "others": "V2-owned private compatibility processors; raw API inputs"
     },
-    "sourceFingerprint": "010609ca4308dbcf0db54a1e5636bfe0e6d7e9cee85343012f2973d3d3e28f3b",
+    "sourceFingerprint": "5cb46f4c08cb3a5ed72ff33408e3eaf408210d445b19ecab2a9d5cc3ad206b3e",
     "status": "standalone_v2",
     "datasets": {
         "rangers": 2321,
         "equipment": 953,
-        "abilities": 202,
+        "abilities": 203,
         "ranger-index": 2321,
         "equipment-name-index": 953,
         "equipment-effects": 149,
-        "labyrinth-artifacts": 55,
-        "projectiles": 3156,
-        "resources": 29,
+        "labyrinth-artifacts": 86,
+        "projectiles": 3158,
+        "resources": 33,
         "enemies/hard": 130,
         "enemies/extreme": 24,
         "enemies/endless": 58,
         "enemies/event": 12,
         "enemies/advent": 46,
-        "enemies/labyrinth": 24,
+        "enemies/labyrinth": 26,
         "stages/hard": 240,
         "stages/extreme": 48,
         "stages/endless": 330,
-        "stages/labyrinth": 240,
+        "stages/labyrinth": 1098,
         "stages/hard:spawnUnits": 6662,
         "stages/extreme:spawnUnits": 1368,
         "stages/endless:spawnUnits": 2564,
-        "stages/labyrinth:spawnUnits": 1876
+        "stages/labyrinth:spawnUnits": 9475
     },
     "limitations": {
         "compactV1Numbers": "Rounded V1 M/G values are marked precision=rounded"
@@ -52,10 +52,10 @@
     },
     "languageCatalogs": {
         "official": {
-            "total": 16294,
-            "withEnglish": 15544,
-            "withThai": 15544,
-            "withJapanese": 15544
+            "total": 17538,
+            "withEnglish": 16785,
+            "withThai": 16785,
+            "withJapanese": 16785
         },
         "custom": {
             "total": 470,
@@ -71,12 +71,12 @@
         }
     },
     "translationAudit": {
-        "missingOfficialApiKeys": 742,
+        "missingOfficialApiKeys": 744,
         "unresolvedGeneratedTextKeys": 0,
         "userAuthoredCustomKeys": 470,
         "allPublicDisplayKeysArePresent": true,
         "allReferencedTranslationsComplete": false,
-        "officialApiRowsMissingEnglish": 8
+        "officialApiRowsMissingEnglish": 9
     },
     "languageFields": [
         "key",
@@ -85,7 +85,7 @@
         "th",
         "jp"
     ],
-    "officialSource": "V2 official lang_unit/lang_equip decoded from API",
+    "officialSource": "V2 official lang_unit/lang_equip/lang_area decoded from API",
     "customSource": "V2-owned authored catalog; author translations are separate from official API text",
     "source": "independent_official_api"
 }
