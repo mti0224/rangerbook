@@ -2226,6 +2226,20 @@
     "jp": "サイドバーの操作方法を更新し、カテゴリをクリックしてサブメニューを開閉できるようになりました。"
   },
   {
+    "key": "UI:update.log.2026-11-17.1",
+    "zh_TW": "更新迷宮關卡資訊",
+    "en": "Updated Labyrinth stage information.",
+    "th": "อัปเดตข้อมูลด่านเขาวงกต",
+    "jp": "ラビリンスのステージ情報を更新しました。"
+  },
+  {
+    "key": "UI:update.log.2026-11-17.2",
+    "zh_TW": "新增及更新迷宮文物資訊",
+    "en": "Added and updated Labyrinth artifact information.",
+    "th": "เพิ่มและอัปเดตข้อมูลโบราณวัตถุเขาวงกต",
+    "jp": "ラビリンスの遺物情報を追加・更新しました。"
+  },
+  {
     "key": "UI:site.admin.directory0",
     "zh_TW": "搜尋帳號",
     "en": "Search accounts",
