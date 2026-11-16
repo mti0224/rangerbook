@@ -1,19 +1,19 @@
 {
     "schemaVersion": 3,
     "source": "data/raw/unit.json",
-    "unitCount": 3156,
+    "unitCount": 3158,
     "skippedWithoutUnitCode": 0,
     "validation": {
         "motionModelVersion": 1,
         "motionTypeCounts": {
-            "CURVE": 698,
-            "DIRECT": 3449,
-            "LINEAR": 1854,
-            "NONE": 3467
+            "CURVE": 699,
+            "DIRECT": 3450,
+            "LINEAR": 1855,
+            "NONE": 3470
         },
         "enabledMotionCounts": {
-            "CURVE": 681,
-            "LINEAR": 1256
+            "CURVE": 682,
+            "LINEAR": 1257
         },
         "attackTypeCounts": {
             "normal": {
@@ -21,10 +21,10 @@
                 "ENERGYC": 8,
                 "KICK": 5,
                 "NONE": 38,
-                "PUNCH": 1730,
+                "PUNCH": 1731,
                 "STAB": 2,
                 "SWING": 17,
-                "WEAPON": 869,
+                "WEAPON": 870,
                 "WEAPONC": 486
             },
             "skill1": {
@@ -32,13 +32,13 @@
                 "ACTION": 23,
                 "KICK": 3,
                 "LASER": 3,
-                "NONE": 948,
+                "NONE": 949,
                 "PUNCH": 1074,
                 "WEAPON": 512,
-                "WEAPONC": 124
+                "WEAPONC": 125
             },
             "skill2": {
-                "(null)": 1258,
+                "(null)": 1260,
                 "KICK": 6,
                 "NONE": 754,
                 "PUNCH": 586,
@@ -23466,7 +23466,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 90
+                "movingSpeed": 100
             },
             "hitTiming": {
                 "attackDelay": 34,
@@ -23602,7 +23602,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 90
+                "movingSpeed": 100
             },
             "hitTiming": {
                 "attackDelay": 34,
@@ -23671,7 +23671,7 @@
             },
             "skill2": {
                 "animationPart": "bul3",
-                "skillCode": "",
+                "skillCode": "sk998_la2",
                 "attackType": "PUNCH",
                 "target": "UNIT",
                 "start": {
@@ -23738,7 +23738,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 90
+                "movingSpeed": 100
             },
             "hitTiming": {
                 "attackDelay": 34,
@@ -317226,7 +317226,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 80
+                "movingSpeed": 110
             },
             "hitTiming": {
                 "attackDelay": 75,
@@ -317362,7 +317362,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 61
+                "movingSpeed": 91
             },
             "hitTiming": {
                 "attackDelay": 105,
@@ -317498,7 +317498,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 111
+                "movingSpeed": 141
             },
             "hitTiming": {
                 "attackDelay": 44,
@@ -317634,7 +317634,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 99
+                "movingSpeed": 129
             },
             "hitTiming": {
                 "attackDelay": 100,
@@ -317770,7 +317770,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 85
+                "movingSpeed": 115
             },
             "hitTiming": {
                 "attackDelay": 88,
@@ -317906,7 +317906,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 57
+                "movingSpeed": 87
             },
             "hitTiming": {
                 "attackDelay": 86,
@@ -318042,7 +318042,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 73
+                "movingSpeed": 103
             },
             "hitTiming": {
                 "attackDelay": 79,
@@ -318178,7 +318178,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 110
+                "movingSpeed": 140
             },
             "hitTiming": {
                 "attackDelay": 70,
@@ -318314,7 +318314,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 98
+                "movingSpeed": 128
             },
             "hitTiming": {
                 "attackDelay": 56,
@@ -318450,7 +318450,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 100
+                "movingSpeed": 130
             },
             "hitTiming": {
                 "attackDelay": 66,
@@ -318586,7 +318586,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 125
+                "movingSpeed": 155
             },
             "hitTiming": {
                 "attackDelay": 59,
@@ -318722,7 +318722,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 100
+                "movingSpeed": 130
             },
             "hitTiming": {
                 "attackDelay": 58,
@@ -318858,7 +318858,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 63
+                "movingSpeed": 93
             },
             "hitTiming": {
                 "attackDelay": 79,
@@ -318994,7 +318994,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 99
+                "movingSpeed": 129
             },
             "hitTiming": {
                 "attackDelay": 73,
@@ -319130,7 +319130,7 @@
                 }
             },
             "movement": {
-                "movingSpeed": 105
+                "movingSpeed": 135
             },
             "hitTiming": {
                 "attackDelay": 60,
@@ -319243,6 +319243,278 @@
                     "preparation": "sk2attrd_u1386hsally",
                     "attack": "",
                     "underAttack": "hit_u2006eham"
+                }
+            }
+        },
+        "u40016-sally": {
+            "unitCode": "u40016-sally",
+            "guardianResourceCode": "",
+            "unitName": "SALLY",
+            "grade": 8,
+            "resourceCode": "u40016-sally",
+            "useEnemySideResource": 0,
+            "render": {
+                "flightYn": 0,
+                "sizeRatio": 1,
+                "shadowCenter": {
+                    "x": 0.67,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.46,
+                    "y": 0.69
+                }
+            },
+            "movement": {
+                "movingSpeed": 70
+            },
+            "hitTiming": {
+                "attackDelay": 105,
+                "normalHitPointRate": 100.0,
+                "skill1HitPointRate": 100.0,
+                "skill2HitPointRate": 100.0
+            },
+            "bullet": {
+                "length": null,
+                "duration": null
+            },
+            "normal": {
+                "animationPart": "bul",
+                "attackType": "WEAPON",
+                "attackRange": 200,
+                "target": "UNIT",
+                "start": {
+                    "x": 125,
+                    "y": -23
+                },
+                "secondStart": {
+                    "x": 0,
+                    "y": 0
+                },
+                "end": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": {
+                    "start": 40,
+                    "end": 0
+                },
+                "moveSpeed": 30,
+                "attackScope": 0,
+                "motion": {
+                    "type": "LINEAR",
+                    "enabled": true,
+                    "rotation": "FIXED",
+                    "loopNormal": true
+                }
+            },
+            "skill1": {
+                "animationPart": "bul2",
+                "skillCode": "sk40016_sally",
+                "attackType": "WEAPONC",
+                "target": "UNIT",
+                "start": {
+                    "x": 98,
+                    "y": 135
+                },
+                "end": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": {
+                    "start": -94,
+                    "end": 0
+                },
+                "moveSpeed": 12,
+                "motion": {
+                    "type": "CURVE",
+                    "enabled": true,
+                    "rotation": "ANGLE_LERP",
+                    "loopNormal": true
+                }
+            },
+            "skill2": {
+                "animationPart": "bul3",
+                "skillCode": "sk40016_sally2",
+                "attackType": null,
+                "target": "UNIT",
+                "start": {
+                    "x": 0,
+                    "y": 0
+                },
+                "end": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": {
+                    "start": 0,
+                    "end": 0
+                },
+                "moveSpeed": 0,
+                "motion": {
+                    "type": "NONE",
+                    "enabled": false,
+                    "rotation": "NONE",
+                    "loopNormal": false
+                }
+            },
+            "effects": {
+                "baseAttackEffectCode": "",
+                "specialAttackEffectCode": "",
+                "skillEffectColor1": "black",
+                "skillEffectColor2": "black"
+            },
+            "sounds": {
+                "normal": {
+                    "preparation": "attrd_u1285esally",
+                    "attack": "",
+                    "underAttack": "hit_body_punch"
+                },
+                "skill1": {
+                    "preparation": "skattrd_u1285esally",
+                    "attack": "",
+                    "underAttack": "hit_body_punch"
+                },
+                "skill2": {
+                    "preparation": "sk2attrd_u1285esally",
+                    "attack": "",
+                    "underAttack": "skhit_buff"
+                }
+            }
+        },
+        "u40016sk-sally": {
+            "unitCode": "u40016sk-sally",
+            "guardianResourceCode": "",
+            "unitName": "SALLY",
+            "grade": 8,
+            "resourceCode": "u40016sk-sally",
+            "useEnemySideResource": 0,
+            "render": {
+                "flightYn": 0,
+                "sizeRatio": 1,
+                "shadowCenter": {
+                    "x": 0.55,
+                    "y": 0.07
+                },
+                "faceCenter": {
+                    "x": 0.5,
+                    "y": 0.63
+                }
+            },
+            "movement": {
+                "movingSpeed": 0
+            },
+            "hitTiming": {
+                "attackDelay": 38,
+                "normalHitPointRate": 100.0,
+                "skill1HitPointRate": 100.0,
+                "skill2HitPointRate": 100.0
+            },
+            "bullet": {
+                "length": null,
+                "duration": null
+            },
+            "normal": {
+                "animationPart": "bul",
+                "attackType": "PUNCH",
+                "attackRange": 0,
+                "target": "UNIT",
+                "start": {
+                    "x": 0,
+                    "y": 0
+                },
+                "secondStart": {
+                    "x": 0,
+                    "y": 0
+                },
+                "end": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": {
+                    "start": 0,
+                    "end": 0
+                },
+                "moveSpeed": 1,
+                "attackScope": 0,
+                "motion": {
+                    "type": "DIRECT",
+                    "enabled": false,
+                    "rotation": "BODY_ANIMATION",
+                    "loopNormal": false
+                }
+            },
+            "skill1": {
+                "animationPart": "bul2",
+                "skillCode": "",
+                "attackType": "NONE",
+                "target": "UNIT",
+                "start": {
+                    "x": 0,
+                    "y": 0
+                },
+                "end": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": {
+                    "start": 0,
+                    "end": 0
+                },
+                "moveSpeed": 0,
+                "motion": {
+                    "type": "NONE",
+                    "enabled": false,
+                    "rotation": "NONE",
+                    "loopNormal": false
+                }
+            },
+            "skill2": {
+                "animationPart": "bul3",
+                "skillCode": "",
+                "attackType": null,
+                "target": "UNIT",
+                "start": {
+                    "x": 0,
+                    "y": 0
+                },
+                "end": {
+                    "x": 0,
+                    "y": 0
+                },
+                "angle": {
+                    "start": 0,
+                    "end": 0
+                },
+                "moveSpeed": 0,
+                "motion": {
+                    "type": "NONE",
+                    "enabled": false,
+                    "rotation": "NONE",
+                    "loopNormal": false
+                }
+            },
+            "effects": {
+                "baseAttackEffectCode": "",
+                "specialAttackEffectCode": "",
+                "skillEffectColor1": null,
+                "skillEffectColor2": null
+            },
+            "sounds": {
+                "normal": {
+                    "preparation": "",
+                    "attack": "",
+                    "underAttack": ""
+                },
+                "skill1": {
+                    "preparation": "",
+                    "attack": "",
+                    "underAttack": ""
+                },
+                "skill2": {
+                    "preparation": "",
+                    "attack": "",
+                    "underAttack": ""
                 }
             }
         },

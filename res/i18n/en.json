@@ -14387,6 +14387,7 @@
             "NOTICE_POPUP_GEAR_SELL_SUCCEED": "You sold the Gear.",
             "PROFILE_TITLE_MINERAL": "Ranger Mineral Cost",
             "PROFILE_TITLE_REPRODUCTION_TIME": "Ranger Regeneration Time(sec)",
+            "SELL_SELECT_MAX_COUNT": "You can select up to %d items at a time.",
             "SKILL_PLUS_200010_nm": "Enemy Hit Rate -N%",
             "SKILL_PLUS_200011_nm": "Enemy Hit Rate -N%",
             "SKILL_PLUS_200020_nm": "attack range +N%",

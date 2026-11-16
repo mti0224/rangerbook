@@ -14387,6 +14387,7 @@
             "NOTICE_POPUP_GEAR_SELL_SUCCEED": "裝備已售出。",
             "PROFILE_TITLE_MINERAL": "Ranger 礦物成本",
             "PROFILE_TITLE_REPRODUCTION_TIME": "Ranger 重新產生時間(秒)",
+            "SELL_SELECT_MAX_COUNT": "每次最多可選擇%d個。",
             "SKILL_PLUS_200010_nm": "使敵人的命中率減少N%",
             "SKILL_PLUS_200011_nm": "使敵人的命中率減少N%",
             "SKILL_PLUS_200020_nm": "提升攻擊射程N%",
