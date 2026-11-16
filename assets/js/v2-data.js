@@ -347,7 +347,14 @@
   function spawn(u) {return {"敵人id":u.unitCode,"初登場時間":u.initialDelaySeconds===null?"-":seconds(u.initialDelaySeconds),
     "再生產間距":u.repeatInterval?range({min:u.repeatInterval.minSeconds,max:u.repeatInterval.maxSeconds,unit:"SECOND"}):"-",
     "生產上限":u.maxUnits===null?"-":number(u.maxUnits)+"隻","詳細資訊":stats(u.combatStats)};}
-  function when(w) {
+  function when(w,mode) {
+    if (mode==="labyrinth") {
+      if (w.kind==="AFTER_START" || w.kind==="STAGE_START")
+        return text({templateKey:"CUSTOM:LABYRINTH_BATTLE_CONDITION_START",args:[w.seconds ?? 0]});
+      if (w.kind==="BOSS") return text("UI:site.labyrinth.boss");
+      if (w.kind==="BOSS_HP_BELOW")
+        return text({templateKey:"CUSTOM:LABYRINTH_BATTLE_CONDITION_BOSS_HP_1",args:[w.percent]});
+    }
     switch(w.kind) {
       case "AFTER_START": case "STAGE_START": return "遊戲開始後"+number(w.seconds||0)+"秒";
       case "ALLY_FRONTLINE_OVER": return "我方前線位置超過"+number(w.percent)+"%";
@@ -372,7 +379,7 @@
       v["時間限制"]=e.timeLimitSeconds?seconds(e.timeLimitSeconds):"無";
       if(x.battleTypeKey)v[mode==="endless"?"樓層類型":"關卡類型"]=text(x.battleTypeKey);
       v["敵人生產線"]=mode==="endless"?x.spawnWaves.flatMap(w=>w.units.map(spawn)):
-        Object.fromEntries(x.spawnWaves.map(w=>[when(w.when),w.units.map(spawn)]));
+        Object.fromEntries(x.spawnWaves.map(w=>[when(w.when,mode),w.units.map(spawn)]));
       if(mode==="extreme") {
         for(const [from,to] of [["passiveGimmicks","被動機關"],["activeGimmicks","主動機關"]])
           v[to]=x[from].map(g=>({"資料名稱":g.gimmickCode,"名稱":text(g.nameKey),
@@ -390,9 +397,15 @@
     }return out;
   }
   async function artifacts() {
-    return Object.fromEntries((await data("labyrinth-artifacts")).artifacts.map(x=>[text(x.nameKey)+"["+x.grade+"]",{
-      "分類":x.effect.direction==="INCREASE"?"增益":"減益","效果":text({templateKey:x.effect.effectKey,args:x.effect.effectArgs}),
-      "分數":Object.fromEntries(Object.entries(x.pointsByTarget).map(([k,v])=>[types[k]||(elements[k]+"屬性"),v])),icon_path:x.iconPath}]));
+    return Object.fromEntries((await data("labyrinth-artifacts")).artifacts.map(x=>{
+      const withoutGrade=value=>value.replace(/^\s*\[[ABC]\]\s*/,"");
+      const name=withoutGrade(render(x.nameKey));
+      pair(name,withoutGrade(render(x.nameKey,locale)),2);
+      const scoreLabel=target=>target==="ALL" ? text("UI:site.labyrinth.allTargets") : types[target] || (elements[target] ? elements[target]+"屬性" : target);
+      return [name+"["+x.grade+"]",{
+        "分類":x.effect.direction==="INCREASE"?"增益":"減益","效果":text({templateKey:x.effect.effectKey,args:x.effect.effectArgs}),
+        "分數":Object.fromEntries(Object.entries(x.pointsByTarget).map(([target,value])=>[scoreLabel(target),value])),icon_path:x.iconPath}];
+    }));
   }
   async function projectiles() {
     const raw=(await data("projectiles")).units;

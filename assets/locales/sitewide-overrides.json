@@ -3134,5 +3134,152 @@
     "en": "View raw log (%N1 lines)",
     "th": "ดูบันทึกต้นฉบับ (%N1 บรรทัด)",
     "jp": "元のログを表示（%N1 行）"
+  },
+  {
+    "key": "UI:update.log.2026-10-30.1",
+    "zh_TW": "新增11月份新Ranger資訊",
+    "en": "Added information on the new November Rangers.",
+    "th": "เพิ่มข้อมูลเรนเจอร์ใหม่ประจำเดือนพฤศจิกายน",
+    "jp": "11月の新規レンジャー情報を追加しました。"
+  },
+  {
+    "key": "UI:update.log.2026-10-30.2",
+    "zh_TW": "新增1億下載紀念裝備資訊",
+    "en": "Added information on the 100 million downloads commemorative gear.",
+    "th": "เพิ่มข้อมูลอุปกรณ์ฉลองยอดดาวน์โหลดครบ 100 ล้านครั้ง",
+    "jp": "1億ダウンロード記念装備の情報を追加しました。"
+  },
+  {
+    "key": "UI:site.labyrinth.stageIntro",
+    "zh_TW": "先選擇地圖與關卡，再查看各難度的敵人生產線。",
+    "en": "Choose a map and stage to view enemy spawn timelines by difficulty.",
+    "th": "เลือกแผนที่และด่านเพื่อดูข้อมูลการเกิดของศัตรูในแต่ละระดับความยาก",
+    "jp": "マップとステージを選ぶと、難易度ごとの敵の出現情報を確認できます。"
+  },
+  {
+    "key": "UI:site.labyrinth.selectMap",
+    "zh_TW": "選擇地圖",
+    "en": "Select a map",
+    "th": "เลือกแผนที่",
+    "jp": "マップを選択"
+  },
+  {
+    "key": "UI:site.labyrinth.helpMap",
+    "zh_TW": "先選擇你在遊戲中進入的地圖，再選擇戰鬥格。不同地圖可能有相同的關卡編號。",
+    "en": "Choose the map you entered in the game, then select a battle tile. Different maps can share the same stage number.",
+    "th": "เลือกแผนที่ที่คุณเข้าในเกม จากนั้นเลือกช่องต่อสู้ แผนที่ต่างกันอาจมีหมายเลขด่านเดียวกัน",
+    "jp": "ゲーム内で入ったマップを選び、戦闘マスを選択してください。マップが異なっても同じステージ番号が使われることがあります。"
+  },
+  {
+    "key": "UI:site.labyrinth.helpTile",
+    "zh_TW": "關卡編號 N-M 代表第 N 段路線的第 M 格。打開關卡後，可切換難度並查看敵人的出場條件、間距和數值。",
+    "en": "Stage N-M is tile M in route segment N. Open the stage to switch difficulties and see enemy spawn conditions, intervals, and stats.",
+    "th": "ด่าน N-M คือช่องที่ M ของช่วงเส้นทางที่ N เมื่อเปิดด่านแล้ว คุณสามารถเปลี่ยนระดับความยากและดูเงื่อนไขการเกิด ระยะห่างระหว่างการเกิด และค่าสถานะของศัตรูได้",
+    "jp": "ステージ番号 N-M は、ルートの第 N 区間にある第 M マスを表します。ステージを開くと、難易度を切り替えて敵の出現条件・間隔・ステータスを確認できます。"
+  },
+  {
+    "key": "UI:site.labyrinth.invalidLink",
+    "zh_TW": "此關卡連結目前無法使用，請從下方選擇地圖和關卡。",
+    "en": "This stage link is unavailable. Choose a map and stage below.",
+    "th": "ไม่สามารถเปิดด่านจากลิงก์นี้ได้ โปรดเลือกแผนที่และด่านด้านล่าง",
+    "jp": "このステージリンクは利用できません。下からマップとステージを選択してください。"
+  },
+  {
+    "key": "UI:site.labyrinth.map",
+    "zh_TW": "地圖 %N1",
+    "en": "Map %N1",
+    "th": "แผนที่ %N1",
+    "jp": "マップ %N1"
+  },
+  {
+    "key": "UI:site.labyrinth.stage",
+    "zh_TW": "關卡 %N1",
+    "en": "Stage %N1",
+    "th": "ด่าน %N1",
+    "jp": "ステージ %N1"
+  },
+  {
+    "key": "UI:site.labyrinth.legacyStage",
+    "zh_TW": "迷宮關卡 %N1",
+    "en": "Labyrinth Stage %N1",
+    "th": "ด่านเขาวงกต %N1",
+    "jp": "ラビリンスステージ %N1"
+  },
+  {
+    "key": "UI:site.labyrinth.level",
+    "zh_TW": "等級%N1",
+    "en": "Level %N1",
+    "th": "เลเวล %N1",
+    "jp": "レベル %N1"
+  },
+  {
+    "key": "UI:site.labyrinth.stageType",
+    "zh_TW": "關卡類型",
+    "en": "Stage Type",
+    "th": "ประเภทด่าน",
+    "jp": "ステージの種類"
+  },
+  {
+    "key": "UI:site.labyrinth.difficulty",
+    "zh_TW": "難度",
+    "en": "Difficulty",
+    "th": "ระดับความยาก",
+    "jp": "難易度"
+  },
+  {
+    "key": "UI:site.labyrinth.unknownEnemy",
+    "zh_TW": "未知敵人",
+    "en": "Unknown Enemy",
+    "th": "ศัตรูที่ไม่รู้จัก",
+    "jp": "不明な敵"
+  },
+  {
+    "key": "UI:site.labyrinth.boss",
+    "zh_TW": "魔王",
+    "en": "Boss",
+    "th": "บอส",
+    "jp": "ボス"
+  },
+  {
+    "key": "UI:site.labyrinth.allTargets",
+    "zh_TW": "所有類型／屬性",
+    "en": "All Types and Elements",
+    "th": "ทุกประเภทและทุกธาตุ",
+    "jp": "すべてのタイプ／属性"
+  },
+  {
+    "key": "UI:site.labyrinth.seconds",
+    "zh_TW": "%N1秒",
+    "en": "%N1 s",
+    "th": "%N1 วินาที",
+    "jp": "%N1秒"
+  },
+  {
+    "key": "UI:site.labyrinth.secondsRange",
+    "zh_TW": "%N1秒 ~ %N2秒",
+    "en": "%N1–%N2 s",
+    "th": "%N1–%N2 วินาที",
+    "jp": "%N1～%N2秒"
+  },
+  {
+    "key": "UI:site.labyrinth.points",
+    "zh_TW": "%N1點",
+    "en": "%N1 pt",
+    "th": "%N1 จุด",
+    "jp": "%N1ポイント"
+  },
+  {
+    "key": "UI:site.labyrinth.count",
+    "zh_TW": "%N1隻",
+    "en": "%N1 units",
+    "th": "%N1 ตัว",
+    "jp": "%N1体"
+  },
+  {
+    "key": "UI:site.labyrinth.skill",
+    "zh_TW": "技能 %N1",
+    "en": "Skill %N1",
+    "th": "สกิล %N1",
+    "jp": "スキル %N1"
   }
 ]

@@ -42,13 +42,33 @@
       .replaceAll("'", "&#039;");
   }
 
+  function localized(key, args, fallback) {
+    return window.RangerbookI18n?.format?.("site.labyrinth." + key, args, fallback) ?? fallback;
+  }
+
+  const stageValuePatterns = [
+    [/^(-?\d+(?:\.\d+)?)秒\s*[~～–-]\s*(-?\d+(?:\.\d+)?)秒$/, "secondsRange"],
+    [/^(-?\d+(?:\.\d+)?)秒$/, "seconds"],
+    [/^(\d+(?:\.\d+)?)點$/, "points"],
+    [/^(\d+)隻$/, "count"],
+    [/^等級\s*(\d+)$/, "level"]
+  ];
+
+  function stageValueLabel(value) {
+    for (const [pattern, key] of stageValuePatterns) {
+      const match = value.match(pattern);
+      if (match) return localized(key, match.slice(1), value);
+    }
+    return window.RangerbookI18n?.uiText?.(value) ?? value;
+  }
+
   function formatValue(value) {
     if (value === null || value === undefined || value === "") return "-";
     if (typeof value === "number") return value.toLocaleString("zh-Hant");
     const raw = text(value);
     const n = Number(raw.replaceAll(",", ""));
     if (Number.isFinite(n) && /^-?\d+(\.\d+)?$/.test(raw.replaceAll(",", ""))) return n.toLocaleString("zh-Hant");
-    return escapeHtml(raw);
+    return escapeHtml(stageValueLabel(raw));
   }
 
   function hasValue(value) {
@@ -75,7 +95,8 @@
 
   function mapLabel(mapId) {
     const match = mapId.match(/^la(\d{2})(\d+)$/);
-    return match ? `地圖 ${Number(match[1])}-${Number(match[2])}` : `地圖 ${mapId}`;
+    const number = match ? `${Number(match[1])}-${Number(match[2])}` : mapId;
+    return localized("map", [number], `地圖 ${number}`);
   }
 
   function getRequestedStageKey() {
@@ -136,11 +157,11 @@
     });
 
     stageGrid.innerHTML = [...rowMap.entries()].sort((a, b) => a[0] - b[0]).map(([rowNo, stages]) => `
-      <section class="labyrinth-stage-row" aria-label="迷宮第 ${rowNo} 行">
+      <section class="labyrinth-stage-row" aria-label="${escapeHtml(window.RangerbookI18n?.format?.("site.dynamic.labyrinthRow", [rowNo], `迷宮第 ${rowNo} 行`) ?? `迷宮第 ${rowNo} 行`)}">
         <div class="labyrinth-stage-row-grid">
           ${stages.sort((a, b) => a.col - b.col).map((stage) => `
             <a class="labyrinth-stage-card" href="${stageUrl(stage.key)}">
-              <span>關卡 ${stage.row}-${stage.col}</span>
+              <span>${escapeHtml(localized("stage", [`${stage.row}-${stage.col}`], `關卡 ${stage.row}-${stage.col}`))}</span>
             </a>
           `).join("")}
         </div>
@@ -257,12 +278,13 @@
       || stage.difficultyNames[0] || "";
     if (stageGrid) stageGrid.hidden = true;
     stageDetail.hidden = false;
+    const position = `${stage.row}-${stage.col}`;
     stageTitle.textContent = stage.mapId
-      ? `${mapLabel(stage.mapId)} · 關卡 ${stage.row}-${stage.col}`
-      : `迷宮關卡 ${stage.key}`;
+      ? `${mapLabel(stage.mapId)} · ${localized("stage", [position], `關卡 ${position}`)}`
+      : localized("legacyStage", [stage.key], `迷宮關卡 ${stage.key}`);
     if (backLink && stage.mapId) backLink.href = `${ROOT}labyrinth/stage/?map=${encodeURIComponent(stage.mapId)}`;
 
-    difficultySelect.innerHTML = stage.difficultyNames.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+    difficultySelect.innerHTML = stage.difficultyNames.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(stageValueLabel(name))}</option>`).join("");
     difficultySelect.value = state.currentDifficulty;
     difficultyControls.hidden = stage.difficultyNames.length <= 1;
 
@@ -313,7 +335,7 @@
       <article class="ranger-skill-card">
         <div class="ranger-icon-title">
           ${skill.icon ? `<img class="small-icon" src="${SKILL_ICON(skill.icon)}" alt="" onerror="this.remove();">` : ""}
-          <div><h4>技能 ${index + 1}</h4></div>
+          <div><h4>${escapeHtml(localized("skill", [index + 1], `技能 ${index + 1}`))}</h4></div>
         </div>
         ${renderSkillMetaTable(skill)}
         ${renderSkillTable(skill)}
@@ -417,7 +439,8 @@
       const [stageRes, enemyRes, abilityRes] = await Promise.all([
         fetch(DATA_URL),
         fetch(ENEMY_DATA_URL).catch(() => null),
-        fetch(ABILITY_DATA_URL).catch(() => null)
+        fetch(ABILITY_DATA_URL).catch(() => null),
+        window.RangerbookI18n?.ready
       ]);
       if (!stageRes.ok) throw new Error(`HTTP ${stageRes.status}`);
       state.stages = parseStageData(await stageRes.json());
