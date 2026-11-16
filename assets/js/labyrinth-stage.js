@@ -97,13 +97,14 @@
     }).filter(Boolean).sort((a, b) => a.row - b.row || a.col - b.col);
   }
 
-  function selectMap() {
+  function selectMap(activeMapId) {
     if (!mapSelect || !mapControls) return;
     const mapIds = [...new Set(state.stages.map((stage) => stage.mapId).filter(Boolean))].sort();
     if (!mapIds.length) return;
     const queryMap = new URLSearchParams(window.location.search).get("map");
     mapSelect.replaceChildren(...mapIds.map((mapId) => new Option(mapLabel(mapId), mapId)));
-    mapSelect.value = mapIds.includes(queryMap) ? queryMap : mapIds[0];
+    const preferred = activeMapId || queryMap;
+    mapSelect.value = mapIds.includes(preferred) ? preferred : mapIds[0];
     mapControls.hidden = false;
   }
 
@@ -259,7 +260,6 @@
     stageTitle.textContent = stage.mapId
       ? `${mapLabel(stage.mapId)} · 關卡 ${stage.row}-${stage.col}`
       : `迷宮關卡 ${stage.key}`;
-    if (mapControls) mapControls.hidden = true;
     if (backLink && stage.mapId) backLink.href = `${ROOT}labyrinth/stage/?map=${encodeURIComponent(stage.mapId)}`;
 
     difficultySelect.innerHTML = stage.difficultyNames.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
@@ -433,11 +433,11 @@
 
       const requestedKey = getRequestedStageKey();
       const stage = state.stages.find((item) => item.key === requestedKey);
+      selectMap(stage?.mapId);
       if (stage) {
         renderStageDetail(stage);
         return;
       }
-      selectMap();
       renderStageGrid();
       if (requestedKey && stageNotice) {
         stageNotice.hidden = false;
@@ -452,8 +452,14 @@
   mapSelect?.addEventListener("change", () => {
     const url = new URL(window.location.href);
     url.searchParams.delete("stage");
+    url.searchParams.delete("difficulty");
     url.hash = "";
     url.searchParams.set("map", mapSelect.value);
+    if (state.currentStage) {
+      url.pathname = ROOT + "labyrinth/stage/";
+      window.location.assign(url);
+      return;
+    }
     window.history.replaceState(null, "", url);
     if (stageNotice) stageNotice.hidden = true;
     renderStageGrid();

@@ -359,8 +359,10 @@
     }
   }
   async function stages(mode) {
+    const dataset=await data("stages/"+mode);
     const out={};
-    for(const x of (await data("stages/"+mode)).stages) {
+    if(mode==="labyrinth" && Array.isArray(dataset.maps)) out._maps=dataset.maps;
+    for(const x of dataset.stages) {
       const e=x.environment, v={};
       const map={unitExp:"角色EXP",playerExp:"玩家EXP",coins:"金幣",towerHp:"塔城體力",allyTowerHp:"我方塔城體力",enemyTowerHp:"敵方塔城體力",cageHp:"牢籠體力"};
       for(const [k,label] of Object.entries(map)) if(e[k]!==undefined)v[label]=e[k];
@@ -379,7 +381,11 @@
         v["主動機關冷卻時間"]=seconds(x.activeGimmickTiming.cooldownSeconds);
       }
       (x.gimmicks||[]).forEach((g,i)=>{v["機關"+(i+1)]=text({templateKey:g.descriptionKey,args:g.descriptionArgs||[]});v["機關"+(i+1)+"_icon"]=g.icon;});
-      if(mode==="labyrinth") {out[x.tile] ||= {};out[x.tile]["等級"+x.difficulty]=v;}
+      if(mode==="labyrinth") {
+        const tile=x.tileCode || x.tile;
+        out[tile] ||= {};
+        out[tile]["等級"+x.difficulty]=v;
+      }
       else out[(mode==="hard"?"困難關卡":mode==="extreme"?"極限關卡":"第")+(x.stageNumber||x.stageId.match(/\d+$/)[0])+(mode==="endless"?"層":"關")]=v;
     }return out;
   }

@@ -123,23 +123,6 @@
   margin: 0.42rem 0;
 }
 
-.labyrinth-difficulty-controls {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.labyrinth-difficulty-controls label {
-  display: grid;
-  gap: 0.35rem;
-  min-width: min(16rem, 100%);
-  font-weight: 850;
-}
-
-.labyrinth-difficulty-controls select {
-  min-height: 2.45rem;
-}
-
 .labyrinth-stage-info-card {
   margin-top: 1rem;
 }
@@ -316,29 +299,63 @@ html[data-theme="dark"] .tag-debuff {
   }
 }
 
-.labyrinth-map-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
-  margin: 1rem 0;
+.labyrinth-stage-card:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
-.labyrinth-map-controls[hidden] {
+.labyrinth-stage-page :is(.labyrinth-map-controls, .labyrinth-difficulty-controls) {
+  display: grid;
+  justify-items: start;
+  gap: 0.45rem;
+  margin-block: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.labyrinth-stage-page :is(.labyrinth-map-controls, .labyrinth-difficulty-controls)[hidden] {
   display: none;
 }
 
-.labyrinth-map-controls select {
-  max-width: 100%;
+.labyrinth-stage-page .labyrinth-difficulty-controls label {
+  display: grid;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.labyrinth-stage-page :is(.labyrinth-map-controls, .labyrinth-difficulty-controls) label {
+  font-weight: 800;
+}
+
+.labyrinth-stage-page :is(.labyrinth-map-controls, .labyrinth-difficulty-controls) select {
+  box-sizing: border-box;
+  width: min(100%, 20rem);
   min-height: 2.75rem;
-  padding: 0.4rem 0.65rem;
-  color: inherit;
-  background: var(--panel);
+  padding: 0.45rem 0.7rem;
+  color: var(--text);
+  background: var(--gt-inset, var(--panel));
   border: 1px solid var(--line);
   border-radius: 0.5rem;
 }
 
-.labyrinth-stage-card:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
+.labyrinth-stage-page .labyrinth-stage-help-link {
+  padding: 0.4rem 0.7rem;
+  min-height: 2.5rem;
+}
+
+.labyrinth-stage-page .labyrinth-stage-info-table :is(th, td) {
+  padding: 0.65rem 0.85rem;
+}
+
+@media (max-width: 620px) {
+  .labyrinth-stage-page :is(.labyrinth-map-controls, .labyrinth-difficulty-controls) select {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .labyrinth-stage-page .labyrinth-stage-info-table :is(th, td) {
+    padding-inline: 0.65rem;
+  }
 }
