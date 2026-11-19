@@ -267,20 +267,40 @@ def write_if_changed(path: Path, content: str) -> bool:
 
 
 def plist_rect(value: str) -> list[int]:
-    numbers = [int(item) for item in re.findall(r"-?\d+", value or "")]
-    return numbers[:4] if len(numbers) >= 4 else [0, 0, 0, 0]
+    """Parse TexturePacker rectangles with decimals (and retain integer coordinates)."""
+    tokens = re.findall(r"[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?", str(value or ""))
+    if len(tokens) < 4:
+        return [0, 0, 0, 0]
+    numbers = [float(token) for token in tokens[:4]]
+    if not all(math.isfinite(number) for number in numbers):
+        return [0, 0, 0, 0]
+    # Match JavaScript Math.round, including negative half-pixels.
+    return [math.floor(number + 0.5) for number in numbers]
 
 
 def load_plist(path: Path) -> dict[str, Any]:
     with path.open("rb") as file:
         data = plistlib.load(file)
     result: dict[str, Any] = {}
-    for name, info in data.get("frames", {}).items():
-        rect = plist_rect(info.get("textureRect", ""))
+    alias_of: list[tuple[str, str]] = []
+    for name, info in (data.get("frames") or {}).items():
+        if not isinstance(info, dict):
+            continue
+        rect = plist_rect(info.get("textureRect") or info.get("frame") or "")
+        if rect[2] <= 0 or rect[3] <= 0:
+            continue  # An invalid / zero-sized atlas crop must not break the whole ranger.
         result[name] = {
             "rect": rect,
-            "rotated": bool(info.get("textureRotated", False)),
+            "rotated": bool(info.get("textureRotated", info.get("rotated", False))),
         }
+        aliases = info.get("aliases")
+        if isinstance(aliases, (list, tuple)):
+            alias_of.extend((alias, name) for alias in aliases
+                            if isinstance(alias, str) and alias and alias != name)
+
+    # Defer aliases so a real sprite definition always takes precedence.
+    for alias, canonical in alias_of:
+        result.setdefault(alias, result[canonical])
     return result
 
 
