@@ -268,7 +268,7 @@ def write_if_changed(path: Path, content: str) -> bool:
 
 def plist_rect(value: str) -> list[int]:
     """Parse TexturePacker rectangles with decimals (and retain integer coordinates)."""
-    tokens = re.findall(r"[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][-+]?\\d+)?", str(value or ""))
+    tokens = re.findall(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?", str(value or ""))
     if len(tokens) < 4:
         return [0, 0, 0, 0]
     numbers = [float(token) for token in tokens[:4]]
