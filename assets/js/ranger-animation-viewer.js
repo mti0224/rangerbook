@@ -716,10 +716,21 @@ function projectileImpactOffset(projectile, bodyPart) {
   function getSpriteCanvas(part, atlas, imageName) {
     const cacheKey = `${normalizeResourcePath(part.png)}|${imageName}`;
     if (state.spriteCache.has(cacheKey)) return state.spriteCache.get(cacheKey);
-    const sprite = part.sprites?.[imageName];
+    let sprite = part.sprites?.[imageName];
+    // TexturePacker stores some sprites under one canonical key and lists
+    // the other SAM resource names as aliases. Older metadata retains those
+    // aliases on the canonical record but doesn't materialize their keys.
+    if (!sprite && part.sprites) {
+      for (const entry of Object.values(part.sprites)) {
+        if (Array.isArray(entry?.aliases) && entry.aliases.includes(imageName)) {
+          sprite = entry;
+          break;
+        }
+      }
+    }
     if (!sprite) return null;
     const [sourceX, sourceY, width, height] = sprite.rect || [];
-    if (!width || !height) return null;
+    if (![sourceX, sourceY, width, height].every(Number.isFinite) || width <= 0 || height <= 0) return null;
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;
