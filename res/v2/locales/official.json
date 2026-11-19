@@ -15653,10 +15653,10 @@
     },
     {
         "key": "LABYRINTH:LABYRINTH_RESET_DESC_3",
-        "zh_TW": "需要攻略魔王1次以上才能登上排行榜。",
-        "en": "You'll need to defeat a boss \nat least 1 time to get in the Rankings.",
+        "zh_TW": "需要攻略魔王1次以上\n才能登上排行榜。",
+        "en": "You'll need to defeat \na boss at least 1 time \nto get in the Rankings.",
         "th": "จำเป็นต้องปราบบอสอย่างน้อย \n1 ครั้งจึงจะถูกบันทึกในอันดับ",
-        "jp": "ランキングに登録するには、\n1回以上ボスを攻略する必要があります。"
+        "jp": "ランキングに登録するには、\n1回以上ボスを攻略する\n必要があります。"
     },
     {
         "key": "LABYRINTH:LABYRINTH_RESTRICT_DESC_AGI",
