@@ -12,7 +12,7 @@ function viewer() {
   let source = fs.readFileSync(require.resolve('../assets/js/ranger-animation-viewer.js'),'utf8');
   // Test the actual playback and export path, without exposing internals publicly.
   source = source.replace('  window.RangerAnimationExport = {', `
-    window.testApi = {state, CLIPS, nativeStartPoint, buildTrack, prepareNativeClips,
+    window.testApi = {state, CLIPS, nativeStartPoint, buildTrack, prepareNativeClips, prepareSpriteAliases,
       resolveProjectileGeometry, referenceLayout, projectileRotation, drawSegment, playbackPlanForTrack};
     window.RangerAnimationExport = {`);
   source = source.replace('    const animation = part?.animations?.[animName];\n    if (!part || !animation?.frames?.length) return false;',
@@ -117,4 +117,18 @@ test('curved finish retains its node rotation at impact',async()=>{
   await v.drawSegment(context,context,m,seg,seg.projectile.spawnTime+seg.projectile.impactOffset+0.05,l,l.sceneScale);
   const finish=context.calls.find(x=>x.part==='bul');
   assert.equal(finish.animName,'finish');assert.equal(finish.rotation,70);
+});
+
+
+test('Sprite aliases resolve to the original atlas entry without overriding real sprites',()=>{
+  const v=viewer();
+  const primary={rect:[98,322,99,99],rotated:false,aliases:['alias.png','real.png','','__proto__']};
+  const real={rect:[3,4,5,6],rotated:false};
+  const part={sprites:{'primary.png':primary,'real.png':real}};
+  v.prepareSpriteAliases({parts:{body:part}});
+  assert.equal(part.sprites['alias.png'],primary);
+  assert.equal(part.sprites['real.png'],real);
+  assert.equal(Object.prototype.hasOwnProperty.call(part.sprites,'__proto__'),true);
+  v.prepareSpriteAliases({parts:{body:part}});
+  assert.equal(part.sprites['alias.png'],primary);
 });

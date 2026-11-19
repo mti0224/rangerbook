@@ -221,6 +221,7 @@
       loadProjectileData(),
     ]);
     attachProjectileDataFallback(meta, projectileData, unitId);
+    prepareSpriteAliases(meta);
     prepareNativeClips(meta);
     state.metaCache.set(unitId, meta);
     return meta;
@@ -281,6 +282,29 @@
   function attackRangeForMeta(meta) {
     return positiveNumber(meta?.projectileData?.normal?.attackRange,
       positiveNumber(state.attackRangeByMeta.get(meta), DEFAULT_ATTACK_RANGE));
+  }
+
+  // The SAM timeline can reference an atlas sprite by one of its TexturePacker aliases.
+  // Older published metadata contains aliases on the canonical sprite, but not as keys.
+  function prepareSpriteAliases(meta) {
+    for (const part of Object.values(meta?.parts || {})) {
+      const sprites = part?.sprites;
+      if (!sprites || typeof sprites !== "object") continue;
+      const pending = [];
+      for (const [name, sprite] of Object.entries(sprites)) {
+        if (!Array.isArray(sprite?.aliases)) continue;
+        for (const alias of sprite.aliases) {
+          if (typeof alias === "string" && alias && alias !== name) pending.push([alias, sprite]);
+        }
+      }
+      for (const [alias, sprite] of pending) {
+        if (!Object.prototype.hasOwnProperty.call(sprites, alias)) {
+          Object.defineProperty(sprites, alias, {
+            value: sprite, enumerable: true, configurable: true, writable: true,
+          });
+        }
+      }
+    }
   }
 
   function prepareNativeClips(meta) {
@@ -692,10 +716,21 @@ function projectileImpactOffset(projectile, bodyPart) {
   function getSpriteCanvas(part, atlas, imageName) {
     const cacheKey = `${normalizeResourcePath(part.png)}|${imageName}`;
     if (state.spriteCache.has(cacheKey)) return state.spriteCache.get(cacheKey);
-    const sprite = part.sprites?.[imageName];
+    let sprite = part.sprites?.[imageName];
+    // TexturePacker stores some sprites under one canonical key and lists
+    // the other SAM resource names as aliases. Older metadata retains those
+    // aliases on the canonical record but doesn't materialize their keys.
+    if (!sprite && part.sprites) {
+      for (const entry of Object.values(part.sprites)) {
+        if (Array.isArray(entry?.aliases) && entry.aliases.includes(imageName)) {
+          sprite = entry;
+          break;
+        }
+      }
+    }
     if (!sprite) return null;
     const [sourceX, sourceY, width, height] = sprite.rect || [];
-    if (!width || !height) return null;
+    if (![sourceX, sourceY, width, height].every(Number.isFinite) || width <= 0 || height <= 0) return null;
     const canvas = document.createElement("canvas");
     canvas.width = width;
     canvas.height = height;

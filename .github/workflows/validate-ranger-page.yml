@@ -7,6 +7,8 @@ on:
     paths:
       - "assets/js/ranger.js"
       - "assets/js/ranger-animation-viewer.js"
+      - "scripts/build_animation_data.py"
+      - "tests/test_animation_plist.py"
       - "assets/js/ranger-animation-gif*.js"
       - "assets/css/ranger-animation-viewer.css"
       - "assets/vendor/gifenc/**"
@@ -66,6 +68,8 @@ jobs:
           node --check assets/js/ranger-animation-debug-overlay.js
           node --check assets/js/ranger-animation-target.js
           node --check assets/js/ranger-animation-hit-effect.js
+      - name: Validate plist decimal rectangles and atlas aliases
+        run: python3 -m unittest discover -s tests -p 'test_animation_plist.py'
       - name: Validate projectile engine regressions
         run: |
           node --test tests/ranger-animation-native-playback.test.js
