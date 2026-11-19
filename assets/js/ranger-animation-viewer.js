@@ -713,6 +713,103 @@ function projectileImpactOffset(projectile, bodyPart) {
     return `<section class="detail-section ranger-animation-section" data-animation-unit-id="${escapeHtml(unitId)}"><h3>角色動畫</h3><div class="empty-state small">尚未產生此角色的動畫 metadata。請確認 GitHub Actions 已完成 Build animation metadata。</div></section>`;
   }
 
+  // Published animation_meta may predate decimal and alias fixes. Recover the
+  // atlas directly from the original .plist only for parts that need it.
+  // Keep native SAM timing, projectile simulation and hit effects untouched.
+  const atlasRecovery = new WeakMap();
+
+  function validSpriteRect(sprite) {
+    const rect = sprite?.rect;
+    return Array.isArray(rect) && rect.length >= 4 &&
+      rect.slice(0, 4).every(Number.isFinite) && rect[2] > 0 && rect[3] > 0;
+  }
+
+  function atlasPixelRect(value) {
+    const numbers = String(value || "").match(/[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?/g);
+    if (!numbers || numbers.length < 4) return null;
+    const rect = numbers.slice(0, 4).map(Number);
+    return rect.every(Number.isFinite) ? rect.map(Math.round) : null;
+  }
+
+  function xmlPlistEntries(dict) {
+    if (!dict || dict.tagName !== "dict") return [];
+    const nodes = [...dict.children];
+    const entries = [];
+    for (let i = 0; i + 1 < nodes.length; i += 2) {
+      if (nodes[i].tagName === "key") {
+        entries.push([nodes[i].textContent || "", nodes[i + 1]]);
+      }
+    }
+    return entries;
+  }
+
+  function applyOriginalAtlasXml(part, xml) {
+    if (typeof DOMParser !== "function" || !xml.includes("<plist")) return 0;
+    const document = new DOMParser().parseFromString(xml, "application/xml");
+    if (document.querySelector("parsererror")) return 0;
+    const dict = document.documentElement?.firstElementChild;
+    const frames = xmlPlistEntries(dict).find(([key]) => key === "frames")?.[1];
+    if (!frames || frames.tagName !== "dict") return 0;
+    const images = new Set((part.images || []).map(item => item?.name).filter(Boolean));
+    const aliasOf = [];
+    let corrected = 0;
+    part.sprites ||= {};
+    for (const [name, raw] of xmlPlistEntries(frames)) {
+      if (!name || raw?.tagName !== "dict") continue;
+      const fields = Object.fromEntries(xmlPlistEntries(raw));
+      const rect = atlasPixelRect(fields.textureRect?.textContent || fields.frame?.textContent);
+      if (!rect || rect[2] <= 0 || rect[3] <= 0) continue;
+      const existing = part.sprites[name];
+      if (!existing && !images.has(name)) {
+        // The canonical sprite can still be referred to through an alias.
+        part.sprites[name] = { rect, rotated: false };
+      } else {
+        part.sprites[name] ||= {};
+        if (!validSpriteRect(existing) || rect.some((v, i) => v !== existing.rect[i])) corrected++;
+        part.sprites[name].rect = rect;
+      }
+      const rotated = fields.textureRotated || fields.rotated;
+      if (rotated?.tagName === "true") part.sprites[name].rotated = true;
+      if (rotated?.tagName === "false") part.sprites[name].rotated = false;
+      if (fields.aliases?.tagName === "array") {
+        for (const child of fields.aliases.children) {
+          const alias = child.tagName === "string" ? child.textContent : "";
+          if (alias && alias !== name) aliasOf.push([alias, name]);
+        }
+      }
+    }
+    // Process aliases after all canonical frames, so explicit entries win.
+    for (const [alias, name] of aliasOf) {
+      if (!part.sprites[alias] && part.sprites[name]) {
+        part.sprites[alias] = { ...part.sprites[name], aliases: [] };
+        corrected++;
+      }
+    }
+    return corrected;
+  }
+
+  function recoverSpriteAtlas(part) {
+    if (!part || typeof part !== "object") return Promise.resolve();
+    if (atlasRecovery.has(part)) return atlasRecovery.get(part);
+    const damaged = (part.images || []).some(image => !validSpriteRect(part.sprites?.[image.name]));
+    if (!damaged) {
+      atlasRecovery.set(part, Promise.resolve());
+      return Promise.resolve();
+    }
+    const path = normalizeResourcePath(part.plist);
+    // Only fetch a same-origin-relative unit plist: avoid untrusted URL/path inputs.
+    if (!/^[a-z0-9_./-]+\.plist$/i.test(path) || path.split("/").includes("..")) {
+      atlasRecovery.set(part, Promise.resolve());
+      return Promise.resolve();
+    }
+    const promise = fetch(resourceUrl(path))
+      .then(response => response.ok ? response.text() : "")
+      .then(xml => { if (xml) applyOriginalAtlasXml(part, xml); })
+      .catch(() => { /* Keep any valid published metadata when offline. */ });
+    atlasRecovery.set(part, promise);
+    return promise;
+  }
+
   function getSpriteCanvas(part, atlas, imageName) {
     const cacheKey = `${normalizeResourcePath(part.png)}|${imageName}`;
     if (state.spriteCache.has(cacheKey)) return state.spriteCache.get(cacheKey);
@@ -781,7 +878,7 @@ function projectileImpactOffset(projectile, bodyPart) {
   async function drawSamFrame(context, part, animName, frameIndexValue, originX, originY, scaleX, scaleY = scaleX, rotationDegrees = 0) {
     const animation = part?.animations?.[animName];
     if (!part || !animation?.frames?.length) return false;
-    const atlas = await loadImage(part.png);
+    const [atlas] = await Promise.all([loadImage(part.png), recoverSpriteAtlas(part)]);
     if (!atlas) return false;
     const frame = animation.frames[clamp(frameIndexValue, 0, animation.frame_count - 1)] || [];
     let drawn = false;
