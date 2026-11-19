@@ -39,10 +39,6 @@
   let abilityMap = {};
   let rangerByCode = {};
   let rangerCatalogPromise;
-  function combatStats(row) {
-    const stats = rangerByCode[row.rangerId]?.stats;
-    return window.RangerbookUnitIcons.stats(stats ? Number(stats.attack?.physical || 0) + Number(stats.attack?.magical || 0) : undefined, stats?.hp, stats?.mineralCost);
-  }
   const modalState = {
     rangerId: "",
     gearPages: { WEAPON: 0, ARMOR: 0, ACC: 0 },
@@ -116,7 +112,6 @@
               <span class="pvp-ranger-portrait ranger-icon-portrait"><img class="pvp-ranger-thumb" src="${RANGER_IMAGE(row.rangerId)}" alt="" loading="lazy" onerror="this.remove();">${window.RangerbookUnitIcons.element(rangerByCode[row.rangerId] || row)}</span>
               <span>
                 <span class="pvp-ranger-name">${window.RangerbookUnitIcons.type(rangerByCode[row.rangerId] || row)}${escapeHtml(row.name || row.rangerId)}</span>
-                ${combatStats(row)}
               </span>
             </button>
           </td>
@@ -306,7 +301,6 @@
         <div class="pvp-modal-ranger-copy">
           <p class="eyebrow">PvP 角色分析</p>
           <h2 id="pvpUsageModalTitle">${window.RangerbookUnitIcons.type(rangerByCode[row.rangerId] || row)}${escapeHtml(row.name || row.rangerId)}</h2>
-          ${combatStats(row)}
           <div class="pvp-modal-summary">
             <span><strong>${escapeHtml(formatNumber(row.usageRate))}%</strong> 使用率</span>
             <span><strong>${escapeHtml(formatNumber(row.playerCount))}</strong> 名玩家</span>
@@ -367,7 +361,7 @@
         fetch(`${DATA_URL}`),
         optionalJson(ID_DICT_URL),
         optionalJson(ABILITY_DATA_URL),
-        rangerCatalogPromise ||= window.RangerbookV2.data("fast/ranger-list").catch(error => { rangerCatalogPromise = null; console.warn("Ranger combat stats unavailable", error); return {}; }),
+        rangerCatalogPromise ||= window.RangerbookV2.data("fast/ranger-list").catch(error => { rangerCatalogPromise = null; console.warn("Ranger catalog unavailable", error); return {}; }),
       ]);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       dataSet = await response.json();
