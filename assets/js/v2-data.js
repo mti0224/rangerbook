@@ -195,6 +195,12 @@
         args:e.targetLimit.kind === "unlimited" ? [e.magnitude.level] : [e.targetLimit.maxTargets,e.magnitude.level]});
     return magnitude(e.magnitude);
   }
+  function effectDuration(e) {
+    // CLEAN_UNBEAT removes an existing invincibility effect immediately.
+    // Its subFactor is not a duration; CLEANING_UNBEAT is a separate timed effect.
+    if (e.effectCode === "SKILLEFF_CLEAN_UNBEAT" || e.effectCode === "CLEAN_UNBEAT") return "-";
+    return !e.duration ? "-" : e.duration.kind === "levelFormula" ? formula(e.duration) : seconds(e.duration.seconds);
+  }
   function skill(s) {
     const trigger=s.trigger.type==="SELF"?"自身":s.trigger.type==="SEARCH"?"前方敵人":
       s.trigger.type==="RSEARCH"?"後方敵人（倍率:"+number(s.trigger.searchRatio)+"倍）":s.trigger.type;
@@ -202,7 +208,7 @@
       __v2:{nameKey:s.nameKey,descriptionKey:s.descriptionKey},
       "發動機率":percent(s.activationRate),"觸發基準":trigger,"技能冷卻時間":seconds(s.cooldownSeconds),icon:s.icon,
       "技能組":s.effects.map(e=>({"效果":text("CUSTOM:"+e.effectCode),"係數":effectMagnitude(e),
-        "有效時間":!e.duration?"-":e.duration.kind==="levelFormula"?formula(e.duration):seconds(e.duration.seconds),
+        "有效時間":effectDuration(e),
         "範圍":points(e.rangePoints),"適用於活動關卡":e.availableIn.events?"是":"否",
         "適用於守護神":e.availableIn.guardian?"是":"否",
         ...(e.effectTrigger?{"發動機率":percent(e.effectTrigger.percent)}:{}),
