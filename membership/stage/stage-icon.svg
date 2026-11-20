@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Rangerbook TEST">
+  <rect width="512" height="512" rx="100" fill="#063f41"/>
+  <rect x="38" y="38" width="436" height="436" rx="75" fill="#087f77" stroke="#f2ce77" stroke-width="14"/>
+  <text x="256" y="302" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="235" font-weight="900">R</text>
+  <rect x="66" y="344" width="380" height="104" rx="29" fill="#b45309"/>
+  <text x="256" y="419" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="74" font-weight="900" letter-spacing="5">TEST</text>
+</svg>
