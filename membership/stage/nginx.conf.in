@@ -9,6 +9,11 @@ server {
     index index.html;
     auth_basic "Rangerbook private acceptance";
     auth_basic_user_file /etc/nginx/rangerbook-membership-test.htpasswd;
+    # iOS standalone PWAs cannot reliably surface native Basic Auth prompts.
+    # Accept either the original Basic Auth or a short-lived signed cookie.
+    satisfy any;
+    auth_request /__stage_access/check;
+    error_page 401 = @rb_stage_pwa_signin;
     access_log off;
     # nginx error logs can contain a full OAuth callback URI. No request logs here.
     error_log /dev/null crit;
@@ -18,6 +23,35 @@ server {
     add_header X-Robots-Tag "noindex, nofollow, noarchive" always;
     add_header X-Content-Type-Options nosniff always;
     add_header X-Frame-Options DENY always;
+    # Internal cookie validation. The subrequest never exposes credentials.
+    location = /__stage_access/check {
+        internal;
+        auth_basic off;
+        auth_request off;
+        proxy_pass http://127.0.0.1:18866/check;
+        proxy_pass_request_body off;
+        proxy_set_header Content-Length "";
+        proxy_set_header Cookie $http_cookie;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 3s;
+    }
+    # Public sign-in route only; static and application content stays protected.
+    location ^~ /__stage_access/ {
+        auth_basic off;
+        auth_request off;
+        proxy_pass http://127.0.0.1:18866/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 5s;
+    }
+    # Only documents get an interactive login page; APIs retain HTTP 401.
+    location @rb_stage_pwa_signin {
+        if ($http_accept ~* "text/html") {
+            return 302 /__stage_access/login;
+        }
+        return 401;
+    }
     location = /admin { return 302 /admin/; }
     location = /admin/ { try_files /admin/index.html =404; }
     location ~ ^/pvp/search/(?:index\.html)?$ {
