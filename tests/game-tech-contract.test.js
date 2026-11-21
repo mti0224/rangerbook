@@ -227,7 +227,7 @@ test("About and Sponsor copy, payment and contributor links match approved conte
     "後端使用Amazon Web Service"
   ])assert.ok(about.includes(phrase),"Missing about content: "+phrase);
   assert.match(about,/<a href="https:\/\/rangers\.lerico\.net\/"[^>]*>LINE Ranger手冊<\/a>/);
-  assert.match(about,/<a href="https:\/\/line-ranger-kiwi\.vercel\.app\/"[^>]*>LINE Rangers Kiwi<\/a>/);
+  assert.match(about,/<a href="https:\/\/ranger-kiwi\.com\/"[^>]*>LINE Rangers Kiwi<\/a>/);
   assert.match(sponsor,/這個網站不會放送任何廣告/);
   assert.match(sponsor,/支持本站維護與資料整理/);
   assert.match(sponsor,/<a\b[^>]*data-region-sponsor[^>]*href="https:\/\/www\.paypal\.com\/ncp\/payment\/SPHZE8H6CQYXW"[^>]*>贊助蚯蚓貓<\/a>/);
